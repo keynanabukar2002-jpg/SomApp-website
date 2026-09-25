@@ -1,1697 +1,1465 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>KNN Markets — Crypto Prediction Market</title>
-<meta name="description" content="KNN Markets crypto prediction demo">
-
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap');
-
-:root{
-  --bg:#030712;
-  --panel:#07111f;
-  --panel2:#0a1728;
-  --panel3:#0d1d31;
-  --line:#1b3049;
-  --text:#f3f7fb;
-  --muted:#8192a8;
-  --blue:#168cff;
-  --blue2:#38bdf8;
-  --green:#22c993;
-  --red:#ff5570;
-  --yellow:#f5c451;
-  --shadow:0 20px 60px rgba(0,0,0,.35);
-}
-
-*{box-sizing:border-box}
-
-html{
-  scroll-behavior:smooth;
-}
-
-body{
-  margin:0;
-  background:
-    radial-gradient(circle at 60% -10%,#0c3a6b44,transparent 30%),
-    var(--bg);
-  color:var(--text);
-  font-family:Inter,Arial,sans-serif;
-}
-
-button,input{
-  font:inherit;
-}
-
-button{
-  cursor:pointer;
-}
-
-button:disabled{
-  opacity:.45;
-  cursor:not-allowed;
-}
-
-.hidden{
-  display:none!important;
-}
-
-a{
-  color:inherit;
-  text-decoration:none;
-}
-
-/* =========================
-   AUTH
-========================= */
-
-#authScreen{
-  min-height:100vh;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  padding:20px;
-  background:
-    radial-gradient(circle at 50% 30%,#0865b633,transparent 35%),
-    #020711;
-}
-
-.auth-box{
-  width:100%;
-  max-width:430px;
-  background:linear-gradient(145deg,#091827,#050d18);
-  border:1px solid #1c3854;
-  border-radius:20px;
-  padding:30px;
-  box-shadow:var(--shadow);
-}
-
-.auth-logo{
-  text-align:center;
-  margin-bottom:25px;
-}
-
-.logo-mark{
-  width:54px;
-  height:54px;
-  margin:auto;
-  display:grid;
-  place-items:center;
-  border-radius:15px;
-  background:linear-gradient(135deg,#168cff,#0754ad);
-  font-size:28px;
-  font-weight:800;
-  box-shadow:0 10px 35px #168cff44;
-}
-
-.logo-title{
-  font-size:24px;
-  font-weight:800;
-  margin-top:12px;
-}
-
-.logo-title span{
-  color:var(--blue2);
-}
-
-.logo-sub{
-  color:var(--muted);
-  font-size:11px;
-  margin-top:5px;
-}
-
-.auth-tabs{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:6px;
-  background:#050d18;
-  padding:5px;
-  border-radius:10px;
-  margin-bottom:20px;
-}
-
-.auth-tabs button{
-  border:0;
-  background:transparent;
-  color:var(--muted);
-  padding:10px;
-  border-radius:7px;
-}
-
-.auth-tabs button.active{
-  background:#123153;
-  color:#fff;
-}
-
-.auth-form h2{
-  margin:0 0 7px;
-}
-
-.auth-form p{
-  color:var(--muted);
-  font-size:12px;
-  line-height:1.5;
-}
-
-.field{
-  margin:15px 0;
-}
-
-.field label{
-  display:block;
-  font-size:11px;
-  color:#aebdd0;
-  margin-bottom:7px;
-}
-
-.field input{
-  width:100%;
-  padding:12px;
-  border-radius:9px;
-  border:1px solid #233d58;
-  background:#071322;
-  color:#fff;
-  outline:none;
-}
-
-.field input:focus{
-  border-color:var(--blue);
-  box-shadow:0 0 0 3px #168cff18;
-}
-
-.primary-btn{
-  width:100%;
-  border:0;
-  padding:13px;
-  border-radius:10px;
-  color:#fff;
-  font-weight:700;
-  background:linear-gradient(135deg,#168fff,#0968d1);
-  box-shadow:0 10px 30px #168cff22;
-}
-
-.auth-message{
-  min-height:18px;
-  margin-top:10px;
-  font-size:11px;
-}
-
-.auth-message.error{
-  color:#ff7187;
-}
-
-.auth-message.success{
-  color:#45e0a8;
-}
-
-.demo-note{
-  margin-top:18px;
-  padding:11px;
-  border:1px solid #25445f;
-  background:#08182a;
-  border-radius:9px;
-  color:#91a5ba;
-  font-size:10px;
-  line-height:1.5;
-}
-
-/* =========================
-   APP
-========================= */
-
-#app{
-  min-height:100vh;
-}
-
-.topbar{
-  height:66px;
-  position:sticky;
-  top:0;
-  z-index:100;
-  display:flex;
-  align-items:center;
-  gap:20px;
-  padding:0 24px;
-  background:#040b15ee;
-  backdrop-filter:blur(16px);
-  border-bottom:1px solid var(--line);
-}
-
-.brand{
-  display:flex;
-  align-items:center;
-  gap:10px;
-  margin-right:auto;
-}
-
-.brand-logo{
-  width:38px;
-  height:38px;
-  display:grid;
-  place-items:center;
-  border-radius:10px;
-  background:linear-gradient(135deg,#168cff,#0754ae);
-  font-weight:800;
-  font-size:21px;
-}
-
-.brand-name{
-  font-size:16px;
-  font-weight:800;
-}
-
-.brand-name span{
-  color:var(--blue2);
-}
-
-.brand-sub{
-  color:#6f849b;
-  font-size:8px;
-  margin-top:2px;
-}
-
-.top-balance{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  border:1px solid #25415d;
-  background:#071525;
-  border-radius:10px;
-  padding:8px 12px;
-  font-size:11px;
-}
-
-.top-balance strong{
-  color:#fff;
-}
-
-.user-menu{
-  display:flex;
-  align-items:center;
-  gap:8px;
-  font-size:11px;
-  color:#b9c8d8;
-}
-
-.avatar{
-  width:31px;
-  height:31px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:#dbeafe;
-  color:#0755a0;
-  font-weight:800;
-}
-
-.logout-btn{
-  border:1px solid #4a2632;
-  background:#180c11;
-  color:#ff7186;
-  padding:8px 11px;
-  border-radius:8px;
-  font-size:11px;
-}
-
-.layout{
-  display:grid;
-  grid-template-columns:220px 1fr;
-  max-width:1500px;
-  margin:auto;
-}
-
-.sidebar{
-  min-height:calc(100vh - 66px);
-  border-right:1px solid var(--line);
-  padding:20px 12px;
-}
-
-.side-label{
-  color:#52677e;
-  font-size:9px;
-  text-transform:uppercase;
-  letter-spacing:1px;
-  margin:15px 9px 8px;
-}
-
-.side-btn{
-  width:100%;
-  display:flex;
-  gap:10px;
-  align-items:center;
-  border:0;
-  background:transparent;
-  color:#9aacbf;
-  padding:11px 12px;
-  border-radius:9px;
-  margin:3px 0;
-  text-align:left;
-  font-size:12px;
-}
-
-.side-btn:hover,
-.side-btn.active{
-  color:#fff;
-  background:linear-gradient(90deg,#106fc4,#0b4d8c);
-}
-
-.main{
-  min-width:0;
-  padding:25px;
-}
-
-/* =========================
-   PAGE
-========================= */
-
-.page{
-  display:none;
-}
-
-.page.active{
-  display:block;
-}
-
-.page-title{
-  margin-bottom:20px;
-}
-
-.page-title h1{
-  margin:0 0 5px;
-  font-size:25px;
-}
-
-.page-title p{
-  margin:0;
-  color:var(--muted);
-  font-size:12px;
-}
-
-/* =========================
-   DASHBOARD
-========================= */
-
-.stats{
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  gap:12px;
-  margin-bottom:18px;
-}
-
-.stat{
-  background:linear-gradient(145deg,#091827,#06101c);
-  border:1px solid var(--line);
-  border-radius:13px;
-  padding:15px;
-}
-
-.stat-label{
-  color:#71869d;
-  font-size:10px;
-}
-
-.stat-value{
-  font-size:18px;
-  font-weight:700;
-  margin-top:8px;
-}
-
-.stat-small{
-  color:#71869d;
-  font-size:9px;
-  margin-top:4px;
-}
-
-.green{
-  color:var(--green)!important;
-}
-
-.red{
-  color:var(--red)!important;
-}
-
-.blue{
-  color:var(--blue2)!important;
-}
-
-.market-grid{
-  display:grid;
-  grid-template-columns:repeat(2,1fr);
-  gap:14px;
-}
-
-.market-card{
-  background:linear-gradient(145deg,#091827,#050d17);
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:17px;
-  transition:.2s;
-}
-
-.market-card:hover{
-  border-color:#28557c;
-  transform:translateY(-1px);
-}
-
-.market-top{
-  display:flex;
-  align-items:center;
-  gap:10px;
-}
-
-.coin-icon{
-  width:37px;
-  height:37px;
-  border-radius:50%;
-  display:grid;
-  place-items:center;
-  background:#132b44;
-  font-weight:800;
-  color:#fff;
-}
-
-.market-name{
-  flex:1;
-}
-
-.market-name strong{
-  display:block;
-  font-size:13px;
-}
-
-.market-name span{
-  display:block;
-  color:#6f849a;
-  font-size:9px;
-  margin-top:3px;
-}
-
-.live-dot{
-  color:var(--green);
-  font-size:9px;
-}
-
-.market-question{
-  margin:16px 0;
-  font-size:14px;
-  line-height:1.4;
-  font-weight:600;
-}
-
-.price-row{
-  display:flex;
-  align-items:end;
-  justify-content:space-between;
-  margin-bottom:14px;
-}
-
-.crypto-price{
-  font-size:18px;
-  font-weight:700;
-}
-
-.price-change{
-  font-size:10px;
-}
-
-.prob-wrap{
-  margin-bottom:13px;
-}
-
-.prob-line{
-  height:7px;
-  display:flex;
-  overflow:hidden;
-  border-radius:20px;
-  background:#182636;
-}
-
-.prob-yes{
-  background:var(--green);
-}
-
-.prob-no{
-  background:var(--red);
-}
-
-.prob-labels{
-  display:flex;
-  justify-content:space-between;
-  font-size:10px;
-  margin-top:6px;
-}
-
-.market-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:7px;
-}
-
-.action-btn{
-  border:0;
-  border-radius:8px;
-  padding:10px 5px;
-  color:#fff;
-  font-weight:700;
-  font-size:11px;
-}
-
-.yes-btn{
-  background:#087856;
-}
-
-.yes-btn:hover{
-  background:#0b9a6e;
-}
-
-.no-btn{
-  background:#9f2940;
-}
-
-.no-btn:hover{
-  background:#c63752;
-}
-
-/* =========================
-   TRADE MODAL
-========================= */
-
-.modal{
-  position:fixed;
-  inset:0;
-  background:#000b;
-  z-index:500;
-  display:none;
-  align-items:center;
-  justify-content:center;
-  padding:18px;
-}
-
-.modal.open{
-  display:flex;
-}
-
-.modal-box{
-  width:100%;
-  max-width:470px;
-  background:#071321;
-  border:1px solid #24415e;
-  border-radius:17px;
-  padding:22px;
-  box-shadow:0 30px 90px #000;
-}
-
-.modal-head{
-  display:flex;
-  align-items:center;
-  margin-bottom:18px;
-}
-
-.modal-head h2{
-  margin:0;
-  font-size:18px;
-  flex:1;
-}
-
-.close{
-  border:0;
-  background:transparent;
-  color:#8ca0b5;
-  font-size:22px;
-}
-
-.trade-market{
-  padding:12px;
-  background:#0a1b2c;
-  border:1px solid #1b344c;
-  border-radius:10px;
-}
-
-.trade-market strong{
-  display:block;
-  font-size:13px;
-}
-
-.trade-market span{
-  color:#7f95aa;
-  font-size:10px;
-}
-
-.trade-side{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin:15px 0;
-}
-
-.trade-side button{
-  padding:11px;
-  border-radius:8px;
-  border:1px solid #28445e;
-  background:#081524;
-  color:#aebfd0;
-  font-weight:700;
-}
-
-.trade-side button.active-yes{
-  background:#087856;
-  color:#fff;
-  border-color:#0da477;
-}
-
-.trade-side button.active-no{
-  background:#9f2940;
-  color:#fff;
-  border-color:#dc4762;
-}
-
-.trade-action{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin:15px 0;
-}
-
-.trade-action button{
-  padding:11px;
-  border:1px solid #28445e;
-  background:#081524;
-  color:#fff;
-  border-radius:8px;
-  font-weight:700;
-}
-
-.trade-action button.active{
-  background:#146fc1;
-  border-color:#168cff;
-}
-
-.trade-info{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-}
-
-.info-box{
-  padding:10px;
-  background:#091a2a;
-  border:1px solid #19334c;
-  border-radius:8px;
-}
-
-.info-box small{
-  display:block;
-  color:#6f8499;
-  font-size:9px;
-}
-
-.info-box strong{
-  display:block;
-  margin-top:5px;
-  font-size:12px;
-}
-
-.trade-submit{
-  width:100%;
-  margin-top:15px;
-  border:0;
-  padding:13px;
-  background:linear-gradient(135deg,#168cff,#0867cc);
-  color:#fff;
-  border-radius:9px;
-  font-weight:700;
-}
-
-.trade-msg{
-  font-size:10px;
-  min-height:15px;
-  margin-top:8px;
-}
-
-/* =========================
-   PORTFOLIO
-========================= */
-
-.portfolio-grid{
-  display:grid;
-  grid-template-columns:repeat(3,1fr);
-  gap:12px;
-  margin-bottom:18px;
-}
-
-.position-card{
-  background:#071321;
-  border:1px solid var(--line);
-  border-radius:13px;
-  padding:15px;
-}
-
-.position-card h3{
-  margin:0 0 12px;
-  font-size:13px;
-}
-
-.position-row{
-  display:flex;
-  justify-content:space-between;
-  border-bottom:1px solid #172a3d;
-  padding:8px 0;
-  font-size:10px;
-}
-
-.position-row:last-child{
-  border-bottom:0;
-}
-
-.position-row span:first-child{
-  color:#71869b;
-}
-
-/* =========================
-   TABLE
-========================= */
-
-.table-card{
-  background:#071321;
-  border:1px solid var(--line);
-  border-radius:14px;
-  overflow:hidden;
-}
-
-.table-head{
-  padding:15px;
-  border-bottom:1px solid var(--line);
-}
-
-.table-head h3{
-  margin:0;
-  font-size:14px;
-}
-
-.table-wrap{
-  overflow:auto;
-}
-
-table{
-  width:100%;
-  border-collapse:collapse;
-  min-width:650px;
-}
-
-th,td{
-  padding:12px 14px;
-  text-align:left;
-  border-bottom:1px solid #14283b;
-  font-size:10px;
-}
-
-th{
-  color:#687f96;
-  font-weight:500;
-}
-
-td{
-  color:#cbd7e4;
-}
-
-.badge{
-  display:inline-block;
-  padding:4px 7px;
-  border-radius:20px;
-  font-size:8px;
-}
-
-.badge.buy{
-  background:#063d2d;
-  color:#43e1a7;
-}
-
-.badge.sell{
-  background:#451522;
-  color:#ff7188;
-}
-
-/* =========================
-   PROFILE
-========================= */
-
-.profile-card{
-  max-width:600px;
-  background:#071321;
-  border:1px solid var(--line);
-  border-radius:15px;
-  padding:20px;
-}
-
-.profile-card h3{
-  margin:0 0 4px;
-}
-
-.profile-card p{
-  color:var(--muted);
-  font-size:11px;
-}
-
-/* =========================
-   TOAST
-========================= */
-
-.toast{
-  position:fixed;
-  right:20px;
-  bottom:20px;
-  z-index:1000;
-  background:#0b1c2d;
-  border:1px solid #2b4d6d;
-  border-radius:9px;
-  padding:12px 15px;
-  font-size:11px;
-  display:none;
-  box-shadow:var(--shadow);
-}
-
-.toast.show{
-  display:block;
-}
-
-.toast.success{
-  border-color:#168e69;
-  color:#55e3ae;
-}
-
-.toast.error{
-  border-color:#913449;
-  color:#ff7187;
-}
-
-/* =========================
-   MOBILE
-========================= */
-
-.mobile-menu{
-  display:none;
-  border:0;
-  background:transparent;
-  color:#fff;
-  font-size:22px;
-}
-
-@media(max-width:1000px){
-  .stats{
-    grid-template-columns:repeat(2,1fr);
-  }
-
-  .portfolio-grid{
-    grid-template-columns:1fr 1fr;
-  }
-}
-
-@media(max-width:800px){
-  .topbar{
-    padding:0 12px;
-  }
-
-  .brand-sub,
-  .user-menu span:last-child,
-  .logout-btn{
-    display:none;
-  }
-
-  .top-balance{
-    margin-left:auto;
-  }
-
-  .layout{
-    display:block;
-  }
-
-  .sidebar{
-    min-height:auto;
-    border-right:0;
-    border-bottom:1px solid var(--line);
-    padding:8px;
-    display:flex;
-    overflow-x:auto;
-    gap:5px;
-  }
-
-  .side-label{
-    display:none;
-  }
-
-  .side-btn{
-    min-width:max-content;
-    width:auto;
-    margin:0;
-  }
-
-  .main{
-    padding:16px 12px;
-  }
-
-  .market-grid{
-    grid-template-columns:1fr;
-  }
-}
-
-@media(max-width:560px){
-  .stats{
-    grid-template-columns:1fr 1fr;
-  }
-
-  .portfolio-grid{
-    grid-template-columns:1fr;
-  }
-
-  .top-balance{
-    font-size:9px;
-    padding:7px;
-  }
-
-  .brand-name{
-    font-size:13px;
-  }
-
-  .page-title h1{
-    font-size:21px;
-  }
-}
-
-@media(max-width:400px){
-  .stats{
-    grid-template-columns:1fr;
-  }
-}
-</style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>KNN Markets — Crypto Prediction Market</title>
+
+  <!-- Firebase -->
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore-compat.js"></script>
+
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+      --bg: #030812;
+      --panel: #081522;
+      --panel2: #0b1b2b;
+      --border: #193047;
+      --text: #f4f7fb;
+      --muted: #8393a7;
+      --blue: #1689ff;
+      --blue2: #0d6fe0;
+      --green: #25d69a;
+      --red: #ff5d73;
+      --yellow: #f5c451;
+    }
+
+    body {
+      font-family: Arial, Helvetica, sans-serif;
+      background:
+        radial-gradient(circle at 50% -10%, #0c2740 0%, transparent 35%),
+        var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+    }
+
+    button,
+    input {
+      font-family: inherit;
+    }
+
+    button {
+      cursor: pointer;
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* AUTH */
+
+    #authScreen {
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 25px;
+    }
+
+    .auth-card {
+      width: 100%;
+      max-width: 625px;
+      background: linear-gradient(145deg, #091b2b, #06111d);
+      border: 1px solid #19334b;
+      border-radius: 28px;
+      padding: 38px;
+      box-shadow: 0 30px 90px rgba(0,0,0,.4);
+    }
+
+    .brand {
+      text-align: center;
+      margin-bottom: 30px;
+    }
+
+    .brand-logo {
+      width: 90px;
+      height: 90px;
+      border-radius: 24px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin: 0 auto 20px;
+      font-size: 48px;
+      font-weight: 800;
+      color: white;
+      background: linear-gradient(145deg, #1d91ff, #0759ba);
+      box-shadow: 0 15px 35px rgba(20,130,255,.25);
+    }
+
+    .brand h1 {
+      font-size: 38px;
+      margin-bottom: 8px;
+    }
+
+    .brand h1 span {
+      color: #16a4ff;
+    }
+
+    .brand p {
+      color: var(--muted);
+      font-size: 16px;
+    }
+
+    .auth-tabs {
+      display: flex;
+      background: #040d17;
+      padding: 8px;
+      border-radius: 16px;
+      margin-bottom: 30px;
+    }
+
+    .auth-tab {
+      width: 50%;
+      padding: 16px;
+      border: 0;
+      border-radius: 12px;
+      background: transparent;
+      color: #738399;
+      font-size: 18px;
+    }
+
+    .auth-tab.active {
+      background: #153a61;
+      color: white;
+    }
+
+    .auth-title {
+      font-size: 30px;
+      margin-bottom: 8px;
+    }
+
+    .auth-subtitle {
+      color: var(--muted);
+      margin-bottom: 28px;
+      font-size: 16px;
+    }
+
+    label {
+      display: block;
+      color: #a9b6c6;
+      margin: 0 0 9px;
+      font-size: 15px;
+    }
+
+    input {
+      width: 100%;
+      background: #071421;
+      border: 1px solid #1c344b;
+      color: white;
+      border-radius: 14px;
+      padding: 17px;
+      outline: none;
+      font-size: 16px;
+      margin-bottom: 18px;
+    }
+
+    input:focus {
+      border-color: #158cff;
+      box-shadow: 0 0 0 3px rgba(21,140,255,.08);
+    }
+
+    .primary-btn {
+      width: 100%;
+      border: 0;
+      border-radius: 14px;
+      padding: 17px;
+      background: linear-gradient(135deg, #1595ff, #0871dc);
+      color: white;
+      font-size: 18px;
+      font-weight: 700;
+      box-shadow: 0 12px 30px rgba(21,140,255,.18);
+    }
+
+    .primary-btn:disabled {
+      opacity: .6;
+      cursor: wait;
+    }
+
+    .message {
+      margin-top: 15px;
+      min-height: 22px;
+      color: var(--green);
+      font-size: 14px;
+    }
+
+    .message.error {
+      color: var(--red);
+    }
+
+    .demo-note {
+      margin-top: 28px;
+      background: #071727;
+      border: 1px solid #1b344b;
+      padding: 16px;
+      border-radius: 14px;
+      color: #8fa0b4;
+      line-height: 1.5;
+    }
+
+    .demo-note strong {
+      color: white;
+    }
+
+    /* APP */
+
+    #app {
+      min-height: 100vh;
+      display: flex;
+    }
+
+    .sidebar {
+      width: 245px;
+      min-height: 100vh;
+      background: #050e18;
+      border-right: 1px solid #14273a;
+      padding: 22px 16px;
+      position: fixed;
+      left: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 20;
+    }
+
+    .side-logo {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      padding: 8px 9px 28px;
+    }
+
+    .side-logo-icon {
+      width: 43px;
+      height: 43px;
+      border-radius: 12px;
+      background: linear-gradient(145deg, #188cff, #075ec0);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+      font-weight: 800;
+    }
+
+    .side-logo strong {
+      font-size: 20px;
+    }
+
+    .side-logo span {
+      color: #13a0ff;
+    }
+
+    .nav-title {
+      color: #5e7187;
+      font-size: 11px;
+      font-weight: 700;
+      margin: 18px 10px 10px;
+      text-transform: uppercase;
+      letter-spacing: 1px;
+    }
+
+    .nav-btn {
+      width: 100%;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      background: transparent;
+      border: 0;
+      color: #8c9caf;
+      padding: 13px 12px;
+      border-radius: 11px;
+      text-align: left;
+      margin-bottom: 4px;
+      font-size: 15px;
+    }
+
+    .nav-btn.active,
+    .nav-btn:hover {
+      color: white;
+      background: #0d2439;
+    }
+
+    .nav-icon {
+      width: 20px;
+      text-align: center;
+    }
+
+    .side-bottom {
+      position: absolute;
+      left: 16px;
+      right: 16px;
+      bottom: 18px;
+    }
+
+    .user-box {
+      background: #081827;
+      border: 1px solid #173149;
+      border-radius: 14px;
+      padding: 13px;
+      margin-bottom: 10px;
+      overflow: hidden;
+    }
+
+    .user-email {
+      color: #93a3b7;
+      font-size: 12px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .balance-mini {
+      margin-top: 6px;
+      font-weight: 700;
+      color: white;
+    }
+
+    .logout-btn {
+      width: 100%;
+      background: transparent;
+      border: 1px solid #21394f;
+      color: #9aabbd;
+      padding: 11px;
+      border-radius: 10px;
+    }
+
+    .main {
+      margin-left: 245px;
+      width: calc(100% - 245px);
+      min-height: 100vh;
+    }
+
+    .topbar {
+      height: 76px;
+      border-bottom: 1px solid #13283b;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 30px;
+      background: rgba(3,8,18,.85);
+      backdrop-filter: blur(10px);
+      position: sticky;
+      top: 0;
+      z-index: 10;
+    }
+
+    .top-title {
+      font-size: 21px;
+      font-weight: 700;
+    }
+
+    .top-right {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .live-pill {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      background: #08251f;
+      border: 1px solid #174d40;
+      color: #35dbab;
+      border-radius: 30px;
+      padding: 8px 12px;
+      font-size: 12px;
+    }
+
+    .live-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: #27d59c;
+      box-shadow: 0 0 10px #27d59c;
+    }
+
+    .content {
+      max-width: 1400px;
+      margin: auto;
+      padding: 30px;
+    }
+
+    /* DASHBOARD */
+
+    .hero {
+      background:
+        radial-gradient(circle at 90% 20%, rgba(17,130,255,.17), transparent 28%),
+        linear-gradient(135deg, #0a1e31, #07111d);
+      border: 1px solid #18344d;
+      border-radius: 22px;
+      padding: 28px;
+      margin-bottom: 24px;
+    }
+
+    .hero small {
+      color: #73869b;
+    }
+
+    .hero h2 {
+      font-size: 32px;
+      margin: 8px 0;
+    }
+
+    .hero p {
+      color: #8c9bad;
+    }
+
+    .balance-card {
+      margin-top: 25px;
+      display: flex;
+      align-items: end;
+      justify-content: space-between;
+      gap: 20px;
+      flex-wrap: wrap;
+    }
+
+    .balance-number {
+      font-size: 38px;
+      font-weight: 800;
+    }
+
+    .balance-label {
+      color: #74879c;
+      margin-bottom: 5px;
+    }
+
+    .demo-tag {
+      background: #102b43;
+      color: #5eb6ff;
+      padding: 9px 13px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 15px;
+      margin-bottom: 28px;
+    }
+
+    .stat {
+      background: #071522;
+      border: 1px solid #172e43;
+      border-radius: 17px;
+      padding: 20px;
+    }
+
+    .stat-label {
+      color: #73869b;
+      font-size: 13px;
+    }
+
+    .stat-value {
+      margin-top: 8px;
+      font-size: 23px;
+      font-weight: 800;
+    }
+
+    .section-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 15px;
+      gap: 15px;
+    }
+
+    .section-head h2 {
+      font-size: 21px;
+    }
+
+    .section-head button {
+      background: transparent;
+      border: 0;
+      color: #1591ff;
+    }
+
+    .markets-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 17px;
+    }
+
+    .market-card {
+      background: #071522;
+      border: 1px solid #173048;
+      border-radius: 18px;
+      padding: 20px;
+      transition: .2s;
+    }
+
+    .market-card:hover {
+      border-color: #28587f;
+      transform: translateY(-1px);
+    }
+
+    .market-top {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+    }
+
+    .coin {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .coin-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 12px;
+      background: #102c43;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 800;
+      color: #43aaff;
+    }
+
+    .market-title {
+      font-weight: 700;
+      line-height: 1.35;
+    }
+
+    .market-sub {
+      color: #72859a;
+      font-size: 12px;
+      margin-top: 4px;
+    }
+
+    .price {
+      text-align: right;
+      font-weight: 800;
+    }
+
+    .change {
+      font-size: 12px;
+      margin-top: 5px;
+    }
+
+    .up {
+      color: var(--green);
+    }
+
+    .down {
+      color: var(--red);
+    }
+
+    .prob-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 22px 0 12px;
+    }
+
+    .prob {
+      font-size: 29px;
+      font-weight: 800;
+    }
+
+    .prob-label {
+      color: #7b8da0;
+      font-size: 12px;
+    }
+
+    .bar {
+      height: 8px;
+      border-radius: 20px;
+      background: #162a3b;
+      overflow: hidden;
+    }
+
+    .bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #168cff, #35a7ff);
+      border-radius: 20px;
+      transition: width .5s;
+    }
+
+    .trade-row {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-top: 17px;
+    }
+
+    .yes-btn,
+    .no-btn {
+      padding: 13px;
+      border-radius: 11px;
+      font-weight: 700;
+      border: 1px solid;
+      background: transparent;
+    }
+
+    .yes-btn {
+      color: var(--green);
+      border-color: #195845;
+      background: rgba(37,214,154,.05);
+    }
+
+    .no-btn {
+      color: var(--red);
+      border-color: #62303a;
+      background: rgba(255,93,115,.05);
+    }
+
+    .yes-btn:hover {
+      background: rgba(37,214,154,.13);
+    }
+
+    .no-btn:hover {
+      background: rgba(255,93,115,.13);
+    }
+
+    /* TABLE / PORTFOLIO */
+
+    .panel {
+      background: #071522;
+      border: 1px solid #173048;
+      border-radius: 18px;
+      padding: 22px;
+    }
+
+    .table-wrap {
+      overflow-x: auto;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      min-width: 650px;
+    }
+
+    th {
+      text-align: left;
+      color: #6f8297;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 12px;
+      border-bottom: 1px solid #183044;
+    }
+
+    td {
+      padding: 16px 12px;
+      border-bottom: 1px solid #112739;
+      color: #dce4ed;
+      font-size: 14px;
+    }
+
+    .empty {
+      padding: 50px 20px;
+      text-align: center;
+      color: #718398;
+    }
+
+    .tag {
+      display: inline-block;
+      padding: 5px 8px;
+      border-radius: 7px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .tag-buy {
+      color: #38dba9;
+      background: #08291f;
+    }
+
+    .tag-sell {
+      color: #ff7184;
+      background: #2c1117;
+    }
+
+    .tag-yes {
+      color: #51b5ff;
+      background: #09243a;
+    }
+
+    .tag-no {
+      color: #ff798a;
+      background: #2a1117;
+    }
+
+    /* PROFILE */
+
+    .profile-card {
+      max-width: 700px;
+    }
+
+    .profile-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      padding: 17px 0;
+      border-bottom: 1px solid #173048;
+    }
+
+    .profile-row span:first-child {
+      color: #73869b;
+    }
+
+    .profile-row span:last-child {
+      text-align: right;
+      word-break: break-word;
+    }
+
+    /* MODAL */
+
+    .modal {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,.72);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+      z-index: 100;
+    }
+
+    .modal-card {
+      width: 100%;
+      max-width: 480px;
+      background: #081725;
+      border: 1px solid #21415d;
+      border-radius: 22px;
+      padding: 25px;
+      box-shadow: 0 30px 90px rgba(0,0,0,.6);
+    }
+
+    .modal-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 15px;
+      margin-bottom: 20px;
+    }
+
+    .close {
+      border: 0;
+      background: transparent;
+      color: #899aad;
+      font-size: 26px;
+    }
+
+    .trade-type {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      margin-bottom: 18px;
+    }
+
+    .trade-type button {
+      padding: 13px;
+      border-radius: 11px;
+      background: #0a1a29;
+      border: 1px solid #1a344b;
+      color: #8394a7;
+    }
+
+    .trade-type button.selected {
+      color: white;
+      border-color: #168cff;
+      background: #103455;
+    }
+
+    .trade-info {
+      background: #07131f;
+      border: 1px solid #173047;
+      border-radius: 13px;
+      padding: 15px;
+      margin-bottom: 18px;
+    }
+
+    .trade-info-row {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 8px;
+      color: #8192a6;
+      font-size: 13px;
+    }
+
+    .trade-info-row:last-child {
+      margin-bottom: 0;
+      color: white;
+    }
+
+    .danger {
+      color: var(--red);
+    }
+
+    .success {
+      color: var(--green);
+    }
+
+    /* MOBILE */
+
+    .mobile-nav {
+      display: none;
+    }
+
+    @media (max-width: 900px) {
+      .sidebar {
+        display: none;
+      }
+
+      .main {
+        margin-left: 0;
+        width: 100%;
+        padding-bottom: 75px;
+      }
+
+      .topbar {
+        padding: 0 17px;
+      }
+
+      .content {
+        padding: 20px 15px;
+      }
+
+      .stats {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .markets-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .mobile-nav {
+        position: fixed;
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        left: 0;
+        right: 0;
+        bottom: 0;
+        height: 68px;
+        background: #06101b;
+        border-top: 1px solid #173048;
+        z-index: 50;
+      }
+
+      .mobile-nav button {
+        background: transparent;
+        border: 0;
+        color: #708297;
+        font-size: 11px;
+      }
+
+      .mobile-nav button.active {
+        color: #1591ff;
+      }
+    }
+
+    @media (max-width: 600px) {
+      #authScreen {
+        padding: 14px;
+        align-items: flex-start;
+        padding-top: 35px;
+      }
+
+      .auth-card {
+        padding: 25px 18px;
+        border-radius: 22px;
+      }
+
+      .brand h1 {
+        font-size: 31px;
+      }
+
+      .brand-logo {
+        width: 75px;
+        height: 75px;
+        font-size: 38px;
+      }
+
+      .auth-title {
+        font-size: 26px;
+      }
+
+      .hero {
+        padding: 21px;
+      }
+
+      .hero h2 {
+        font-size: 26px;
+      }
+
+      .balance-number {
+        font-size: 31px;
+      }
+
+      .stats {
+        gap: 10px;
+      }
+
+      .stat {
+        padding: 15px;
+      }
+
+      .stat-value {
+        font-size: 19px;
+      }
+
+      .top-title {
+        font-size: 17px;
+      }
+
+      .live-pill {
+        padding: 7px 9px;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-<!-- =========================
-     AUTH SCREEN
-========================= -->
+  <!-- ================= AUTH ================= -->
 
-<div id="authScreen">
+  <section id="authScreen">
 
-  <div class="auth-box">
+    <div class="auth-card">
 
-    <div class="auth-logo">
-      <div class="logo-mark">K</div>
-      <div class="logo-title">KNN <span>Markets</span></div>
-      <div class="logo-sub">Crypto Prediction Market • DEMO</div>
-    </div>
+      <div class="brand">
+        <div class="brand-logo">K</div>
+        <h1>KNN <span>Markets</span></h1>
+        <p>Crypto Prediction Market • DEMO</p>
+      </div>
 
-    <div class="auth-tabs">
-      <button id="loginTab" class="active" onclick="showAuth('login')">
-        Login
-      </button>
+      <div class="auth-tabs">
+        <button id="loginTab" class="auth-tab active" onclick="showAuth('login')">
+          Login
+        </button>
 
-      <button id="registerTab" onclick="showAuth('register')">
-        Register
-      </button>
-    </div>
+        <button id="registerTab" class="auth-tab" onclick="showAuth('register')">
+          Register
+        </button>
+      </div>
 
-    <!-- LOGIN -->
+      <!-- LOGIN -->
 
-    <div id="loginForm" class="auth-form">
+      <div id="loginForm">
 
-      <h2>Welcome back</h2>
+        <h2 class="auth-title">Welcome back</h2>
 
-      <p>
-        Login to access your KNN Markets demo account.
-      </p>
+        <p class="auth-subtitle">
+          Login to access your KNN Markets demo account.
+        </p>
 
-      <div class="field">
         <label>Email</label>
+
         <input
           id="loginEmail"
           type="email"
           placeholder="you@example.com"
-        >
-      </div>
+          autocomplete="email"
+        />
 
-      <div class="field">
         <label>Password</label>
+
         <input
           id="loginPassword"
           type="password"
           placeholder="Password"
-        >
+          autocomplete="current-password"
+        />
+
+        <button id="loginBtn" class="primary-btn" onclick="loginUser()">
+          Login
+        </button>
+
+        <div id="loginMessage" class="message"></div>
+
       </div>
 
-      <button class="primary-btn" onclick="loginUser()">
-        Login
-      </button>
+      <!-- REGISTER -->
 
-      <div id="loginMessage" class="auth-message"></div>
+      <div id="registerForm" class="hidden">
+
+        <h2 class="auth-title">Create account</h2>
+
+        <p class="auth-subtitle">
+          Create your KNN Markets demo account.
+        </p>
+
+        <label>Name</label>
+
+        <input
+          id="registerName"
+          type="text"
+          placeholder="Your name"
+          autocomplete="name"
+        />
+
+        <label>Email</label>
+
+        <input
+          id="registerEmail"
+          type="email"
+          placeholder="you@example.com"
+          autocomplete="email"
+        />
+
+        <label>Password</label>
+
+        <input
+          id="registerPassword"
+          type="password"
+          placeholder="At least 6 characters"
+          autocomplete="new-password"
+        />
+
+        <button id="registerBtn" class="primary-btn" onclick="registerUser()">
+          Create Account
+        </button>
+
+        <div id="registerMessage" class="message"></div>
+
+      </div>
 
       <div class="demo-note">
-        New accounts receive <b>10,000 BNB DEMO</b>.
+        New accounts receive <strong>10,000 BNB DEMO</strong>.
         This is a simulated trading balance, not real BNB.
       </div>
 
     </div>
 
-    <!-- REGISTER -->
-
-    <div id="registerForm" class="auth-form hidden">
-
-      <h2>Create account</h2>
-
-      <p>
-        Create your KNN Markets demo account.
-      </p>
-
-      <div class="field">
-        <label>Name</label>
-        <input
-          id="registerName"
-          type="text"
-          placeholder="Your name"
-        >
-      </div>
-
-      <div class="field">
-        <label>Email</label>
-        <input
-          id="registerEmail"
-          type="email"
-          placeholder="you@example.com"
-        >
-      </div>
-
-      <div class="field">
-        <label>Password</label>
-        <input
-          id="registerPassword"
-          type="password"
-          placeholder="Minimum 6 characters"
-        >
-      </div>
-
-      <div class="field">
-        <label>Confirm password</label>
-        <input
-          id="registerConfirm"
-          type="password"
-          placeholder="Confirm password"
-        >
-      </div>
-
-      <button class="primary-btn" onclick="registerUser()">
-        Create Account
-      </button>
-
-      <div id="registerMessage" class="auth-message"></div>
-
-      <div class="demo-note">
-        Starting demo balance:
-        <b>10,000 BNB DEMO</b>
-      </div>
-
-    </div>
-
-  </div>
-
-</div>
+  </section>
 
 
-<!-- =========================
-     APP
-========================= -->
+  <!-- ================= APP ================= -->
 
-<div id="app" class="hidden">
+  <section id="app" class="hidden">
 
-  <header class="topbar">
-
-    <div class="brand">
-
-      <div class="brand-logo">
-        K
-      </div>
-
-      <div>
-        <div class="brand-name">
-          KNN <span>Markets</span>
-        </div>
-
-        <div class="brand-sub">
-          CRYPTO PREDICTION MARKET
-        </div>
-      </div>
-
-    </div>
-
-    <div class="top-balance">
-      💰
-      <strong id="topBalance">10,000.0000 BNB DEMO</strong>
-    </div>
-
-    <div class="user-menu">
-
-      <div class="avatar" id="avatar">
-        K
-      </div>
-
-      <span id="topUserName">
-        User
-      </span>
-
-    </div>
-
-    <button class="logout-btn" onclick="logoutUser()">
-      Logout
-    </button>
-
-  </header>
-
-
-  <div class="layout">
+    <!-- SIDEBAR -->
 
     <aside class="sidebar">
 
-      <div class="side-label">
+      <div class="side-logo">
+        <div class="side-logo-icon">K</div>
+
+        <strong>KNN <span>Markets</span></strong>
+      </div>
+
+      <div class="nav-title">Menu</div>
+
+      <button class="nav-btn active" data-page="dashboard" onclick="openPage('dashboard')">
+        <span class="nav-icon">⌂</span>
+        Dashboard
+      </button>
+
+      <button class="nav-btn" data-page="markets" onclick="openPage('markets')">
+        <span class="nav-icon">◉</span>
         Markets
+      </button>
+
+      <button class="nav-btn" data-page="portfolio" onclick="openPage('portfolio')">
+        <span class="nav-icon">▣</span>
+        Portfolio
+      </button>
+
+      <button class="nav-btn" data-page="history" onclick="openPage('history')">
+        <span class="nav-icon">↔</span>
+        History
+      </button>
+
+      <button class="nav-btn" data-page="profile" onclick="openPage('profile')">
+        <span class="nav-icon">●</span>
+        Profile
+      </button>
+
+      <div class="side-bottom">
+
+        <div class="user-box">
+          <div id="sideEmail" class="user-email">
+            Loading...
+          </div>
+
+          <div class="balance-mini">
+            <span id="sideBalance">0.0000</span> BNB
+          </div>
+        </div>
+
+        <button class="logout-btn" onclick="logoutUser()">
+          Logout
+        </button>
+
       </div>
-
-      <button
-        class="side-btn active"
-        data-page="dashboard"
-        onclick="navigate('dashboard')"
-      >
-        📊 Dashboard
-      </button>
-
-      <button
-        class="side-btn"
-        data-page="markets"
-        onclick="navigate('markets')"
-      >
-        📈 Markets
-      </button>
-
-      <div class="side-label">
-        Account
-      </div>
-
-      <button
-        class="side-btn"
-        data-page="portfolio"
-        onclick="navigate('portfolio')"
-      >
-        💼 Portfolio
-      </button>
-
-      <button
-        class="side-btn"
-        data-page="history"
-        onclick="navigate('history')"
-      >
-        🕘 History
-      </button>
-
-      <button
-        class="side-btn"
-        data-page="profile"
-        onclick="navigate('profile')"
-      >
-        👤 Profile
-      </button>
 
     </aside>
 
 
+    <!-- MAIN -->
+
     <main class="main">
 
-      <!-- ================= DASHBOARD ================= -->
+      <header class="topbar">
 
-      <section id="dashboardPage" class="page active">
-
-        <div class="page-title">
-
-          <h1>
-            Good to see you, <span id="welcomeName">Trader</span>
-          </h1>
-
-          <p>
-            Trade crypto prediction markets using demo BNB.
-          </p>
-
+        <div id="pageTitle" class="top-title">
+          Dashboard
         </div>
 
-        <div class="stats">
+        <div class="top-right">
 
-          <div class="stat">
-            <div class="stat-label">
-              DEMO BALANCE
-            </div>
-
-            <div class="stat-value blue" id="statBalance">
-              10,000.0000 BNB
-            </div>
-
-            <div class="stat-small">
-              Available to trade
-            </div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-label">
-              INVESTED
-            </div>
-
-            <div class="stat-value" id="statInvested">
-              0.0000 BNB
-            </div>
-
-            <div class="stat-small">
-              Current positions
-            </div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-label">
-              PORTFOLIO VALUE
-            </div>
-
-            <div class="stat-value green" id="statPortfolio">
-              0.0000 BNB
-            </div>
-
-            <div class="stat-small">
-              Estimated value
-            </div>
-          </div>
-
-          <div class="stat">
-            <div class="stat-label">
-              TOTAL P/L
-            </div>
-
-            <div class="stat-value" id="statPL">
-              +0.0000 BNB
-            </div>
-
-            <div class="stat-small">
-              Demo trading result
-            </div>
+          <div class="live-pill">
+            <span class="live-dot"></span>
+            LIVE DATA
           </div>
 
         </div>
 
-
-        <div class="page-title">
-          <h1 style="font-size:18px">
-            Crypto Markets
-          </h1>
-
-          <p>
-            Live prices update automatically.
-          </p>
-        </div>
-
-        <div id="dashboardMarkets" class="market-grid"></div>
-
-      </section>
+      </header>
 
 
-      <!-- ================= MARKETS ================= -->
+      <div class="content">
 
-      <section id="marketsPage" class="page">
+        <!-- DASHBOARD -->
 
-        <div class="page-title">
+        <section id="page-dashboard">
 
-          <h1>
-            Markets
-          </h1>
+          <div class="hero">
 
-          <p>
-            Choose a market and trade YES or NO.
-          </p>
+            <small>YOUR DEMO ACCOUNT</small>
 
-        </div>
+            <h2>Trade crypto predictions</h2>
 
-        <div id="marketsGrid" class="market-grid"></div>
+            <p>
+              Predict whether crypto prices move up or down.
+              All trades use simulated BNB DEMO.
+            </p>
 
-      </section>
+            <div class="balance-card">
 
+              <div>
+                <div class="balance-label">Available Balance</div>
 
-      <!-- ================= PORTFOLIO ================= -->
+                <div class="balance-number">
+                  <span id="mainBalance">10,000.0000</span> BNB
+                </div>
+              </div>
 
-      <section id="portfolioPage" class="page">
+              <div class="demo-tag">
+                DEMO ONLY
+              </div>
 
-        <div class="page-title">
-
-          <h1>
-            Portfolio
-          </h1>
-
-          <p>
-            Your current YES and NO positions.
-          </p>
-
-        </div>
-
-        <div id="portfolioGrid" class="portfolio-grid"></div>
-
-        <div class="table-card">
-
-          <div class="table-head">
-            <h3>Open Positions</h3>
-          </div>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Market</th>
-                  <th>Side</th>
-                  <th>Shares</th>
-                  <th>Invested</th>
-                  <th>Current Value</th>
-                  <th>P/L</th>
-                </tr>
-              </thead>
-
-              <tbody id="positionsTable"></tbody>
-
-            </table>
+            </div>
 
           </div>
 
-        </div>
 
-      </section>
+          <div class="stats">
 
+            <div class="stat">
+              <div class="stat-label">Balance</div>
+              <div id="statBalance" class="stat-value">10,000</div>
+            </div>
 
-      <!-- ================= HISTORY ================= -->
+            <div class="stat">
+              <div class="stat-label">Positions</div>
+              <div id="statPositions" class="stat-value">0</div>
+            </div>
 
-      <section id="historyPage" class="page">
+            <div class="stat">
+              <div class="stat-label">Trades</div>
+              <div id="statTrades" class="stat-value">0</div>
+            </div>
 
-        <div class="page-title">
-
-          <h1>
-            Trade History
-          </h1>
-
-          <p>
-            All your demo BUY and SELL transactions.
-          </p>
-
-        </div>
-
-        <div class="table-card">
-
-          <div class="table-head">
-            <h3>Transactions</h3>
-          </div>
-
-          <div class="table-wrap">
-
-            <table>
-
-              <thead>
-                <tr>
-                  <th>Date</th>
-                  <th>Market</th>
-                  <th>Side</th>
-                  <th>Action</th>
-                  <th>Shares</th>
-                  <th>Price</th>
-                  <th>Total</th>
-                </tr>
-              </thead>
-
-              <tbody id="historyTable"></tbody>
-
-            </table>
+            <div class="stat">
+              <div class="stat-label">Portfolio Value</div>
+              <div id="statPortfolio" class="stat-value">0</div>
+            </div>
 
           </div>
 
-        </div>
 
-      </section>
+          <div class="section-head">
 
+            <h2>Crypto Markets</h2>
 
-      <!-- ================= PROFILE ================= -->
-
-      <section id="profilePage" class="page">
-
-        <div class="page-title">
-
-          <h1>
-            Profile
-          </h1>
-
-          <p>
-            Your account information.
-          </p>
-
-        </div>
-
-        <div class="profile-card">
-
-          <h3>
-            Account
-          </h3>
-
-          <p>
-            Firebase Authentication account.
-          </p>
-
-          <div class="field">
-
-            <label>Name</label>
-
-            <input
-              id="profileName"
-              type="text"
-            >
+            <button onclick="openPage('markets')">
+              View all →
+            </button>
 
           </div>
 
-          <div class="field">
+          <div id="dashboardMarkets" class="markets-grid"></div>
 
-            <label>Email</label>
+        </section>
 
-            <input
-              id="profileEmail"
-              type="email"
-              disabled
-            >
+
+        <!-- MARKETS -->
+
+        <section id="page-markets" class="hidden">
+
+          <div class="section-head">
+
+            <div>
+              <h2>Crypto Markets</h2>
+              <div style="color:#73869b;margin-top:5px;font-size:13px;">
+                Live crypto prices • Simulated prediction trading
+              </div>
+            </div>
+
+            <button onclick="refreshPrices()">
+              Refresh
+            </button>
 
           </div>
 
-          <button
-            class="primary-btn"
-            onclick="saveProfile()"
-          >
-            Save Name
-          </button>
+          <div id="allMarkets" class="markets-grid"></div>
 
-        </div>
+        </section>
 
-      </section>
+
+        <!-- PORTFOLIO -->
+
+        <section id="page-portfolio" class="hidden">
+
+          <div class="section-head">
+            <h2>Your Portfolio</h2>
+          </div>
+
+          <div class="panel">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Market</th>
+                    <th>YES Shares</th>
+                    <th>NO Shares</th>
+                    <th>Invested</th>
+                    <th>Current Value</th>
+                    <th>P/L</th>
+                  </tr>
+                </thead>
+
+                <tbody id="portfolioBody"></tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- HISTORY -->
+
+        <section id="page-history" class="hidden">
+
+          <div class="section-head">
+            <h2>Trade History</h2>
+          </div>
+
+          <div class="panel">
+
+            <div class="table-wrap">
+
+              <table>
+
+                <thead>
+                  <tr>
+                    <th>Date</th>
+                    <th>Market</th>
+                    <th>Action</th>
+                    <th>Side</th>
+                    <th>Shares</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                  </tr>
+                </thead>
+
+                <tbody id="historyBody"></tbody>
+
+              </table>
+
+            </div>
+
+          </div>
+
+        </section>
+
+
+        <!-- PROFILE -->
+
+        <section id="page-profile" class="hidden">
+
+          <div class="section-head">
+            <h2>Profile</h2>
+          </div>
+
+          <div class="panel profile-card">
+
+            <div class="profile-row">
+              <span>Name</span>
+              <span id="profileName">-</span>
+            </div>
+
+            <div class="profile-row">
+              <span>Email</span>
+              <span id="profileEmail">-</span>
+            </div>
+
+            <div class="profile-row">
+              <span>User ID</span>
+              <span id="profileUid">-</span>
+            </div>
+
+            <div class="profile-row">
+              <span>Account Type</span>
+              <span>DEMO</span>
+            </div>
+
+            <div class="profile-row">
+              <span>Starting Balance</span>
+              <span>10,000 BNB DEMO</span>
+            </div>
+
+          </div>
+
+        </section>
+
+      </div>
 
     </main>
 
-  </div>
 
-</div>
+    <!-- MOBILE NAV -->
 
+    <nav class="mobile-nav">
 
-<!-- =========================
-     TRADE MODAL
-========================= -->
-
-<div id="tradeModal" class="modal">
-
-  <div class="modal-box">
-
-    <div class="modal-head">
-
-      <h2>
-        Trade Market
-      </h2>
-
-      <button
-        class="close"
-        onclick="closeTrade()"
-      >
-        ×
+      <button class="active" data-page="dashboard" onclick="openPage('dashboard')">
+        🏠<br>Home
       </button>
 
-    </div>
-
-
-    <div class="trade-market">
-
-      <strong id="tradeQuestion">
-        Market
-      </strong>
-
-      <span id="tradeCrypto">
-        BTC
-      </span>
-
-    </div>
-
-
-    <div class="trade-side">
-
-      <button
-        id="yesSide"
-        onclick="selectTradeSide('YES')"
-      >
-        YES
+      <button data-page="markets" onclick="openPage('markets')">
+        📊<br>Markets
       </button>
 
-      <button
-        id="noSide"
-        onclick="selectTradeSide('NO')"
-      >
-        NO
+      <button data-page="portfolio" onclick="openPage('portfolio')">
+        💼<br>Portfolio
       </button>
 
-    </div>
-
-
-    <div class="trade-action">
-
-      <button
-        id="buyAction"
-        class="active"
-        onclick="selectTradeAction('BUY')"
-      >
-        BUY
+      <button data-page="history" onclick="openPage('history')">
+        🧾<br>History
       </button>
 
-      <button
-        id="sellAction"
-        onclick="selectTradeAction('SELL')"
-      >
-        SELL
-      </button>
+    </nav>
 
-    </div>
+  </section>
 
 
-    <div class="field">
+  <!-- ================= TRADE MODAL ================= -->
 
-      <label>
-        Shares
-      </label>
+  <div id="tradeModal" class="modal hidden">
+
+    <div class="modal-card">
+
+      <div class="modal-head">
+
+        <div>
+          <h2 id="modalTitle">Trade</h2>
+          <div id="modalMarketName" style="color:#73869b;margin-top:5px;"></div>
+        </div>
+
+        <button class="close" onclick="closeTradeModal()">
+          ×
+        </button>
+
+      </div>
+
+
+      <div class="trade-type">
+
+        <button id="buyTypeBtn" class="selected" onclick="setTradeAction('BUY')">
+          BUY
+        </button>
+
+        <button id="sellTypeBtn" onclick="setTradeAction('SELL')">
+          SELL
+        </button>
+
+      </div>
+
+
+      <div class="trade-type">
+
+        <button id="yesSideBtn" class="selected" onclick="setTradeSide('YES')">
+          YES
+        </button>
+
+        <button id="noSideBtn" onclick="setTradeSide('NO')">
+          NO
+        </button>
+
+      </div>
+
+
+      <label>Shares</label>
 
       <input
-        id="tradeShares"
+        id="sharesInput"
         type="number"
         min="0.01"
         step="0.01"
-        value="10"
+        placeholder="100"
         oninput="updateTradePreview()"
-      >
+      />
+
+
+      <div class="trade-info">
+
+        <div class="trade-info-row">
+          <span>Share Price</span>
+          <strong id="tradePrice">0.5000 BNB</strong>
+        </div>
+
+        <div class="trade-info-row">
+          <span>Shares</span>
+          <strong id="tradeShares">0</strong>
+        </div>
+
+        <div class="trade-info-row">
+          <span>Total</span>
+          <strong id="tradeTotal">0.0000 BNB</strong>
+        </div>
+
+        <div class="trade-info-row">
+          <span>Available Balance</span>
+          <strong id="tradeBalance">0.0000 BNB</strong>
+        </div>
+
+      </div>
+
+
+      <button class="primary-btn" onclick="executeTrade()">
+        Confirm Trade
+      </button>
+
+      <div id="tradeMessage" class="message"></div>
 
     </div>
-
-
-    <div class="trade-info">
-
-      <div class="info-box">
-
-        <small>
-          Share price
-        </small>
-
-        <strong id="tradePrice">
-          0.50 BNB
-        </strong>
-
-      </div>
-
-      <div class="info-box">
-
-        <small>
-          Total
-        </small>
-
-        <strong id="tradeTotal">
-          5.00 BNB
-        </strong>
-
-      </div>
-
-    </div>
-
-
-    <div class="trade-info" style="margin-top:8px">
-
-      <div class="info-box">
-
-        <small>
-          Your balance
-        </small>
-
-        <strong id="tradeBalance">
-          10,000 BNB
-        </strong>
-
-      </div>
-
-      <div class="info-box">
-
-        <small>
-          Position
-        </small>
-
-        <strong id="tradePosition">
-          0 shares
-        </strong>
-
-      </div>
-
-    </div>
-
-
-    <button
-      class="trade-submit"
-      onclick="executeTrade()"
-    >
-      Confirm Trade
-    </button>
-
-    <div
-      id="tradeMessage"
-      class="trade-msg"
-    ></div>
 
   </div>
 
-</div>
-
-
-<div id="toast" class="toast"></div>
-
-
-<!-- =========================
-     FIREBASE
-========================= -->
-
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-auth-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore-compat.js"></script>
-
 
 <script>
-
-/* ==========================================================
+/* =========================================================
    FIREBASE CONFIG
-========================================================== */
+========================================================= */
 
 const firebaseConfig = {
-  apiKey: "AIzaSyCFtV6LGHc1EgRnvk7eN6PT0ySxtLHPmPk",
+  apiKey: "AIzaSyCFtV6LGHc1EgRnvk9eN6PT0ySxtLHPmPk",
   authDomain: "knn-markets.firebaseapp.com",
   projectId: "knn-markets",
   storageBucket: "knn-markets.firebasestorage.app",
@@ -1706,77 +1474,96 @@ const auth = firebase.auth();
 const db = firebase.firestore();
 
 
-/* ==========================================================
+/* =========================================================
+   GLOBAL STATE
+========================================================= */
+
+const STARTING_BALANCE = 10000;
+
+let currentUser = null;
+let userData = null;
+
+let trades = [];
+let positions = {};
+
+let currentPage = "dashboard";
+
+let currentTradeMarket = null;
+let currentTradeAction = "BUY";
+let currentTradeSide = "YES";
+
+let priceData = {
+  BTC: {
+    symbol: "BTCUSDT",
+    name: "Bitcoin",
+    short: "BTC",
+    price: 0,
+    previous: 0
+  },
+
+  ETH: {
+    symbol: "ETHUSDT",
+    name: "Ethereum",
+    short: "ETH",
+    price: 0,
+    previous: 0
+  },
+
+  BNB: {
+    symbol: "BNBUSDT",
+    name: "BNB",
+    short: "BNB",
+    price: 0,
+    previous: 0
+  }
+};
+
+
+/* =========================================================
    MARKETS
-========================================================== */
+========================================================= */
 
 const markets = [
 
   {
-    id:"btc",
-    symbol:"BTC",
-    name:"Bitcoin",
-    coinId:"bitcoin",
-    icon:"₿",
-    target:120000,
-    question:"Will BTC reach $120,000?"
+    id: "btc-up",
+    coin: "BTC",
+    title: "Will BTC go up?",
+    subtitle: "Bitcoin • short-term demo market"
   },
 
   {
-    id:"eth",
-    symbol:"ETH",
-    name:"Ethereum",
-    coinId:"ethereum",
-    icon:"Ξ",
-    target:5000,
-    question:"Will ETH reach $5,000?"
+    id: "eth-up",
+    coin: "ETH",
+    title: "Will ETH go up?",
+    subtitle: "Ethereum • short-term demo market"
   },
 
   {
-    id:"bnb",
-    symbol:"BNB",
-    name:"BNB",
-    coinId:"binancecoin",
-    icon:"B",
-    target:1000,
-    question:"Will BNB reach $1,000?"
+    id: "bnb-up",
+    coin: "BNB",
+    title: "Will BNB go up?",
+    subtitle: "BNB • short-term demo market"
   }
 
 ];
 
 
-let prices = {};
+/* =========================================================
+   AUTH TABS
+========================================================= */
 
-let currentUser = null;
+function showAuth(type) {
 
-let userData = null;
+  const loginForm = document.getElementById("loginForm");
+  const registerForm = document.getElementById("registerForm");
 
-let selectedMarket = null;
+  const loginTab = document.getElementById("loginTab");
+  const registerTab = document.getElementById("registerTab");
 
-let selectedSide = "YES";
+  clearMessages();
 
-let selectedAction = "BUY";
-
-
-/* ==========================================================
-   AUTH UI
-========================================================== */
-
-function showAuth(type){
-
-  const loginForm =
-    document.getElementById("loginForm");
-
-  const registerForm =
-    document.getElementById("registerForm");
-
-  const loginTab =
-    document.getElementById("loginTab");
-
-  const registerTab =
-    document.getElementById("registerTab");
-
-  if(type === "login"){
+  if (type === "login") {
 
     loginForm.classList.remove("hidden");
     registerForm.classList.add("hidden");
@@ -1784,7 +1571,7 @@ function showAuth(type){
     loginTab.classList.add("active");
     registerTab.classList.remove("active");
 
-  }else{
+  } else {
 
     loginForm.classList.add("hidden");
     registerForm.classList.remove("hidden");
@@ -1793,90 +1580,89 @@ function showAuth(type){
     registerTab.classList.add("active");
 
   }
-
 }
 
 
-/* ==========================================================
-   MESSAGE
-========================================================== */
+/* =========================================================
+   MESSAGES
+========================================================= */
 
-function authMessage(id,message,type){
+function clearMessages() {
 
-  const el =
-    document.getElementById(id);
+  document.getElementById("loginMessage").textContent = "";
+  document.getElementById("registerMessage").textContent = "";
 
-  el.textContent = message;
-
-  el.className =
-    "auth-message " + type;
-
+  document.getElementById("loginMessage").classList.remove("error");
+  document.getElementById("registerMessage").classList.remove("error");
 }
 
 
-/* ==========================================================
+function setMessage(id, text, error = false) {
+
+  const el = document.getElementById(id);
+
+  if (!el) return;
+
+  el.textContent = text;
+
+  el.classList.toggle("error", error);
+}
+
+
+/* =========================================================
    REGISTER
-========================================================== */
+========================================================= */
 
-async function registerUser(){
+async function registerUser() {
 
-  const name =
-    document.getElementById("registerName").value.trim();
+  const name = document.getElementById("registerName").value.trim();
+  const email = document.getElementById("registerEmail").value.trim();
+  const password = document.getElementById("registerPassword").value;
 
-  const email =
-    document.getElementById("registerEmail").value.trim();
+  const button = document.getElementById("registerBtn");
 
-  const password =
-    document.getElementById("registerPassword").value;
+  if (!name) {
 
-  const confirm =
-    document.getElementById("registerConfirm").value;
-
-
-  if(!name || !email || !password){
-
-    authMessage(
+    setMessage(
       "registerMessage",
-      "Please fill all fields.",
-      "error"
+      "Please enter your name.",
+      true
     );
 
     return;
   }
 
+  if (!email) {
 
-  if(password.length < 6){
-
-    authMessage(
+    setMessage(
       "registerMessage",
-      "Password must contain at least 6 characters.",
-      "error"
+      "Please enter your email.",
+      true
     );
 
     return;
   }
 
+  if (password.length < 6) {
 
-  if(password !== confirm){
-
-    authMessage(
+    setMessage(
       "registerMessage",
-      "Passwords do not match.",
-      "error"
+      "Password must be at least 6 characters.",
+      true
     );
 
     return;
   }
 
+  button.disabled = true;
+  button.textContent = "Creating account...";
 
-  try{
+  setMessage(
+    "registerMessage",
+    "Creating your account..."
+  );
 
-    authMessage(
-      "registerMessage",
-      "Creating account...",
-      "success"
-    );
-
+  try {
 
     const result =
       await auth.createUserWithEmailAndPassword(
@@ -1884,74 +1670,54 @@ async function registerUser(){
         password
       );
 
-
-    const uid =
-      result.user.uid;
-
-
-    const newUser = {
-
-      uid:uid,
-
-      name:name,
-
-      email:email,
-
-      balance:10000,
-
-      createdAt:
-        firebase.firestore.FieldValue.serverTimestamp()
-
-    };
-
+    const user = result.user;
 
     await db
       .collection("users")
-      .doc(uid)
-      .set(newUser);
+      .doc(user.uid)
+      .set({
 
+        uid: user.uid,
 
-    userData = {
-      uid:uid,
-      name:name,
-      email:email,
-      balance:10000
-    };
+        name: name,
 
+        email: email,
 
-    authMessage(
+        balance: STARTING_BALANCE,
+
+        createdAt:
+          firebase.firestore.FieldValue.serverTimestamp(),
+
+        accountType: "DEMO"
+
+      });
+
+    setMessage(
       "registerMessage",
-      "Account created. You received 10,000 BNB DEMO.",
-      "success"
+      "Account created. Loading..."
     );
 
-
-    setTimeout(
-      () => showApp(),
-      700
-    );
-
-
-  }catch(error){
+  } catch (error) {
 
     console.error(error);
 
-    authMessage(
+    setMessage(
       "registerMessage",
-      getFirebaseError(error),
-      "error"
+      firebaseError(error),
+      true
     );
 
+    button.disabled = false;
+    button.textContent = "Create Account";
   }
-
 }
 
 
-/* ==========================================================
+/* =========================================================
    LOGIN
-========================================================== */
+========================================================= */
 
-async function loginUser(){
+async function loginUser() {
 
   const email =
     document.getElementById("loginEmail").value.trim();
@@ -1959,412 +1725,467 @@ async function loginUser(){
   const password =
     document.getElementById("loginPassword").value;
 
+  const button =
+    document.getElementById("loginBtn");
 
-  if(!email || !password){
+  if (!email || !password) {
 
-    authMessage(
+    setMessage(
       "loginMessage",
-      "Enter email and password.",
-      "error"
+      "Enter your email and password.",
+      true
     );
 
     return;
   }
 
+  button.disabled = true;
+  button.textContent = "Logging in...";
 
-  try{
+  setMessage(
+    "loginMessage",
+    "Logging in..."
+  );
 
-    authMessage(
-      "loginMessage",
-      "Logging in...",
-      "success"
+  try {
+
+    await auth.signInWithEmailAndPassword(
+      email,
+      password
     );
 
+    /*
+      onAuthStateChanged() below will load the account.
+    */
 
-    await auth
-      .signInWithEmailAndPassword(
-        email,
-        password
-      );
-
-
-  }catch(error){
+  } catch (error) {
 
     console.error(error);
 
-    authMessage(
+    setMessage(
       "loginMessage",
-      getFirebaseError(error),
-      "error"
+      firebaseError(error),
+      true
     );
 
+    button.disabled = false;
+    button.textContent = "Login";
   }
-
 }
 
 
-/* ==========================================================
+/* =========================================================
    FIREBASE AUTH STATE
-========================================================== */
+========================================================= */
 
-auth.onAuthStateChanged(
-  async user => {
+auth.onAuthStateChanged(async user => {
 
-    if(user){
+  if (!user) {
 
-      currentUser = user;
+    currentUser = null;
 
-      try{
+    document
+      .getElementById("authScreen")
+      .classList.remove("hidden");
 
-        const snap =
-          await db
-            .collection("users")
-            .doc(user.uid)
-            .get();
+    document
+      .getElementById("app")
+      .classList.add("hidden");
 
-
-        if(snap.exists){
-
-          userData = snap.data();
-
-        }else{
-
-          /*
-             If the account existed before this version,
-             create a demo profile.
-          */
-
-          userData = {
-
-            uid:user.uid,
-
-            name:
-              user.displayName ||
-              user.email.split("@")[0],
-
-            email:user.email,
-
-            balance:10000
-
-          };
-
-
-          await db
-            .collection("users")
-            .doc(user.uid)
-            .set(userData);
-
-        }
-
-
-        showApp();
-
-      }catch(error){
-
-        console.error(error);
-
-        showToast(
-          "Could not load account data.",
-          "error"
-        );
-
-      }
-
-    }else{
-
-      currentUser = null;
-
-      userData = null;
-
-      document
-        .getElementById("app")
-        .classList.add("hidden");
-
-      document
-        .getElementById("authScreen")
-        .style.display = "flex";
-
-    }
-
-  }
-);
-
-
-/* ==========================================================
-   SHOW APP
-========================================================== */
-
-function showApp(){
-
-  document
-    .getElementById("authScreen")
-    .style.display = "none";
-
-  document
-    .getElementById("app")
-    .classList.remove("hidden");
-
-
-  updateUserUI();
-
-  navigate("dashboard");
-
-  renderMarkets();
-
-  renderPortfolio();
-
-  loadHistory();
-
-  fetchPrices();
-
-}
-
-
-/* ==========================================================
-   USER UI
-========================================================== */
-
-function updateUserUI(){
-
-  if(!userData) return;
-
-
-  const name =
-    userData.name ||
-    userData.email ||
-    "User";
-
-
-  document
-    .getElementById("topUserName")
-    .textContent = name;
-
-
-  document
-    .getElementById("welcomeName")
-    .textContent = name.split(" ")[0];
-
-
-  document
-    .getElementById("avatar")
-    .textContent =
-      name.charAt(0).toUpperCase();
-
-
-  updateBalanceUI();
-
-  document
-    .getElementById("profileName")
-    .value =
-      userData.name || "";
-
-  document
-    .getElementById("profileEmail")
-    .value =
-      userData.email || "";
-
-}
-
-
-/* ==========================================================
-   BALANCE UI
-========================================================== */
-
-function updateBalanceUI(){
-
-  const balance =
-    Number(userData?.balance || 0);
-
-
-  document
-    .getElementById("topBalance")
-    .textContent =
-      formatNumber(balance) +
-      " BNB DEMO";
-
-
-  document
-    .getElementById("statBalance")
-    .textContent =
-      formatNumber(balance) +
-      " BNB";
-
-}
-
-
-/* ==========================================================
-   NAVIGATION
-========================================================== */
-
-function navigate(page){
-
-  document
-    .querySelectorAll(".page")
-    .forEach(
-      p => p.classList.remove("active")
-    );
-
-
-  const target =
-    document.getElementById(
-      page + "Page"
-    );
-
-
-  if(target){
-
-    target.classList.add("active");
-
+    return;
   }
 
+  currentUser = user;
 
-  document
-    .querySelectorAll(".side-btn")
-    .forEach(btn => {
+  try {
 
-      btn.classList.toggle(
-        "active",
-        btn.dataset.page === page
-      );
+    await loadUserAccount();
+
+    document
+      .getElementById("authScreen")
+      .classList.add("hidden");
+
+    document
+      .getElementById("app")
+      .classList.remove("hidden");
+
+    await loadTrades();
+
+    await loadPositions();
+
+    updateUserUI();
+
+    renderMarkets();
+
+    renderPortfolio();
+
+    renderHistory();
+
+    updateStats();
+
+    refreshPrices();
+
+  } catch (error) {
+
+    console.error("Account loading error:", error);
+
+    setMessage(
+      "loginMessage",
+      "Login succeeded, but your account data could not be loaded. Check Firestore Rules.",
+      true
+    );
+
+    await auth.signOut();
+
+    document
+      .getElementById("loginBtn")
+      .disabled = false;
+
+    document
+      .getElementById("loginBtn")
+      .textContent = "Login";
+  }
+
+});
+
+
+/* =========================================================
+   LOAD USER
+========================================================= */
+
+async function loadUserAccount() {
+
+  const ref =
+    db.collection("users").doc(currentUser.uid);
+
+  const snap = await ref.get();
+
+  if (!snap.exists) {
+
+    /*
+      This handles an Auth account that existed before
+      the Firestore user document was created.
+    */
+
+    await ref.set({
+
+      uid: currentUser.uid,
+
+      name:
+        currentUser.displayName ||
+        currentUser.email.split("@")[0],
+
+      email: currentUser.email,
+
+      balance: STARTING_BALANCE,
+
+      createdAt:
+        firebase.firestore.FieldValue.serverTimestamp(),
+
+      accountType: "DEMO"
 
     });
 
+    userData = {
+      uid: currentUser.uid,
+      name:
+        currentUser.displayName ||
+        currentUser.email.split("@")[0],
+      email: currentUser.email,
+      balance: STARTING_BALANCE
+    };
 
-  if(page === "dashboard"){
+  } else {
 
-    renderMarkets();
+    userData = {
+      ...snap.data()
+    };
 
+    /*
+      If old document does not have balance,
+      give it the demo starting balance once.
+    */
+
+    if (
+      typeof userData.balance !== "number" ||
+      Number.isNaN(userData.balance)
+    ) {
+
+      userData.balance = STARTING_BALANCE;
+
+      await ref.update({
+        balance: STARTING_BALANCE
+      });
+    }
   }
-
-
-  if(page === "markets"){
-
-    renderMarkets();
-
-  }
-
-
-  if(page === "portfolio"){
-
-    renderPortfolio();
-
-  }
-
-
-  if(page === "history"){
-
-    loadHistory();
-
-  }
-
 }
 
 
-/* ==========================================================
-   MARKET PRICE FETCH
-========================================================== */
+/* =========================================================
+   LOAD TRADES
+========================================================= */
 
-async function fetchPrices(){
+async function loadTrades() {
 
-  try{
+  trades = [];
 
-    const ids =
-      markets
-        .map(m => m.coinId)
-        .join(",");
+  const snap = await db
+    .collection("users")
+    .doc(currentUser.uid)
+    .collection("trades")
+    .orderBy("createdAt", "desc")
+    .limit(200)
+    .get();
+
+  snap.forEach(doc => {
+
+    trades.push({
+      id: doc.id,
+      ...doc.data()
+    });
+
+  });
+}
 
 
-    const url =
-      "https://api.coingecko.com/api/v3/simple/price" +
-      "?ids=" +
-      encodeURIComponent(ids) +
-      "&vs_currencies=usd" +
-      "&include_24hr_change=true";
+/* =========================================================
+   LOAD POSITIONS
+========================================================= */
+
+async function loadPositions() {
+
+  positions = {};
+
+  const snap = await db
+    .collection("users")
+    .doc(currentUser.uid)
+    .collection("positions")
+    .get();
+
+  snap.forEach(doc => {
+
+    positions[doc.id] = {
+      ...doc.data()
+    };
+
+  });
+}
 
 
-    const response =
-      await fetch(url);
+/* =========================================================
+   USER UI
+========================================================= */
+
+function updateUserUI() {
+
+  const balance =
+    Number(userData.balance || 0);
+
+  document.getElementById("sideEmail").textContent =
+    userData.email || currentUser.email;
+
+  document.getElementById("sideBalance").textContent =
+    formatBNB(balance);
+
+  document.getElementById("mainBalance").textContent =
+    formatBNB(balance);
+
+  document.getElementById("statBalance").textContent =
+    formatBNB(balance);
+
+  document.getElementById("profileName").textContent =
+    userData.name || "-";
+
+  document.getElementById("profileEmail").textContent =
+    userData.email || currentUser.email;
+
+  document.getElementById("profileUid").textContent =
+    currentUser.uid;
+}
 
 
-    if(!response.ok){
+/* =========================================================
+   NAVIGATION
+========================================================= */
 
-      throw new Error("Price API error");
+function openPage(page) {
 
+  currentPage = page;
+
+  const pages = [
+    "dashboard",
+    "markets",
+    "portfolio",
+    "history",
+    "profile"
+  ];
+
+  pages.forEach(p => {
+
+    const el =
+      document.getElementById("page-" + p);
+
+    if (el) {
+
+      el.classList.toggle(
+        "hidden",
+        p !== page
+      );
     }
 
+  });
 
-    const data =
-      await response.json();
+  document.querySelectorAll(".nav-btn").forEach(btn => {
+
+    btn.classList.toggle(
+      "active",
+      btn.dataset.page === page
+    );
+
+  });
+
+  document.querySelectorAll(".mobile-nav button").forEach(btn => {
+
+    btn.classList.toggle(
+      "active",
+      btn.dataset.page === page
+    );
+
+  });
+
+  const titles = {
+    dashboard: "Dashboard",
+    markets: "Markets",
+    portfolio: "Portfolio",
+    history: "History",
+    profile: "Profile"
+  };
+
+  document.getElementById("pageTitle").textContent =
+    titles[page] || "KNN Markets";
+
+  if (page === "portfolio") {
+    renderPortfolio();
+  }
+
+  if (page === "history") {
+    renderHistory();
+  }
+
+  if (page === "dashboard") {
+    updateStats();
+  }
+}
 
 
-    prices = data;
+/* =========================================================
+   LIVE PRICES
+========================================================= */
 
+async function refreshPrices() {
+
+  try {
+
+    const symbols = [
+      "BTCUSDT",
+      "ETHUSDT",
+      "BNBUSDT"
+    ];
+
+    const requests = symbols.map(symbol =>
+      fetch(
+        "https://api.binance.com/api/v3/ticker/price?symbol=" +
+        symbol
+      ).then(r => r.json())
+    );
+
+    const results =
+      await Promise.all(requests);
+
+    results.forEach(result => {
+
+      let coin = null;
+
+      if (result.symbol === "BTCUSDT") {
+        coin = "BTC";
+      }
+
+      if (result.symbol === "ETHUSDT") {
+        coin = "ETH";
+      }
+
+      if (result.symbol === "BNBUSDT") {
+        coin = "BNB";
+      }
+
+      if (!coin) return;
+
+      const newPrice =
+        Number(result.price);
+
+      if (
+        priceData[coin].price > 0
+      ) {
+
+        priceData[coin].previous =
+          priceData[coin].price;
+      }
+
+      priceData[coin].price =
+        newPrice;
+
+    });
 
     renderMarkets();
 
     renderPortfolio();
 
+    updateStats();
 
-  }catch(error){
+  } catch (error) {
 
-    console.error(error);
-
-    showToast(
-      "Live price feed temporarily unavailable.",
-      "error"
+    console.warn(
+      "Live price feed unavailable:",
+      error
     );
 
+    /*
+      Website still works in demo mode.
+    */
   }
-
 }
 
 
-/* Update every 60 seconds */
+/* =========================================================
+   PROBABILITY
+========================================================= */
 
-setInterval(
-  fetchPrices,
-  60000
-);
+function getProbability(coin) {
 
+  const item =
+    priceData[coin];
 
-/* ==========================================================
-   MARKET PROBABILITY
-========================================================== */
-
-function getProbability(market){
-
-  const price =
-    Number(
-      prices[market.coinId]?.usd ||
-      0
-    );
-
-
-  if(!price){
-
+  if (!item || !item.price) {
     return 50;
-
   }
 
-
-  const distance =
-    (price - market.target) /
-    market.target;
-
-
   /*
-    Demo probability model.
+    Demo probability formula.
 
-    Price near target = around 50%.
-    Higher price = higher YES.
-    Lower price = lower YES.
-
-    This is NOT a financial prediction.
+    Price movement influences the YES probability.
+    This is NOT a financial forecast.
   */
 
-  let probability =
-    50 + (distance * 250);
+  if (!item.previous) {
+    return 50;
+  }
 
+  const change =
+    ((item.price - item.previous) /
+      item.previous) * 100;
+
+  let probability =
+    50 + (change * 8);
 
   probability =
     Math.max(
@@ -2375,514 +2196,392 @@ function getProbability(market){
       )
     );
 
-
-  return Math.round(probability);
-
+  return probability;
 }
 
 
-/* ==========================================================
-   RENDER MARKETS
-========================================================== */
+/* =========================================================
+   SHARE PRICES
+========================================================= */
 
-function renderMarkets(){
+function getYesPrice(coin) {
+
+  const probability =
+    getProbability(coin) / 100;
+
+  return Math.max(
+    0.05,
+    Math.min(
+      0.95,
+      probability
+    )
+  );
+}
+
+
+function getNoPrice(coin) {
+
+  return 1 - getYesPrice(coin);
+}
+
+
+/* =========================================================
+   RENDER MARKETS
+========================================================= */
+
+function renderMarkets() {
 
   const dashboard =
-    document.getElementById(
-      "dashboardMarkets"
-    );
+    document.getElementById("dashboardMarkets");
 
-  const marketsGrid =
-    document.getElementById(
-      "marketsGrid"
-    );
-
-
-  if(!dashboard || !marketsGrid)
-    return;
-
+  const all =
+    document.getElementById("allMarkets");
 
   const html =
-    markets
-      .map(renderMarketCard)
-      .join("");
-
+    markets.map(renderMarketCard).join("");
 
   dashboard.innerHTML = html;
-
-  marketsGrid.innerHTML = html;
-
+  all.innerHTML = html;
 }
 
 
-/* ==========================================================
-   MARKET CARD
-========================================================== */
+function renderMarketCard(market) {
 
-function renderMarketCard(market){
+  const coin =
+    priceData[market.coin];
 
   const price =
-    Number(
-      prices[market.coinId]?.usd ||
-      0
-    );
+    coin.price || 0;
 
+  const previous =
+    coin.previous || price;
 
-  const change =
-    Number(
-      prices[market.coinId]?.usd_24h_change ||
-      0
-    );
+  let change = 0;
 
+  if (previous > 0 && price > 0) {
 
-  const yes =
-    getProbability(market);
+    change =
+      ((price - previous) / previous) * 100;
+  }
 
+  const probability =
+    getProbability(market.coin);
 
-  const no =
-    100 - yes;
+  const yesPrice =
+    getYesPrice(market.coin);
 
-
-  const priceText =
-    price
-      ? "$" + formatUSD(price)
-      : "Loading...";
-
-
-  const changeClass =
-    change >= 0
-      ? "green"
-      : "red";
-
-
-  const changeText =
-    (change >= 0 ? "+" : "") +
-    change.toFixed(2) +
-    "%";
-
+  const noPrice =
+    getNoPrice(market.coin);
 
   return `
-
     <div class="market-card">
 
       <div class="market-top">
 
-        <div class="coin-icon">
-          ${market.icon}
-        </div>
+        <div class="coin">
 
-        <div class="market-name">
+          <div class="coin-icon">
+            ${market.coin[0]}
+          </div>
 
-          <strong>
-            ${market.name}
-          </strong>
+          <div>
+            <div class="market-title">
+              ${market.title}
+            </div>
 
-          <span>
-            ${market.symbol}
-          </span>
-
-        </div>
-
-        <div class="live-dot">
-          ● LIVE
-        </div>
-
-      </div>
-
-
-      <div class="market-question">
-        ${market.question}
-      </div>
-
-
-      <div class="price-row">
-
-        <div class="crypto-price">
-          ${priceText}
-        </div>
-
-        <div class="price-change ${changeClass}">
-          ${changeText} 24h
-        </div>
-
-      </div>
-
-
-      <div class="prob-wrap">
-
-        <div class="prob-line">
-
-          <div
-            class="prob-yes"
-            style="width:${yes}%"
-          ></div>
-
-          <div
-            class="prob-no"
-            style="width:${no}%"
-          ></div>
+            <div class="market-sub">
+              ${market.subtitle}
+            </div>
+          </div>
 
         </div>
 
+        <div>
 
-        <div class="prob-labels">
+          <div class="price">
+            ${price > 0 ? formatUSD(price) : "Loading..."}
+          </div>
 
-          <span class="green">
-            YES ${yes}%
-          </span>
-
-          <span class="red">
-            NO ${no}%
-          </span>
+          <div class="change ${change >= 0 ? "up" : "down"}">
+            ${price > 0 ? formatPercent(change) : ""}
+          </div>
 
         </div>
 
       </div>
 
 
-      <div class="market-actions">
+      <div class="prob-row">
+
+        <div>
+
+          <div class="prob">
+            ${probability.toFixed(1)}%
+          </div>
+
+          <div class="prob-label">
+            YES probability
+          </div>
+
+        </div>
+
+        <div style="text-align:right">
+
+          <div style="font-size:12px;color:#718398;">
+            YES ${yesPrice.toFixed(3)} BNB
+          </div>
+
+          <div style="font-size:12px;color:#718398;margin-top:4px;">
+            NO ${noPrice.toFixed(3)} BNB
+          </div>
+
+        </div>
+
+      </div>
+
+
+      <div class="bar">
+
+        <div
+          class="bar-fill"
+          style="width:${probability}%"
+        ></div>
+
+      </div>
+
+
+      <div class="trade-row">
 
         <button
-          class="action-btn yes-btn"
-          onclick="openTrade('${market.id}','YES')"
+          class="yes-btn"
+          onclick="openTrade('${market.id}', 'BUY', 'YES')"
         >
-          BUY YES
+          Buy YES
         </button>
 
         <button
-          class="action-btn no-btn"
-          onclick="openTrade('${market.id}','NO')"
+          class="no-btn"
+          onclick="openTrade('${market.id}', 'BUY', 'NO')"
         >
-          BUY NO
+          Buy NO
         </button>
 
       </div>
 
     </div>
-
   `;
-
 }
 
 
-/* ==========================================================
+/* =========================================================
    OPEN TRADE
-========================================================== */
+========================================================= */
 
 function openTrade(
   marketId,
-  side
-){
+  action = "BUY",
+  side = "YES"
+) {
 
-  selectedMarket =
-    markets.find(
-      m => m.id === marketId
-    );
+  const market =
+    markets.find(m => m.id === marketId);
 
+  if (!market) return;
 
-  if(!selectedMarket)
-    return;
+  currentTradeMarket = market;
 
-
-  selectedSide = side;
-
-  selectedAction = "BUY";
-
+  currentTradeAction = action;
+  currentTradeSide = side;
 
   document
     .getElementById("tradeModal")
-    .classList.add("open");
+    .classList.remove("hidden");
 
+  document.getElementById("modalTitle").textContent =
+    action === "BUY" ? "Buy Shares" : "Sell Shares";
 
-  document
-    .getElementById("tradeQuestion")
-    .textContent =
-      selectedMarket.question;
+  document.getElementById("modalMarketName").textContent =
+    market.title;
 
+  document.getElementById("sharesInput").value = "";
 
-  document
-    .getElementById("tradeCrypto")
-    .textContent =
-      selectedMarket.symbol;
+  setTradeAction(action);
 
-
-  selectTradeSide(side);
-
-  selectTradeAction("BUY");
+  setTradeSide(side);
 
   updateTradePreview();
-
 }
 
 
-/* ==========================================================
-   CLOSE TRADE
-========================================================== */
-
-function closeTrade(){
+function closeTradeModal() {
 
   document
     .getElementById("tradeModal")
-    .classList.remove("open");
+    .classList.add("hidden");
 
+  document.getElementById("tradeMessage").textContent = "";
+
+  currentTradeMarket = null;
 }
 
 
-/* ==========================================================
-   SELECT SIDE
-========================================================== */
+/* =========================================================
+   TRADE ACTION
+========================================================= */
 
-function selectTradeSide(side){
+function setTradeAction(action) {
 
-  selectedSide = side;
-
-
-  const yes =
-    document.getElementById("yesSide");
-
-  const no =
-    document.getElementById("noSide");
-
-
-  yes.className = "";
-
-  no.className = "";
-
-
-  if(side === "YES"){
-
-    yes.classList.add("active-yes");
-
-  }else{
-
-    no.classList.add("active-no");
-
-  }
-
-
-  updateTradePreview();
-
-}
-
-
-/* ==========================================================
-   SELECT ACTION
-========================================================== */
-
-function selectTradeAction(action){
-
-  selectedAction = action;
-
+  currentTradeAction = action;
 
   document
-    .getElementById("buyAction")
+    .getElementById("buyTypeBtn")
     .classList.toggle(
-      "active",
+      "selected",
       action === "BUY"
     );
 
-
   document
-    .getElementById("sellAction")
+    .getElementById("sellTypeBtn")
     .classList.toggle(
-      "active",
+      "selected",
       action === "SELL"
     );
 
+  document.getElementById("modalTitle").textContent =
+    action === "BUY"
+      ? "Buy Shares"
+      : "Sell Shares";
 
   updateTradePreview();
-
 }
 
 
-/* ==========================================================
-   SHARE PRICE
-========================================================== */
+/* =========================================================
+   TRADE SIDE
+========================================================= */
 
-function getSharePrice(){
+function setTradeSide(side) {
 
-  if(!selectedMarket)
-    return .5;
+  currentTradeSide = side;
 
+  document
+    .getElementById("yesSideBtn")
+    .classList.toggle(
+      "selected",
+      side === "YES"
+    );
 
-  const yes =
-    getProbability(
-      selectedMarket
-    ) / 100;
+  document
+    .getElementById("noSideBtn")
+    .classList.toggle(
+      "selected",
+      side === "NO"
+    );
 
-
-  return selectedSide === "YES"
-    ? yes
-    : 1 - yes;
-
+  updateTradePreview();
 }
 
 
-/* ==========================================================
-   POSITION
-========================================================== */
+/* =========================================================
+   TRADE PRICE
+========================================================= */
 
-async function getPosition(){
+function getTradePrice() {
 
-  if(!currentUser || !selectedMarket)
-    return null;
-
-
-  const ref =
-    db
-      .collection("users")
-      .doc(currentUser.uid)
-      .collection("positions")
-      .doc(selectedMarket.id);
-
-
-  const snap =
-    await ref.get();
-
-
-  if(!snap.exists){
-
-    return {
-      yesShares:0,
-      noShares:0
-    };
-
+  if (!currentTradeMarket) {
+    return 0;
   }
 
+  if (currentTradeSide === "YES") {
+    return getYesPrice(
+      currentTradeMarket.coin
+    );
+  }
 
-  return snap.data();
-
+  return getNoPrice(
+    currentTradeMarket.coin
+  );
 }
 
 
-/* ==========================================================
-   TRADE PREVIEW
-========================================================== */
+/* =========================================================
+   PREVIEW
+========================================================= */
 
-async function updateTradePreview(){
+function updateTradePreview() {
 
-  if(!selectedMarket)
-    return;
-
+  const price =
+    getTradePrice();
 
   const shares =
     Number(
-      document.getElementById("tradeShares").value
-    ) || 0;
-
-
-  const price =
-    getSharePrice();
-
+      document.getElementById("sharesInput").value || 0
+    );
 
   const total =
-    shares * price;
+    price * shares;
 
+  const balance =
+    Number(userData?.balance || 0);
 
-  document
-    .getElementById("tradePrice")
-    .textContent =
-      price.toFixed(4) +
-      " BNB";
+  document.getElementById("tradePrice").textContent =
+    price.toFixed(4) + " BNB";
 
+  document.getElementById("tradeShares").textContent =
+    shares.toFixed(2);
 
-  document
-    .getElementById("tradeTotal")
-    .textContent =
-      total.toFixed(4) +
-      " BNB";
+  document.getElementById("tradeTotal").textContent =
+    formatBNB(total) + " BNB";
 
-
-  document
-    .getElementById("tradeBalance")
-    .textContent =
-      formatNumber(
-        userData?.balance || 0
-      ) +
-      " BNB";
-
-
-  try{
-
-    const position =
-      await getPosition();
-
-
-    const sharesHeld =
-      selectedSide === "YES"
-        ? Number(position?.yesShares || 0)
-        : Number(position?.noShares || 0);
-
-
-    document
-      .getElementById("tradePosition")
-      .textContent =
-        sharesHeld.toFixed(2) +
-        " shares";
-
-  }catch(error){
-
-    console.error(error);
-
-  }
-
+  document.getElementById("tradeBalance").textContent =
+    formatBNB(balance) + " BNB";
 }
 
 
-/* ==========================================================
+/* =========================================================
    EXECUTE TRADE
-========================================================== */
+========================================================= */
 
-async function executeTrade(){
+async function executeTrade() {
 
-  if(!currentUser || !selectedMarket){
-
-    showTradeMessage(
-      "Please login first.",
-      "error"
-    );
-
+  if (!currentUser || !currentTradeMarket) {
     return;
   }
 
+  const message =
+    document.getElementById("tradeMessage");
+
+  message.classList.remove("error");
 
   const shares =
     Number(
-      document.getElementById("tradeShares").value
+      document.getElementById("sharesInput").value
     );
 
+  if (!shares || shares <= 0) {
 
-  if(!shares || shares <= 0){
+    message.textContent =
+      "Enter a valid number of shares.";
 
-    showTradeMessage(
-      "Enter a valid number of shares.",
-      "error"
-    );
+    message.classList.add("error");
 
     return;
-
   }
 
-
   const price =
-    getSharePrice();
-
+    getTradePrice();
 
   const total =
     shares * price;
-
 
   const userRef =
-    db
-      .collection("users")
+    db.collection("users")
       .doc(currentUser.uid);
-
 
   const positionRef =
     userRef
       .collection("positions")
-      .doc(selectedMarket.id);
-
+      .doc(currentTradeMarket.id);
 
   const tradeRef =
     userRef
@@ -2890,997 +2589,704 @@ async function executeTrade(){
       .doc();
 
 
-  try{
+  try {
 
-    showTradeMessage(
-      "Processing...",
-      "success"
-    );
+    await db.runTransaction(async transaction => {
+
+      const userSnap =
+        await transaction.get(userRef);
+
+      const positionSnap =
+        await transaction.get(positionRef);
+
+      if (!userSnap.exists) {
+        throw new Error("User account not found.");
+      }
+
+      const freshUser =
+        userSnap.data();
+
+      const balance =
+        Number(freshUser.balance || 0);
+
+      const oldPosition =
+        positionSnap.exists
+          ? positionSnap.data()
+          : {};
+
+      let yesShares =
+        Number(oldPosition.yesShares || 0);
+
+      let noShares =
+        Number(oldPosition.noShares || 0);
+
+      let investedYes =
+        Number(oldPosition.investedYes || 0);
+
+      let investedNo =
+        Number(oldPosition.investedNo || 0);
 
 
-    await db.runTransaction(
-      async transaction => {
+      /* BUY */
 
-        const userSnap =
-          await transaction.get(
-            userRef
+      if (currentTradeAction === "BUY") {
+
+        if (balance < total) {
+
+          throw new Error(
+            "Insufficient BNB DEMO balance."
           );
-
-
-        const positionSnap =
-          await transaction.get(
-            positionRef
-          );
-
-
-        const data =
-          userSnap.data();
-
-
-        let balance =
-          Number(data.balance || 0);
-
-
-        let position =
-          positionSnap.exists
-            ? positionSnap.data()
-            : {
-                yesShares:0,
-                noShares:0,
-                investedYes:0,
-                investedNo:0
-              };
-
-
-        let currentShares =
-          selectedSide === "YES"
-            ? Number(position.yesShares || 0)
-            : Number(position.noShares || 0);
-
-
-        if(selectedAction === "BUY"){
-
-          if(balance < total){
-
-            throw new Error(
-              "INSUFFICIENT_BALANCE"
-            );
-
-          }
-
-
-          balance -= total;
-
-
-          if(selectedSide === "YES"){
-
-            position.yesShares =
-              currentShares + shares;
-
-            position.investedYes =
-              Number(position.investedYes || 0) +
-              total;
-
-          }else{
-
-            position.noShares =
-              currentShares + shares;
-
-            position.investedNo =
-              Number(position.investedNo || 0) +
-              total;
-
-          }
-
-        }else{
-
-          if(currentShares < shares){
-
-            throw new Error(
-              "INSUFFICIENT_SHARES"
-            );
-
-          }
-
-
-          balance += total;
-
-
-          if(selectedSide === "YES"){
-
-            position.yesShares =
-              currentShares - shares;
-
-          }else{
-
-            position.noShares =
-              currentShares - shares;
-
-          }
-
         }
 
+        if (currentTradeSide === "YES") {
+
+          yesShares += shares;
+          investedYes += total;
+
+        } else {
+
+          noShares += shares;
+          investedNo += total;
+
+        }
 
         transaction.update(
           userRef,
           {
-            balance:balance
+            balance: balance - total
           }
         );
-
-
-        transaction.set(
-          positionRef,
-          {
-            marketId:selectedMarket.id,
-
-            market:selectedMarket.name,
-
-            yesShares:
-              Number(position.yesShares || 0),
-
-            noShares:
-              Number(position.noShares || 0),
-
-            investedYes:
-              Number(position.investedYes || 0),
-
-            investedNo:
-              Number(position.investedNo || 0),
-
-            updatedAt:
-              firebase.firestore.FieldValue.serverTimestamp()
-
-          }
-        );
-
-
-        transaction.set(
-          tradeRef,
-          {
-            marketId:selectedMarket.id,
-
-            market:selectedMarket.name,
-
-            symbol:selectedMarket.symbol,
-
-            side:selectedSide,
-
-            action:selectedAction,
-
-            shares:shares,
-
-            price:price,
-
-            total:total,
-
-            createdAt:
-              firebase.firestore.FieldValue.serverTimestamp()
-
-          }
-        );
-
       }
-    );
 
 
-    userData.balance =
-      userData.balance +
-      (
-        selectedAction === "BUY"
-          ? -total
-          : total
-      );
+      /* SELL */
 
+      else {
 
-    updateBalanceUI();
+        if (currentTradeSide === "YES") {
 
-    renderPortfolio();
+          if (yesShares < shares) {
 
-    loadHistory();
+            throw new Error(
+              "You do not have enough YES shares."
+            );
+          }
 
+          yesShares -= shares;
 
-    showTradeMessage(
-      "Trade completed successfully.",
-      "success"
-    );
+          /*
+            Reduce invested amount proportionally.
+          */
 
+          const oldInvested =
+            investedYes;
 
-    showToast(
-      selectedAction +
-      " " +
-      shares.toFixed(2) +
-      " " +
-      selectedSide +
-      " shares completed.",
-      "success"
-    );
+          if (yesShares + shares > 0) {
 
+            investedYes =
+              Math.max(
+                0,
+                oldInvested -
+                (
+                  oldInvested *
+                  shares /
+                  (yesShares + shares)
+                )
+              );
 
-    setTimeout(
-      closeTrade,
-      700
-    );
+          } else {
 
+            investedYes = 0;
+          }
 
-  }catch(error){
+        } else {
 
-    console.error(error);
+          if (noShares < shares) {
 
+            throw new Error(
+              "You do not have enough NO shares."
+            );
+          }
 
-    if(
-      error.message ===
-      "INSUFFICIENT_BALANCE"
-    ){
+          noShares -= shares;
 
-      showTradeMessage(
-        "Insufficient BNB DEMO balance.",
-        "error"
-      );
+          const oldInvested =
+            investedNo;
 
-    }else if(
-      error.message ===
-      "INSUFFICIENT_SHARES"
-    ){
+          if (noShares + shares > 0) {
 
-      showTradeMessage(
-        "You do not have enough shares to sell.",
-        "error"
-      );
+            investedNo =
+              Math.max(
+                0,
+                oldInvested -
+                (
+                  oldInvested *
+                  shares /
+                  (noShares + shares)
+                )
+              );
 
-    }else{
+          } else {
 
-      showTradeMessage(
-        "Trade failed. Check Firestore rules.",
-        "error"
-      );
-
-    }
-
-  }
-
-}
-
-
-/* ==========================================================
-   TRADE MESSAGE
-========================================================== */
-
-function showTradeMessage(
-  message,
-  type
-){
-
-  const el =
-    document.getElementById(
-      "tradeMessage"
-    );
-
-
-  el.textContent =
-    message;
-
-
-  el.style.color =
-    type === "error"
-      ? "#ff7187"
-      : "#55e3ae";
-
-}
-
-
-/* ==========================================================
-   PORTFOLIO
-========================================================== */
-
-async function renderPortfolio(){
-
-  if(!currentUser)
-    return;
-
-
-  const grid =
-    document.getElementById(
-      "portfolioGrid"
-    );
-
-
-  const table =
-    document.getElementById(
-      "positionsTable"
-    );
-
-
-  try{
-
-    const snap =
-      await db
-        .collection("users")
-        .doc(currentUser.uid)
-        .collection("positions")
-        .get();
-
-
-    let invested = 0;
-
-    let portfolioValue = 0;
-
-    let rows = "";
-
-    let cards = "";
-
-
-    markets.forEach(
-      market => {
-
-        const doc =
-          snap.docs.find(
-            d => d.id === market.id
-          );
-
-
-        const p =
-          doc
-            ? doc.data()
-            : {
-                yesShares:0,
-                noShares:0,
-                investedYes:0,
-                investedNo:0
-              };
-
-
-        const yesShares =
-          Number(p.yesShares || 0);
-
-        const noShares =
-          Number(p.noShares || 0);
-
-        const investedYes =
-          Number(p.investedYes || 0);
-
-        const investedNo =
-          Number(p.investedNo || 0);
-
-
-        const yesPrice =
-          getProbability(market) / 100;
-
-        const noPrice =
-          1 - yesPrice;
-
-
-        const yesValue =
-          yesShares * yesPrice;
-
-        const noValue =
-          noShares * noPrice;
-
-
-        const value =
-          yesValue + noValue;
-
-
-        const marketInvested =
-          investedYes + investedNo;
-
-
-        invested +=
-          marketInvested;
-
-        portfolioValue +=
-          value;
-
-
-        if(
-          yesShares > 0 ||
-          noShares > 0
-        ){
-
-          rows += `
-
-            <tr>
-
-              <td>
-                ${market.name}
-              </td>
-
-              <td>
-                <span class="badge buy">
-                  YES
-                </span>
-              </td>
-
-              <td>
-                ${yesShares.toFixed(2)}
-              </td>
-
-              <td>
-                ${investedYes.toFixed(4)} BNB
-              </td>
-
-              <td>
-                ${yesValue.toFixed(4)} BNB
-              </td>
-
-              <td class="${
-                yesValue-investedYes >= 0
-                  ? "green"
-                  : "red"
-              }">
-                ${
-                  (yesValue-investedYes >= 0 ? "+" : "") +
-                  (yesValue-investedYes).toFixed(4)
-                }
-              </td>
-
-            </tr>
-
-          `;
-
-
-          rows += `
-
-            <tr>
-
-              <td>
-                ${market.name}
-              </td>
-
-              <td>
-                <span class="badge sell">
-                  NO
-                </span>
-              </td>
-
-              <td>
-                ${noShares.toFixed(2)}
-              </td>
-
-              <td>
-                ${investedNo.toFixed(4)} BNB
-              </td>
-
-              <td>
-                ${noValue.toFixed(4)} BNB
-              </td>
-
-              <td class="${
-                noValue-investedNo >= 0
-                  ? "green"
-                  : "red"
-              }">
-                ${
-                  (noValue-investedNo >= 0 ? "+" : "") +
-                  (noValue-investedNo).toFixed(4)
-                }
-              </td>
-
-            </tr>
-
-          `;
-
+            investedNo = 0;
+          }
         }
 
-
-        cards += `
-
-          <div class="position-card">
-
-            <h3>
-              ${market.icon}
-              ${market.name}
-            </h3>
-
-            <div class="position-row">
-              <span>YES shares</span>
-              <strong>${yesShares.toFixed(2)}</strong>
-            </div>
-
-            <div class="position-row">
-              <span>NO shares</span>
-              <strong>${noShares.toFixed(2)}</strong>
-            </div>
-
-            <div class="position-row">
-              <span>Invested</span>
-              <strong>${marketInvested.toFixed(4)} BNB</strong>
-            </div>
-
-            <div class="position-row">
-              <span>Value</span>
-              <strong>${value.toFixed(4)} BNB</strong>
-            </div>
-
-          </div>
-
-        `;
-
+        transaction.update(
+          userRef,
+          {
+            balance: balance + total
+          }
+        );
       }
-    );
 
 
-    grid.innerHTML =
-      cards;
+      transaction.set(
+        positionRef,
+        {
+          marketId: currentTradeMarket.id,
 
+          marketTitle:
+            currentTradeMarket.title,
 
-    if(!rows){
+          coin:
+            currentTradeMarket.coin,
 
-      rows = `
+          yesShares: yesShares,
 
-        <tr>
+          noShares: noShares,
 
-          <td colspan="6" style="text-align:center;color:#687f96">
+          investedYes: investedYes,
 
-            No open positions yet.
+          investedNo: investedNo,
 
-          </td>
-
-        </tr>
-
-      `;
-
-    }
-
-
-    table.innerHTML =
-      rows;
-
-
-    const pl =
-      portfolioValue -
-      invested;
-
-
-    document
-      .getElementById("statInvested")
-      .textContent =
-        invested.toFixed(4) +
-        " BNB";
-
-
-    document
-      .getElementById("statPortfolio")
-      .textContent =
-        portfolioValue.toFixed(4) +
-        " BNB";
-
-
-    const plEl =
-      document.getElementById(
-        "statPL"
+          updatedAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+        },
+        { merge: true }
       );
 
 
-    plEl.textContent =
-      (pl >= 0 ? "+" : "") +
-      pl.toFixed(4) +
-      " BNB";
+      transaction.set(
+        tradeRef,
+        {
+          marketId:
+            currentTradeMarket.id,
 
+          marketTitle:
+            currentTradeMarket.title,
 
-    plEl.className =
-      "stat-value " +
-      (pl >= 0 ? "green" : "red");
+          coin:
+            currentTradeMarket.coin,
 
+          action:
+            currentTradeAction,
 
-  }catch(error){
+          side:
+            currentTradeSide,
 
-    console.error(error);
+          shares:
+            shares,
 
-  }
+          price:
+            price,
 
-}
+          total:
+            total,
 
+          createdAt:
+            firebase.firestore.FieldValue.serverTimestamp()
+        }
+      );
 
-/* ==========================================================
-   HISTORY
-========================================================== */
+    });
 
-async function loadHistory(){
 
-  if(!currentUser)
-    return;
+    message.textContent =
+      "Trade completed successfully.";
 
+    message.classList.add("success");
 
-  const table =
-    document.getElementById(
-      "historyTable"
-    );
+    await loadUserAccount();
 
+    await loadTrades();
 
-  try{
-
-    const snap =
-      await db
-        .collection("users")
-        .doc(currentUser.uid)
-        .collection("trades")
-        .orderBy(
-          "createdAt",
-          "desc"
-        )
-        .limit(100)
-        .get();
-
-
-    if(snap.empty){
-
-      table.innerHTML = `
-
-        <tr>
-
-          <td colspan="7"
-            style="text-align:center;color:#687f96">
-
-            No trades yet.
-
-          </td>
-
-        </tr>
-
-      `;
-
-      return;
-
-    }
-
-
-    let html = "";
-
-
-    snap.forEach(
-      doc => {
-
-        const t =
-          doc.data();
-
-
-        const date =
-          t.createdAt
-            ? t.createdAt.toDate().toLocaleString()
-            : "—";
-
-
-        html += `
-
-          <tr>
-
-            <td>
-              ${date}
-            </td>
-
-            <td>
-              ${t.market || "—"}
-            </td>
-
-            <td class="${
-              t.side === "YES"
-                ? "green"
-                : "red"
-            }">
-              ${t.side || "—"}
-            </td>
-
-            <td>
-              <span class="badge ${
-                t.action === "BUY"
-                  ? "buy"
-                  : "sell"
-              }">
-                ${t.action || "—"}
-              </span>
-            </td>
-
-            <td>
-              ${Number(t.shares || 0).toFixed(2)}
-            </td>
-
-            <td>
-              ${Number(t.price || 0).toFixed(4)}
-            </td>
-
-            <td>
-              ${Number(t.total || 0).toFixed(4)} BNB
-            </td>
-
-          </tr>
-
-        `;
-
-      }
-    );
-
-
-    table.innerHTML =
-      html;
-
-
-  }catch(error){
-
-    console.error(error);
-
-    table.innerHTML = `
-
-      <tr>
-
-        <td colspan="7"
-          style="text-align:center;color:#ff7187">
-
-          Could not load history.
-
-        </td>
-
-      </tr>
-
-    `;
-
-  }
-
-}
-
-
-/* ==========================================================
-   PROFILE
-========================================================== */
-
-async function saveProfile(){
-
-  if(!currentUser)
-    return;
-
-
-  const name =
-    document
-      .getElementById("profileName")
-      .value
-      .trim();
-
-
-  if(!name){
-
-    showToast(
-      "Name cannot be empty.",
-      "error"
-    );
-
-    return;
-
-  }
-
-
-  try{
-
-    await db
-      .collection("users")
-      .doc(currentUser.uid)
-      .update({
-        name:name
-      });
-
-
-    userData.name =
-      name;
-
+    await loadPositions();
 
     updateUserUI();
 
+    renderMarkets();
 
-    showToast(
-      "Profile saved.",
-      "success"
-    );
+    renderPortfolio();
 
+    renderHistory();
 
-  }catch(error){
+    updateStats();
+
+    setTimeout(() => {
+      closeTradeModal();
+    }, 900);
+
+  } catch (error) {
 
     console.error(error);
 
-    showToast(
-      "Could not save profile.",
-      "error"
-    );
+    message.textContent =
+      error.message ||
+      "Trade failed.";
 
+    message.classList.add("error");
   }
-
 }
 
 
-/* ==========================================================
+/* =========================================================
+   PORTFOLIO
+========================================================= */
+
+function renderPortfolio() {
+
+  const body =
+    document.getElementById("portfolioBody");
+
+  const keys =
+    Object.keys(positions);
+
+  if (!keys.length) {
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="6">
+          <div class="empty">
+            No positions yet.<br>
+            Go to Markets and buy YES or NO shares.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+
+  body.innerHTML =
+    keys.map(id => {
+
+      const p =
+        positions[id];
+
+      const market =
+        markets.find(
+          m => m.id === id
+        );
+
+      if (!market) return "";
+
+      const yesShares =
+        Number(p.yesShares || 0);
+
+      const noShares =
+        Number(p.noShares || 0);
+
+      const invested =
+        Number(p.investedYes || 0) +
+        Number(p.investedNo || 0);
+
+      const yesValue =
+        yesShares *
+        getYesPrice(market.coin);
+
+      const noValue =
+        noShares *
+        getNoPrice(market.coin);
+
+      const currentValue =
+        yesValue + noValue;
+
+      const pnl =
+        currentValue - invested;
+
+      return `
+        <tr>
+
+          <td>
+            <strong>${market.coin}</strong><br>
+            <span style="color:#718398;font-size:12px;">
+              ${market.title}
+            </span>
+          </td>
+
+          <td>
+            ${yesShares.toFixed(2)}
+          </td>
+
+          <td>
+            ${noShares.toFixed(2)}
+          </td>
+
+          <td>
+            ${formatBNB(invested)} BNB
+          </td>
+
+          <td>
+            ${formatBNB(currentValue)} BNB
+          </td>
+
+          <td class="${pnl >= 0 ? "success" : "danger"}">
+            ${pnl >= 0 ? "+" : ""}
+            ${formatBNB(pnl)} BNB
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+}
+
+
+/* =========================================================
+   HISTORY
+========================================================= */
+
+function renderHistory() {
+
+  const body =
+    document.getElementById("historyBody");
+
+  if (!trades.length) {
+
+    body.innerHTML = `
+      <tr>
+        <td colspan="7">
+          <div class="empty">
+            No trades yet.
+          </div>
+        </td>
+      </tr>
+    `;
+
+    return;
+  }
+
+
+  body.innerHTML =
+    trades.map(trade => {
+
+      const date =
+        formatDate(
+          trade.createdAt
+        );
+
+      return `
+        <tr>
+
+          <td>${date}</td>
+
+          <td>
+            ${trade.coin || ""}
+            <br>
+            <span style="color:#718398;font-size:12px;">
+              ${trade.marketTitle || ""}
+            </span>
+          </td>
+
+          <td>
+            <span class="tag ${
+              trade.action === "BUY"
+                ? "tag-buy"
+                : "tag-sell"
+            }">
+              ${trade.action}
+            </span>
+          </td>
+
+          <td>
+            <span class="tag ${
+              trade.side === "YES"
+                ? "tag-yes"
+                : "tag-no"
+            }">
+              ${trade.side}
+            </span>
+          </td>
+
+          <td>
+            ${Number(trade.shares || 0).toFixed(2)}
+          </td>
+
+          <td>
+            ${Number(trade.price || 0).toFixed(4)}
+          </td>
+
+          <td>
+            ${formatBNB(
+              Number(trade.total || 0)
+            )} BNB
+          </td>
+
+        </tr>
+      `;
+
+    }).join("");
+}
+
+
+/* =========================================================
+   STATS
+========================================================= */
+
+function updateStats() {
+
+  if (!userData) return;
+
+  const positionCount =
+    Object.values(positions)
+      .filter(p =>
+        Number(p.yesShares || 0) > 0 ||
+        Number(p.noShares || 0) > 0
+      ).length;
+
+  let portfolioValue = 0;
+
+  Object.keys(positions).forEach(id => {
+
+    const p = positions[id];
+
+    const market =
+      markets.find(
+        m => m.id === id
+      );
+
+    if (!market) return;
+
+    portfolioValue +=
+      Number(p.yesShares || 0) *
+      getYesPrice(market.coin);
+
+    portfolioValue +=
+      Number(p.noShares || 0) *
+      getNoPrice(market.coin);
+  });
+
+
+  document.getElementById("statPositions").textContent =
+    positionCount;
+
+  document.getElementById("statTrades").textContent =
+    trades.length;
+
+  document.getElementById("statPortfolio").textContent =
+    formatBNB(portfolioValue);
+
+  updateUserUI();
+}
+
+
+/* =========================================================
    LOGOUT
-========================================================== */
+========================================================= */
 
-async function logoutUser(){
+async function logoutUser() {
 
-  try{
+  try {
 
     await auth.signOut();
 
-  }catch(error){
+  } catch (error) {
 
     console.error(error);
-
   }
-
 }
 
 
-/* ==========================================================
-   FIREBASE ERROR TEXT
-========================================================== */
+/* =========================================================
+   FIREBASE ERROR TRANSLATION
+========================================================= */
 
-function getFirebaseError(error){
+function firebaseError(error) {
+
+  if (!error) {
+    return "Something went wrong.";
+  }
 
   const code =
     error.code || "";
 
+  const messages = {
 
-  if(
-    code ===
-    "auth/email-already-in-use"
-  ){
+    "auth/invalid-email":
+      "Email address is not valid.",
 
-    return "This email is already registered.";
+    "auth/user-not-found":
+      "No account was found with this email.",
 
-  }
+    "auth/wrong-password":
+      "Incorrect password.",
 
+    "auth/invalid-credential":
+      "Incorrect email or password.",
 
-  if(
-    code ===
-    "auth/invalid-email"
-  ){
+    "auth/email-already-in-use":
+      "This email is already registered.",
 
-    return "Invalid email address.";
+    "auth/weak-password":
+      "Password is too weak. Use at least 6 characters.",
 
-  }
+    "auth/network-request-failed":
+      "Network error. Check your internet connection.",
 
+    "permission-denied":
+      "Firestore permission denied. Check your Rules.",
 
-  if(
-    code ===
-    "auth/weak-password"
-  ){
+    "failed-precondition":
+      "Firestore needs an index or configuration update."
 
-    return "Password is too weak.";
+  };
 
-  }
-
-
-  if(
-    code ===
-    "auth/invalid-credential" ||
-    code ===
-    "auth/wrong-password" ||
-    code ===
-    "auth/user-not-found"
-  ){
-
-    return "Incorrect email or password.";
-
-  }
-
-
-  if(
-    code ===
-    "auth/too-many-requests"
-  ){
-
-    return "Too many attempts. Try again later.";
-
-  }
-
-
-  return error.message ||
-    "Something went wrong.";
-
+  return (
+    messages[code] ||
+    error.message ||
+    "Something went wrong."
+  );
 }
 
 
-/* ==========================================================
-   FORMAT NUMBERS
-========================================================== */
+/* =========================================================
+   FORMATTING
+========================================================= */
 
-function formatNumber(number){
+function formatBNB(number) {
 
-  return Number(
-    number || 0
-  ).toLocaleString(
+  const n =
+    Number(number || 0);
+
+  return n.toLocaleString(
     undefined,
     {
-      minimumFractionDigits:4,
-      maximumFractionDigits:4
+      minimumFractionDigits: 4,
+      maximumFractionDigits: 4
     }
   );
-
 }
 
 
-function formatUSD(number){
+function formatUSD(number) {
 
-  if(number >= 1000){
+  const n =
+    Number(number || 0);
 
-    return Number(number)
-      .toLocaleString(
+  if (n >= 1000) {
+
+    return "$" +
+      n.toLocaleString(
         undefined,
         {
-          maximumFractionDigits:0
+          minimumFractionDigits: 2,
+          maximumFractionDigits: 2
         }
       );
 
   }
 
-
-  return Number(number)
-    .toLocaleString(
-      undefined,
-      {
-        maximumFractionDigits:2
-      }
-    );
-
+  return "$" +
+    n.toFixed(2);
 }
 
 
-/* ==========================================================
-   TOAST
-========================================================== */
+function formatPercent(number) {
 
-function showToast(
-  message,
-  type="success"
-){
+  const n =
+    Number(number || 0);
 
-  const toast =
-    document.getElementById(
-      "toast"
-    );
-
-
-  toast.textContent =
-    message;
-
-
-  toast.className =
-    "toast show " +
-    type;
-
-
-  setTimeout(
-    () => {
-      toast.className =
-        "toast";
-    },
-    3500
-  );
-
+  return (
+    n >= 0 ? "+" : ""
+  ) +
+  n.toFixed(2) +
+  "%";
 }
 
 
-/* ==========================================================
-   MODAL CLICK OUTSIDE
-========================================================== */
+function formatDate(timestamp) {
+
+  if (!timestamp) {
+    return "-";
+  }
+
+  try {
+
+    let date;
+
+    if (
+      timestamp &&
+      typeof timestamp.toDate === "function"
+    ) {
+
+      date =
+        timestamp.toDate();
+
+    } else {
+
+      date =
+        new Date(timestamp);
+    }
+
+    return date.toLocaleString();
+
+  } catch {
+
+    return "-";
+  }
+}
+
+
+/* =========================================================
+   AUTO REFRESH
+========================================================= */
+
+setInterval(() => {
+
+  if (currentUser) {
+    refreshPrices();
+  }
+
+}, 15000);
+
+
+/* =========================================================
+   CLOSE MODAL WHEN OUTSIDE IS CLICKED
+========================================================= */
 
 document
   .getElementById("tradeModal")
-  .addEventListener(
-    "click",
-    function(e){
+  .addEventListener("click", function(event) {
 
-      if(e.target === this){
-
-        closeTrade();
-
-      }
-
+    if (event.target === this) {
+      closeTradeModal();
     }
-  );
+
+  });
 
 
-/* ==========================================================
-   START
-========================================================== */
+/* =========================================================
+   ENTER KEY LOGIN
+========================================================= */
 
-console.log(
-  "KNN Markets DEMO started."
-);
+document
+  .getElementById("loginPassword")
+  .addEventListener("keydown", function(event) {
+
+    if (event.key === "Enter") {
+      loginUser();
+    }
+
+  });
+
+
+/* =========================================================
+   INITIAL UI
+========================================================= */
+
+showAuth("login");
 
 </script>
 

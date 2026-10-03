@@ -1,2692 +1,299 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">
-<title>KNN Markets</title>
-
-<style>
-*{
-    box-sizing:border-box;
-    margin:0;
-    padding:0;
-}
-
-:root{
-    --bg:#050b14;
-    --panel:#0a1422;
-    --panel2:#0d1a2b;
-    --border:#17283b;
-    --text:#f3f7fb;
-    --muted:#8192a7;
-    --blue:#168cff;
-    --blue2:#0877df;
-    --green:#20d47b;
-    --red:#ff5264;
-    --yellow:#ffc857;
-}
-
-body{
-    background:
-        radial-gradient(circle at 50% -20%,rgba(16,101,190,.18),transparent 40%),
-        var(--bg);
-    color:var(--text);
-    font-family:Inter,Arial,sans-serif;
-    min-height:100vh;
-}
-
-button,input{
-    font:inherit;
-}
-
-button{
-    cursor:pointer;
-}
-
-.header{
-    height:66px;
-    border-bottom:1px solid var(--border);
-    background:rgba(5,11,20,.94);
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    padding:0 22px;
-    position:sticky;
-    top:0;
-    z-index:100;
-    backdrop-filter:blur(15px);
-}
-
-.logo{
-    display:flex;
-    align-items:center;
-    gap:10px;
-    font-size:21px;
-    font-weight:800;
-    letter-spacing:-.5px;
-}
-
-.logo-mark{
-    width:34px;
-    height:34px;
-    border-radius:10px;
-    background:linear-gradient(135deg,#1795ff,#0755a8);
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:900;
-    box-shadow:0 0 20px rgba(22,140,255,.25);
-}
-
-.logo span{
-    color:#42a8ff;
-}
-
-.balance-box{
-    border:1px solid var(--border);
-    background:#091321;
-    border-radius:10px;
-    padding:8px 13px;
-    text-align:right;
-}
-
-.balance-label{
-    font-size:10px;
-    color:var(--muted);
-    text-transform:uppercase;
-    letter-spacing:.6px;
-}
-
-.balance-value{
-    font-size:14px;
-    font-weight:800;
-    margin-top:2px;
-}
-
-.layout{
-    max-width:1250px;
-    margin:auto;
-    padding:28px 18px 60px;
-}
-
-.hero{
-    text-align:center;
-    margin:10px auto 28px;
-}
-
-.hero h1{
-    font-size:34px;
-    line-height:1.15;
-    letter-spacing:-1.2px;
-}
-
-.hero p{
-    color:var(--muted);
-    margin-top:9px;
-    font-size:14px;
-}
-
-.demo-badge{
-    display:inline-flex;
-    margin-top:14px;
-    padding:5px 10px;
-    border:1px solid rgba(22,140,255,.3);
-    background:rgba(22,140,255,.08);
-    color:#5bb3ff;
-    border-radius:20px;
-    font-size:11px;
-    font-weight:700;
-}
-
-.market-grid{
-    display:grid;
-    grid-template-columns:repeat(2,minmax(0,1fr));
-    gap:15px;
-}
-
-.market-card{
-    background:linear-gradient(145deg,#0a1422,#07111d);
-    border:1px solid var(--border);
-    border-radius:16px;
-    padding:18px;
-    position:relative;
-    overflow:hidden;
-    transition:.2s;
-}
-
-.market-card:hover{
-    border-color:#24415f;
-    transform:translateY(-1px);
-}
-
-.market-top{
-    display:flex;
-    justify-content:space-between;
-    align-items:flex-start;
-    gap:10px;
-}
-
-.coin{
-    display:flex;
-    align-items:center;
-    gap:10px;
-}
-
-.coin-icon{
-    width:40px;
-    height:40px;
-    border-radius:50%;
-    background:#111f31;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    font-weight:900;
-    font-size:13px;
-}
-
-.coin-info h3{
-    font-size:14px;
-}
-
-.coin-info span{
-    color:var(--muted);
-    font-size:11px;
-}
-
-.live{
-    display:flex;
-    align-items:center;
-    gap:5px;
-    color:var(--green);
-    font-size:10px;
-    font-weight:800;
-    text-transform:uppercase;
-}
-
-.live-dot{
-    width:6px;
-    height:6px;
-    border-radius:50%;
-    background:var(--green);
-    box-shadow:0 0 8px var(--green);
-}
-
-.question{
-    margin-top:18px;
-    font-size:17px;
-    line-height:1.4;
-    font-weight:750;
-}
-
-.target{
-    color:#6caee8;
-}
-
-.market-info{
-    display:flex;
-    justify-content:space-between;
-    align-items:end;
-    margin-top:17px;
-}
-
-.price-label{
-    font-size:10px;
-    color:var(--muted);
-    text-transform:uppercase;
-}
-
-.price{
-    font-size:20px;
-    font-weight:850;
-    margin-top:3px;
-}
-
-.change{
-    font-size:11px;
-    margin-top:3px;
-}
-
-.up{
-    color:var(--green);
-}
-
-.down{
-    color:var(--red);
-}
-
-.timer{
-    border:1px solid #263a50;
-    border-radius:8px;
-    padding:7px 9px;
-    text-align:center;
-    background:#091321;
-}
-
-.timer small{
-    display:block;
-    color:var(--muted);
-    font-size:9px;
-    text-transform:uppercase;
-}
-
-.timer strong{
-    display:block;
-    margin-top:2px;
-    color:#fff;
-    font-size:14px;
-    font-variant-numeric:tabular-nums;
-}
-
-.probability{
-    margin-top:19px;
-}
-
-.prob-row{
-    display:flex;
-    justify-content:space-between;
-    margin-bottom:7px;
-    font-size:11px;
-}
-
-.prob-row span:first-child{
-    color:var(--green);
-}
-
-.prob-row span:last-child{
-    color:var(--red);
-}
-
-.bar{
-    width:100%;
-    height:8px;
-    border-radius:20px;
-    overflow:hidden;
-    background:#1d2937;
-    display:flex;
-}
-
-.yes-bar{
-    background:var(--green);
-    transition:width .35s;
-}
-
-.no-bar{
-    background:var(--red);
-    transition:width .35s;
-}
-
-.buttons{
-    display:grid;
-    grid-template-columns:1fr 1fr;
-    gap:9px;
-    margin-top:15px;
-}
-
-.bet-btn{
-    height:42px;
-    border-radius:9px;
-    border:1px solid;
-    font-size:13px;
-    font-weight:800;
-    transition:.15s;
-}
-
-.yes-btn{
-    color:var(--green);
-    border-color:rgba(32,212,123,.3);
-    background:rgba(32,212,123,.07);
-}
-
-.yes-btn:hover{
-    background:rgba(32,212,123,.15);
-}
-
-.no-btn{
-    color:var(--red);
-    border-color:rgba(255,82,100,.3);
-    background:rgba(255,82,100,.07);
-}
-
-.no-btn:hover{
-    background:rgba(255,82,100,.15);
-}
-
-.footer-nav{
-    margin-top:25px;
-    display:flex;
-    justify-content:center;
-    gap:8px;
-}
-
-.nav-btn{
-    background:#0a1422;
-    border:1px solid var(--border);
-    color:#9cafc4;
-    padding:9px 16px;
-    border-radius:8px;
-    font-size:12px;
-}
-
-.nav-btn.active,
-.nav-btn:hover{
-    color:#fff;
-    border-color:#22517d;
-    background:#0c1c2e;
-}
-
-.section{
-    margin-top:25px;
-}
-
-.section-title{
-    font-size:17px;
-    margin-bottom:13px;
-}
-
-.panel{
-    background:#091321;
-    border:1px solid var(--border);
-    border-radius:14px;
-    padding:18px;
-}
-
-.portfolio-grid{
-    display:grid;
-    grid-template-columns:repeat(3,1fr);
-    gap:10px;
-}
-
-.stat{
-    background:#0c1827;
-    border:1px solid #15283d;
-    border-radius:10px;
-    padding:14px;
-}
-
-.stat small{
-    color:var(--muted);
-    display:block;
-    font-size:10px;
-    text-transform:uppercase;
-}
-
-.stat strong{
-    display:block;
-    font-size:18px;
-    margin-top:6px;
-}
-
-.history-table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:11px;
-}
-
-.history-table th{
-    color:var(--muted);
-    text-align:left;
-    font-weight:600;
-    padding:10px 7px;
-    border-bottom:1px solid var(--border);
-}
-
-.history-table td{
-    padding:11px 7px;
-    border-bottom:1px solid #102031;
-}
-
-.result-win{
-    color:var(--green);
-    font-weight:800;
-}
-
-.result-loss{
-    color:var(--red);
-    font-weight:800;
-}
-
-.empty{
-    text-align:center;
-    color:var(--muted);
-    padding:25px;
-    font-size:12px;
-}
-
-.modal-bg{
-    position:fixed;
-    inset:0;
-    background:rgba(0,0,0,.72);
-    z-index:500;
-    display:none;
-    align-items:center;
-    justify-content:center;
-    padding:15px;
-}
-
-.modal-bg.show{
-    display:flex;
-}
-
-.modal{
-    width:100%;
-    max-width:420px;
-    background:#091321;
-    border:1px solid #20364e;
-    border-radius:16px;
-    padding:20px;
-    box-shadow:0 20px 80px rgba(0,0,0,.6);
-}
-
-.modal-head{
-    display:flex;
-    justify-content:space-between;
-    align-items:center;
-}
-
-.modal-head h2{
-    font-size:18px;
-}
-
-.close{
-    width:30px;
-    height:30px;
-    border-radius:7px;
-    border:1px solid var(--border);
-    background:#0c1827;
-    color:#9db0c4;
-}
-
-.selected-market{
-    margin-top:15px;
-    padding:12px;
-    border:1px solid var(--border);
-    border-radius:10px;
-    background:#0c1827;
-}
-
-.selected-market .title{
-    font-size:13px;
-    font-weight:750;
-}
-
-.selected-side{
-    margin-top:5px;
-    font-size:12px;
-}
-
-.amount-label{
-    display:block;
-    color:#91a4b9;
-    font-size:11px;
-    margin-top:15px;
-    margin-bottom:6px;
-}
-
-.amount-input{
-    width:100%;
-    height:45px;
-    background:#060e18;
-    border:1px solid #20344a;
-    border-radius:9px;
-    color:#fff;
-    outline:none;
-    padding:0 12px;
-    font-size:15px;
-}
-
-.amount-input:focus{
-    border-color:#268eea;
-}
-
-.quick{
-    display:flex;
-    gap:6px;
-    margin-top:7px;
-}
-
-.quick button{
-    flex:1;
-    border:1px solid var(--border);
-    background:#0d1b2b;
-    color:#94a8bd;
-    border-radius:7px;
-    padding:6px;
-    font-size:10px;
-}
-
-.quick button:hover{
-    color:#fff;
-    border-color:#315171;
-}
-
-.calculation{
-    margin-top:14px;
-    border-top:1px solid var(--border);
-    padding-top:13px;
-}
-
-.calc-row{
-    display:flex;
-    justify-content:space-between;
-    padding:5px 0;
-    color:#94a8bd;
-    font-size:11px;
-}
-
-.calc-row strong{
-    color:#fff;
-}
-
-.confirm{
-    width:100%;
-    height:44px;
-    margin-top:14px;
-    border:0;
-    border-radius:9px;
-    color:#fff;
-    background:linear-gradient(135deg,#148dff,#0866bd);
-    font-weight:850;
-}
-
-.confirm:hover{
-    filter:brightness(1.1);
-}
-
-.warning{
-    color:#ffb85c;
-    font-size:10px;
-    margin-top:9px;
-    line-height:1.5;
-}
-
-.balance-modal input{
-    margin-top:8px;
-}
-
-.set-balance{
-    width:100%;
-    height:42px;
-    margin-top:12px;
-    border:0;
-    border-radius:8px;
-    background:#168cff;
-    color:white;
-    font-weight:800;
-}
-
-.toast{
-    position:fixed;
-    left:50%;
-    bottom:22px;
-    transform:translate(-50%,20px);
-    opacity:0;
-    pointer-events:none;
-    background:#101d2d;
-    border:1px solid #2a4058;
-    color:#fff;
-    padding:11px 15px;
-    border-radius:9px;
-    font-size:12px;
-    z-index:1000;
-    transition:.25s;
-}
-
-.toast.show{
-    opacity:1;
-    transform:translate(-50%,0);
-}
-
-@media(max-width:760px){
-    .header{
-        padding:0 12px;
-        height:60px;
-    }
-
-    .logo{
-        font-size:18px;
-    }
-
-    .balance-box{
-        padding:6px 9px;
-    }
-
-    .layout{
-        padding:20px 11px 50px;
-    }
-
-    .hero h1{
-        font-size:27px;
-    }
-
-    .market-grid{
-        grid-template-columns:1fr;
-    }
-
-    .portfolio-grid{
-        grid-template-columns:1fr;
-    }
-
-    .history-table{
-        font-size:9px;
-    }
-
-    .history-table th,
-    .history-table td{
-        padding:8px 4px;
-    }
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SalaamWallet UI</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
+<body class="bg-[#050B14] text-white font-sans max-w-md mx-auto min-h-screen pb-24">
 
-<body>
-
-<header class="header">
-    <div class="logo">
-        <div class="logo-mark">K</div>
-        KNN <span>Markets</span>
-    </div>
-
-    <button class="balance-box" onclick="openBalanceModal()">
-        <div class="balance-label">Demo Balance</div>
-        <div class="balance-value" id="headerBalance">10,000.00 BNB</div>
-    </button>
-</header>
-
-<main class="layout">
-
-    <section class="hero">
-        <h1>Predict the Crypto Market</h1>
-        <p>Make demo predictions on where crypto prices will be at the end of each minute.</p>
-        <div class="demo-badge">DEMO MODE • NO REAL MONEY</div>
-    </section>
-
-    <section class="market-grid" id="marketGrid"></section>
-
-    <div class="footer-nav">
-        <button class="nav-btn active" onclick="showSection('markets')">Markets</button>
-        <button class="nav-btn" onclick="showSection('portfolio')">Portfolio</button>
-        <button class="nav-btn" onclick="showSection('history')">Trade History</button>
-    </div>
-
-    <section id="portfolioSection" class="section" style="display:none">
-        <h2 class="section-title">Portfolio</h2>
-
-        <div class="portfolio-grid">
-            <div class="stat">
-                <small>Balance</small>
-                <strong id="portfolioBalance">0 BNB</strong>
+    <!-- Top Header -->
+    <header class="flex justify-between items-center p-4">
+        <div class="flex items-center space-x-2">
+            <div class="bg-gradient-to-tr from-blue-700 to-cyan-500 p-2.5 rounded-2xl text-xl shadow-lg shadow-blue-600/30">
+                <i class="fa-brands fa-bitcoin text-white"></i>
             </div>
-
-            <div class="stat">
-                <small>Total Bets</small>
-                <strong id="totalBets">0</strong>
+            <div>
+                <h1 class="font-extrabold text-xl tracking-wide text-cyan-400">Salaam<span class="text-white">Wallet</span></h1>
+                <p class="text-[10px] text-gray-400">Your Crypto. Your Control.</p>
             </div>
+        </div>
+        <div class="flex space-x-2">
+            <button class="bg-[#111F36] p-3 rounded-full text-cyan-400 border border-blue-900/50 shadow-md">
+                <i class="fa-regular fa-bell"></i>
+            </button>
+            <button class="bg-gradient-to-r from-blue-600 to-cyan-500 p-3 rounded-full text-white shadow-md shadow-blue-600/40">
+                <i class="fa-solid fa-star"></i>
+            </button>
+        </div>
+    </header>
 
-            <div class="stat">
-                <small>Profit / Loss</small>
-                <strong id="totalPnL">0 BNB</strong>
-            </div>
+    <!-- Total Balance Card -->
+    <section class="mx-4 mt-2 bg-gradient-to-r from-[#0d1b33] via-[#091528] to-[#040e1b] p-5 rounded-3xl border border-blue-500/30 shadow-2xl relative overflow-hidden">
+        <!-- Background Wallet Graphic Illustration Effect -->
+        <div class="absolute -right-6 -bottom-4 opacity-20 pointer-events-none transform rotate-12">
+            <i class="fa-solid fa-wallet text-9xl text-blue-400"></i>
+        </div>
+
+        <div class="text-xs text-gray-400 flex items-center space-x-1">
+            <span>Total Balance</span>
+            <i class="fa-regular fa-eye text-cyan-400 ml-1"></i>
+        </div>
+        <div class="text-3xl font-black mt-1 tracking-tight text-white">
+            $2,450.<span class="text-xl text-gray-400 font-semibold">00</span>
+        </div>
+        <div class="flex items-center space-x-2 mt-2 text-xs">
+            <span class="text-emerald-400 font-bold flex items-center"><i class="fa-solid fa-caret-up mr-1 text-sm"></i> +12.5% (24h)</span>
+        </div>
+        <div class="mt-2 text-xs text-gray-300 font-medium">
+            ⭐ 1 SOS = $0.04
         </div>
     </section>
 
-    <section id="historySection" class="section" style="display:none">
-        <h2 class="section-title">Trade History</h2>
-
-        <div class="panel">
-            <div id="historyContainer"></div>
+    <!-- Action Buttons -->
+    <section class="grid grid-cols-5 gap-2 px-4 mt-5 text-center">
+        <div class="flex flex-col items-center">
+            <button class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-600/40 hover:scale-105 transition">
+                <i class="fa-solid fa-paper-plane text-sm"></i>
+            </button>
+            <span class="text-[11px] mt-1 text-gray-300 font-medium">Send</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <button class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-600/40 hover:scale-105 transition">
+                <i class="fa-solid fa-arrow-down text-sm"></i>
+            </button>
+            <span class="text-[11px] mt-1 text-gray-300 font-medium">Receive</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <button class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-600/40 hover:scale-105 transition">
+                <i class="fa-solid fa-right-left text-sm"></i>
+            </button>
+            <span class="text-[11px] mt-1 text-gray-300 font-medium">Swap</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <button class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-600/40 hover:scale-105 transition">
+                <i class="fa-solid fa-plus text-sm"></i>
+            </button>
+            <span class="text-[11px] mt-1 text-gray-300 font-medium">Deposit</span>
+        </div>
+        <div class="flex flex-col items-center">
+            <button class="w-12 h-12 bg-blue-600 rounded-full flex items-center justify-center text-white shadow-lg shadow-blue-600/40 hover:scale-105 transition">
+                <i class="fa-solid fa-minus text-sm"></i>
+            </button>
+            <span class="text-[11px] mt-1 text-gray-300 font-medium">Withdraw</span>
         </div>
     </section>
 
-</main>
-
-<!-- BET MODAL -->
-<div class="modal-bg" id="betModal">
-    <div class="modal">
-
-        <div class="modal-head">
-            <h2>Place Prediction</h2>
-            <button class="close" onclick="closeBetModal()">×</button>
-        </div>
-
-        <div class="selected-market">
-            <div class="title" id="modalQuestion">Will BTC be higher?</div>
-            <div class="selected-side" id="modalSide">YES</div>
-        </div>
-
-        <label class="amount-label">Amount (BNB)</label>
-
-        <input
-            id="betAmount"
-            class="amount-input"
-            type="number"
-            min="0"
-            step="any"
-            placeholder="Enter amount"
-            oninput="updateCalculation()"
-        >
-
-        <div class="quick">
-            <button onclick="setAmount(.1)">0.1</button>
-            <button onclick="setAmount(1)">1</button>
-            <button onclick="setAmount(10)">10</button>
-            <button onclick="setAmount(100)">100</button>
-            <button onclick="setMaxAmount()">MAX</button>
-        </div>
-
-        <div class="calculation">
-
-            <div class="calc-row">
-                <span>Current probability</span>
-                <strong id="calcProbability">50%</strong>
+    <!-- Two Columns Layout: My Assets & Crypto Markets -->
+    <div class="grid grid-cols-2 gap-3 mx-4 mt-6">
+        
+        <!-- My Assets Section -->
+        <section class="bg-[#0b1629]/60 p-3 rounded-2xl border border-blue-900/40">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="font-bold text-xs flex items-center text-cyan-400">
+                    <i class="fa-solid fa-coins mr-1.5"></i> My Assets
+                </h2>
+                <span class="text-[10px] text-cyan-400 font-semibold cursor-pointer">Manage ></span>
             </div>
 
-            <div class="calc-row">
-                <span>Share price</span>
-                <strong id="calcPrice">0.50</strong>
+            <div class="space-y-2.5">
+                <!-- SOS -->
+                <div class="bg-[#0b1629] p-2.5 rounded-xl border border-blue-900/40">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 bg-blue-600 rounded-full flex items-center justify-center text-white text-xs font-bold">⭐</div>
+                        <div>
+                            <div class="font-bold text-xs">SOS</div>
+                            <div class="text-[11px] text-white font-semibold">$1,950.00</div>
+                            <div class="text-[9px] text-gray-400">48,750.00 SOS</div>
+                        </div>
+                    </div>
+                    <div class="mt-1 text-emerald-400 text-[10px] font-bold">+8.2%</div>
+                </div>
+
+                <!-- USDT -->
+                <div class="bg-[#0b1629] p-2.5 rounded-xl border border-blue-900/40">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 bg-emerald-600 rounded-full flex items-center justify-center text-white text-xs font-bold">$</div>
+                        <div>
+                            <div class="font-bold text-xs">USDT</div>
+                            <div class="text-[11px] text-white font-semibold">$520.00</div>
+                            <div class="text-[9px] text-gray-400">520.00 USDT</div>
+                        </div>
+                    </div>
+                    <div class="mt-1 text-emerald-400 text-[10px] font-bold">+1.9%</div>
+                </div>
+
+                <!-- BTC -->
+                <div class="bg-[#0b1629] p-2.5 rounded-xl border border-blue-900/40">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 bg-amber-500 rounded-full flex items-center justify-center text-white text-xs font-bold">₿</div>
+                        <div>
+                            <div class="font-bold text-xs">BTC</div>
+                            <div class="text-[11px] text-white font-semibold">$980.00</div>
+                            <div class="text-[9px] text-gray-400">0.015 BTC</div>
+                        </div>
+                    </div>
+                    <div class="mt-1 text-emerald-400 text-[10px] font-bold">+1.9%</div>
+                </div>
+
+                <!-- ETH -->
+                <div class="bg-[#0b1629] p-2.5 rounded-xl border border-blue-900/40">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 bg-indigo-600 rounded-full flex items-center justify-center text-white text-xs font-bold">Ξ</div>
+                        <div>
+                            <div class="font-bold text-xs">ETH</div>
+                            <div class="text-[11px] text-white font-semibold">$420.00</div>
+                            <div class="text-[9px] text-gray-400">0.12 ETH</div>
+                        </div>
+                    </div>
+                    <div class="mt-1 text-emerald-400 text-[10px] font-bold">+1.9%</div>
+                </div>
+
+                <!-- LTC -->
+                <div class="bg-[#0b1629] p-2.5 rounded-xl border border-blue-900/40">
+                    <div class="flex items-center space-x-2">
+                        <div class="w-7 h-7 bg-slate-500 rounded-full flex items-center justify-center text-white text-xs font-bold">Ł</div>
+                        <div>
+                            <div class="font-bold text-xs">LTC</div>
+                            <div class="text-[11px] text-white font-semibold">$300.00</div>
+                            <div class="text-[9px] text-gray-400">1.50 LTC</div>
+                        </div>
+                    </div>
+                    <div class="mt-1 text-emerald-400 text-[10px] font-bold">+1.9%</div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Crypto Markets Section -->
+        <section class="bg-[#0b1629]/60 p-3 rounded-2xl border border-blue-900/40">
+            <div class="flex justify-between items-center mb-3">
+                <h2 class="font-bold text-xs flex items-center text-cyan-400">
+                    <i class="fa-solid fa-chart-line mr-1.5"></i> Markets
+                </h2>
+                <span class="text-[10px] text-cyan-400 font-semibold cursor-pointer">View All ></span>
             </div>
 
-            <div class="calc-row">
-                <span>Shares</span>
-                <strong id="calcShares">0</strong>
+            <div class="space-y-2.5">
+                <!-- Market Item 1 -->
+                <div class="bg-[#0b1629] p-2 rounded-xl border border-blue-900/40 flex justify-between items-center">
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[10px] text-gray-400">1</span>
+                        <div class="w-6 h-6 bg-blue-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">⭐</div>
+                        <div>
+                            <div class="font-bold text-[11px]">SOS</div>
+                            <div class="text-[9px] text-emerald-400 font-semibold">+8.2%</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[11px] font-bold">$0.04</div>
+                    </div>
+                </div>
+
+                <!-- Market Item 2 -->
+                <div class="bg-[#0b1629] p-2 rounded-xl border border-blue-900/40 flex justify-between items-center">
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[10px] text-gray-400">2</span>
+                        <div class="w-6 h-6 bg-amber-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold">₿</div>
+                        <div>
+                            <div class="font-bold text-[11px]">BTC</div>
+                            <div class="text-[9px] text-emerald-400 font-semibold">+1.9%</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[11px] font-bold">$65,230</div>
+                    </div>
+                </div>
+
+                <!-- Market Item 3 -->
+                <div class="bg-[#0b1629] p-2 rounded-xl border border-blue-900/40 flex justify-between items-center">
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[10px] text-gray-400">3</span>
+                        <div class="w-6 h-6 bg-indigo-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">Ξ</div>
+                        <div>
+                            <div class="font-bold text-[11px]">ETH</div>
+                            <div class="text-[9px] text-emerald-400 font-semibold">+2.1%</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[11px] font-bold">$3,420</div>
+                    </div>
+                </div>
+
+                <!-- Market Item 4 -->
+                <div class="bg-[#0b1629] p-2 rounded-xl border border-blue-900/40 flex justify-between items-center">
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[10px] text-gray-400">4</span>
+                        <div class="w-6 h-6 bg-emerald-600 rounded-full flex items-center justify-center text-[10px] text-white font-bold">$</div>
+                        <div>
+                            <div class="font-bold text-[11px]">USDT</div>
+                            <div class="text-[9px] text-emerald-400 font-semibold">+0.0%</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[11px] font-bold">$1.00</div>
+                    </div>
+                </div>
+
+                <!-- Market Item 5 -->
+                <div class="bg-[#0b1629] p-2 rounded-xl border border-blue-900/40 flex justify-between items-center">
+                    <div class="flex items-center space-x-1.5">
+                        <span class="text-[10px] text-gray-400">5</span>
+                        <div class="w-6 h-6 bg-slate-500 rounded-full flex items-center justify-center text-[10px] text-white font-bold">Ł</div>
+                        <div>
+                            <div class="font-bold text-[11px]">LTC</div>
+                            <div class="text-[9px] text-emerald-400 font-semibold">+1.9%</div>
+                        </div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-[11px] font-bold">$85.60</div>
+                    </div>
+                </div>
             </div>
-
-            <div class="calc-row">
-                <span>Potential payout</span>
-                <strong id="calcPayout">0 BNB</strong>
-            </div>
-
-            <div class="calc-row">
-                <span>Potential profit</span>
-                <strong id="calcProfit">0 BNB</strong>
-            </div>
-
-            <div class="calc-row">
-                <span>Your balance</span>
-                <strong id="calcBalance">0 BNB</strong>
-            </div>
-
-        </div>
-
-        <button class="confirm" onclick="confirmBet()">Confirm Prediction</button>
-
-        <div class="warning">
-            Demo only. This market does not use real money or real cryptocurrency.
-        </div>
+        </section>
 
     </div>
-</div>
 
-<!-- BALANCE MODAL -->
-<div class="modal-bg" id="balanceModal">
-    <div class="modal balance-modal">
-
-        <div class="modal-head">
-            <h2>Demo Balance</h2>
-            <button class="close" onclick="closeBalanceModal()">×</button>
+    <!-- Secure Your Assets Banner -->
+    <section class="mx-4 mt-4 bg-gradient-to-r from-[#0d1b33] to-[#081324] p-3.5 rounded-2xl border border-blue-500/30 flex items-center justify-between shadow-lg">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600/30 p-2.5 rounded-xl text-cyan-400 border border-blue-500/30">
+                <i class="fa-solid fa-shield-halved text-lg"></i>
+            </div>
+            <div>
+                <h3 class="font-bold text-xs text-white">Secure Your Assets</h3>
+                <p class="text-[10px] text-gray-400">Two-Factor Authentication (2FA) keeps your wallet safe.</p>
+            </div>
         </div>
-
-        <p style="color:#879ab0;font-size:12px;margin-top:8px">
-            Set your demo balance to any amount.
-        </p>
-
-        <label class="amount-label">New balance (BNB)</label>
-
-        <input
-            id="newBalance"
-            class="amount-input"
-            type="number"
-            min="0"
-            step="any"
-            placeholder="10000"
-        >
-
-        <button class="set-balance" onclick="saveBalance()">
-            Set Demo Balance
+        <button class="bg-gradient-to-r from-blue-600 to-cyan-500 text-white text-[11px] font-bold px-3 py-2 rounded-xl shadow-md shadow-blue-600/30 whitespace-nowrap">
+            Enable 2FA >
         </button>
-
-        <div class="warning">
-            Changing the demo balance is only for testing.
-        </div>
-
-    </div>
-</div>
-
-<div class="toast" id="toast"></div>
-
-<script>
-/* ============================================================
-   KNN MARKETS
-   DEMO PREDICTION MARKET
-   ============================================================ */
-
-const BINANCE_API = "https://data-api.binance.vision/api/v3";
-
-const COINS = [
-    {
-        symbol:"BTCUSDT",
-        name:"Bitcoin",
-        short:"BTC",
-        icon:"₿"
-    },
-    {
-        symbol:"ETHUSDT",
-        name:"Ethereum",
-        short:"ETH",
-        icon:"Ξ"
-    },
-    {
-        symbol:"BNBUSDT",
-        name:"BNB",
-        short:"BNB",
-        icon:"B"
-    },
-    {
-        symbol:"SOLUSDT",
-        name:"Solana",
-        short:"SOL",
-        icon:"S"
-    },
-    {
-        symbol:"XRPUSDT",
-        name:"XRP",
-        short:"XRP",
-        icon:"X"
-    },
-    {
-        symbol:"LTCUSDT",
-        name:"Litecoin",
-        short:"LTC",
-        icon:"Ł"
-    }
-];
-
-const STORAGE_KEY = "knn_markets_demo_v3";
-
-let state = {
-    balance:10000,
-    markets:{},
-    history:[]
-};
-
-let selectedMarket = null;
-let selectedSide = null;
-
-let prices = {};
-let previousPrices = {};
-let initialPrices = {};
-
-let wsConnections = {};
-
-let serverOffset = 0;
-
-loadState();
-
-/* ============================================================
-   STORAGE
-   ============================================================ */
-
-function loadState(){
-
-    try{
-        const saved = localStorage.getItem(STORAGE_KEY);
-
-        if(saved){
-            const parsed = JSON.parse(saved);
-
-            if(parsed && typeof parsed === "object"){
-                state = {
-                    balance:Number(parsed.balance ?? 10000),
-                    markets:parsed.markets || {},
-                    history:Array.isArray(parsed.history) ? parsed.history : []
-                };
-            }
-        }
-
-    }catch(e){
-        console.log("Storage error",e);
-    }
-
-    updateBalanceUI();
-}
-
-function saveState(){
-    localStorage.setItem(
-        STORAGE_KEY,
-        JSON.stringify(state)
-    );
-}
-
-/* ============================================================
-   TIME
-   ============================================================ */
-
-/*
-   We use Binance server time to synchronize the clock.
-   Market closes exactly at the next minute.
-*/
-
-async function syncServerTime(){
-
-    try{
-
-        const start = Date.now();
-
-        const response = await fetch(
-            BINANCE_API + "/time",
-            {
-                cache:"no-store"
-            }
-        );
-
-        const end = Date.now();
-
-        const data = await response.json();
-
-        const roundTrip = end - start;
-
-        serverOffset =
-            Number(data.serverTime)
-            - (start + roundTrip / 2);
-
-    }catch(e){
-
-        serverOffset = 0;
-
-    }
-}
-
-function now(){
-
-    return Date.now() + serverOffset;
-}
-
-function getMinuteStart(){
-
-    const d = new Date(now());
-
-    d.setSeconds(0,0);
-
-    return d.getTime();
-}
-
-function getMinuteEnd(){
-
-    return getMinuteStart() + 60000;
-}
-
-function formatClock(ms){
-
-    const d = new Date(ms);
-
-    return d.toLocaleTimeString(
-        [],
-        {
-            hour:"2-digit",
-            minute:"2-digit",
-            second:"2-digit",
-            hour12:false
-        }
-    );
-}
-
-function formatTargetTime(ms){
-
-    const d = new Date(ms);
-
-    return d.toLocaleTimeString(
-        [],
-        {
-            hour:"2-digit",
-            minute:"2-digit",
-            hour12:false
-        }
-    );
-}
-
-function secondsRemaining(){
-
-    return Math.max(
-        0,
-        Math.ceil(
-            (getMinuteEnd() - now()) / 1000
-        )
-    );
-}
-
-/* ============================================================
-   MARKET KEY
-   ============================================================ */
-
-function marketKey(symbol){
-
-    return (
-        symbol +
-        "_" +
-        getMinuteStart()
-    );
-}
-
-/* ============================================================
-   INITIAL MARKET DATA
-   ============================================================ */
-
-function ensureMarket(symbol){
-
-    const key = marketKey(symbol);
-
-    if(!state.markets[key]){
-
-        state.markets[key] = {
-            symbol:symbol,
-            startTime:getMinuteStart(),
-            endTime:getMinuteEnd(),
-            startPrice:null,
-            settled:false,
-            bets:[]
-        };
-
-        saveState();
-    }
-
-    return state.markets[key];
-}
-
-/* ============================================================
-   PRICE WEBSOCKET
-   ============================================================ */
-
-function connectPriceStream(coin){
-
-    const symbol = coin.symbol.toLowerCase();
-
-    if(wsConnections[symbol]){
-        return;
-    }
-
-    try{
-
-        const ws = new WebSocket(
-            "wss://stream.binance.com:9443/ws/" +
-            symbol +
-            "@trade"
-        );
-
-        wsConnections[symbol] = ws;
-
-        ws.onopen = function(){
-
-            console.log("Connected:",coin.symbol);
-        };
-
-        ws.onmessage = function(event){
-
-            try{
-
-                const data = JSON.parse(event.data);
-
-                const p = Number(data.p);
-
-                if(!Number.isFinite(p)){
-                    return;
-                }
-
-                if(prices[coin.symbol] !== undefined){
-                    previousPrices[coin.symbol] =
-                        prices[coin.symbol];
-                }
-
-                prices[coin.symbol] = p;
-
-                if(initialPrices[coin.symbol] === undefined){
-                    initialPrices[coin.symbol] = p;
-                }
-
-                const market = ensureMarket(
-                    coin.symbol
-                );
-
-                if(
-                    market.startPrice === null ||
-                    market.startPrice === undefined
-                ){
-
-                    market.startPrice = p;
-
-                    saveState();
-                }
-
-                updateCoinCard(coin);
-
-            }catch(e){}
-        };
-
-        ws.onerror = function(){
-
-            try{
-                ws.close();
-            }catch(e){}
-
-            delete wsConnections[symbol];
-
-            setTimeout(
-                ()=>connectPriceStream(coin),
-                3000
-            );
-        };
-
-        ws.onclose = function(){
-
-            delete wsConnections[symbol];
-
-            setTimeout(
-                ()=>connectPriceStream(coin),
-                3000
-            );
-        };
-
-    }catch(e){
-
-        setTimeout(
-            ()=>connectPriceStream(coin),
-            3000
-        );
-    }
-}
-
-/* ============================================================
-   REST FALLBACK
-   ============================================================ */
-
-async function fetchPrice(coin){
-
-    try{
-
-        const response = await fetch(
-            BINANCE_API +
-            "/ticker/price?symbol=" +
-            coin.symbol,
-            {
-                cache:"no-store"
-            }
-        );
-
-        const data = await response.json();
-
-        const p = Number(data.price);
-
-        if(Number.isFinite(p)){
-
-            if(prices[coin.symbol] !== undefined){
-                previousPrices[coin.symbol] =
-                    prices[coin.symbol];
-            }
-
-            prices[coin.symbol] = p;
-
-            if(initialPrices[coin.symbol] === undefined){
-                initialPrices[coin.symbol] = p;
-            }
-
-            const market = ensureMarket(
-                coin.symbol
-            );
-
-            if(market.startPrice === null){
-                market.startPrice = p;
-                saveState();
-            }
-
-            updateCoinCard(coin);
-        }
-
-    }catch(e){}
-}
-
-/* ============================================================
-   PROBABILITY ENGINE
-   ============================================================ */
-
-/*
-   YES represents:
-   closing price > starting price.
-
-   The probability is influenced by the current movement
-   versus the market's starting price.
-
-   It intentionally stays around 50% initially and moves
-   second-by-second.
-*/
-
-function getProbability(coin){
-
-    const market = ensureMarket(
-        coin.symbol
-    );
-
-    const current = prices[coin.symbol];
-
-    const start = market.startPrice;
-
-    if(
-        !Number.isFinite(current) ||
-        !Number.isFinite(start) ||
-        start <= 0
-    ){
-        return 50;
-    }
-
-    const movement =
-        ((current - start) / start) * 100;
-
-    /*
-       Sensitivity:
-       A 0.10% movement can create a visible change
-       while keeping the demo market within 5%-95%.
-    */
-
-    let probability =
-        50 + (movement * 120);
-
-    /*
-       Add remaining-time influence.
-       Early in the minute it remains closer to 50.
-    */
-
-    const remaining = secondsRemaining();
-
-    const progress =
-        1 - (remaining / 60);
-
-    probability =
-        50 +
-        (probability - 50) *
-        (0.45 + progress * 0.85);
-
-    probability =
-        Math.max(
-            5,
-            Math.min(
-                95,
-                probability
-            )
-        );
-
-    return probability;
-}
-
-function getYESPrice(coin){
-
-    return getProbability(coin) / 100;
-}
-
-function getNOPrice(coin){
-
-    return 1 - getYESPrice(coin);
-}
-
-/* ============================================================
-   MARKET CARD
-   ============================================================ */
-
-function renderMarkets(){
-
-    const container =
-        document.getElementById("marketGrid");
-
-    container.innerHTML = "";
-
-    COINS.forEach(coin=>{
-
-        ensureMarket(coin.symbol);
-
-        const card =
-            document.createElement("div");
-
-        card.className = "market-card";
-
-        card.id =
-            "card-" + coin.symbol;
-
-        card.innerHTML = `
-            <div class="market-top">
-
-                <div class="coin">
-
-                    <div class="coin-icon">
-                        ${coin.icon}
-                    </div>
-
-                    <div class="coin-info">
-                        <h3>${coin.name}</h3>
-                        <span>${coin.short}/USDT</span>
-                    </div>
-
-                </div>
-
-                <div class="live">
-                    <span class="live-dot"></span>
-                    LIVE
-                </div>
-
-            </div>
-
-            <div class="question">
-                Will ${coin.short} be higher at
-                <span class="target"
-                      id="target-${coin.symbol}">
-                    --
-                </span>?
-            </div>
-
-            <div class="market-info">
-
-                <div>
-                    <div class="price-label">
-                        Live price
-                    </div>
-
-                    <div class="price"
-                         id="price-${coin.symbol}">
-                        --
-                    </div>
-
-                    <div class="change"
-                         id="change-${coin.symbol}">
-                        --
-                    </div>
-                </div>
-
-                <div class="timer">
-                    <small>Closes in</small>
-                    <strong id="timer-${coin.symbol}">
-                        00:60
-                    </strong>
-                </div>
-
-            </div>
-
-            <div class="probability">
-
-                <div class="prob-row">
-
-                    <span id="yesProb-${coin.symbol}">
-                        YES 50%
-                    </span>
-
-                    <span id="noProb-${coin.symbol}">
-                        NO 50%
-                    </span>
-
-                </div>
-
-                <div class="bar">
-
-                    <div class="yes-bar"
-                         id="yesBar-${coin.symbol}"
-                         style="width:50%">
-                    </div>
-
-                    <div class="no-bar"
-                         id="noBar-${coin.symbol}"
-                         style="width:50%">
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div class="buttons">
-
-                <button
-                    class="bet-btn yes-btn"
-                    onclick="openBetModal('${coin.symbol}','YES')">
-
-                    YES
-                    <span id="yesPrice-${coin.symbol}">
-                        0.50
-                    </span>
-
-                </button>
-
-                <button
-                    class="bet-btn no-btn"
-                    onclick="openBetModal('${coin.symbol}','NO')">
-
-                    NO
-                    <span id="noPrice-${coin.symbol}">
-                        0.50
-                    </span>
-
-                </button>
-
-            </div>
-        `;
-
-        container.appendChild(card);
-
-        updateCoinCard(coin);
-    });
-}
-
-/* ============================================================
-   UPDATE CARD
-   ============================================================ */
-
-function updateCoinCard(coin){
-
-    const price =
-        prices[coin.symbol];
-
-    const market =
-        ensureMarket(coin.symbol);
-
-    const priceElement =
-        document.getElementById(
-            "price-" + coin.symbol
-        );
-
-    const changeElement =
-        document.getElementById(
-            "change-" + coin.symbol
-        );
-
-    const targetElement =
-        document.getElementById(
-            "target-" + coin.symbol
-        );
-
-    const timerElement =
-        document.getElementById(
-            "timer-" + coin.symbol
-        );
-
-    if(!priceElement){
-        return;
-    }
-
-    if(Number.isFinite(price)){
-
-        priceElement.textContent =
-            formatCryptoPrice(price);
-
-        if(
-            Number.isFinite(market.startPrice) &&
-            market.startPrice > 0
-        ){
-
-            const change =
-                ((price - market.startPrice)
-                / market.startPrice) * 100;
-
-            changeElement.textContent =
-                (change >= 0 ? "+" : "") +
-                change.toFixed(4) +
-                "%";
-
-            changeElement.className =
-                "change " +
-                (
-                    change >= 0
-                    ? "up"
-                    : "down"
-                );
-        }
-    }
-
-    targetElement.textContent =
-        formatTargetTime(
-            market.endTime
-        );
-
-    const remaining =
-        secondsRemaining();
-
-    const mins =
-        Math.floor(remaining / 60);
-
-    const secs =
-        remaining % 60;
-
-    timerElement.textContent =
-        String(mins).padStart(2,"0") +
-        ":" +
-        String(secs).padStart(2,"0");
-
-    const yes =
-        getProbability(coin);
-
-    const no =
-        100 - yes;
-
-    document.getElementById(
-        "yesProb-" + coin.symbol
-    ).textContent =
-        "YES " + yes.toFixed(1) + "%";
-
-    document.getElementById(
-        "noProb-" + coin.symbol
-    ).textContent =
-        "NO " + no.toFixed(1) + "%";
-
-    document.getElementById(
-        "yesBar-" + coin.symbol
-    ).style.width =
-        yes + "%";
-
-    document.getElementById(
-        "noBar-" + coin.symbol
-    ).style.width =
-        no + "%";
-
-    document.getElementById(
-        "yesPrice-" + coin.symbol
-    ).textContent =
-        (yes / 100).toFixed(2);
-
-    document.getElementById(
-        "noPrice-" + coin.symbol
-    ).textContent =
-        (no / 100).toFixed(2);
-}
-
-/* ============================================================
-   PRICE FORMATTING
-   ============================================================ */
-
-function formatCryptoPrice(price){
-
-    if(price >= 1000){
-        return "$" + price.toLocaleString(
-            undefined,
-            {
-                minimumFractionDigits:2,
-                maximumFractionDigits:2
-            }
-        );
-    }
-
-    if(price >= 1){
-        return "$" + price.toLocaleString(
-            undefined,
-            {
-                minimumFractionDigits:2,
-                maximumFractionDigits:4
-            }
-        );
-    }
-
-    return "$" + price.toFixed(5);
-}
-
-/* ============================================================
-   BET MODAL
-   ============================================================ */
-
-function openBetModal(symbol,side){
-
-    const coin =
-        COINS.find(
-            c=>c.symbol === symbol
-        );
-
-    if(!coin){
-        return;
-    }
-
-    selectedMarket = symbol;
-    selectedSide = side;
-
-    const market =
-        ensureMarket(symbol);
-
-    const yes =
-        getProbability(coin);
-
-    const probability =
-        side === "YES"
-        ? yes
-        : 100 - yes;
-
-    document.getElementById(
-        "modalQuestion"
-    ).textContent =
-        "Will " +
-        coin.short +
-        " be higher at " +
-        formatTargetTime(market.endTime) +
-        "?";
-
-    const sideElement =
-        document.getElementById("modalSide");
-
-    sideElement.textContent =
-        side +
-        " • " +
-        probability.toFixed(1) +
-        "%";
-
-    sideElement.style.color =
-        side === "YES"
-        ? "var(--green)"
-        : "var(--red)";
-
-    document.getElementById(
-        "betAmount"
-    ).value = "";
-
-    document.getElementById(
-        "betModal"
-    ).classList.add("show");
-
-    updateCalculation();
-}
-
-function closeBetModal(){
-
-    document.getElementById(
-        "betModal"
-    ).classList.remove("show");
-
-    selectedMarket = null;
-    selectedSide = null;
-}
-
-function setAmount(amount){
-
-    document.getElementById(
-        "betAmount"
-    ).value = amount;
-
-    updateCalculation();
-}
-
-function setMaxAmount(){
-
-    document.getElementById(
-        "betAmount"
-    ).value =
-        state.balance;
-
-    updateCalculation();
-}
-
-/* ============================================================
-   BET CALCULATION
-   ============================================================ */
-
-function updateCalculation(){
-
-    if(!selectedMarket || !selectedSide){
-        return;
-    }
-
-    const coin =
-        COINS.find(
-            c=>c.symbol === selectedMarket
-        );
-
-    if(!coin){
-        return;
-    }
-
-    const yes =
-        getProbability(coin);
-
-    const probability =
-        selectedSide === "YES"
-        ? yes
-        : 100 - yes;
-
-    const sharePrice =
-        probability / 100;
-
-    const amount =
-        Number(
-            document.getElementById(
-                "betAmount"
-            ).value
-        ) || 0;
-
-    const shares =
-        sharePrice > 0
-        ? amount / sharePrice
-        : 0;
-
-    const payout =
-        shares;
-
-    const profit =
-        payout - amount;
-
-    document.getElementById(
-        "calcProbability"
-    ).textContent =
-        probability.toFixed(1) + "%";
-
-    document.getElementById(
-        "calcPrice"
-    ).textContent =
-        sharePrice.toFixed(4);
-
-    document.getElementById(
-        "calcShares"
-    ).textContent =
-        shares.toFixed(6);
-
-    document.getElementById(
-        "calcPayout"
-    ).textContent =
-        formatBNB(payout);
-
-    document.getElementById(
-        "calcProfit"
-    ).textContent =
-        formatBNB(profit);
-
-    document.getElementById(
-        "calcBalance"
-    ).textContent =
-        formatBNB(state.balance);
-}
-
-/* ============================================================
-   CONFIRM BET
-   ============================================================ */
-
-function confirmBet(){
-
-    if(!selectedMarket || !selectedSide){
-        return;
-    }
-
-    const amount =
-        Number(
-            document.getElementById(
-                "betAmount"
-            ).value
-        );
-
-    if(
-        !Number.isFinite(amount) ||
-        amount <= 0
-    ){
-
-        showToast(
-            "Enter a valid amount."
-        );
-
-        return;
-    }
-
-    if(amount > state.balance){
-
-        showToast(
-            "Not enough demo balance."
-        );
-
-        return;
-    }
-
-    const coin =
-        COINS.find(
-            c=>c.symbol === selectedMarket
-        );
-
-    const market =
-        ensureMarket(selectedMarket);
-
-    /*
-       Prevent betting after market closes.
-    */
-
-    if(now() >= market.endTime){
-
-        showToast(
-            "This market has already closed."
-        );
-
-        closeBetModal();
-
-        return;
-    }
-
-    const probability =
-        selectedSide === "YES"
-        ? getProbability(coin)
-        : 100 - getProbability(coin);
-
-    const sharePrice =
-        probability / 100;
-
-    const shares =
-        amount / sharePrice;
-
-    const bet = {
-
-        id:
-            Date.now() +
-            "_" +
-            Math.random()
-                .toString(36)
-                .slice(2),
-
-        symbol:selectedMarket,
-
-        side:selectedSide,
-
-        amount:amount,
-
-        sharePrice:sharePrice,
-
-        shares:shares,
-
-        placedAt:now(),
-
-        marketStart:market.startTime,
-
-        marketEnd:market.endTime,
-
-        startPrice:
-            market.startPrice,
-
-        status:"OPEN",
-
-        payout:0,
-
-        profit:0
-    };
-
-    state.balance -= amount;
-
-    market.bets.push(bet);
-
-    state.history.unshift(bet);
-
-    saveState();
-
-    updateBalanceUI();
-
-    showToast(
-        selectedSide +
-        " prediction placed: " +
-        formatBNB(amount)
-    );
-
-    closeBetModal();
-
-    renderHistory();
-
-    renderPortfolio();
-}
-
-/* ============================================================
-   MARKET SETTLEMENT
-   ============================================================ */
-
-function settleExpiredMarkets(){
-
-    const current =
-        now();
-
-    let changed = false;
-
-    Object.keys(
-        state.markets
-    ).forEach(key=>{
-
-        const market =
-            state.markets[key];
-
-        if(
-            market.settled ||
-            current < market.endTime
-        ){
-            return;
-        }
-
-        /*
-           Get final price.
-        */
-
-        const finalPrice =
-            prices[market.symbol];
-
-        if(
-            !Number.isFinite(finalPrice) ||
-            !Number.isFinite(market.startPrice)
-        ){
-            return;
-        }
-
-        let winner;
-
-        if(finalPrice > market.startPrice){
-            winner = "YES";
-        }
-        else if(finalPrice < market.startPrice){
-            winner = "NO";
-        }
-        else{
-            winner = "DRAW";
-        }
-
-        market.bets.forEach(bet=>{
-
-            if(bet.status !== "OPEN"){
-                return;
-            }
-
-            if(winner === "DRAW"){
-
-                state.balance +=
-                    bet.amount;
-
-                bet.status = "REFUND";
-
-                bet.payout =
-                    bet.amount;
-
-                bet.profit = 0;
-
-                return;
-            }
-
-            if(bet.side === winner){
-
-                /*
-                   Binary market payout:
-                   each winning share pays 1 BNB.
-                */
-
-                const payout =
-                    bet.shares;
-
-                state.balance += payout;
-
-                bet.status = "WON";
-
-                bet.payout =
-                    payout;
-
-                bet.profit =
-                    payout - bet.amount;
-
-            }else{
-
-                bet.status = "LOST";
-
-                bet.payout = 0;
-
-                bet.profit =
-                    -bet.amount;
-            }
-        });
-
-        market.settled = true;
-
-        market.winner = winner;
-
-        market.finalPrice =
-            finalPrice;
-
-        changed = true;
-    });
-
-    if(changed){
-
-        saveState();
-
-        updateBalanceUI();
-
-        renderHistory();
-
-        renderPortfolio();
-
-        showToast(
-            "A market has settled."
-        );
-    }
-}
-
-/* ============================================================
-   NEW MINUTE
-   ============================================================ */
-
-let lastMinute = null;
-
-function checkMinuteChange(){
-
-    const minute =
-        getMinuteStart();
-
-    if(lastMinute === null){
-
-        lastMinute = minute;
-
-        return;
-    }
-
-    if(minute !== lastMinute){
-
-        lastMinute = minute;
-
-        /*
-           Every new minute automatically creates:
-           08:05
-           08:06
-           08:07
-           etc.
-        */
-
-        COINS.forEach(coin=>{
-
-            /*
-               Clear starting price so the first live
-               price of the new minute becomes the start.
-            */
-
-            initialPrices[coin.symbol] =
-                undefined;
-
-            ensureMarket(
-                coin.symbol
-            );
-
-        });
-
-        renderMarkets();
-
-        showToast(
-            "New 1-minute markets are now open."
-        );
-    }
-}
-
-/* ============================================================
-   BALANCE
-   ============================================================ */
-
-function updateBalanceUI(){
-
-    const value =
-        formatBNB(
-            state.balance
-        );
-
-    const header =
-        document.getElementById(
-            "headerBalance"
-        );
-
-    if(header){
-        header.textContent =
-            value;
-    }
-
-    const portfolio =
-        document.getElementById(
-            "portfolioBalance"
-        );
-
-    if(portfolio){
-        portfolio.textContent =
-            value;
-    }
-
-    const calc =
-        document.getElementById(
-            "calcBalance"
-        );
-
-    if(calc){
-        calc.textContent =
-            value;
-    }
-}
-
-function openBalanceModal(){
-
-    document.getElementById(
-        "newBalance"
-    ).value =
-        state.balance;
-
-    document.getElementById(
-        "balanceModal"
-    ).classList.add("show");
-}
-
-function closeBalanceModal(){
-
-    document.getElementById(
-        "balanceModal"
-    ).classList.remove("show");
-}
-
-function saveBalance(){
-
-    const value =
-        Number(
-            document.getElementById(
-                "newBalance"
-            ).value
-        );
-
-    if(
-        !Number.isFinite(value) ||
-        value < 0
-    ){
-
-        showToast(
-            "Enter a valid balance."
-        );
-
-        return;
-    }
-
-    state.balance = value;
-
-    saveState();
-
-    updateBalanceUI();
-
-    renderPortfolio();
-
-    closeBalanceModal();
-
-    showToast(
-        "Demo balance updated."
-    );
-}
-
-/* ============================================================
-   PORTFOLIO
-   ============================================================ */
-
-function renderPortfolio(){
-
-    const totalBets =
-        state.history.length;
-
-    let pnl = 0;
-
-    state.history.forEach(
-        bet=>{
-            if(
-                bet.status === "WON" ||
-                bet.status === "LOST" ||
-                bet.status === "REFUND"
-            ){
-                pnl +=
-                    Number(bet.profit || 0);
-            }
-        }
-    );
-
-    document.getElementById(
-        "portfolioBalance"
-    ).textContent =
-        formatBNB(state.balance);
-
-    document.getElementById(
-        "totalBets"
-    ).textContent =
-        totalBets;
-
-    const pnlElement =
-        document.getElementById(
-            "totalPnL"
-        );
-
-    pnlElement.textContent =
-        (
-            pnl >= 0
-            ? "+"
-            : ""
-        ) +
-        formatBNB(pnl);
-
-    pnlElement.style.color =
-        pnl >= 0
-        ? "var(--green)"
-        : "var(--red)";
-}
-
-/* ============================================================
-   HISTORY
-   ============================================================ */
-
-function renderHistory(){
-
-    const container =
-        document.getElementById(
-            "historyContainer"
-        );
-
-    if(!state.history.length){
-
-        container.innerHTML =
-            `<div class="empty">
-                No trades yet.
-             </div>`;
-
-        return;
-    }
-
-    const rows =
-        state.history
-        .slice(0,100)
-        .map(bet=>{
-
-            const time =
-                new Date(
-                    bet.placedAt
-                ).toLocaleTimeString(
-                    [],
-                    {
-                        hour:"2-digit",
-                        minute:"2-digit",
-                        second:"2-digit",
-                        hour12:false
-                    }
-                );
-
-            let statusClass = "";
-
-            if(bet.status === "WON"){
-                statusClass =
-                    "result-win";
-            }
-
-            if(bet.status === "LOST"){
-                statusClass =
-                    "result-loss";
-            }
-
-            return `
-                <tr>
-                    <td>${bet.symbol.replace("USDT","")}</td>
-
-                    <td>
-                        <span style="
-                            color:${
-                                bet.side === "YES"
-                                ? "var(--green)"
-                                : "var(--red)"
-                            };
-                            font-weight:800
-                        ">
-                            ${bet.side}
-                        </span>
-                    </td>
-
-                    <td>
-                        ${formatBNB(bet.amount)}
-                    </td>
-
-                    <td>
-                        ${bet.status}
-                    </td>
-
-                    <td class="${statusClass}">
-                        ${
-                            bet.status === "OPEN"
-                            ? "Pending"
-                            : formatBNB(
-                                bet.profit
-                            )
-                        }
-                    </td>
-
-                    <td>${time}</td>
-                </tr>
-            `;
-        })
-        .join("");
-
-    container.innerHTML = `
-        <div style="overflow-x:auto">
-
-            <table class="history-table">
-
-                <thead>
-                    <tr>
-                        <th>Market</th>
-                        <th>Side</th>
-                        <th>Stake</th>
-                        <th>Status</th>
-                        <th>P/L</th>
-                        <th>Time</th>
-                    </tr>
-                </thead>
-
-                <tbody>
-                    ${rows}
-                </tbody>
-
-            </table>
-
-        </div>
-    `;
-}
-
-/* ============================================================
-   SECTIONS
-   ============================================================ */
-
-function showSection(section){
-
-    const marketGrid =
-        document.getElementById(
-            "marketGrid"
-        );
-
-    const portfolio =
-        document.getElementById(
-            "portfolioSection"
-        );
-
-    const history =
-        document.getElementById(
-            "historySection"
-        );
-
-    const buttons =
-        document.querySelectorAll(
-            ".nav-btn"
-        );
-
-    buttons.forEach(
-        b=>b.classList.remove("active")
-    );
-
-    if(section === "markets"){
-
-        marketGrid.style.display =
-            "grid";
-
-        portfolio.style.display =
-            "none";
-
-        history.style.display =
-            "none";
-
-        buttons[0].classList.add("active");
-
-    }else if(section === "portfolio"){
-
-        marketGrid.style.display =
-            "none";
-
-        portfolio.style.display =
-            "block";
-
-        history.style.display =
-            "none";
-
-        buttons[1].classList.add("active");
-
-        renderPortfolio();
-
-    }else{
-
-        marketGrid.style.display =
-            "none";
-
-        portfolio.style.display =
-            "none";
-
-        history.style.display =
-            "block";
-
-        buttons[2].classList.add("active");
-
-        renderHistory();
-    }
-}
-
-/* ============================================================
-   FORMATTING
-   ============================================================ */
-
-function formatBNB(value){
-
-    value =
-        Number(value) || 0;
-
-    return (
-        value.toLocaleString(
-            undefined,
-            {
-                minimumFractionDigits:2,
-                maximumFractionDigits:6
-            }
-        ) +
-        " BNB"
-    );
-}
-
-/* ============================================================
-   TOAST
-   ============================================================ */
-
-let toastTimer = null;
-
-function showToast(message){
-
-    const toast =
-        document.getElementById(
-            "toast"
-        );
-
-    toast.textContent =
-        message;
-
-    toast.classList.add("show");
-
-    clearTimeout(toastTimer);
-
-    toastTimer =
-        setTimeout(
-            ()=>{
-                toast.classList.remove(
-                    "show"
-                );
-            },
-            2600
-        );
-}
-
-/* ============================================================
-   GLOBAL SECOND LOOP
-   ============================================================ */
-
-setInterval(()=>{
-
-    /*
-       Check whether the minute changed.
-    */
-
-    checkMinuteChange();
-
-    /*
-       Settle markets whose exact end time passed.
-    */
-
-    settleExpiredMarkets();
-
-    /*
-       Update every market once per second.
-    */
-
-    COINS.forEach(
-        coin=>{
-            updateCoinCard(coin);
-        }
-    );
-
-    /*
-       If bet modal is open, recalculate
-       the current YES/NO price every second.
-    */
-
-    if(
-        document
-        .getElementById("betModal")
-        .classList.contains("show")
-    ){
-
-        updateCalculation();
-    }
-
-},1000);
-
-/* ============================================================
-   PERIODIC REST FALLBACK
-   ============================================================ */
-
-setInterval(()=>{
-
-    COINS.forEach(
-        coin=>{
-
-            /*
-               WebSocket normally supplies the price.
-               REST gives a fallback/synchronization.
-            */
-
-            if(
-                !wsConnections[
-                    coin.symbol.toLowerCase()
-                ]
-            ){
-
-                fetchPrice(coin);
-            }
-
-        }
-    );
-
-},5000);
-
-/* ============================================================
-   INITIALIZATION
-   ============================================================ */
-
-async function init(){
-
-    await syncServerTime();
-
-    renderMarkets();
-
-    renderHistory();
-
-    renderPortfolio();
-
-    /*
-       Connect live Binance streams.
-    */
-
-    COINS.forEach(
-        coin=>{
-            connectPriceStream(coin);
-        }
-    );
-
-    /*
-       Initial REST prices.
-    */
-
-    await Promise.all(
-        COINS.map(
-            coin=>fetchPrice(coin)
-        )
-    );
-
-    /*
-       Make sure every market has
-       its starting price.
-    */
-
-    COINS.forEach(
-        coin=>{
-
-            const market =
-                ensureMarket(
-                    coin.symbol
-                );
-
-            if(
-                market.startPrice === null &&
-                Number.isFinite(
-                    prices[coin.symbol]
-                )
-            ){
-
-                market.startPrice =
-                    prices[coin.symbol];
-
-                saveState();
-            }
-        }
-    );
-
-    lastMinute =
-        getMinuteStart();
-
-    updateBalanceUI();
-}
-
-init();
-
-/* ============================================================
-   CLOSE MODALS WHEN BACKGROUND IS CLICKED
-   ============================================================ */
-
-document.getElementById(
-    "betModal"
-).addEventListener(
-    "click",
-    function(e){
-
-        if(e.target === this){
-            closeBetModal();
-        }
-
-    }
-);
-
-document.getElementById(
-    "balanceModal"
-).addEventListener(
-    "click",
-    function(e){
-
-        if(e.target === this){
-            closeBalanceModal();
-        }
-
-    }
-);
-
-/* ============================================================
-   ENTER KEY
-   ============================================================ */
-
-document.getElementById(
-    "betAmount"
-).addEventListener(
-    "keydown",
-    function(e){
-
-        if(e.key === "Enter"){
-            confirmBet();
-        }
-
-    }
-);
-
-</script>
+    </section>
+
+    <!-- Bottom Navigation Bar -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#050B14]/95 backdrop-blur border-t border-blue-950 flex justify-around py-3 text-xs text-gray-400 z-50">
+        <a href="#" class="flex flex-col items-center text-cyan-400">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[10px]">Home</span>
+        </a>
+        <a href="#" class="flex flex-col items-center hover:text-white">
+            <i class="fa-solid fa-chart-line text-lg"></i>
+            <span class="text-[10px]">Markets</span>
+        </a>
+        <a href="#" class="flex flex-col items-center hover:text-white">
+            <i class="fa-solid fa-right-left text-lg"></i>
+            <span class="text-[10px]">Trade</span>
+        </a>
+        <a href="#" class="flex flex-col items-center hover:text-white">
+            <i class="fa-solid fa-wallet text-lg"></i>
+            <span class="text-[10px]">Wallet</span>
+        </a>
+        <a href="#" class="flex flex-col items-center hover:text-white">
+            <i class="fa-solid fa-user text-lg"></i>
+            <span class="text-[10px]">Profile</span>
+        </a>
+    </nav>
 
 </body>
 </html>

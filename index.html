@@ -96,7 +96,7 @@
     <!-- Mobile Device Container Wrapper -->
     <div class="ios-screen max-w-full bg-[#05070D] sm:rounded-[48px] sm:border-[10px] sm:border-slate-800 shadow-2xl flex flex-col relative overflow-hidden sm:glow-cyan">
 
-        <!-- Header: Sawirkaaga cusub ayaa lagu dhex daray -->
+        <!-- Header -->
         <header class="px-5 pt-3 pb-2 bg-[#05070D]/90 backdrop-blur-xl border-b border-slate-800/60 sticky top-0 z-30 flex items-center justify-between">
             <div class="flex items-center gap-2">
                 <div class="w-8 h-8 rounded-xl overflow-hidden border border-slate-700/80 bg-slate-900 flex items-center justify-center shadow-md">
@@ -246,6 +246,7 @@
                         </div>
                     </div>
 
+                    <!-- Pay Asset Box (SOL - Wuxuu ku suganyahay ikoonkii SOL) -->
                     <div class="bg-black/60 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
                         <div class="flex justify-between text-[10px] text-slate-400">
                             <span>You Pay</span>
@@ -254,7 +255,7 @@
                         <div class="flex items-center gap-2">
                             <input type="number" id="swapFromInput" value="1.0" oninput="recalculateSwap()" class="bg-transparent w-full text-2xl font-mono font-black text-white focus:outline-none" step="0.1">
                             <button onclick="openTokenSelector('from')" id="swapFromTokenBtn" class="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white">
-                                    <i class="fa-solid fa-bolt text-purple-400"></i>
+                                <i class="fa-solid fa-bolt text-purple-400"></i>
                                 <span>SOL</span>
                                 <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                             </button>
@@ -267,6 +268,7 @@
                         </button>
                     </div>
 
+                    <!-- Receive Asset Box (SCM - Hadda waxaa ku jira SAWIRKAAGA) -->
                     <div class="bg-black/60 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
                         <div class="flex justify-between text-[10px] text-slate-400">
                             <span>You Receive (Est.)</span>
@@ -275,7 +277,7 @@
                         <div class="flex items-center gap-2">
                             <input type="text" id="swapToInput" readonly value="148.50" class="bg-transparent w-full text-2xl font-mono font-black text-accent-cyan focus:outline-none">
                             <button onclick="openTokenSelector('to')" id="swapToTokenBtn" class="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white">
-                                <i class="fa-solid fa-cube text-accent-cyan"></i>
+                                <img src="https://i.ibb.co/j92qw0s5/681969f2bd2da9d1c94984orig-b43dd654.webp" class="w-4 h-4 rounded-md object-cover">
                                 <span>SCM</span>
                                 <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                             </button>

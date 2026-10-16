@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en" class="dark h-full">
 <head>
@@ -77,6 +78,7 @@
             from { opacity: 0; transform: translateY(6px); }
             to { opacity: 1; transform: translateY(0); }
         }
+        /* Mobile device mock container styling */
         .ios-screen {
             height: 844px;
             width: 390px;
@@ -96,11 +98,11 @@
     <!-- Mobile Device Container Wrapper -->
     <div class="ios-screen max-w-full bg-[#05070D] sm:rounded-[48px] sm:border-[10px] sm:border-slate-800 shadow-2xl flex flex-col relative overflow-hidden sm:glow-cyan">
 
-        <!-- Header -->
+        <!-- Standard iOS Status Bar & Header -->
         <header class="px-5 pt-3 pb-2 bg-[#05070D]/90 backdrop-blur-xl border-b border-slate-800/60 sticky top-0 z-30 flex items-center justify-between">
             <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-xl overflow-hidden border border-slate-700/80 bg-slate-900 flex items-center justify-center shadow-md">
-                    <img src="https://i.ibb.co/j92qw0s5/681969f2bd2da9d1c94984orig-b43dd654.webp" alt="SCM Logo" class="w-full h-full object-cover">
+                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent-cyan via-brand-500 to-accent-neon flex items-center justify-center text-slate-950 font-black text-sm shadow-md">
+                    <i class="fa-solid fa-cube"></i>
                 </div>
                 <div>
                     <div class="flex items-center gap-1.5">
@@ -110,7 +112,7 @@
                 </div>
             </div>
 
-            <!-- Network Switcher -->
+            <!-- Network Switcher & Quick Actions -->
             <div class="flex items-center gap-2">
                 <button onclick="toggleNetwork()" id="netToggleBtn" class="px-2.5 py-1 rounded-full bg-slate-900 border border-slate-700/80 text-[10px] font-mono text-accent-cyan flex items-center gap-1.5 hover:bg-slate-800 transition">
                     <span class="w-1.5 h-1.5 rounded-full bg-accent-neon animate-pulse"></span>
@@ -126,7 +128,7 @@
         <!-- Main Dynamic Scrollable Tab Content Container -->
         <main class="flex-1 overflow-y-auto custom-scrollbar p-4 pb-24 space-y-4">
 
-            <!-- TAB 1: HOME -->
+            <!-- ================= TAB 1: HOME ================= -->
             <div id="tab-home" class="tab-page active space-y-4">
                 
                 <!-- Main Balance Card -->
@@ -142,6 +144,7 @@
                         <h2 class="text-3xl font-black font-mono text-white tracking-tight" id="homeTotalBalance">$48,250.80</h2>
                     </div>
 
+                    <!-- Wallet Address Copy Pill -->
                     <div class="flex items-center justify-between bg-black/50 border border-slate-800 rounded-xl px-3 py-1.5 mb-4 text-xs">
                         <div class="flex items-center gap-2 font-mono text-slate-300">
                             <i class="fa-solid fa-wallet text-accent-cyan text-[11px]"></i>
@@ -152,6 +155,7 @@
                         </button>
                     </div>
 
+                    <!-- Main Quick Action Buttons -->
                     <div class="grid grid-cols-4 gap-2">
                         <button onclick="openModal('sendModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-accent-cyan hover:bg-cyan-400 text-slate-950 font-extrabold transition shadow-lg shadow-accent-cyan/20 active:scale-95">
                             <i class="fa-solid fa-paper-plane text-xs mb-1"></i>
@@ -172,7 +176,7 @@
                     </div>
                 </div>
 
-                <!-- Provenance Smart Badge -->
+                <!-- Active Provenance Smart Badge -->
                 <div onclick="switchTab('discover'); openLotDetails('SCM-8942-AGRI');" class="glass-card rounded-2xl p-3 border border-accent-neon/30 hover:border-accent-neon/60 transition cursor-pointer flex items-center justify-between">
                     <div class="flex items-center gap-2.5">
                         <div class="w-8 h-8 rounded-xl bg-accent-neon/15 text-accent-neon flex items-center justify-center text-sm">
@@ -189,35 +193,41 @@
                     <i class="fa-solid fa-chevron-right text-xs text-slate-500"></i>
                 </div>
 
-                <!-- Multi-Chain Asset Allocation -->
+                <!-- Multi-Chain Asset Allocation Breakdown -->
                 <div>
                     <div class="flex items-center justify-between mb-2 px-1">
                         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Multi-Chain Assets</h3>
                         <span class="text-[10px] text-slate-500 font-mono">4 Networks</span>
                     </div>
 
-                    <div class="space-y-2" id="homeAssetList"></div>
+                    <div class="space-y-2" id="homeAssetList">
+                        <!-- Rendered by JavaScript -->
+                    </div>
                 </div>
 
-                <!-- Activity -->
+                <!-- Recent Wallet Transactions -->
                 <div>
                     <div class="flex items-center justify-between mb-2 px-1">
                         <h3 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono">Recent Activity</h3>
                         <span class="text-[10px] text-accent-cyan cursor-pointer">View All</span>
                     </div>
-                    <div class="space-y-2" id="homeTxList"></div>
+                    <div class="space-y-2" id="homeTxList">
+                        <!-- Rendered by JavaScript -->
+                    </div>
                 </div>
 
             </div>
 
-            <!-- TAB 2: MARKETS -->
+            <!-- ================= TAB 2: MARKETS ================= -->
             <div id="tab-markets" class="tab-page space-y-3">
+                <!-- Search & Filters -->
                 <div class="space-y-2">
                     <div class="relative">
                         <input type="text" id="marketSearchInput" oninput="filterMarketList()" placeholder="Search coin name or ticker symbol..." class="w-full bg-black/60 border border-slate-800 rounded-2xl px-3.5 py-2.5 text-xs text-white focus:outline-none focus:border-accent-cyan pl-9 font-mono">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-slate-500"></i>
                     </div>
 
+                    <!-- Category Filter Chips -->
                     <div class="flex gap-1.5 overflow-x-auto custom-scrollbar pb-1 text-[10px] font-mono">
                         <button onclick="setMarketCategory('all')" class="m-cat-chip px-3 py-1 rounded-xl bg-accent-cyan text-slate-950 font-bold whitespace-nowrap">All</button>
                         <button onclick="setMarketCategory('layer1')" class="m-cat-chip px-3 py-1 rounded-xl bg-slate-900 text-slate-400 border border-slate-800 whitespace-nowrap">Layer 1</button>
@@ -227,10 +237,13 @@
                     </div>
                 </div>
 
-                <div class="space-y-2" id="marketsContainer"></div>
+                <!-- Markets List -->
+                <div class="space-y-2" id="marketsContainer">
+                    <!-- Dynamic rendering by JS -->
+                </div>
             </div>
 
-            <!-- TAB 3: SWAP -->
+            <!-- ================= TAB 3: SWAP ================= -->
             <div id="tab-swap" class="tab-page space-y-4">
                 <div class="glass-card rounded-3xl p-5 border border-slate-800/80 space-y-4">
                     <div class="flex items-center justify-between">
@@ -238,6 +251,7 @@
                             <i class="fa-solid fa-arrows-rotate text-accent-cyan"></i>
                             <span>SCM Aggregator Swap</span>
                         </h3>
+                        <!-- Slippage Selector -->
                         <div class="flex items-center gap-1 bg-black/50 p-1 rounded-xl border border-slate-800 text-[9px] font-mono">
                             <span class="text-slate-500 px-1">Slippage:</span>
                             <button onclick="setSlippage('0.1')" class="slip-btn px-1.5 py-0.5 rounded bg-slate-800 text-slate-300">0.1%</button>
@@ -246,7 +260,7 @@
                         </div>
                     </div>
 
-                    <!-- Pay Asset Box (SOL - Wuxuu ku suganyahay ikoonkii SOL) -->
+                    <!-- Pay Asset Box -->
                     <div class="bg-black/60 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
                         <div class="flex justify-between text-[10px] text-slate-400">
                             <span>You Pay</span>
@@ -255,20 +269,21 @@
                         <div class="flex items-center gap-2">
                             <input type="number" id="swapFromInput" value="1.0" oninput="recalculateSwap()" class="bg-transparent w-full text-2xl font-mono font-black text-white focus:outline-none" step="0.1">
                             <button onclick="openTokenSelector('from')" id="swapFromTokenBtn" class="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white">
-                                <img src="https://i.ibb.co/mVWYNQV2/36461b5481864997babde108c8ecc6f4.png" class="w-4 h-4 rounded-md object-cover">
+                                <i class="fa-solid fa-bolt text-purple-400"></i>
                                 <span>SOL</span>
                                 <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                             </button>
                         </div>
                     </div>
 
+                    <!-- Flip Swap Switch -->
                     <div class="flex justify-center -my-2 relative z-10">
                         <button onclick="switchSwapTokens()" class="w-8 h-8 rounded-full bg-slate-900 border border-slate-700 text-accent-cyan flex items-center justify-center shadow-lg active:scale-95 transition">
                             <i class="fa-solid fa-arrow-down-up-across-line text-xs"></i>
                         </button>
                     </div>
 
-                    <!-- Receive Asset Box (SCM - Hadda waxaa ku jira SAWIRKAAGA) -->
+                    <!-- Receive Asset Box -->
                     <div class="bg-black/60 border border-slate-800 rounded-2xl p-3.5 space-y-1.5">
                         <div class="flex justify-between text-[10px] text-slate-400">
                             <span>You Receive (Est.)</span>
@@ -277,13 +292,14 @@
                         <div class="flex items-center gap-2">
                             <input type="text" id="swapToInput" readonly value="148.50" class="bg-transparent w-full text-2xl font-mono font-black text-accent-cyan focus:outline-none">
                             <button onclick="openTokenSelector('to')" id="swapToTokenBtn" class="flex items-center gap-1.5 bg-slate-900 hover:bg-slate-800 border border-slate-700/80 rounded-xl px-2.5 py-1.5 text-xs font-bold text-white">
-                                <img src="https://i.ibb.co/j92qw0s5/681969f2bd2da9d1c94984orig-b43dd654.webp" class="w-4 h-4 rounded-md object-cover">
+                                <i class="fa-solid fa-cube text-accent-cyan"></i>
                                 <span>SCM</span>
                                 <i class="fa-solid fa-chevron-down text-[9px] text-slate-400"></i>
                             </button>
                         </div>
                     </div>
 
+                    <!-- Trade Breakdown Details -->
                     <div class="bg-black/40 border border-slate-800/80 p-3 rounded-xl text-[10px] font-mono space-y-1 text-slate-400">
                         <div class="flex justify-between">
                             <span>Exchange Rate:</span>
@@ -299,15 +315,18 @@
                         </div>
                     </div>
 
+                    <!-- Execute Swap Button -->
                     <button onclick="executeSwapTrade()" class="w-full py-3.5 bg-gradient-to-r from-accent-cyan via-brand-500 to-accent-neon text-slate-950 font-black rounded-2xl shadow-lg shadow-accent-cyan/20 active:scale-95 transition">
                         1-Tap Execute Swap
                     </button>
                 </div>
             </div>
 
-            <!-- TAB 4: PERPS -->
+            <!-- ================= TAB 4: PERPS ================= -->
             <div id="tab-perps" class="tab-page space-y-3">
                 <div class="glass-card rounded-3xl p-4 border border-slate-800 space-y-3">
+                    
+                    <!-- Market Pair Selector & Live Price -->
                     <div class="flex items-center justify-between border-b border-slate-800/80 pb-3">
                         <div class="flex items-center gap-2">
                             <select id="perpPairSelector" onchange="updatePerpPair()" class="bg-slate-900 text-white font-bold text-xs rounded-xl px-2.5 py-1.5 border border-slate-700 font-mono focus:outline-none">
@@ -323,11 +342,13 @@
                         </div>
                     </div>
 
+                    <!-- Order Side Switcher (Long / Short) -->
                     <div class="grid grid-cols-2 gap-2 p-1 bg-black/60 rounded-2xl border border-slate-800 font-bold text-xs">
                         <button onclick="setPerpSide('LONG')" id="btnPerpLong" class="py-2 rounded-xl bg-accent-neon text-slate-950 font-black">LONG</button>
                         <button onclick="setPerpSide('SHORT')" id="btnPerpShort" class="py-2 rounded-xl bg-slate-900 text-slate-400">SHORT</button>
                     </div>
 
+                    <!-- Dynamic Leverage Slider (Up to 100x) -->
                     <div class="space-y-1 bg-black/40 p-3 rounded-2xl border border-slate-800">
                         <div class="flex justify-between text-[10px] font-mono">
                             <span class="text-slate-400">Leverage:</span>
@@ -343,6 +364,7 @@
                         </div>
                     </div>
 
+                    <!-- Margin & TP/SL Input -->
                     <div class="grid grid-cols-2 gap-2 text-xs">
                         <div>
                             <label class="text-[10px] text-slate-400 block mb-1 font-mono">Margin (USDT)</label>
@@ -359,14 +381,19 @@
                     </button>
                 </div>
 
+                <!-- Active Perpetual Positions -->
                 <div>
                     <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono mb-2 px-1">Open Positions</h4>
-                    <div class="space-y-2" id="perpPositionsContainer"></div>
+                    <div class="space-y-2" id="perpPositionsContainer">
+                        <!-- Dynamic position list -->
+                    </div>
                 </div>
             </div>
 
-            <!-- TAB 5: DISCOVER -->
+            <!-- ================= TAB 5: DISCOVER ================= -->
             <div id="tab-discover" class="tab-page space-y-4">
+                
+                <!-- Supply Chain Lot ID Tracking Scanner -->
                 <div class="glass-card rounded-3xl p-4 border border-slate-800 space-y-3">
                     <div class="flex items-center gap-2">
                         <div class="w-8 h-8 rounded-xl bg-accent-neon/15 text-accent-neon flex items-center justify-center text-sm">
@@ -383,9 +410,12 @@
                         <button onclick="lookupLotId()" class="px-3.5 py-2 bg-accent-neon text-slate-950 font-bold text-xs rounded-xl active:scale-95">Verify</button>
                     </div>
 
-                    <div id="lotResultBox" class="bg-black/50 border border-slate-800/80 rounded-2xl p-3 text-xs space-y-2"></div>
+                    <div id="lotResultBox" class="bg-black/50 border border-slate-800/80 rounded-2xl p-3 text-xs space-y-2">
+                        <!-- Populated by JS -->
+                    </div>
                 </div>
 
+                <!-- Staking APY Hubs -->
                 <div>
                     <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono mb-2 px-1">Yield Farming & Vaults</h4>
                     <div class="grid grid-cols-2 gap-2">
@@ -409,6 +439,7 @@
                     </div>
                 </div>
 
+                <!-- Crypto & Logistics News Feed -->
                 <div>
                     <h4 class="text-xs font-bold text-slate-300 uppercase tracking-wider font-mono mb-2 px-1">Ecosystem Intelligence</h4>
                     <div class="space-y-2">
@@ -428,7 +459,7 @@
 
         </main>
 
-        <!-- Navigation Bar -->
+        <!-- Standard iOS Bottom Navigation Tab Bar -->
         <nav class="absolute bottom-0 left-0 right-0 h-16 bg-[#05070D]/95 border-t border-slate-800/80 backdrop-blur-xl flex items-center justify-around z-40 px-2">
             <button onclick="switchTab('home')" id="nav-home" class="nav-tab flex flex-col items-center justify-center gap-1 text-accent-cyan">
                 <i class="fa-solid fa-wallet text-base"></i>
@@ -452,11 +483,12 @@
             </button>
         </nav>
 
+        <!-- Standard iOS Home Indicator Line -->
         <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-700/60 rounded-full z-50 pointer-events-none"></div>
 
     </div>
 
-    <!-- MODALS -->
+    <!-- SEND MODAL -->
     <div id="sendModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4">
         <div class="glass-card p-6 rounded-3xl max-w-sm w-full border border-slate-800 shadow-2xl relative">
             <button onclick="closeModal('sendModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -498,6 +530,7 @@
         </div>
     </div>
 
+    <!-- RECEIVE MODAL -->
     <div id="receiveModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4">
         <div class="glass-card p-6 rounded-3xl max-w-sm w-full border border-slate-800 shadow-2xl relative text-center">
             <button onclick="closeModal('receiveModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -519,6 +552,7 @@
         </div>
     </div>
 
+    <!-- BUY MODAL -->
     <div id="buyModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md hidden p-4">
         <div class="glass-card p-6 rounded-3xl max-w-sm w-full border border-slate-800 shadow-2xl relative">
             <button onclick="closeModal('buyModal')" class="absolute top-4 right-4 text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
@@ -546,7 +580,7 @@
         </div>
     </div>
 
-    <!-- Toast Notification -->
+    <!-- Toast Notification Overlay -->
     <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 transform -translate-y-4">
         <div id="toastInner" class="glass-card px-4 py-2.5 rounded-2xl border border-accent-cyan/50 text-xs font-bold text-white shadow-2xl flex items-center gap-2">
             <i class="fa-solid fa-circle-check text-accent-cyan" id="toastIcon"></i>
@@ -554,24 +588,23 @@
         </div>
     </div>
 
-    <!-- JS Application Engine -->
+    <!-- SCRIPT APPLICATION ENGINE -->
     <script>
-        const myCustomLogoUrl = "https://i.ibb.co/j92qw0s5/681969f2bd2da9d1c94984orig-b43dd654.webp";
-
-const cryptoState = {
-    SOL: { name: 'Solana', category: 'layer1', balance: 42, rate: 148.50, change: '+8.40%', symbol: 'SOL', color: '#9945FF', icon: 'fa-bolt' },
-    ETH: { name: 'Ethereum', category: 'layer1', balance: 4.25, rate: 3450.00, change: '+1.85%', symbol: 'ETH', color: '#627EEA', icon: 'fa-ethereum' },
-    BTC: { name: 'Bitcoin', category: 'layer1', balance: 0.285, rate: 65400.00, change: '+3.12%', symbol: 'BTC', color: '#F7931A', icon: 'fa-bitcoin' },
-    SCM: { name: 'SCM Token', category: 'scm', balance: 35000, rate: 1.00, change: '+2.40%', symbol: 'SCM', color: '#00FF9D', icon: 'fa-cube' },
-    NEAR: { name: 'NEAR Protocol', category: 'layer1', balance: 150, rate: 5.20, change: '+4.10%', symbol: 'NEAR', color: '#000000', icon: 'fa-circle' },
-    AVAX: { name: 'Avalanche', category: 'layer1', balance: 25, rate: 28.40, change: '-0.50%', symbol: 'AVAX', color: '#E84142', icon: 'fa-triangle' }
-};
-
+        // Global Crypto Market State Data
+        const cryptoState = {
+            SOL: { name: 'Solana', category: 'layer1', balance: 42.00, rate: 148.50, change: '+8.40%', symbol: 'SOL', color: '#9945FF', icon: 'fa-bolt' },
+            ETH: { name: 'Ethereum', category: 'layer1', balance: 4.25, rate: 3450.00, change: '+1.85%', symbol: 'ETH', color: '#627EEA', icon: 'fa-ethereum' },
+            BTC: { name: 'Bitcoin', category: 'layer1', balance: 0.285, rate: 65400.00, change: '+3.12%', symbol: 'BTC', color: '#F7931A', icon: 'fa-bitcoin' },
+            SCM: { name: 'SCM Token', category: 'scm', balance: 35000.00, rate: 1.00, change: '+2.40%', symbol: 'SCM', color: '#00FF9D', icon: 'fa-cube' },
+            NEAR: { name: 'NEAR Protocol', category: 'layer1', balance: 180.00, rate: 5.20, change: '-0.45%', symbol: 'NEAR', color: '#000000', icon: 'fa-globe' },
+            AVAX: { name: 'Avalanche', category: 'layer1', balance: 30.00, rate: 28.40, change: '+4.10%', symbol: 'AVAX', color: '#E84142', icon: 'fa-mountain' }
+        };
 
         let selectedMarketCat = 'all';
         let currentSlippage = '0.5';
         let isMainnet = true;
 
+        // Perpetual Futures State
         let perpSide = 'LONG';
         let perpLeverage = 20;
         let perpPositions = [
@@ -586,38 +619,53 @@ const cryptoState = {
             lookupLotId();
             initQrGenerator();
         });
-function renderHomeHoldings() {
-    const holdingsContainer = document.getElementById('homeHoldingsList');
-    if (!holdingsContainer) return;
 
-    holdingsContainer.innerHTML = Object.entries(cryptoState).map(([key, coin]) => {
-        
-        const iconContent = (key === 'SCM') 
-            ? `<img src="${myCustomLogoUrl}" class="w-full h-full object-cover rounded-xl">`
-            : `<i class="fa-solid ${coin.icon}"></i>`;
+        // Tab Navigation Router
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('text-accent-cyan');
+                el.classList.add('text-slate-500');
+            });
 
-        return `
-            <div class="flex items-center justify-between p-3 bg-slate-800/40 border border-slate-700/50 rounded-2xl mb-2">
-                <div class="flex items-center gap-3">
-                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center overflow-hidden">
-                        ${iconContent}
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if(activeNav) {
+                activeNav.classList.remove('text-slate-500');
+                activeNav.classList.add('text-accent-cyan');
+            }
+        }
+
+        // Home View Assets Renderer
+        function renderHomeHoldings() {
+            const container = document.getElementById('homeAssetList');
+            container.innerHTML = '';
+
+            for (let key in cryptoState) {
+                if(key === 'NEAR' || key === 'AVAX') continue; // Top 4 for Home
+                const coin = cryptoState[key];
+                const usdVal = coin.balance * coin.rate;
+
+                const item = document.createElement('div');
+                item.className = "glass-card p-3 rounded-2xl border border-slate-800/80 flex items-center justify-between";
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm" style="background: ${coin.color}18; color: ${coin.color}">
+                            <i class="fa-solid ${coin.icon}"></i>
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xs text-white">${coin.name}</h4>
+                            <span class="text-[10px] text-slate-400 font-mono">${coin.balance} ${coin.symbol}</span>
+                        </div>
                     </div>
-                    <div>
-                        <div class="font-semibold text-slate-100">${coin.name}</div>
-                        <div class="text-xs text-slate-400">${coin.balance} ${coin.symbol}</div>
+                    <div class="text-right font-mono">
+                        <span class="text-xs font-bold text-white block">$${usdVal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
+                        <span class="text-[9px] text-accent-neon">${coin.change}</span>
                     </div>
-                </div>
-                <div class="text-right">
-                    <div class="font-bold text-slate-100">$${(coin.balance * coin.rate).toLocaleString()}</div>
-                    <div class="text-xs text-emerald-400">${coin.change}</div>
-                </div>
-            </div>
-        `;
-    }).join('');
-}
-
-}
-
+                `;
+                container.appendChild(item);
+            }
+        }
 
         function renderHomeTxs() {
             const container = document.getElementById('homeTxList');
@@ -635,6 +683,7 @@ function renderHomeHoldings() {
             `;
         }
 
+        // Markets View Renderer
         function renderMarketList() {
             const container = document.getElementById('marketsContainer');
             container.innerHTML = '';
@@ -649,15 +698,10 @@ function renderHomeHoldings() {
 
                 const card = document.createElement('div');
                 card.className = "glass-card p-3 rounded-2xl border border-slate-800/80 flex items-center justify-between";
-                
-                const iconContent = (key === 'SCM') 
-                    ? `<img src="${myCustomLogoUrl}" class="w-full h-full object-cover rounded-xl">`
-                    : `<i class="fa-solid ${coin.icon}"></i>`;
-
                 card.innerHTML = `
                     <div class="flex items-center gap-3">
                         <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm" style="background: ${coin.color}18; color: ${coin.color}">
-                            ${iconContent}
+                            <i class="fa-solid ${coin.icon}"></i>
                         </div>
                         <div>
                             <h4 class="text-xs font-bold text-white">${coin.name}</h4>
@@ -684,6 +728,7 @@ function renderHomeHoldings() {
             renderMarketList();
         }
 
+        // DEX Swap Recalculations
         function recalculateSwap() {
             const val = parseFloat(document.getElementById('swapFromInput').value) || 0;
             const solRate = cryptoState['SOL'].rate;
@@ -706,6 +751,7 @@ function renderHomeHoldings() {
             showToast("Swap Order Executed Successfully!", "success");
         }
 
+        // Perps Trading Engine
         function setPerpSide(side) {
             perpSide = side;
             const l = document.getElementById('btnPerpLong');
@@ -780,6 +826,7 @@ function renderHomeHoldings() {
             });
         }
 
+        // Supply Chain Discover Verification
         function lookupLotId() {
             const id = document.getElementById('lotIdSearchInput').value || 'SCM-8942-AGRI';
             const res = document.getElementById('lotResultBox');
@@ -801,6 +848,7 @@ function renderHomeHoldings() {
             lookupLotId();
         }
 
+        // QR Generator
         function initQrGenerator() {
             new QRCode(document.getElementById('receiveQrContainer'), {
                 text: "0x9A4F39210F94A23412395892183SCM",
@@ -809,6 +857,7 @@ function renderHomeHoldings() {
             });
         }
 
+        // Utility & Modals
         function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
         function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
 
@@ -850,3 +899,5 @@ function renderHomeHoldings() {
     </script>
 </body>
 </html>
+```
+Codekaan kala jejebi iisharax midwalba waxa uu qabanaayo

@@ -608,14 +608,18 @@ const cryptoState = {
 
     holdingsContainer.innerHTML = Object.entries(cryptoState).map(([key, coin]) => {
         
-        const iconContent = (key === 'SCM') 
-            ? `<img src="${myCustomLogoUrl}" class="w-full h-full object-cover rounded-xl">`
-            : (key === 'SOL')
-            ? `<img src="${solanaLogoUrl}" class="w-full h-full object-cover rounded-xl">`
-            : `<i class="fa-solid ${coin.icon}"></i>`;
+        // Doorashada Logo-ga: SCM ama SOL
+        let iconContent;
+        if (key === 'SCM') {
+            iconContent = `<img src="${myCustomLogoUrl}" class="w-full h-full object-cover rounded-xl">`;
+        } else if (key === 'SOL') {
+            iconContent = `<img src="https://i.ibb.co/Z1tHS6rm/36461b5481864997babde108c8ecc6f4.png" class="w-full h-full object-cover rounded-xl">`;
+        } else {
+            iconContent = `<i class="fa-solid ${coin.icon}"></i>`;
+        }
 
         return `
-            <div class="flex items-center justify-between p-3 bg-slate-800/40 border border-slate-700/50 rounded-2xl">
+            <div class="flex items-center justify-between p-3 bg-slate-800/40 border border-slate-700/50 rounded-2xl mb-2">
                 <div class="flex items-center gap-3">
                     <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center overflow-hidden">
                         ${iconContent}

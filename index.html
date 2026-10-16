@@ -166,4 +166,277 @@
                     </div>
                 </div>
 
-                <!-- Active Provenance Smart
+                <!-- Active Provenance Smart Badge -->
+                <div onclick="switchTab('discover'); lookupLotId();" class="glass-card rounded-2xl p-3 border border-accent-neon/30 hover:border-accent-neon/60 transition cursor-pointer flex items-center justify-between">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl bg-accent-neon/15 text-accent-neon flex items-center justify-center text-sm">
+                            <i class="fa-solid fa-truck-ramp-box"></i>
+                        </div>
+                        <div>
+                            <div class="flex items-center gap-1.5">
+                                <span class="text-xs font-bold text-main">Supply Chain Badge</span>
+                                <span class="w-2 h-2 rounded-full bg-accent-neon"></span>
+                            </div>
+                            <p class="text-[10px] text-sub font-mono">Lot #SCM-8942-AGRI &bull; In Transit</p>
+                        </div>
+                    </div>
+                    <i class="fa-solid fa-chevron-right text-xs text-sub"></i>
+                </div>
+
+                <!-- Multi-Chain Asset Allocation Breakdown -->
+                <div>
+                    <div class="flex items-center justify-between mb-2 px-1">
+                        <h3 class="text-xs font-bold text-sub uppercase tracking-wider font-mono">Multi-Chain Assets</h3>
+                        <span class="text-[10px] text-sub font-mono">4 Networks</span>
+                    </div>
+
+                    <div class="space-y-2" id="homeAssetList">
+                        <!-- Rendered by JavaScript -->
+                    </div>
+                </div>
+
+                <!-- Recent Wallet Transactions -->
+                <div>
+                    <div class="flex items-center justify-between mb-2 px-1">
+                        <h3 class="text-xs font-bold text-sub uppercase tracking-wider font-mono">Recent Activity</h3>
+                        <span class="text-[10px] text-accent-cyan cursor-pointer">View All</span>
+                    </div>
+                    <div class="space-y-2" id="homeTxList">
+                        <!-- Rendered by JavaScript -->
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- ================= TAB 2: MARKETS ================= -->
+            <div id="tab-markets" class="tab-page space-y-3">
+                <div class="space-y-2">
+                    <div class="relative">
+                        <input type="text" id="marketSearchInput" oninput="filterMarketList()" placeholder="Search coin name or ticker symbol..." class="w-full bg-slate-800/10 border border-slate-500/20 rounded-2xl px-3.5 py-2.5 text-xs text-main focus:outline-none focus:border-accent-cyan pl-9 font-mono">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-sub"></i>
+                    </div>
+                </div>
+                <div class="space-y-2" id="marketsContainer"></div>
+            </div>
+
+            <!-- ================= TAB 3: SWAP ================= -->
+            <div id="tab-swap" class="tab-page space-y-4">
+                <div class="glass-card rounded-3xl p-5 space-y-4">
+                    <h3 class="text-xs font-bold text-main flex items-center gap-2 font-mono">
+                        <i class="fa-solid fa-arrows-rotate text-accent-cyan"></i>
+                        <span>SCM Aggregator Swap</span>
+                    </h3>
+                    <div class="bg-slate-800/10 border border-slate-500/20 rounded-2xl p-3.5 space-y-1.5">
+                        <div class="flex justify-between text-[10px] text-sub">
+                            <span>You Pay</span>
+                            <span class="font-mono">42.00 SOL</span>
+                        </div>
+                        <div class="flex items-center gap-2">
+                            <input type="number" value="1.0" class="bg-transparent w-full text-2xl font-mono font-black text-main focus:outline-none">
+                            <span class="text-xs font-bold text-main font-mono">SOL</span>
+                        </div>
+                    </div>
+                    <button onclick="showToast('Swap Executed!')" class="w-full py-3.5 bg-accent-cyan text-slate-950 font-black rounded-2xl shadow-lg active:scale-95 transition">
+                        Execute Swap
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= TAB 4: PERPS ================= -->
+            <div id="tab-perps" class="tab-page space-y-3">
+                <div class="glass-card rounded-3xl p-4 space-y-3">
+                    <span class="text-xs font-bold text-main">Perpetuals Futures Trading</span>
+                    <button onclick="showToast('Order Placed!')" class="w-full py-3 bg-accent-neon text-slate-950 font-black rounded-2xl">
+                        Open Long Position
+                    </button>
+                </div>
+            </div>
+
+            <!-- ================= TAB 5: DISCOVER ================= -->
+            <div id="tab-discover" class="tab-page space-y-4">
+                <div class="glass-card rounded-3xl p-4 space-y-3">
+                    <h3 class="text-xs font-bold text-main uppercase font-mono">Provenance Tracker</h3>
+                    <div id="lotResultBox" class="text-xs text-sub"></div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- Standard iOS Bottom Navigation Tab Bar -->
+        <nav class="absolute bottom-0 left-0 right-0 h-16 nav-bg border-t backdrop-blur-xl flex items-center justify-around z-40 px-2 transition-colors">
+            <button onclick="switchTab('home')" id="nav-home" class="nav-tab flex flex-col items-center justify-center gap-1 text-accent-cyan">
+                <i class="fa-solid fa-wallet text-base"></i>
+                <span class="text-[9px] font-bold">Home</span>
+            </button>
+            <button onclick="switchTab('markets')" id="nav-markets" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
+                <i class="fa-solid fa-chart-simple text-base"></i>
+                <span class="text-[9px] font-bold">Markets</span>
+            </button>
+            <button onclick="switchTab('swap')" id="nav-swap" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
+                <i class="fa-solid fa-arrows-rotate text-base"></i>
+                <span class="text-[9px] font-bold">Swap</span>
+            </button>
+            <button onclick="switchTab('perps')" id="nav-perps" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
+                <i class="fa-solid fa-chart-line text-base"></i>
+                <span class="text-[9px] font-bold">Perps</span>
+            </button>
+            <button onclick="switchTab('discover')" id="nav-discover" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
+                <i class="fa-solid fa-compass text-base"></i>
+                <span class="text-[9px] font-bold">Discover</span>
+            </button>
+        </nav>
+        <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-500/50 rounded-full z-50 pointer-events-none"></div>
+    </div>
+
+    <!-- Toast Notification Overlay -->
+    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 transform -translate-y-4">
+        <div id="toastInner" class="glass-card px-4 py-2.5 rounded-2xl border border-accent-cyan/50 text-xs font-bold text-main shadow-2xl flex items-center gap-2">
+            <i class="fa-solid fa-circle-check text-accent-cyan"></i>
+            <span id="toastMsg">Notification Message</span>
+        </div>
+    </div>
+
+    <!-- SCRIPT APPLICATION ENGINE -->
+    <script>
+        const cryptoState = {
+            SOL: { name: 'Solana', category: 'layer1', balance: 42.00, rate: 148.50, change: '+8.40%', symbol: 'SOL', color: '#9945FF', icon: 'fa-bolt', image: 'https://i.ibb.co/Z1Wk75jT/36461b5481864997babde108c8ecc6f4.png' },
+            ETH: { name: 'Ethereum', category: 'layer1', balance: 4.25, rate: 3450.00, change: '+1.85%', symbol: 'ETH', color: '#627EEA', icon: 'fa-ethereum', image: 'https://i.ibb.co/YBYBBPC3/683577d88381b80d27b57667-ethereum-price-predction-main.jpg' },
+            BTC: { name: 'Bitcoin', category: 'layer1', balance: 0.285, rate: 65400.00, change: '+3.12%', symbol: 'BTC', color: '#F7931A', icon: 'fa-bitcoin', image: 'https://i.ibb.co/S76xD2vV/giphy.gif' },
+            SCM: { name: 'SCM Token', category: 'scm', balance: 35000.00, rate: 1.00, change: '+2.40%', symbol: 'SCM', color: '#00FF9D', icon: 'fa-cube', image: 'https://i.ibb.co/Z1tQ0PDM/depositphotos-331197110-stock-illustration-somalia-sign-round-country-logo.webp' }
+        };
+
+        let isDarkMode = true;
+
+        document.addEventListener('DOMContentLoaded', () => {
+            renderHomeHoldings();
+            renderHomeTxs();
+            renderMarketList();
+            lookupLotId();
+        });
+
+        // Theme Toggle Function (#FEFBEA / Dark)
+        function toggleTheme() {
+            const html = document.getElementById('htmlApp');
+            const icon = document.getElementById('themeIcon');
+            
+            if (isDarkMode) {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                icon.classList.remove('fa-sun', 'text-yellow-400');
+                icon.classList.add('fa-moon', 'text-slate-700');
+                showToast("Mode-ka ku beddelo #FEFBEA", "info");
+            } else {
+                html.classList.remove('light');
+                html.classList.add('dark');
+                icon.classList.remove('fa-moon', 'text-slate-700');
+                icon.classList.add('fa-sun', 'text-yellow-400');
+                showToast("Beddelay Madow (Dark Mode)", "info");
+            }
+            isDarkMode = !isDarkMode;
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
+            document.querySelectorAll('.nav-tab').forEach(el => {
+                el.classList.remove('text-accent-cyan');
+                el.classList.add('text-sub');
+            });
+            document.getElementById(`tab-${tabId}`).classList.add('active');
+            const activeNav = document.getElementById(`nav-${tabId}`);
+            if(activeNav) {
+                activeNav.classList.remove('text-sub');
+                activeNav.classList.add('text-accent-cyan');
+            }
+        }
+
+        function renderHomeHoldings() {
+            const container = document.getElementById('homeAssetList');
+            container.innerHTML = '';
+            for (let key in cryptoState) {
+                const coin = cryptoState[key];
+                const usdVal = coin.balance * coin.rate;
+                const item = document.createElement('div');
+                item.className = "glass-card p-3 rounded-2xl flex items-center justify-between";
+                item.innerHTML = `
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm overflow-hidden" style="background: ${coin.color}18; color:${coin.color}">
+                            ${coin.image ? `<img src="${coin.image}" class="w-full h-full object-cover" alt="${coin.name}">` : `<i class="fa-solid ${coin.icon}"></i>`}
+                        </div>
+                        <div>
+                            <h4 class="font-bold text-xs text-main">${coin.name}</h4>
+                            <span class="text-[10px] text-sub font-mono">${coin.balance} ${coin.symbol}</span>
+                        </div>
+                    </div>
+                    <div class="text-right font-mono">
+                        <span class="text-xs font-bold text-main block">$${usdVal.toLocaleString('en-US', {minimumFractionDigits:2})}</span>
+                        <span class="text-[9px] text-accent-neon font-bold">${coin.change}</span>
+                    </div>
+                `;
+                container.appendChild(item);
+            }
+        }
+
+        function renderHomeTxs() {
+            const container = document.getElementById('homeTxList');
+            container.innerHTML = `
+                <div class="glass-card p-2.5 rounded-xl flex justify-between items-center text-xs">
+                    <div class="flex items-center gap-2">
+                        <i class="fa-solid fa-arrow-down-left text-accent-neon"></i>
+                        <div>
+                            <p class="font-bold text-main">Received SCM</p>
+                            <p class="text-[9px] text-sub">12 mins ago &bull; Lot #SCM-8942</p>
+                        </div>
+                    </div>
+                    <span class="font-mono font-bold text-accent-neon">+5,000 SCM</span>
+                </div>
+            `;
+        }
+
+        function renderMarketList() {
+            const container = document.getElementById('marketsContainer');
+            container.innerHTML = '';
+            for (let key in cryptoState) {
+                const coin = cryptoState[key];
+                const card = document.createElement('div');
+                card.className = "glass-card p-3 rounded-2xl flex items-center justify-between";
+                card.innerHTML = `
+                    <div class="flex items-center gap-3">
+                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm overflow-hidden">
+                            ${coin.image ? `<img src="${coin.image}" class="w-full h-full object-cover" alt="${coin.name}">` : `<i class="fa-solid ${coin.icon}"></i>`}
+                        </div>
+                        <div>
+                            <h4 class="text-xs font-bold text-main">${coin.name}</h4>
+                            <span class="text-[10px] text-sub font-mono">${coin.symbol}</span>
+                        </div>
+                    </div>
+                    <div class="text-right font-mono">
+                        <span class="text-xs font-bold text-main block">$${coin.rate.toLocaleString()}</span>
+                        <span class="text-[9px] font-bold text-accent-neon">${coin.change}</span>
+                    </div>
+                `;
+                container.appendChild(card);
+            }
+        }
+
+        function lookupLotId() {
+            const res = document.getElementById('lotResultBox');
+            res.innerHTML = `
+                <div class="flex justify-between items-center">
+                    <span class="font-bold text-main">SCM-8942-AGRI</span>
+                    <span class="text-[8px] bg-accent-neon/20 text-accent-neon px-2 py-0.5 rounded-full font-bold">VERIFIED</span>
+                </div>
+            `;
+        }
+
+        function copyWalletAddress() { showToast("Wallet Address Copied!"); }
+        function toggleNetwork() { showToast("Switched Network"); }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toast');
+            document.getElementById('toastMsg').innerText = msg;
+            toast.classList.remove('opacity-0', '-translate-y-4');
+            setTimeout(() => { toast.classList.add('opacity-0', '-translate-y-4'); }, 2500);
+        }
+    </script>
+</body>
+</html>

@@ -586,37 +586,15 @@ const cryptoState = {
             lookupLotId();
             initQrGenerator();
         });
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => {
-                el.classList.remove('text-accent-cyan');
-                el.classList.add('text-slate-500');
-            });
-
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            const activeNav = document.getElementById(`nav-${tabId}`);
-            if(activeNav) {
-                activeNav.classList.remove('text-slate-500');
-                activeNav.classList.add('text-accent-cyan');
-            }
-        }
-
-        function renderHomeHoldings() {
+function renderHomeHoldings() {
     const holdingsContainer = document.getElementById('homeHoldingsList');
     if (!holdingsContainer) return;
 
     holdingsContainer.innerHTML = Object.entries(cryptoState).map(([key, coin]) => {
         
-        // Doorashada Logo-ga: SCM ama SOL
-        let iconContent;
-        if (key === 'SCM') {
-            iconContent = `<img src="${myCustomLogoUrl}" class="w-full h-full object-cover rounded-xl">`;
-        } else if (key === 'SOL') {
-            iconContent = `<img src="https://i.ibb.co/Z1tHS6rm/36461b5481864997babde108c8ecc6f4.png" class="w-full h-full object-cover rounded-xl">`;
-        } else {
-            iconContent = `<i class="fa-solid ${coin.icon}"></i>`;
-        }
+        const iconContent = (key === 'SCM') 
+            ? `<img src="${myCustomLogoUrl}" class="w-full h-full object-cover rounded-xl">`
+            : `<i class="fa-solid ${coin.icon}"></i>`;
 
         return `
             <div class="flex items-center justify-between p-3 bg-slate-800/40 border border-slate-700/50 rounded-2xl mb-2">
@@ -636,6 +614,8 @@ const cryptoState = {
             </div>
         `;
     }).join('');
+}
+
 }
 
 

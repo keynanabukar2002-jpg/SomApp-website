@@ -43,6 +43,14 @@
             transition: background-color 0.3s, color 0.3s;
         }
 
+        /* Brightness Filter Wrapper */
+        #brightnessWrapper {
+            transition: filter 0.15s ease-out;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+
         /* Dark Mode Styles */
         html.dark body { background-color: #020408; color: #f1f5f9; }
         html.dark .app-bg { background-color: #05070D; }
@@ -84,208 +92,226 @@
     <!-- Mobile Device Container Wrapper -->
     <div class="ios-screen max-w-full app-bg sm:rounded-[48px] sm:border-[10px] sm:border-slate-800 shadow-2xl flex flex-col relative overflow-hidden transition-colors">
 
-        <!-- Standard iOS Status Bar & Header -->
-        <header class="px-5 pt-3 pb-2 header-bg backdrop-blur-xl border-b sticky top-0 z-30 flex items-center justify-between transition-colors">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent-cyan via-brand-500 to-accent-neon flex items-center justify-center text-slate-950 font-black text-sm shadow-md">
-                    <i class="fa-solid fa-cube"></i>
-                </div>
-                <div>
-                    <div class="flex items-center gap-1.5">
-                        <span class="font-extrabold text-sm tracking-wider text-main">SCM <span class="text-accent-cyan">WALLET</span></span>
-                        <span class="px-1.5 py-0.2 text-[8px] bg-accent-neon/20 border border-accent-neon/40 text-accent-neon rounded-md font-mono font-bold">V2.4</span>
+        <!-- Brightness Wrapper Element -->
+        <div id="brightnessWrapper">
+
+            <!-- Standard iOS Status Bar & Header -->
+            <header class="px-5 pt-3 pb-2 header-bg backdrop-blur-xl border-b sticky top-0 z-30 flex items-center justify-between transition-colors">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent-cyan via-brand-500 to-accent-neon flex items-center justify-center text-slate-950 font-black text-sm shadow-md">
+                        <i class="fa-solid fa-cube"></i>
                     </div>
-                </div>
-            </div>
-
-            <!-- Theme Toggle & Network Switcher -->
-            <div class="flex items-center gap-2">
-                <!-- DARK / LIGHT MODE SWITCH BUTTON -->
-                <button onclick="toggleTheme()" class="w-7 h-7 rounded-lg bg-slate-800/10 border border-slate-500/30 flex items-center justify-center text-accent-cyan hover:scale-105 transition" title="Beddel Midabka (Theme)">
-                    <i id="themeIcon" class="fa-solid fa-sun text-xs text-yellow-400"></i>
-                </button>
-
-                <button onclick="toggleNetwork()" id="netToggleBtn" class="px-2.5 py-1 rounded-full bg-slate-800/10 border border-slate-500/30 text-[10px] font-mono text-accent-cyan flex items-center gap-1.5 hover:opacity-80 transition">
-                    <span class="w-1.5 h-1.5 rounded-full bg-accent-neon animate-pulse"></span>
-                    <span id="netLabel">Mainnet</span>
-                    <i class="fa-solid fa-chevron-down text-[8px] text-slate-400"></i>
-                </button>
-            </div>
-        </header>
-
-        <!-- Main Dynamic Scrollable Tab Content Container -->
-        <main class="flex-1 overflow-y-auto custom-scrollbar p-4 pb-24 space-y-4">
-
-            <!-- ================= TAB 1: HOME ================= -->
-            <div id="tab-home" class="tab-page active space-y-4">
-                
-                <!-- Main Balance Card (SIDIISA AYAAMU U AHAANAYAAN - WAXBA MA ISBEDDELIN) -->
-                <div class="rounded-3xl p-5 relative overflow-hidden border border-accent-cyan/30 glow-cyan bg-cover bg-center bg-no-repeat shadow-xl" style="background-image: url('https://i.ibb.co/NnH77mtB/tony-twaine-comp-2-2.gif');">
-                    <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]"></div>
-
-                    <div class="relative z-10">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] font-mono uppercase tracking-wider text-slate-300 font-semibold">Total Net Worth</span>
-                            <span class="px-2 py-0.5 rounded-full text-[10px] bg-accent-neon/20 text-accent-neon border border-accent-neon/40 font-mono font-bold">+4.12% (24h)</span>
-                        </div>
-
-                        <div class="flex items-baseline gap-2 mb-3">
-                            <h2 class="text-3xl font-black font-mono text-white tracking-tight" id="homeTotalBalance">$48,250.80</h2>
-                        </div>
-
-                        <!-- Wallet Address Copy Pill -->
-                        <div class="flex items-center justify-between bg-black/60 border border-slate-700/80 rounded-xl px-3 py-1.5 mb-4 text-xs">
-                            <div class="flex items-center gap-2 font-mono text-slate-200">
-                                <i class="fa-solid fa-wallet text-accent-cyan text-[11px]"></i>
-                                <span id="homeWalletAddress">0x9A4F...7C21</span>
-                            </div>
-                            <button onclick="copyWalletAddress()" class="text-[10px] text-accent-cyan hover:underline font-bold flex items-center gap-1">
-                                <i class="fa-regular fa-copy"></i> Copy
-                            </button>
-                        </div>
-
-                        <!-- Main Quick Action Buttons -->
-                        <div class="grid grid-cols-4 gap-2">
-                            <button onclick="openModal('sendModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-accent-cyan hover:bg-cyan-400 text-slate-950 font-extrabold transition shadow-lg shadow-accent-cyan/20 active:scale-95">
-                                <i class="fa-solid fa-paper-plane text-xs mb-1"></i>
-                                <span class="text-[10px]">Send</span>
-                            </button>
-                            <button onclick="openModal('receiveModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
-                                <i class="fa-solid fa-qrcode text-accent-neon text-xs mb-1"></i>
-                                <span class="text-[10px]">Receive</span>
-                            </button>
-                            <button onclick="openModal('buyModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
-                                <i class="fa-solid fa-credit-card text-accent-purple text-xs mb-1"></i>
-                                <span class="text-[10px]">Buy</span>
-                            </button>
-                            <button onclick="switchTab('swap')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
-                                <i class="fa-solid fa-arrows-rotate text-yellow-400 text-xs mb-1"></i>
-                                <span class="text-[10px]">Swap</span>
-                            </button>
+                    <div>
+                        <div class="flex items-center gap-1.5">
+                            <span class="font-extrabold text-sm tracking-wider text-main">SCM <span class="text-accent-cyan">WALLET</span></span>
+                            <span class="px-1.5 py-0.2 text-[8px] bg-accent-neon/20 border border-accent-neon/40 text-accent-neon rounded-md font-mono font-bold">V2.4</span>
                         </div>
                     </div>
                 </div>
 
-                <!-- Active Provenance Smart Badge -->
-                <div onclick="switchTab('discover'); lookupLotId();" class="glass-card rounded-2xl p-3 border border-accent-neon/30 hover:border-accent-neon/60 transition cursor-pointer flex items-center justify-between">
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl bg-accent-neon/15 text-accent-neon flex items-center justify-center text-sm">
-                            <i class="fa-solid fa-truck-ramp-box"></i>
-                        </div>
-                        <div>
-                            <div class="flex items-center gap-1.5">
-                                <span class="text-xs font-bold text-main">Supply Chain Badge</span>
-                                <span class="w-2 h-2 rounded-full bg-accent-neon"></span>
-                            </div>
-                            <p class="text-[10px] text-sub font-mono">Lot #SCM-8942-AGRI &bull; In Transit</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-xs text-sub"></i>
-                </div>
+                <!-- Theme Toggle, Brightness Slider Trigger & Network Switcher -->
+                <div class="flex items-center gap-2">
+                    <!-- BRIGHTNESS SLIDER POPUP TRIGGER -->
+                    <button onclick="toggleBrightnessPanel()" class="w-7 h-7 rounded-lg bg-slate-800/10 border border-slate-500/30 flex items-center justify-center text-yellow-400 hover:scale-105 transition" title="Aagga Iftiinka (Brightness)">
+                        <i class="fa-solid fa-lightbulb text-xs"></i>
+                    </button>
 
-                <!-- Multi-Chain Asset Allocation Breakdown -->
-                <div>
-                    <div class="flex items-center justify-between mb-2 px-1">
-                        <h3 class="text-xs font-bold text-sub uppercase tracking-wider font-mono">Multi-Chain Assets</h3>
-                        <span class="text-[10px] text-sub font-mono">4 Networks</span>
-                    </div>
+                    <!-- DARK / LIGHT MODE SWITCH BUTTON -->
+                    <button onclick="toggleTheme()" class="w-7 h-7 rounded-lg bg-slate-800/10 border border-slate-500/30 flex items-center justify-center text-accent-cyan hover:scale-105 transition" title="Beddel Midabka (Theme)">
+                        <i id="themeIcon" class="fa-solid fa-sun text-xs text-yellow-400"></i>
+                    </button>
 
-                    <div class="space-y-2" id="homeAssetList">
-                        <!-- Rendered by JavaScript -->
-                    </div>
-                </div>
-
-                <!-- Recent Wallet Transactions -->
-                <div>
-                    <div class="flex items-center justify-between mb-2 px-1">
-                        <h3 class="text-xs font-bold text-sub uppercase tracking-wider font-mono">Recent Activity</h3>
-                        <span class="text-[10px] text-accent-cyan cursor-pointer">View All</span>
-                    </div>
-                    <div class="space-y-2" id="homeTxList">
-                        <!-- Rendered by JavaScript -->
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- ================= TAB 2: MARKETS ================= -->
-            <div id="tab-markets" class="tab-page space-y-3">
-                <div class="space-y-2">
-                    <div class="relative">
-                        <input type="text" id="marketSearchInput" oninput="filterMarketList()" placeholder="Search coin name or ticker symbol..." class="w-full bg-slate-800/10 border border-slate-500/20 rounded-2xl px-3.5 py-2.5 text-xs text-main focus:outline-none focus:border-accent-cyan pl-9 font-mono">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-sub"></i>
-                    </div>
-                </div>
-                <div class="space-y-2" id="marketsContainer"></div>
-            </div>
-
-            <!-- ================= TAB 3: SWAP ================= -->
-            <div id="tab-swap" class="tab-page space-y-4">
-                <div class="glass-card rounded-3xl p-5 space-y-4">
-                    <h3 class="text-xs font-bold text-main flex items-center gap-2 font-mono">
-                        <i class="fa-solid fa-arrows-rotate text-accent-cyan"></i>
-                        <span>SCM Aggregator Swap</span>
-                    </h3>
-                    <div class="bg-slate-800/10 border border-slate-500/20 rounded-2xl p-3.5 space-y-1.5">
-                        <div class="flex justify-between text-[10px] text-sub">
-                            <span>You Pay</span>
-                            <span class="font-mono">42.00 SOL</span>
-                        </div>
-                        <div class="flex items-center gap-2">
-                            <input type="number" value="1.0" class="bg-transparent w-full text-2xl font-mono font-black text-main focus:outline-none">
-                            <span class="text-xs font-bold text-main font-mono">SOL</span>
-                        </div>
-                    </div>
-                    <button onclick="showToast('Swap Executed!')" class="w-full py-3.5 bg-accent-cyan text-slate-950 font-black rounded-2xl shadow-lg active:scale-95 transition">
-                        Execute Swap
+                    <button onclick="toggleNetwork()" id="netToggleBtn" class="px-2.5 py-1 rounded-full bg-slate-800/10 border border-slate-500/30 text-[10px] font-mono text-accent-cyan flex items-center gap-1.5 hover:opacity-80 transition">
+                        <span class="w-1.5 h-1.5 rounded-full bg-accent-neon animate-pulse"></span>
+                        <span id="netLabel">Mainnet</span>
+                        <i class="fa-solid fa-chevron-down text-[8px] text-slate-400"></i>
                     </button>
                 </div>
+            </header>
+
+            <!-- BRIGHTNESS CONTROL POPUP PANEL -->
+            <div id="brightnessPanel" class="hidden px-5 py-2.5 bg-black/80 backdrop-blur-md border-b border-slate-700 text-white flex items-center justify-between gap-3 text-xs font-mono transition">
+                <i class="fa-solid fa-circle-half-stroke text-accent-cyan text-sm"></i>
+                <span class="text-[10px] text-slate-300">Iftiinka:</span>
+                <input type="range" id="brightnessRange" min="30" max="150" value="100" oninput="adjustBrightness(this.value)" class="flex-1 accent-accent-cyan h-1.5 rounded-lg bg-slate-700 cursor-pointer">
+                <span id="brightnessVal" class="text-[10px] text-accent-cyan font-bold w-8 text-right">100%</span>
             </div>
 
-            <!-- ================= TAB 4: PERPS ================= -->
-            <div id="tab-perps" class="tab-page space-y-3">
-                <div class="glass-card rounded-3xl p-4 space-y-3">
-                    <span class="text-xs font-bold text-main">Perpetuals Futures Trading</span>
-                    <button onclick="showToast('Order Placed!')" class="w-full py-3 bg-accent-neon text-slate-950 font-black rounded-2xl">
-                        Open Long Position
-                    </button>
+            <!-- Main Dynamic Scrollable Tab Content Container -->
+            <main class="flex-1 overflow-y-auto custom-scrollbar p-4 pb-24 space-y-4">
+
+                <!-- ================= TAB 1: HOME ================= -->
+                <div id="tab-home" class="tab-page active space-y-4">
+                    
+                    <!-- Main Balance Card -->
+                    <div class="rounded-3xl p-5 relative overflow-hidden border border-accent-cyan/30 glow-cyan bg-cover bg-center bg-no-repeat shadow-xl" style="background-image: url('https://i.ibb.co/NnH77mtB/tony-twaine-comp-2-2.gif');">
+                        <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]"></div>
+
+                        <div class="relative z-10">
+                            <div class="flex justify-between items-center mb-1">
+                                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-300 font-semibold">Total Net Worth</span>
+                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-accent-neon/20 text-accent-neon border border-accent-neon/40 font-mono font-bold">+4.12% (24h)</span>
+                            </div>
+
+                            <div class="flex items-baseline gap-2 mb-3">
+                                <h2 class="text-3xl font-black font-mono text-white tracking-tight" id="homeTotalBalance">$48,250.80</h2>
+                            </div>
+
+                            <!-- Wallet Address Copy Pill -->
+                            <div class="flex items-center justify-between bg-black/60 border border-slate-700/80 rounded-xl px-3 py-1.5 mb-4 text-xs">
+                                <div class="flex items-center gap-2 font-mono text-slate-200">
+                                    <i class="fa-solid fa-wallet text-accent-cyan text-[11px]"></i>
+                                    <span id="homeWalletAddress">0x9A4F...7C21</span>
+                                </div>
+                                <button onclick="copyWalletAddress()" class="text-[10px] text-accent-cyan hover:underline font-bold flex items-center gap-1">
+                                    <i class="fa-regular fa-copy"></i> Copy
+                                </button>
+                            </div>
+
+                            <!-- Main Quick Action Buttons -->
+                            <div class="grid grid-cols-4 gap-2">
+                                <button onclick="openModal('sendModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-accent-cyan hover:bg-cyan-400 text-slate-950 font-extrabold transition shadow-lg shadow-accent-cyan/20 active:scale-95">
+                                    <i class="fa-solid fa-paper-plane text-xs mb-1"></i>
+                                    <span class="text-[10px]">Send</span>
+                                </button>
+                                <button onclick="openModal('receiveModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
+                                    <i class="fa-solid fa-qrcode text-accent-neon text-xs mb-1"></i>
+                                    <span class="text-[10px]">Receive</span>
+                                </button>
+                                <button onclick="openModal('buyModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
+                                    <i class="fa-solid fa-credit-card text-accent-purple text-xs mb-1"></i>
+                                    <span class="text-[10px]">Buy</span>
+                                </button>
+                                <button onclick="switchTab('swap')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
+                                    <i class="fa-solid fa-arrows-rotate text-yellow-400 text-xs mb-1"></i>
+                                    <span class="text-[10px]">Swap</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Active Provenance Smart Badge -->
+                    <div onclick="switchTab('discover'); lookupLotId();" class="glass-card rounded-2xl p-3 border border-accent-neon/30 hover:border-accent-neon/60 transition cursor-pointer flex items-center justify-between">
+                        <div class="flex items-center gap-2.5">
+                            <div class="w-8 h-8 rounded-xl bg-accent-neon/15 text-accent-neon flex items-center justify-center text-sm">
+                                <i class="fa-solid fa-truck-ramp-box"></i>
+                            </div>
+                            <div>
+                                <div class="flex items-center gap-1.5">
+                                    <span class="text-xs font-bold text-main">Supply Chain Badge</span>
+                                    <span class="w-2 h-2 rounded-full bg-accent-neon"></span>
+                                </div>
+                                <p class="text-[10px] text-sub font-mono">Lot #SCM-8942-AGRI &bull; In Transit</p>
+                            </div>
+                        </div>
+                        <i class="fa-solid fa-chevron-right text-xs text-sub"></i>
+                    </div>
+
+                    <!-- Multi-Chain Asset Allocation Breakdown -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2 px-1">
+                            <h3 class="text-xs font-bold text-sub uppercase tracking-wider font-mono">Multi-Chain Assets</h3>
+                            <span class="text-[10px] text-sub font-mono">4 Networks</span>
+                        </div>
+
+                        <div class="space-y-2" id="homeAssetList">
+                            <!-- Rendered by JavaScript -->
+                        </div>
+                    </div>
+
+                    <!-- Recent Wallet Transactions -->
+                    <div>
+                        <div class="flex items-center justify-between mb-2 px-1">
+                            <h3 class="text-xs font-bold text-sub uppercase tracking-wider font-mono">Recent Activity</h3>
+                            <span class="text-[10px] text-accent-cyan cursor-pointer">View All</span>
+                        </div>
+                        <div class="space-y-2" id="homeTxList">
+                            <!-- Rendered by JavaScript -->
+                        </div>
+                    </div>
+
                 </div>
-            </div>
 
-            <!-- ================= TAB 5: DISCOVER ================= -->
-            <div id="tab-discover" class="tab-page space-y-4">
-                <div class="glass-card rounded-3xl p-4 space-y-3">
-                    <h3 class="text-xs font-bold text-main uppercase font-mono">Provenance Tracker</h3>
-                    <div id="lotResultBox" class="text-xs text-sub"></div>
+                <!-- ================= TAB 2: MARKETS ================= -->
+                <div id="tab-markets" class="tab-page space-y-3">
+                    <div class="space-y-2">
+                        <div class="relative">
+                            <input type="text" id="marketSearchInput" oninput="filterMarketList()" placeholder="Search coin name or ticker symbol..." class="w-full bg-slate-800/10 border border-slate-500/20 rounded-2xl px-3.5 py-2.5 text-xs text-main focus:outline-none focus:border-accent-cyan pl-9 font-mono">
+                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-sub"></i>
+                        </div>
+                    </div>
+                    <div class="space-y-2" id="marketsContainer"></div>
                 </div>
-            </div>
 
-        </main>
+                <!-- ================= TAB 3: SWAP ================= -->
+                <div id="tab-swap" class="tab-page space-y-4">
+                    <div class="glass-card rounded-3xl p-5 space-y-4">
+                        <h3 class="text-xs font-bold text-main flex items-center gap-2 font-mono">
+                            <i class="fa-solid fa-arrows-rotate text-accent-cyan"></i>
+                            <span>SCM Aggregator Swap</span>
+                        </h3>
+                        <div class="bg-slate-800/10 border border-slate-500/20 rounded-2xl p-3.5 space-y-1.5">
+                            <div class="flex justify-between text-[10px] text-sub">
+                                <span>You Pay</span>
+                                <span class="font-mono">42.00 SOL</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <input type="number" value="1.0" class="bg-transparent w-full text-2xl font-mono font-black text-main focus:outline-none">
+                                <span class="text-xs font-bold text-main font-mono">SOL</span>
+                            </div>
+                        </div>
+                        <button onclick="showToast('Swap Executed!')" class="w-full py-3.5 bg-accent-cyan text-slate-950 font-black rounded-2xl shadow-lg active:scale-95 transition">
+                            Execute Swap
+                        </button>
+                    </div>
+                </div>
 
-        <!-- Standard iOS Bottom Navigation Tab Bar -->
-        <nav class="absolute bottom-0 left-0 right-0 h-16 nav-bg border-t backdrop-blur-xl flex items-center justify-around z-40 px-2 transition-colors">
-            <button onclick="switchTab('home')" id="nav-home" class="nav-tab flex flex-col items-center justify-center gap-1 text-accent-cyan">
-                <i class="fa-solid fa-wallet text-base"></i>
-                <span class="text-[9px] font-bold">Home</span>
-            </button>
-            <button onclick="switchTab('markets')" id="nav-markets" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
-                <i class="fa-solid fa-chart-simple text-base"></i>
-                <span class="text-[9px] font-bold">Markets</span>
-            </button>
-            <button onclick="switchTab('swap')" id="nav-swap" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
-                <i class="fa-solid fa-arrows-rotate text-base"></i>
-                <span class="text-[9px] font-bold">Swap</span>
-            </button>
-            <button onclick="switchTab('perps')" id="nav-perps" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
-                <i class="fa-solid fa-chart-line text-base"></i>
-                <span class="text-[9px] font-bold">Perps</span>
-            </button>
-            <button onclick="switchTab('discover')" id="nav-discover" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
-                <i class="fa-solid fa-compass text-base"></i>
-                <span class="text-[9px] font-bold">Discover</span>
-            </button>
-        </nav>
-        <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-500/50 rounded-full z-50 pointer-events-none"></div>
+                <!-- ================= TAB 4: PERPS ================= -->
+                <div id="tab-perps" class="tab-page space-y-3">
+                    <div class="glass-card rounded-3xl p-4 space-y-3">
+                        <span class="text-xs font-bold text-main">Perpetuals Futures Trading</span>
+                        <button onclick="showToast('Order Placed!')" class="w-full py-3 bg-accent-neon text-slate-950 font-black rounded-2xl">
+                            Open Long Position
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ================= TAB 5: DISCOVER ================= -->
+                <div id="tab-discover" class="tab-page space-y-4">
+                    <div class="glass-card rounded-3xl p-4 space-y-3">
+                        <h3 class="text-xs font-bold text-main uppercase font-mono">Provenance Tracker</h3>
+                        <div id="lotResultBox" class="text-xs text-sub"></div>
+                    </div>
+                </div>
+
+            </main>
+
+            <!-- Standard iOS Bottom Navigation Tab Bar -->
+            <nav class="absolute bottom-0 left-0 right-0 h-16 nav-bg border-t backdrop-blur-xl flex items-center justify-around z-40 px-2 transition-colors">
+                <button onclick="switchTab('home')" id="nav-home" class="nav-tab flex flex-col items-center justify-center gap-1 text-accent-cyan">
+                    <i class="fa-solid fa-wallet text-base"></i>
+                    <span class="text-[9px] font-bold">Home</span>
+                </button>
+                <button onclick="switchTab('markets')" id="nav-markets" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
+                    <i class="fa-solid fa-chart-simple text-base"></i>
+                    <span class="text-[9px] font-bold">Markets</span>
+                </button>
+                <button onclick="switchTab('swap')" id="nav-swap" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
+                    <i class="fa-solid fa-arrows-rotate text-base"></i>
+                    <span class="text-[9px] font-bold">Swap</span>
+                </button>
+                <button onclick="switchTab('perps')" id="nav-perps" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
+                    <i class="fa-solid fa-chart-line text-base"></i>
+                    <span class="text-[9px] font-bold">Perps</span>
+                </button>
+                <button onclick="switchTab('discover')" id="nav-discover" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
+                    <i class="fa-solid fa-compass text-base"></i>
+                    <span class="text-[9px] font-bold">Discover</span>
+                </button>
+            </nav>
+            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-500/50 rounded-full z-50 pointer-events-none"></div>
+
+        </div> <!-- End of Brightness Wrapper -->
     </div>
 
     <!-- Toast Notification Overlay -->
@@ -313,6 +339,19 @@
             renderMarketList();
             lookupLotId();
         });
+
+        // Brightness Adjust Control Functions
+        function toggleBrightnessPanel() {
+            const panel = document.getElementById('brightnessPanel');
+            panel.classList.toggle('hidden');
+        }
+
+        function adjustBrightness(val) {
+            const wrapper = document.getElementById('brightnessWrapper');
+            const display = document.getElementById('brightnessVal');
+            wrapper.style.filter = `brightness(${val}%)`;
+            display.innerText = `${val}%`;
+        }
 
         // Theme Toggle Function (#FEFBEA / Dark)
         function toggleTheme() {

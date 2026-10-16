@@ -604,39 +604,37 @@ const cryptoState = {
         }
 
         function renderHomeHoldings() {
-            const container = document.getElementById('homeAssetList');
-            container.innerHTML = '';
+    const holdingsContainer = document.getElementById('homeHoldingsList');
+    if (!holdingsContainer) return;
 
-            for (let key in cryptoState) {
-                if(key === 'NEAR' || key === 'AVAX') continue;
-                const coin = cryptoState[key];
-                const usdVal = coin.balance * coin.rate;
+    holdingsContainer.innerHTML = Object.entries(cryptoState).map(([key, coin]) => {
+        
+        const iconContent = (key === 'SCM') 
+            ? `<img src="${myCustomLogoUrl}" class="w-full h-full object-cover rounded-xl">`
+            : (key === 'SOL')
+            ? `<img src="${solanaLogoUrl}" class="w-full h-full object-cover rounded-xl">`
+            : `<i class="fa-solid ${coin.icon}"></i>`;
 
-                const item = document.createElement('div');
-                item.className = "glass-card p-3 rounded-2xl border border-slate-800/80 flex items-center justify-between";
-                
-                const iconContent = (key === 'SCM') 
-                    ? `<img src="${myCustomLogoUrl}" class="w-full h-full object-cover rounded-xl">`
-                    : `<i class="fa-solid ${coin.icon}"></i>`;
-
-                item.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm" style="background: ${coin.color}18; color: ${coin.color}">
-                            ${iconContent}
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xs text-white">${coin.name}</h4>
-                            <span class="text-[10px] text-slate-400 font-mono">${coin.balance} ${coin.symbol}</span>
-                        </div>
+        return `
+            <div class="flex items-center justify-between p-3 bg-slate-800/40 border border-slate-700/50 rounded-2xl">
+                <div class="flex items-center gap-3">
+                    <div class="w-10 h-10 rounded-xl bg-slate-900 border border-slate-700 flex items-center justify-center overflow-hidden">
+                        ${iconContent}
                     </div>
-                    <div class="text-right font-mono">
-                        <span class="text-xs font-bold text-white block">$${usdVal.toLocaleString('en-US', {minimumFractionDigits:2, maximumFractionDigits:2})}</span>
-                        <span class="text-[9px] text-accent-neon">${coin.change}</span>
+                    <div>
+                        <div class="font-semibold text-slate-100">${coin.name}</div>
+                        <div class="text-xs text-slate-400">${coin.balance} ${coin.symbol}</div>
                     </div>
-                `;
-                container.appendChild(item);
-            }
-        }
+                </div>
+                <div class="text-right">
+                    <div class="font-bold text-slate-100">$${(coin.balance * coin.rate).toLocaleString()}</div>
+                    <div class="text-xs text-emerald-400">${coin.change}</div>
+                </div>
+            </div>
+        `;
+    }).join('');
+}
+
 
         function renderHomeTxs() {
             const container = document.getElementById('homeTxList');

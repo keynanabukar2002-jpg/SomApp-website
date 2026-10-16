@@ -1,481 +1,58 @@
 <!DOCTYPE html>
-<html lang="en" class="dark h-full" id="htmlApp">
+<html lang="so">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SCM WALLET - Web3 & Supply Chain Ecosystem</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        obsidian: '#05070D',
-                        card: 'rgba(15, 23, 42, 0.75)',
-                        accent: {
-                            cyan: '#00E5FF',
-                            neon: '#00FF9D',
-                            purple: '#A855F7',
-                            rose: '#FF3366'
-                        }
-                    },
-                    fontFamily: {
-                        sans: ['Plus Jakarta Sans', 'Inter', 'sans-serif'],
-                        mono: ['JetBrains Mono', 'monospace']
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Google Fonts & FontAwesome -->
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <!-- Chart.js & QRCode.js -->
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <style>
-        body {
-            font-family: 'Plus Jakarta Sans', sans-serif;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-            transition: background-color 0.3s, color 0.3s;
-        }
-
-        /* Brightness Filter Wrapper */
-        #brightnessWrapper {
-            transition: filter 0.15s ease-out;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-        }
-
-        /* Dark Mode Styles */
-        html.dark body { background-color: #020408; color: #f1f5f9; }
-        html.dark .app-bg { background-color: #05070D; }
-        html.dark .header-bg { background-color: rgba(5, 7, 13, 0.9); border-color: rgba(30, 41, 59, 0.6); }
-        html.dark .glass-card { background: rgba(13, 20, 36, 0.75); border: 1px solid rgba(255, 255, 255, 0.07); color: #ffffff; }
-        html.dark .text-main { color: #ffffff; }
-        html.dark .text-sub { color: #94a3b8; }
-        html.dark .nav-bg { background-color: rgba(5, 7, 13, 0.95); border-color: rgba(30, 41, 59, 0.8); }
-
-        /* Light Mode (#FEFBEA) Styles */
-        html.light body { background-color: #EFECE0; color: #1E293B; }
-        html.light .app-bg { background-color: #FEFBEA; }
-        html.light .header-bg { background-color: rgba(254, 251, 234, 0.95); border-color: #E2DFD0; }
-        html.light .glass-card { background: rgba(255, 255, 255, 0.85); border: 1px solid #E2DFD0; box-shadow: 0 4px 12px rgba(0,0,0,0.03); color: #0F172A; }
-        html.light .text-main { color: #0F172A; }
-        html.light .text-sub { color: #64748B; }
-        html.light .nav-bg { background-color: rgba(254, 251, 234, 0.95); border-color: #E2DFD0; }
-
-        .glow-cyan { box-shadow: 0 0 25px rgba(0, 229, 255, 0.15); }
-        .custom-scrollbar::-webkit-scrollbar { width: 3px; height: 3px; }
-        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
-        .custom-scrollbar::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
-        
-        .tab-page { display: none; animation: fadeIn 0.22s cubic-bezier(0.16, 1, 0.3, 1); }
-        .tab-page.active { display: block; }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(6px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
-
-        .ios-screen { height: 844px; width: 390px; }
-        @media (max-width: 640px) {
-            .ios-screen { height: 100vh; width: 100vw; border-radius: 0 !important; border: none !important; }
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>App-kaaga - Landing Page</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
 </head>
-<body class="h-full flex items-center justify-center p-0 sm:p-4">
+<body class="bg-[#FEFBEA] text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between">
 
-    <!-- Mobile Device Container Wrapper -->
-    <div class="ios-screen max-w-full app-bg sm:rounded-[48px] sm:border-[10px] sm:border-slate-800 shadow-2xl flex flex-col relative overflow-hidden transition-colors">
-
-        <!-- Brightness Wrapper Element -->
-        <div id="brightnessWrapper">
-
-            <!-- Standard iOS Status Bar & Header -->
-            <header class="px-5 pt-3 pb-2 header-bg backdrop-blur-xl border-b sticky top-0 z-30 flex items-center justify-between transition-colors">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-accent-cyan via-brand-500 to-accent-neon flex items-center justify-center text-slate-950 font-black text-sm shadow-md">
-                        <i class="fa-solid fa-cube"></i>
-                    </div>
-                    <div>
-                        <div class="flex items-center gap-1.5">
-                            <span class="font-extrabold text-sm tracking-wider text-main">SCM <span class="text-accent-cyan">WALLET</span></span>
-                            <span class="px-1.5 py-0.2 text-[8px] bg-accent-neon/20 border border-accent-neon/40 text-accent-neon rounded-md font-mono font-bold">V2.4</span>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- Theme Toggle, Brightness Slider Trigger & Network Switcher -->
-                <div class="flex items-center gap-2">
-                    <!-- BRIGHTNESS SLIDER POPUP TRIGGER -->
-                    <button onclick="toggleBrightnessPanel()" class="w-7 h-7 rounded-lg bg-slate-800/10 border border-slate-500/30 flex items-center justify-center text-yellow-400 hover:scale-105 transition" title="Aagga Iftiinka (Brightness)">
-                        <i class="fa-solid fa-lightbulb text-xs"></i>
-                    </button>
-
-                    <!-- DARK / LIGHT MODE SWITCH BUTTON -->
-                    <button onclick="toggleTheme()" class="w-7 h-7 rounded-lg bg-slate-800/10 border border-slate-500/30 flex items-center justify-center text-accent-cyan hover:scale-105 transition" title="Beddel Midabka (Theme)">
-                        <i id="themeIcon" class="fa-solid fa-sun text-xs text-yellow-400"></i>
-                    </button>
-
-                    <button onclick="toggleNetwork()" id="netToggleBtn" class="px-2.5 py-1 rounded-full bg-slate-800/10 border border-slate-500/30 text-[10px] font-mono text-accent-cyan flex items-center gap-1.5 hover:opacity-80 transition">
-                        <span class="w-1.5 h-1.5 rounded-full bg-accent-neon animate-pulse"></span>
-                        <span id="netLabel">Mainnet</span>
-                        <i class="fa-solid fa-chevron-down text-[8px] text-slate-400"></i>
-                    </button>
-                </div>
-            </header>
-
-            <!-- BRIGHTNESS CONTROL POPUP PANEL -->
-            <div id="brightnessPanel" class="hidden px-5 py-2.5 bg-black/80 backdrop-blur-md border-b border-slate-700 text-white flex items-center justify-between gap-3 text-xs font-mono transition">
-                <i class="fa-solid fa-circle-half-stroke text-accent-cyan text-sm"></i>
-                <span class="text-[10px] text-slate-300">Iftiinka:</span>
-                <input type="range" id="brightnessRange" min="30" max="150" value="100" oninput="adjustBrightness(this.value)" class="flex-1 accent-accent-cyan h-1.5 rounded-lg bg-slate-700 cursor-pointer">
-                <span id="brightnessVal" class="text-[10px] text-accent-cyan font-bold w-8 text-right">100%</span>
-            </div>
-
-            <!-- Main Dynamic Scrollable Tab Content Container -->
-            <main class="flex-1 overflow-y-auto custom-scrollbar p-4 pb-24 space-y-4">
-
-                <!-- ================= TAB 1: HOME ================= -->
-                <div id="tab-home" class="tab-page active space-y-4">
-                    
-                    <!-- Main Balance Card -->
-                    <div class="rounded-3xl p-5 relative overflow-hidden border border-accent-cyan/30 glow-cyan bg-cover bg-center bg-no-repeat shadow-xl" style="background-image: url('https://i.ibb.co/NnH77mtB/tony-twaine-comp-2-2.gif');">
-                        <div class="absolute inset-0 bg-black/40 backdrop-blur-[1px]"></div>
-
-                        <div class="relative z-10">
-                            <div class="flex justify-between items-center mb-1">
-                                <span class="text-[10px] font-mono uppercase tracking-wider text-slate-300 font-semibold">Total Net Worth</span>
-                                <span class="px-2 py-0.5 rounded-full text-[10px] bg-accent-neon/20 text-accent-neon border border-accent-neon/40 font-mono font-bold">+4.12% (24h)</span>
-                            </div>
-
-                            <div class="flex items-baseline gap-2 mb-3">
-                                <h2 class="text-3xl font-black font-mono text-white tracking-tight" id="homeTotalBalance">$48,250.80</h2>
-                            </div>
-
-                            <!-- Wallet Address Copy Pill -->
-                            <div class="flex items-center justify-between bg-black/60 border border-slate-700/80 rounded-xl px-3 py-1.5 mb-4 text-xs">
-                                <div class="flex items-center gap-2 font-mono text-slate-200">
-                                    <i class="fa-solid fa-wallet text-accent-cyan text-[11px]"></i>
-                                    <span id="homeWalletAddress">0x9A4F...7C21</span>
-                                </div>
-                                <button onclick="copyWalletAddress()" class="text-[10px] text-accent-cyan hover:underline font-bold flex items-center gap-1">
-                                    <i class="fa-regular fa-copy"></i> Copy
-                                </button>
-                            </div>
-
-                            <!-- Main Quick Action Buttons -->
-                            <div class="grid grid-cols-4 gap-2">
-                                <button onclick="openModal('sendModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-accent-cyan hover:bg-cyan-400 text-slate-950 font-extrabold transition shadow-lg shadow-accent-cyan/20 active:scale-95">
-                                    <i class="fa-solid fa-paper-plane text-xs mb-1"></i>
-                                    <span class="text-[10px]">Send</span>
-                                </button>
-                                <button onclick="openModal('receiveModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
-                                    <i class="fa-solid fa-qrcode text-accent-neon text-xs mb-1"></i>
-                                    <span class="text-[10px]">Receive</span>
-                                </button>
-                                <button onclick="openModal('buyModal')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
-                                    <i class="fa-solid fa-credit-card text-accent-purple text-xs mb-1"></i>
-                                    <span class="text-[10px]">Buy</span>
-                                </button>
-                                <button onclick="switchTab('swap')" class="flex flex-col items-center justify-center py-2.5 rounded-2xl bg-slate-900/90 border border-slate-700 hover:bg-slate-800 text-white font-bold transition active:scale-95">
-                                    <i class="fa-solid fa-arrows-rotate text-yellow-400 text-xs mb-1"></i>
-                                    <span class="text-[10px]">Swap</span>
-                                </button>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!-- Active Provenance Smart Badge -->
-                    <div onclick="switchTab('discover'); lookupLotId();" class="glass-card rounded-2xl p-3 border border-accent-neon/30 hover:border-accent-neon/60 transition cursor-pointer flex items-center justify-between">
-                        <div class="flex items-center gap-2.5">
-                            <div class="w-8 h-8 rounded-xl bg-accent-neon/15 text-accent-neon flex items-center justify-center text-sm">
-                                <i class="fa-solid fa-truck-ramp-box"></i>
-                            </div>
-                            <div>
-                                <div class="flex items-center gap-1.5">
-                                    <span class="text-xs font-bold text-main">Supply Chain Badge</span>
-                                    <span class="w-2 h-2 rounded-full bg-accent-neon"></span>
-                                </div>
-                                <p class="text-[10px] text-sub font-mono">Lot #SCM-8942-AGRI &bull; In Transit</p>
-                            </div>
-                        </div>
-                        <i class="fa-solid fa-chevron-right text-xs text-sub"></i>
-                    </div>
-
-                    <!-- Multi-Chain Asset Allocation Breakdown -->
-                    <div>
-                        <div class="flex items-center justify-between mb-2 px-1">
-                            <h3 class="text-xs font-bold text-sub uppercase tracking-wider font-mono">Multi-Chain Assets</h3>
-                            <span class="text-[10px] text-sub font-mono">4 Networks</span>
-                        </div>
-
-                        <div class="space-y-2" id="homeAssetList">
-                            <!-- Rendered by JavaScript -->
-                        </div>
-                    </div>
-
-                    <!-- Recent Wallet Transactions -->
-                    <div>
-                        <div class="flex items-center justify-between mb-2 px-1">
-                            <h3 class="text-xs font-bold text-sub uppercase tracking-wider font-mono">Recent Activity</h3>
-                            <span class="text-[10px] text-accent-cyan cursor-pointer">View All</span>
-                        </div>
-                        <div class="space-y-2" id="homeTxList">
-                            <!-- Rendered by JavaScript -->
-                        </div>
-                    </div>
-
-                </div>
-
-                <!-- ================= TAB 2: MARKETS ================= -->
-                <div id="tab-markets" class="tab-page space-y-3">
-                    <div class="space-y-2">
-                        <div class="relative">
-                            <input type="text" id="marketSearchInput" oninput="filterMarketList()" placeholder="Search coin name or ticker symbol..." class="w-full bg-slate-800/10 border border-slate-500/20 rounded-2xl px-3.5 py-2.5 text-xs text-main focus:outline-none focus:border-accent-cyan pl-9 font-mono">
-                            <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-xs text-sub"></i>
-                        </div>
-                    </div>
-                    <div class="space-y-2" id="marketsContainer"></div>
-                </div>
-
-                <!-- ================= TAB 3: SWAP ================= -->
-                <div id="tab-swap" class="tab-page space-y-4">
-                    <div class="glass-card rounded-3xl p-5 space-y-4">
-                        <h3 class="text-xs font-bold text-main flex items-center gap-2 font-mono">
-                            <i class="fa-solid fa-arrows-rotate text-accent-cyan"></i>
-                            <span>SCM Aggregator Swap</span>
-                        </h3>
-                        <div class="bg-slate-800/10 border border-slate-500/20 rounded-2xl p-3.5 space-y-1.5">
-                            <div class="flex justify-between text-[10px] text-sub">
-                                <span>You Pay</span>
-                                <span class="font-mono">42.00 SOL</span>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                <input type="number" value="1.0" class="bg-transparent w-full text-2xl font-mono font-black text-main focus:outline-none">
-                                <span class="text-xs font-bold text-main font-mono">SOL</span>
-                            </div>
-                        </div>
-                        <button onclick="showToast('Swap Executed!')" class="w-full py-3.5 bg-accent-cyan text-slate-950 font-black rounded-2xl shadow-lg active:scale-95 transition">
-                            Execute Swap
-                        </button>
-                    </div>
-                </div>
-
-                <!-- ================= TAB 4: PERPS ================= -->
-                <div id="tab-perps" class="tab-page space-y-3">
-                    <div class="glass-card rounded-3xl p-4 space-y-3">
-                        <span class="text-xs font-bold text-main">Perpetuals Futures Trading</span>
-                        <button onclick="showToast('Order Placed!')" class="w-full py-3 bg-accent-neon text-slate-950 font-black rounded-2xl">
-                            Open Long Position
-                        </button>
-                    </div>
-                </div>
-
-                <!-- ================= TAB 5: DISCOVER ================= -->
-                <div id="tab-discover" class="tab-page space-y-4">
-                    <div class="glass-card rounded-3xl p-4 space-y-3">
-                        <h3 class="text-xs font-bold text-main uppercase font-mono">Provenance Tracker</h3>
-                        <div id="lotResultBox" class="text-xs text-sub"></div>
-                    </div>
-                </div>
-
-            </main>
-
-            <!-- Standard iOS Bottom Navigation Tab Bar -->
-            <nav class="absolute bottom-0 left-0 right-0 h-16 nav-bg border-t backdrop-blur-xl flex items-center justify-around z-40 px-2 transition-colors">
-                <button onclick="switchTab('home')" id="nav-home" class="nav-tab flex flex-col items-center justify-center gap-1 text-accent-cyan">
-                    <i class="fa-solid fa-wallet text-base"></i>
-                    <span class="text-[9px] font-bold">Home</span>
-                </button>
-                <button onclick="switchTab('markets')" id="nav-markets" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
-                    <i class="fa-solid fa-chart-simple text-base"></i>
-                    <span class="text-[9px] font-bold">Markets</span>
-                </button>
-                <button onclick="switchTab('swap')" id="nav-swap" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
-                    <i class="fa-solid fa-arrows-rotate text-base"></i>
-                    <span class="text-[9px] font-bold">Swap</span>
-                </button>
-                <button onclick="switchTab('perps')" id="nav-perps" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
-                    <i class="fa-solid fa-chart-line text-base"></i>
-                    <span class="text-[9px] font-bold">Perps</span>
-                </button>
-                <button onclick="switchTab('discover')" id="nav-discover" class="nav-tab flex flex-col items-center justify-center gap-1 text-sub hover:opacity-80">
-                    <i class="fa-solid fa-compass text-base"></i>
-                    <span class="text-[9px] font-bold">Discover</span>
-                </button>
-            </nav>
-            <div class="absolute bottom-1 left-1/2 -translate-x-1/2 w-32 h-1 bg-slate-500/50 rounded-full z-50 pointer-events-none"></div>
-
-        </div> <!-- End of Brightness Wrapper -->
+  <!-- 1. Header / Navigation -->
+  <header class="w-full max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div class="text-2xl font-bold tracking-wide text-slate-900">
+      App<span class="text-amber-600">Logo</span>
     </div>
+    <nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-700">
+      <a href="#features" class="hover:text-amber-700 transition">Features</a>
+      <a href="#about" class="hover:text-amber-700 transition">Kusaabsan</a>
+      <a href="#contact" class="hover:text-amber-700 transition">Xiriir</a>
+    </nav>
+    <button class="bg-amber-600 hover:bg-amber-700 text-white font-medium px-4 py-2 rounded-xl transition text-sm">
+      Get Started
+    </button>
+  </header>
 
-    <!-- Toast Notification Overlay -->
-    <div id="toast" class="fixed top-6 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 transform -translate-y-4">
-        <div id="toastInner" class="glass-card px-4 py-2.5 rounded-2xl border border-accent-cyan/50 text-xs font-bold text-main shadow-2xl flex items-center gap-2">
-            <i class="fa-solid fa-circle-check text-accent-cyan"></i>
-            <span id="toastMsg">Notification Message</span>
-        </div>
+  <!-- 2. Hero Section (Qaybta Dhexe ee Muhiimka ah) -->
+  <main class="w-full max-w-4xl mx-auto px-6 py-16 text-center flex-1 flex flex-col items-center justify-center">
+    <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full mb-4 border border-amber-200">
+      Welcome to our App
+    </span>
+    
+    <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6">
+      Magaca Mashruucaaga ama Hadafka App-ka
+    </h1>
+    
+    <p class="text-lg md:text-xl text-slate-600 max-w-2xl mb-8 leading-relaxed">
+      Halkan ku qor sharrah gaaban oo ku saabsan waxa uu App-ku qabto, dhibaatada uu xallinayo, ama adeegga uu dadka u fayo.
+    </p>
+
+    <!-- Buttons -->
+    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
+      <a href="#" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-3.5 rounded-xl shadow-md transition text-center">
+        Biloow Hada
+      </a>
+      <a href="#" class="bg-white/80 hover:bg-white text-slate-800 border border-slate-300 font-semibold px-8 py-3.5 rounded-xl shadow-sm transition text-center">
+        Sii Akhri
+      </a>
     </div>
+  </main>
 
-    <!-- SCRIPT APPLICATION ENGINE -->
-    <script>
-        const cryptoState = {
-            SOL: { name: 'Solana', category: 'layer1', balance: 42.00, rate: 148.50, change: '+8.40%', symbol: 'SOL', color: '#9945FF', icon: 'fa-bolt', image: 'https://i.ibb.co/Z1Wk75jT/36461b5481864997babde108c8ecc6f4.png' },
-            ETH: { name: 'Ethereum', category: 'layer1', balance: 4.25, rate: 3450.00, change: '+1.85%', symbol: 'ETH', color: '#627EEA', icon: 'fa-ethereum', image: 'https://i.ibb.co/YBYBBPC3/683577d88381b80d27b57667-ethereum-price-predction-main.jpg' },
-            BTC: { name: 'Bitcoin', category: 'layer1', balance: 0.285, rate: 65400.00, change: '+3.12%', symbol: 'BTC', color: '#F7931A', icon: 'fa-bitcoin', image: 'https://i.ibb.co/S76xD2vV/giphy.gif' },
-            SCM: { name: 'SCM Token', category: 'scm', balance: 35000.00, rate: 1.00, change: '+2.40%', symbol: 'SCM', color: '#00FF9D', icon: 'fa-cube', image: 'https://i.ibb.co/Z1tQ0PDM/depositphotos-331197110-stock-illustration-somalia-sign-round-country-logo.webp' }
-        };
+  <!-- 3. Footer -->
+  <footer class="w-full border-t border-amber-200/60 py-6 text-center text-xs text-slate-500">
+    <p>© 2026 Mashruucayna. Dhammaan xuquuqda waa la dhowray.</p>
+  </footer>
 
-        let isDarkMode = true;
-
-        document.addEventListener('DOMContentLoaded', () => {
-            renderHomeHoldings();
-            renderHomeTxs();
-            renderMarketList();
-            lookupLotId();
-        });
-
-        // Brightness Adjust Control Functions
-        function toggleBrightnessPanel() {
-            const panel = document.getElementById('brightnessPanel');
-            panel.classList.toggle('hidden');
-        }
-
-        function adjustBrightness(val) {
-            const wrapper = document.getElementById('brightnessWrapper');
-            const display = document.getElementById('brightnessVal');
-            wrapper.style.filter = `brightness(${val}%)`;
-            display.innerText = `${val}%`;
-        }
-
-        // Theme Toggle Function (#FEFBEA / Dark)
-        function toggleTheme() {
-            const html = document.getElementById('htmlApp');
-            const icon = document.getElementById('themeIcon');
-            
-            if (isDarkMode) {
-                html.classList.remove('dark');
-                html.classList.add('light');
-                icon.classList.remove('fa-sun', 'text-yellow-400');
-                icon.classList.add('fa-moon', 'text-slate-700');
-                showToast("Mode-ka ku beddelo #FEFBEA", "info");
-            } else {
-                html.classList.remove('light');
-                html.classList.add('dark');
-                icon.classList.remove('fa-moon', 'text-slate-700');
-                icon.classList.add('fa-sun', 'text-yellow-400');
-                showToast("Beddelay Madow (Dark Mode)", "info");
-            }
-            isDarkMode = !isDarkMode;
-        }
-
-        function switchTab(tabId) {
-            document.querySelectorAll('.tab-page').forEach(el => el.classList.remove('active'));
-            document.querySelectorAll('.nav-tab').forEach(el => {
-                el.classList.remove('text-accent-cyan');
-                el.classList.add('text-sub');
-            });
-            document.getElementById(`tab-${tabId}`).classList.add('active');
-            const activeNav = document.getElementById(`nav-${tabId}`);
-            if(activeNav) {
-                activeNav.classList.remove('text-sub');
-                activeNav.classList.add('text-accent-cyan');
-            }
-        }
-
-        function renderHomeHoldings() {
-            const container = document.getElementById('homeAssetList');
-            container.innerHTML = '';
-            for (let key in cryptoState) {
-                const coin = cryptoState[key];
-                const usdVal = coin.balance * coin.rate;
-                const item = document.createElement('div');
-                item.className = "glass-card p-3 rounded-2xl flex items-center justify-between";
-                item.innerHTML = `
-                    <div class="flex items-center gap-2.5">
-                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm overflow-hidden" style="background: ${coin.color}18; color:${coin.color}">
-                            ${coin.image ? `<img src="${coin.image}" class="w-full h-full object-cover" alt="${coin.name}">` : `<i class="fa-solid ${coin.icon}"></i>`}
-                        </div>
-                        <div>
-                            <h4 class="font-bold text-xs text-main">${coin.name}</h4>
-                            <span class="text-[10px] text-sub font-mono">${coin.balance} ${coin.symbol}</span>
-                        </div>
-                    </div>
-                    <div class="text-right font-mono">
-                        <span class="text-xs font-bold text-main block">$${usdVal.toLocaleString('en-US', {minimumFractionDigits:2})}</span>
-                        <span class="text-[9px] text-accent-neon font-bold">${coin.change}</span>
-                    </div>
-                `;
-                container.appendChild(item);
-            }
-        }
-
-        function renderHomeTxs() {
-            const container = document.getElementById('homeTxList');
-            container.innerHTML = `
-                <div class="glass-card p-2.5 rounded-xl flex justify-between items-center text-xs">
-                    <div class="flex items-center gap-2">
-                        <i class="fa-solid fa-arrow-down-left text-accent-neon"></i>
-                        <div>
-                            <p class="font-bold text-main">Received SCM</p>
-                            <p class="text-[9px] text-sub">12 mins ago &bull; Lot #SCM-8942</p>
-                        </div>
-                    </div>
-                    <span class="font-mono font-bold text-accent-neon">+5,000 SCM</span>
-                </div>
-            `;
-        }
-
-        function renderMarketList() {
-            const container = document.getElementById('marketsContainer');
-            container.innerHTML = '';
-            for (let key in cryptoState) {
-                const coin = cryptoState[key];
-                const card = document.createElement('div');
-                card.className = "glass-card p-3 rounded-2xl flex items-center justify-between";
-                card.innerHTML = `
-                    <div class="flex items-center gap-3">
-                        <div class="w-8 h-8 rounded-xl flex items-center justify-center text-sm overflow-hidden">
-                            ${coin.image ? `<img src="${coin.image}" class="w-full h-full object-cover" alt="${coin.name}">` : `<i class="fa-solid ${coin.icon}"></i>`}
-                        </div>
-                        <div>
-                            <h4 class="text-xs font-bold text-main">${coin.name}</h4>
-                            <span class="text-[10px] text-sub font-mono">${coin.symbol}</span>
-                        </div>
-                    </div>
-                    <div class="text-right font-mono">
-                        <span class="text-xs font-bold text-main block">$${coin.rate.toLocaleString()}</span>
-                        <span class="text-[9px] font-bold text-accent-neon">${coin.change}</span>
-                    </div>
-                `;
-                container.appendChild(card);
-            }
-        }
-
-        function lookupLotId() {
-            const res = document.getElementById('lotResultBox');
-            res.innerHTML = `
-                <div class="flex justify-between items-center">
-                    <span class="font-bold text-main">SCM-8942-AGRI</span>
-                    <span class="text-[8px] bg-accent-neon/20 text-accent-neon px-2 py-0.5 rounded-full font-bold">VERIFIED</span>
-                </div>
-            `;
-        }
-
-        function copyWalletAddress() { showToast("Wallet Address Copied!"); }
-        function toggleNetwork() { showToast("Switched Network"); }
-
-        function showToast(msg) {
-            const toast = document.getElementById('toast');
-            document.getElementById('toastMsg').innerText = msg;
-            toast.classList.remove('opacity-0', '-translate-y-4');
-            setTimeout(() => { toast.classList.add('opacity-0', '-translate-y-4'); }, 2500);
-        }
-    </script>
 </body>
 </html>

@@ -1,120 +1,89 @@
 <!DOCTYPE html>
-<html lang="so">
+<html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bayan App - Landing Page</title>
-  <!-- Tailwind CSS CDN -->
-  <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Adeega Macaash</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
 </head>
-<body class="bg-[#FEFBEA] text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between transition-colors duration-300">
+<body class="bg-[#FEFBEA] min-h-screen flex flex-col justify-between font-sans text-gray-800">
 
-  <!-- 1. Header / Navigation -->
-  <header class="w-full max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">
-    <!-- Logo -->
-    <div class="text-2xl font-bold tracking-wider text-slate-900" id="appLogo">
-      BAY<span class="text-amber-600">AN</span>
+    <!-- Top Header -->
+    <div class="p-4 flex justify-between items-center">
+        <div>
+            <p class="text-xs text-gray-500">Good Morning</p>
+            <h1 class="text-base font-bold text-gray-900">abukar</h1>
+        </div>
+        <div class="text-lg">
+            <i class="fa-brands fa-tiktok"></i>
+        </div>
     </div>
 
-    <!-- Navigation Links -->
-    <nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-700" id="navLinks">
-      <a href="#features" class="hover:text-amber-700 transition">Features</a>
-      <a href="#about" class="hover:text-amber-700 transition">Kusaabsan</a>
-      <a href="#contact" class="hover:text-amber-700 transition">Xiriir</a>
-    </nav>
+    <!-- Main Content Area -->
+    <div class="px-4 flex-1">
+        <!-- Green Card -->
+        <div class="bg-emerald-700 text-white p-5 rounded-2xl shadow-md mb-5 relative overflow-hidden">
+            <h2 class="text-2xl font-bold tracking-wide">Adeega Macaash</h2>
+            <p class="text-xs mt-1 opacity-90">Macmiil iibso oo dhibco aruurso</p>
+        </div>
 
-    <!-- Batoonka Iftiinka (Light/Dark Toggle Button) -->
-    <button id="themeToggle" onclick="toggleTheme()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300/60 p-2.5 rounded-xl transition flex items-center gap-2 text-sm font-medium shadow-sm">
-      <!-- Sun Icon -->
-      <svg id="sunIcon" class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
-      </svg>
-      <!-- Moon Icon -->
-      <svg id="moonIcon" class="w-5 h-5 text-slate-700 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
-      </svg>
-      <span id="themeText" class="text-xs font-semibold">Iftiin</span>
-    </button>
-  </header>
-
-  <!-- 2. Hero Section (Qaybta Dhexe ee Muhiimka ah) -->
-  <main class="w-full max-w-4xl mx-auto px-6 py-16 text-center flex-1 flex flex-col items-center justify-center">
-    <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full mb-4 border border-amber-200">
-      Welcome to Bayan App
-    </span>
-    
-    <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6" id="mainTitle">
-      Kusoo Dhawoow Bayan-app
-    </h1>
-    
-    <p class="text-lg md:text-xl text-slate-600 max-w-2xl mb-8 leading-relaxed" id="mainDesc">
-      App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo shopping, si dadka ay adeegyo badan hal app uga wada isticmaalaan.
-    </p>
-
-    <!-- Buttons -->
-    <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">
-      <a href="#" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-3.5 rounded-xl shadow-md transition text-center">
-        Get Started
-      </a>
-      <a href="#" class="bg-white/80 hover:bg-white text-slate-800 border border-slate-300 font-semibold px-8 py-3.5 rounded-xl shadow-sm transition text-center">
-        Sii Akhri
-      </a>
+        <!-- Services Grid -->
+        <div class="grid grid-cols-3 gap-3 mb-6">
+            <!-- Hormuud -->
+            <div class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24">
+                <div class="text-emerald-600 font-bold text-2xl mb-1">H</div>
+                <span class="text-xs font-bold text-gray-900">Hormuud</span>
+            </div>
+            <!-- Somnet -->
+            <div class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24">
+                <div class="text-blue-600 font-bold text-sm">SOMNET</div>
+                <span class="text-xs font-bold text-gray-900 mt-1">Somnet</span>
+            </div>
+            <!-- Somtel Yellow -->
+            <div class="bg-yellow-300 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24">
+                <div class="text-black font-bold text-sm">somtel</div>
+                <span class="text-xs font-bold text-gray-900 mt-1">Somtel</span>
+            </div>
+            <!-- SomLink -->
+            <div class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24">
+                <div class="text-purple-700 font-bold text-xs">SomLink</div>
+                <span class="text-xs font-bold text-gray-900 mt-1">SomLink</span>
+            </div>
+            <!-- Amtel Red -->
+            <div class="bg-red-700 text-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24">
+                <div class="font-bold text-sm">Amtel</div>
+                <span class="text-[10px] opacity-90">Friendly calling partner</span>
+            </div>
+            <!-- Rukumo -->
+            <div class="bg-red-50 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 border border-red-100">
+                <div class="text-red-500 text-lg mb-1"><i class="fa-solid fa-ban"></i></div>
+                <span class="text-xs font-bold text-gray-900">Rukumo</span>
+            </div>
+        </div>
     </div>
-  </main>
 
-  <!-- 3. Footer -->
-  <footer class="w-full border-t border-amber-200/60 py-6 text-center text-xs text-slate-500" id="footerText">
-    <p>© 2026 Bayan App. Dhammaan xuquuqda waa la dhowray.</p>
-  </footer>
-
-  <!-- JavaScript si uu Batoonka Iftiinka u Beddelo Muuqaalka -->
-  <script>
-    function toggleTheme() {
-      const body = document.body;
-      const sunIcon = document.getElementById('sunIcon');
-      const moonIcon = document.getElementById('moonIcon');
-      const themeText = document.getElementById('themeText');
-      const appLogo = document.getElementById('appLogo');
-      const mainTitle = document.getElementById('mainTitle');
-      const mainDesc = document.getElementById('mainDesc');
-
-      if (body.classList.contains('bg-[#FEFBEA]')) {
-        // Beddel oo ka dhig Gaawis / Madow (Dark Mode)
-        body.classList.remove('bg-[#FEFBEA]', 'text-slate-800');
-        body.classList.add('bg-slate-900', 'text-slate-100');
-        
-        sunIcon.classList.add('hidden');
-        moonIcon.classList.remove('hidden');
-        themeText.innerText = "Gaawis";
-        
-        appLogo.classList.remove('text-slate-900');
-        appLogo.classList.add('text-white');
-
-        mainTitle.classList.remove('text-slate-900');
-        mainTitle.classList.add('text-white');
-
-        mainDesc.classList.remove('text-slate-600');
-        mainDesc.classList.add('text-slate-300');
-      } else {
-        // Dib ugu celi Iftiinka dabiiciga ah (#FEFBEA)
-        body.classList.remove('bg-slate-900', 'text-slate-100');
-        body.classList.add('bg-[#FEFBEA]', 'text-slate-800');
-        
-        sunIcon.classList.remove('hidden');
-        moonIcon.classList.add('hidden');
-        themeText.innerText = "Iftiin";
-        
-        appLogo.classList.remove('text-white');
-        appLogo.classList.add('text-slate-900');
-
-        mainTitle.classList.remove('text-white');
-        mainTitle.classList.add('text-slate-900');
-
-        mainDesc.classList.remove('text-slate-300');
-        mainDesc.classList.add('text-slate-600');
-      }
-    }
-  </script>
+    <!-- Bottom Navigation Bar -->
+    <div class="bg-white border-t border-gray-200 py-3 px-6 flex justify-between items-center text-xs text-gray-500">
+        <div class="flex flex-col items-center text-indigo-950 font-semibold">
+            <i class="fa-solid fa-house text-lg mb-1"></i>
+            <span>Home</span>
+        </div>
+        <div class="flex flex-col items-center hover:text-indigo-950">
+            <i class="fa-solid fa-gift text-lg mb-1"></i>
+            <span>Macaash</span>
+        </div>
+        <div class="flex flex-col items-center hover:text-indigo-950">
+            <i class="fa-solid fa-clock-rotate-left text-lg mb-1"></i>
+            <span>Orders</span>
+        </div>
+        <div class="flex flex-col items-center hover:text-indigo-950">
+            <i class="fa-solid fa-user text-lg mb-1"></i>
+            <span>My Profile</span>
+        </div>
+    </div>
 
 </body>
 </html>

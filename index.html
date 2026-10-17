@@ -207,7 +207,7 @@
 
         </div>
 
-        <!-- Bottom Navigation Bar (Waxaa lagu soo kordhiyay Camera oo u dhexeya Macaash & Orders) -->
+        <!-- Bottom Navigation Bar -->
         <div class="bg-white border-t border-gray-200 py-3 px-4 flex justify-between items-center text-xs text-gray-400 rounded-b-none md:rounded-b-[32px]">
             <button onclick="setActiveTab(this)" class="nav-item flex flex-col items-center text-indigo-950 font-bold">
                 <i class="fa-solid fa-house text-lg mb-1"></i>
@@ -218,8 +218,8 @@
                 <span>Macaash</span>
             </button>
 
-            <!-- Badhanka Cusub ee Camera -->
-            <button onclick="openCameraModal(this)" class="nav-item flex flex-col items-center hover:text-indigo-950 transition">
+            <!-- Badhanka Camera-ga Live-ka ah -->
+            <button onclick="openLiveCamera(this)" class="nav-item flex flex-col items-center hover:text-indigo-950 transition">
                 <div class="w-10 h-10 -mt-5 bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-md border-2 border-white hover:bg-emerald-800 transition">
                     <i class="fa-solid fa-camera text-base"></i>
                 </div>
@@ -253,23 +253,54 @@
         </div>
     </div>
 
-    <!-- Interactive Popup Modal (Camera) -->
-    <div id="cameraModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl transform scale-90 transition-transform duration-200" id="cameraModalCard">
-            <div class="w-16 h-16 bg-emerald-700 text-white rounded-full flex items-center justify-center text-2xl mx-auto mb-3 shadow-lg">
-                <i class="fa-solid fa-camera"></i>
+    <!-- Live Camera Scanner Modal -->
+    <div id="cameraModal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-gray-900 text-white rounded-3xl p-4 w-full max-w-xs text-center shadow-2xl relative flex flex-col items-center" id="cameraModalCard">
+            <!-- Header -->
+            <div class="w-full flex justify-between items-center mb-3">
+                <span class="text-xs font-bold text-emerald-400 flex items-center gap-1">
+                    <i class="fa-solid fa-circle text-[8px] animate-pulse"></i> Live Scanner
+                </span>
+                <button onclick="closeLiveCamera()" class="text-gray-400 hover:text-white text-base">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
             </div>
-            <h3 class="text-lg font-bold text-gray-900">Adeegga Camera-ga</h3>
-            <p class="text-xs text-gray-500 mt-2">Waxaad si toos ah uga baari kartaa kaararka shubashada ama dukumeentiyada scanner-ka.</p>
-            
-            <button onclick="closeCameraModal()" class="mt-5 w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 rounded-xl text-xs transition active:scale-95">
-                Xidh Window-ga
-            </button>
+
+            <!-- Video Stream Screen -->
+            <div class="w-full h-64 bg-black rounded-2xl overflow-hidden relative border-2 border-emerald-500 flex items-center justify-center">
+                <video id="webcamVideo" autoplay playsinline class="w-full h-full object-cover"></video>
+                <!-- Canvas-ka lagu qabto sawirka ( hidden ) -->
+                <canvas id="photoCanvas" class="hidden"></canvas>
+                <!-- Sawirka la qaaday -->
+                <img id="capturedImage" class="w-full h-full object-cover hidden" alt="Captured Photo" />
+
+                <!-- Scanner Line Overlay Animation -->
+                <div id="scannerOverlay" class="absolute inset-0 border-2 border-dashed border-emerald-400/60 rounded-2xl pointer-events-none flex items-center justify-center">
+                    <div class="w-full h-0.5 bg-emerald-400 shadow-[0_0_10px_#10b981] animate-bounce"></div>
+                </div>
+            </div>
+
+            <p class="text-[11px] text-gray-300 my-3" id="cameraStatus">Khadka kaarka ama dokumintiga kaamerada hor dhig.</p>
+
+            <!-- Buttons -->
+            <div class="w-full flex gap-2">
+                <button id="snapBtn" onclick="takeSnapshot()" class="flex-1 bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-2.5 rounded-xl text-xs transition active:scale-95 flex items-center justify-center gap-1">
+                    <i class="fa-solid fa-camera"></i> Sawir
+                </button>
+                <button id="retakeBtn" onclick="retakePhoto()" class="hidden flex-1 bg-gray-700 hover:bg-gray-600 text-white font-bold py-2.5 rounded-xl text-xs transition active:scale-95">
+                    Dob u sawir
+                </button>
+                <button onclick="closeLiveCamera()" class="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2.5 rounded-xl text-xs transition active:scale-95">
+                    Xidh
+                </button>
+            </div>
         </div>
     </div>
 
     <!-- JavaScript Logic -->
     <script>
+        let mediaStream = null;
+
         // Screen Switcher Logic
         function switchScreen(targetScreenId) {
             const landing = document.getElementById('landingScreen');
@@ -322,11 +353,12 @@
             }, 200);
         }
 
-        // Camera Modal Functions
-        function openCameraModal(button) {
+        // ================= LIVE CAMERA FUNCTIONS =================
+        async function openLiveCamera(button) {
             setActiveTab(button);
             const modal = document.getElementById('cameraModal');
             const modalCard = document.getElementById('cameraModalCard');
+            const video = document.getElementById('webcamVideo');
 
             modal.classList.remove('hidden');
             setTimeout(() => {
@@ -334,12 +366,70 @@
                 modalCard.classList.remove('scale-90');
                 modalCard.classList.add('scale-100');
             }, 10);
+
+            // Biloow kaamerada live-ka ah
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: "environment" }, // Kaamera dambe ee telefoonka
+                    audio: false
+                });
+                video.srcObject = mediaStream;
+                document.getElementById('cameraStatus').innerText = "Kaamerada waa la daaray. Kaarka hordhig.";
+            } catch (err) {
+                console.error("Camera access error:", err);
+                document.getElementById('cameraStatus').innerText = "Fadlan bixi fasax kusaabsan kaamerada si ay u shaqayso.";
+            }
         }
 
-        function closeCameraModal() {
+        function takeSnapshot() {
+            const video = document.getElementById('webcamVideo');
+            const canvas = document.getElementById('photoCanvas');
+            const img = document.getElementById('capturedImage');
+            const overlay = document.getElementById('scannerOverlay');
+
+            canvas.width = video.videoWidth || 300;
+            canvas.height = video.videoHeight || 300;
+
+            const context = canvas.getContext('2d');
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            // Beddel muuqalka
+            img.src = canvas.toDataURL('image/png');
+            img.classList.remove('hidden');
+            video.classList.add('hidden');
+            overlay.classList.add('hidden');
+
+            document.getElementById('snapBtn').classList.add('hidden');
+            document.getElementById('retakeBtn').classList.remove('hidden');
+            document.getElementById('cameraStatus').innerText = "Sawirka waa la qabtay!";
+        }
+
+        function retakePhoto() {
+            const video = document.getElementById('webcamVideo');
+            const img = document.getElementById('capturedImage');
+            const overlay = document.getElementById('scannerOverlay');
+
+            img.classList.add('hidden');
+            video.classList.remove('hidden');
+            overlay.classList.remove('hidden');
+
+            document.getElementById('snapBtn').classList.remove('hidden');
+            document.getElementById('retakeBtn').classList.add('hidden');
+            document.getElementById('cameraStatus').innerText = "Khadka kaarka ama dokumintiga kaamerada hor dhig.";
+        }
+
+        function closeLiveCamera() {
             const modal = document.getElementById('cameraModal');
             const modalCard = document.getElementById('cameraModalCard');
-            
+
+            // dami kaamerada
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+
+            retakePhoto(); // dib u hagaaji UI-ga
+
             modalCard.classList.remove('scale-100');
             modalCard.classList.add('scale-90');
             modal.classList.add('opacity-0');

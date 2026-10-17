@@ -1,21 +1,13 @@
 {
-  "name": "Bayan App",
-  "short_name": "Bayan",
-  "description": "Bayan App - Quran, Mobile Data, Camera, Calculator, and Shopping",
-  "start_url": "/",
+  "background_color": "#ffffff",
+  "dir": "ltr",
   "display": "standalone",
-  "background_color": "#FEFBEA",
-  "theme_color": "#047857",
-  "icons": [
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-      "sizes": "192x192",
-      "type": "image/png"
-    },
-    {
-      "src": "https://cdn-icons-png.flaticon.com/512/684/684908.png",
-      "sizes": "512x512",
-      "type": "image/png"
-    }
-  ]
+  "name": "Bayan App",
+  "orientation": "any",
+  "scope": "/",
+  "short_name": "Bayan",
+  "start_url": "/",
+  "theme_color": "#ffffff",
+  "id": "/",
+  "description": "Bayan App - Application-ka Adeegyada Badan"
 }

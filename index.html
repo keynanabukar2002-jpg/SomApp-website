@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bayan App - Smart Camera</title>
+    <title>Bayan App - Torch Feature</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -40,6 +40,9 @@
     </style>
 </head>
 <body class="bg-[#FEFBEA] text-slate-800 min-h-screen flex justify-center items-center p-0 md:p-4 transition-colors duration-300">
+
+    <!-- Screen Flashlight Layer (Fallback for Torch) -->
+    <div id="screenTorchOverlay" class="fixed inset-0 bg-white z-50 hidden opacity-0 transition-opacity duration-300 pointer-events-none"></div>
 
     <!-- ==========================================
          SCREEN 1: BAYAN APP LANDING PAGE
@@ -199,11 +202,11 @@
 
 
     <!-- ==========================================
-         SCREEN 3: CAMERA SCREEN (No Permission Needed)
+         SCREEN 3: CAMERA & REAL TORCH SCREEN
     =========================================== -->
     <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
         
-        <!-- Flash Overlay Effect -->
+        <!-- Flash Overlay Effect for Photo Capture -->
         <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-200 z-40"></div>
 
         <!-- Top Camera Controls -->
@@ -219,11 +222,13 @@
                 <span id="timerText">00:00</span>
             </div>
 
-            <!-- Flash & Switch Camera -->
+            <!-- Flash & Torch Buttons -->
             <div class="flex items-center space-x-3">
-                <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                <!-- TORCH / FLASHLIGHT BUTTON -->
+                <button onclick="toggleRealTorch()" id="torchBtn" title="Shid Laydhka/Tooshka" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition">
                     <i class="fa-solid fa-bolt text-lg"></i>
                 </button>
+                <!-- SWITCH CAMERA -->
                 <button onclick="switchCameraFacing()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
                     <i class="fa-solid fa-rotate text-lg"></i>
                 </button>
@@ -321,7 +326,8 @@
         let animFrameId = null;
         let currentFacing = "BACK";
         let zoomLevel = 1;
-        let flashOn = false;
+        let torchOn = false;
+        let videoTrack = null;
         let currentMode = "photo";
         let isRecording = false;
         let timerInterval = null;
@@ -350,19 +356,92 @@
             }
         }
 
-        // Open Camera (No Permission Required)
-        function openFullCamera() {
+        // Open Camera & Setup Torch
+        async function openFullCamera() {
             document.getElementById('cameraScreen').classList.remove('hidden');
             document.getElementById('cameraScreen').classList.add('flex');
             isCameraRunning = true;
             renderSimulatedCamera();
+            initDeviceTorchTrack();
         }
 
         function closeFullCamera() {
             isCameraRunning = false;
+            turnOffTorch();
             if (animFrameId) cancelAnimationFrame(animFrameId);
             document.getElementById('cameraScreen').classList.add('hidden');
             document.getElementById('cameraScreen').classList.remove('flex');
+        }
+
+        // Try getting MediaStream Track for Real Torch Hardware Access
+        async function initDeviceTorchTrack() {
+            try {
+                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
+                    const stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: 'environment' }
+                    });
+                    videoTrack = stream.getVideoTracks()[0];
+                }
+            } catch (e) {
+                videoTrack = null;
+            }
+        }
+
+        // Real Torch Toggle Logic
+        async function toggleRealTorch() {
+            torchOn = !torchOn;
+            const btn = document.getElementById('torchBtn');
+            const screenOverlay = document.getElementById('screenTorchOverlay');
+
+            if (torchOn) {
+                btn.classList.add('bg-yellow-400', 'text-black');
+                btn.classList.remove('bg-white/20');
+
+                // Try applying hardware torch if available
+                if (videoTrack) {
+                    try {
+                        await videoTrack.applyConstraints({
+                            advanced: [{ torch: true }]
+                        });
+                    } catch (err) {
+                        // If Hardware Torch fails, fallback to Screen Flashlight
+                        enableScreenTorch();
+                    }
+                } else {
+                    enableScreenTorch();
+                }
+            } else {
+                turnOffTorch();
+            }
+        }
+
+        function enableScreenTorch() {
+            const screenOverlay = document.getElementById('screenTorchOverlay');
+            screenOverlay.classList.remove('hidden');
+            setTimeout(() => {
+                screenOverlay.classList.remove('opacity-0');
+                screenOverlay.classList.add('opacity-90');
+            }, 10);
+        }
+
+        async function turnOffTorch() {
+            torchOn = false;
+            const btn = document.getElementById('torchBtn');
+            const screenOverlay = document.getElementById('screenTorchOverlay');
+
+            btn.classList.remove('bg-yellow-400', 'text-black');
+            btn.classList.add('bg-white/20');
+
+            if (videoTrack) {
+                try {
+                    await videoTrack.applyConstraints({
+                        advanced: [{ torch: false }]
+                    });
+                } catch (err) {}
+            }
+
+            screenOverlay.classList.add('opacity-0');
+            setTimeout(() => screenOverlay.classList.add('hidden'), 300);
         }
 
         // Canvas Live Camera Render Loop
@@ -424,17 +503,6 @@
             document.getElementById('facingLabel').innerText = `${currentFacing} CAMERA (4K HD)`;
         }
 
-        // Flash Toggle
-        function toggleFlash() {
-            flashOn = !flashOn;
-            const btn = document.getElementById('flashBtn');
-            if (flashOn) {
-                btn.classList.add('bg-yellow-400', 'text-black');
-            } else {
-                btn.classList.remove('bg-yellow-400', 'text-black');
-            }
-        }
-
         // Filters
         function applyFilter(filterClass) {
             const canvas = document.getElementById('simulatedCameraCanvas');
@@ -466,12 +534,10 @@
 
         // Shutter Click Logic
         function handleShutterClick() {
-            // Flash animation if flash is on
-            if (flashOn) {
-                const overlay = document.getElementById('flashOverlay');
-                overlay.style.opacity = '0.8';
-                setTimeout(() => overlay.style.opacity = '0', 150);
-            }
+            // Flash animation when clicking shutter
+            const overlay = document.getElementById('flashOverlay');
+            overlay.style.opacity = '0.8';
+            setTimeout(() => overlay.style.opacity = '0', 150);
 
             if (currentMode === 'photo') {
                 takePhoto();

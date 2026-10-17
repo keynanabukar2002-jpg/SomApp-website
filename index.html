@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bayan App - Torch Feature</title>
+    <title>Bayan App - Live Front Camera</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -33,16 +33,13 @@
 
         /* Camera Filters */
         .filter-normal { filter: none; }
-        .filter-bright { filter: brightness(1.3) contrast(1.1) saturate(1.2); }
-        .filter-vintage { filter: sepia(0.6) contrast(1.2) brightness(0.9); }
+        .filter-bright { filter: brightness(1.2) contrast(1.1) saturate(1.2); }
+        .filter-vintage { filter: sepia(0.5) contrast(1.2) brightness(0.9); }
         .filter-bw { filter: grayscale(1); }
         .filter-warm { filter: sepia(0.3) saturate(1.5) hue-rotate(-10deg); }
     </style>
 </head>
 <body class="bg-[#FEFBEA] text-slate-800 min-h-screen flex justify-center items-center p-0 md:p-4 transition-colors duration-300">
-
-    <!-- Screen Flashlight Layer (Fallback for Torch) -->
-    <div id="screenTorchOverlay" class="fixed inset-0 bg-white z-50 hidden opacity-0 transition-opacity duration-300 pointer-events-none"></div>
 
     <!-- ==========================================
          SCREEN 1: BAYAN APP LANDING PAGE
@@ -181,7 +178,7 @@
                 <span>Macaash</span>
             </button>
 
-            <!-- Badhanka Camera-ga oo toos u furmaya -->
+            <!-- Badhanka Camera-ga -->
             <button onclick="openFullCamera()" class="nav-item flex flex-col items-center hover:text-indigo-950 transition">
                 <div class="w-10 h-10 -mt-5 bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-md border-2 border-white hover:bg-emerald-800 transition">
                     <i class="fa-solid fa-camera text-base"></i>
@@ -202,16 +199,29 @@
 
 
     <!-- ==========================================
-         SCREEN 3: CAMERA & REAL TORCH SCREEN
+         SCREEN 3: REAL CAMERA SCREEN (Front Facing)
     =========================================== -->
     <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
         
-        <!-- Flash Overlay Effect for Photo Capture -->
+        <!-- Flash Effect Overlay -->
         <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-200 z-40"></div>
+
+        <!-- Permission Request Warning Box (Haddii Permission La Diado) -->
+        <div id="permissionNotice" class="absolute inset-0 bg-black/90 z-50 hidden flex-col items-center justify-center p-6 text-center text-white space-y-4">
+            <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center text-3xl mb-2">
+                <i class="fa-solid fa-camera-rotate"></i>
+            </div>
+            <h3 class="text-xl font-bold">Fasax kaamarad ayaa loo baahan yahay</h3>
+            <p class="text-xs text-gray-300 max-w-xs leading-relaxed">
+                Si aad wejigaaga u aragto, fadlan taabo badhanka hoose si aad barnaamijka ugu ogolaato isticmaalka kaamerada dhabta ah.
+            </p>
+            <button onclick="requestCameraAccess()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl text-xs transition active:scale-95 shadow-lg">
+                Ogoloow Kaamerada (Allow Camera)
+            </button>
+        </div>
 
         <!-- Top Camera Controls -->
         <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
-            <!-- Close Button -->
             <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -222,31 +232,22 @@
                 <span id="timerText">00:00</span>
             </div>
 
-            <!-- Flash & Torch Buttons -->
+            <!-- Switch Camera (Front / Back) -->
             <div class="flex items-center space-x-3">
-                <!-- TORCH / FLASHLIGHT BUTTON -->
-                <button onclick="toggleRealTorch()" id="torchBtn" title="Shid Laydhka/Tooshka" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center transition">
+                <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
                     <i class="fa-solid fa-bolt text-lg"></i>
                 </button>
-                <!-- SWITCH CAMERA -->
                 <button onclick="switchCameraFacing()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
                     <i class="fa-solid fa-rotate text-lg"></i>
                 </button>
             </div>
         </div>
 
-        <!-- Live Interactive Simulation Canvas -->
-        <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-slate-950">
-            <canvas id="simulatedCameraCanvas" class="w-full h-full object-cover filter-normal"></canvas>
-
-            <!-- Camera Viewfinder Overlay -->
-            <div id="viewfinder" class="absolute w-64 h-64 border-2 border-white/40 rounded-3xl flex items-center justify-center pointer-events-none">
-                <div class="w-4 h-4 border-t-2 border-l-2 border-emerald-400 absolute top-2 left-2"></div>
-                <div class="w-4 h-4 border-t-2 border-r-2 border-emerald-400 absolute top-2 right-2"></div>
-                <div class="w-4 h-4 border-b-2 border-l-2 border-emerald-400 absolute bottom-2 left-2"></div>
-                <div class="w-4 h-4 border-b-2 border-r-2 border-emerald-400 absolute bottom-2 right-2"></div>
-                <span id="facingLabel" class="text-[10px] text-emerald-400/80 font-mono tracking-widest uppercase">BACK CAMERA (4K HD)</span>
-            </div>
+        <!-- Live Real Video Feed (Wajigaaga Si Toos Ah) -->
+        <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-black">
+            <!-- Video Tag-ga oo si toos ah loo oynayo stream-ka kaamerada -->
+            <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal transform -scale-x-100"></video>
+            <canvas id="photoCanvas" class="hidden"></canvas>
 
             <!-- Zoom Control Slider -->
             <div class="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2 rounded-full space-y-2 text-white z-30">
@@ -267,13 +268,11 @@
 
         <!-- Bottom Shutter & Mode Controls -->
         <div class="p-6 bg-black flex flex-col items-center z-30 space-y-4">
-            <!-- Mode Switcher (Photo / Video) -->
             <div class="flex space-x-6 text-xs font-semibold text-white/60">
                 <button id="photoModeBtn" onclick="setMode('photo')" class="text-emerald-400 font-bold border-b-2 border-emerald-400 pb-1">PHOTO</button>
                 <button id="videoModeBtn" onclick="setMode('video')" class="hover:text-white transition pb-1">VIDEO</button>
             </div>
 
-            <!-- Shutter Controls Bar -->
             <div class="w-full flex justify-between items-center px-4">
                 <!-- Gallery Thumbnail Preview -->
                 <button onclick="openGalleryModal()" class="w-12 h-12 rounded-xl bg-white/20 overflow-hidden border-2 border-white flex items-center justify-center">
@@ -322,14 +321,13 @@
 
     <!-- JavaScript Logic -->
     <script>
-        let isCameraRunning = false;
-        let animFrameId = null;
-        let currentFacing = "BACK";
-        let zoomLevel = 1;
-        let torchOn = false;
-        let videoTrack = null;
+        let currentStream = null;
+        let facingMode = "user"; // "user" kaamarada hore si aad wajigaaga u aragto
+        let flashOn = false;
         let currentMode = "photo";
         let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
         let timerInterval = null;
         let seconds = 0;
         let galleryItems = [];
@@ -356,162 +354,83 @@
             }
         }
 
-        // Open Camera & Setup Torch
+        // Open Real Camera Stream (Front Camera default)
         async function openFullCamera() {
             document.getElementById('cameraScreen').classList.remove('hidden');
             document.getElementById('cameraScreen').classList.add('flex');
-            isCameraRunning = true;
-            renderSimulatedCamera();
-            initDeviceTorchTrack();
+            await startCameraStream();
         }
 
         function closeFullCamera() {
-            isCameraRunning = false;
-            turnOffTorch();
-            if (animFrameId) cancelAnimationFrame(animFrameId);
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
             document.getElementById('cameraScreen').classList.add('hidden');
             document.getElementById('cameraScreen').classList.remove('flex');
+            document.getElementById('permissionNotice').classList.add('hidden');
         }
 
-        // Try getting MediaStream Track for Real Torch Hardware Access
-        async function initDeviceTorchTrack() {
+        async function startCameraStream() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
             try {
-                if (navigator.mediaDevices && navigator.mediaDevices.getUserMedia) {
-                    const stream = await navigator.mediaDevices.getUserMedia({
-                        video: { facingMode: 'environment' }
-                    });
-                    videoTrack = stream.getVideoTracks()[0];
-                }
-            } catch (e) {
-                videoTrack = null;
+                // Toos u wac kamarada hore (user) si wejigu u muuqdo
+                currentStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: facingMode },
+                    audio: currentMode === 'video'
+                });
+                
+                const video = document.getElementById('cameraVideo');
+                video.srcObject = currentStream;
+                document.getElementById('permissionNotice').classList.add('hidden');
+            } catch (err) {
+                // Haddii permission-ka la diado ama error ka dhaco
+                console.error("Camera permission error:", err);
+                document.getElementById('permissionNotice').classList.remove('hidden');
             }
         }
 
-        // Real Torch Toggle Logic
-        async function toggleRealTorch() {
-            torchOn = !torchOn;
-            const btn = document.getElementById('torchBtn');
-            const screenOverlay = document.getElementById('screenTorchOverlay');
-
-            if (torchOn) {
-                btn.classList.add('bg-yellow-400', 'text-black');
-                btn.classList.remove('bg-white/20');
-
-                // Try applying hardware torch if available
-                if (videoTrack) {
-                    try {
-                        await videoTrack.applyConstraints({
-                            advanced: [{ torch: true }]
-                        });
-                    } catch (err) {
-                        // If Hardware Torch fails, fallback to Screen Flashlight
-                        enableScreenTorch();
-                    }
-                } else {
-                    enableScreenTorch();
-                }
-            } else {
-                turnOffTorch();
-            }
+        function requestCameraAccess() {
+            startCameraStream();
         }
 
-        function enableScreenTorch() {
-            const screenOverlay = document.getElementById('screenTorchOverlay');
-            screenOverlay.classList.remove('hidden');
-            setTimeout(() => {
-                screenOverlay.classList.remove('opacity-0');
-                screenOverlay.classList.add('opacity-90');
-            }, 10);
-        }
-
-        async function turnOffTorch() {
-            torchOn = false;
-            const btn = document.getElementById('torchBtn');
-            const screenOverlay = document.getElementById('screenTorchOverlay');
-
-            btn.classList.remove('bg-yellow-400', 'text-black');
-            btn.classList.add('bg-white/20');
-
-            if (videoTrack) {
-                try {
-                    await videoTrack.applyConstraints({
-                        advanced: [{ torch: false }]
-                    });
-                } catch (err) {}
-            }
-
-            screenOverlay.classList.add('opacity-0');
-            setTimeout(() => screenOverlay.classList.add('hidden'), 300);
-        }
-
-        // Canvas Live Camera Render Loop
-        function renderSimulatedCamera() {
-            const canvas = document.getElementById('simulatedCameraCanvas');
-            const ctx = canvas.getContext('2d');
-            canvas.width = window.innerWidth;
-            canvas.height = window.innerHeight;
-
-            let time = 0;
-
-            function drawFrame() {
-                if (!isCameraRunning) return;
-                time += 0.03;
-
-                // Background gradient
-                let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
-                if (currentFacing === "BACK") {
-                    gradient.addColorStop(0, '#0f172a');
-                    gradient.addColorStop(0.5, '#1e293b');
-                    gradient.addColorStop(1, '#0f172a');
-                } else {
-                    gradient.addColorStop(0, '#312e81');
-                    gradient.addColorStop(0.5, '#4338ca');
-                    gradient.addColorStop(1, '#312e81');
-                }
-                ctx.fillStyle = gradient;
-                ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-                // Animated light circles
-                ctx.save();
-                ctx.translate(canvas.width / 2, canvas.height / 2);
-                ctx.scale(zoomLevel, zoomLevel);
-
-                for (let i = 0; i < 5; i++) {
-                    let radius = 40 + i * 35 + Math.sin(time + i) * 10;
-                    ctx.beginPath();
-                    ctx.arc(Math.cos(time + i) * 60, Math.sin(time * 0.8 + i) * 60, radius, 0, Math.PI * 2);
-                    ctx.fillStyle = i % 2 === 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.15)';
-                    ctx.fill();
-                }
-
-                // Center camera grid line
-                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
-                ctx.lineWidth = 1;
-                ctx.strokeRect(-canvas.width/3, -canvas.height/3, (canvas.width/3)*2, (canvas.height/3)*2);
-
-                ctx.restore();
-
-                animFrameId = requestAnimationFrame(drawFrame);
-            }
-
-            drawFrame();
-        }
-
-        // Switch Camera (Front/Back)
+        // Switch Camera (Front / Back)
         function switchCameraFacing() {
-            currentFacing = currentFacing === "BACK" ? "FRONT" : "BACK";
-            document.getElementById('facingLabel').innerText = `${currentFacing} CAMERA (4K HD)`;
+            facingMode = facingMode === "user" ? "environment" : "user";
+            const video = document.getElementById('cameraVideo');
+            
+            // Mirror flip keliya kamarada hore
+            if (facingMode === "user") {
+                video.classList.add('transform', '-scale-x-100');
+            } else {
+                video.classList.remove('transform', '-scale-x-100');
+            }
+            startCameraStream();
+        }
+
+        // Flash Effect
+        function toggleFlash() {
+            flashOn = !flashOn;
+            const btn = document.getElementById('flashBtn');
+            if (flashOn) {
+                btn.classList.add('bg-yellow-400', 'text-black');
+            } else {
+                btn.classList.remove('bg-yellow-400', 'text-black');
+            }
         }
 
         // Filters
         function applyFilter(filterClass) {
-            const canvas = document.getElementById('simulatedCameraCanvas');
-            canvas.className = `w-full h-full object-cover ${filterClass}`;
+            const video = document.getElementById('cameraVideo');
+            let mirror = facingMode === "user" ? "transform -scale-x-100" : "";
+            video.className = `w-full h-full object-cover ${filterClass} ${mirror}`;
         }
 
         // Zoom
         function applyZoom(val) {
-            zoomLevel = parseFloat(val);
+            const video = document.getElementById('cameraVideo');
+            video.style.transform = `scale(${val}) ${facingMode === "user" ? "scaleX(-1)" : ""}`;
         }
 
         // Mode Switch (Photo / Video)
@@ -530,14 +449,16 @@
                 photoBtn.className = "hover:text-white transition pb-1 text-white/60";
                 shutterInner.className = "w-full h-full bg-red-600 rounded-full";
             }
+            startCameraStream();
         }
 
         // Shutter Click Logic
         function handleShutterClick() {
-            // Flash animation when clicking shutter
-            const overlay = document.getElementById('flashOverlay');
-            overlay.style.opacity = '0.8';
-            setTimeout(() => overlay.style.opacity = '0', 150);
+            if (flashOn) {
+                const overlay = document.getElementById('flashOverlay');
+                overlay.style.opacity = '0.8';
+                setTimeout(() => overlay.style.opacity = '0', 150);
+            }
 
             if (currentMode === 'photo') {
                 takePhoto();
@@ -546,15 +467,28 @@
             }
         }
 
-        // Take Photo
+        // Take Photo (Capture Real Video Frame)
         function takePhoto() {
-            const canvas = document.getElementById('simulatedCameraCanvas');
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('photoCanvas');
+            const context = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+
+            if (facingMode === "user") {
+                context.translate(canvas.width, 0);
+                context.scale(-1, 1);
+            }
+
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+
             const imageData = canvas.toDataURL('image/png');
             galleryItems.push(imageData);
             updateGalleryPreview(imageData);
         }
 
-        // Video Recording Logic
+        // Record Video Logic
         function toggleRecordVideo() {
             if (!isRecording) {
                 startRecording();
@@ -564,6 +498,13 @@
         }
 
         function startRecording() {
+            if (!currentStream) return;
+            recordedChunks = [];
+            mediaRecorder = new MediaRecorder(currentStream);
+            mediaRecorder.ondataavailable = event => recordedChunks.push(event.data);
+            mediaRecorder.onstop = saveVideo;
+            mediaRecorder.start();
+
             isRecording = true;
             document.getElementById('videoTimer').classList.remove('hidden');
             document.getElementById('shutterInner').classList.replace('rounded-full', 'rounded-md');
@@ -578,16 +519,20 @@
         }
 
         function stopRecording() {
+            mediaRecorder.stop();
             isRecording = false;
             clearInterval(timerInterval);
             document.getElementById('videoTimer').classList.add('hidden');
             document.getElementById('shutterInner').classList.replace('rounded-md', 'rounded-full');
-
-            // Save video frame to gallery
-            takePhoto();
         }
 
-        // Update Gallery Icon
+        function saveVideo() {
+            const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+            const videoUrl = URL.createObjectURL(blob);
+            galleryItems.push(videoUrl);
+        }
+
+        // Gallery Functions
         function updateGalleryPreview(url) {
             const preview = document.getElementById('galleryPreview');
             const placeholder = document.getElementById('galleryPlaceholder');
@@ -596,7 +541,6 @@
             placeholder.classList.add('hidden');
         }
 
-        // Gallery Modal
         function openGalleryModal() {
             const modal = document.getElementById('galleryModal');
             const container = document.getElementById('galleryContainer');
@@ -616,7 +560,7 @@
             modal.classList.remove('flex');
         }
 
-        // Modal Helpers
+        // Service Modal Helpers
         function selectService(name, detail) {
             const modal = document.getElementById('serviceModal');
             const modalCard = document.getElementById('modalCard');

@@ -51,6 +51,114 @@
   </a>  
 </div>
 
+<!-- Get Started Button -->
+        <div class="pb-8">
+            <button onclick="startApp()" class="w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-4 rounded-xl shadow-lg transform transition active:scale-95 flex items-center justify-center gap-2 text-base">
+                <span>Get Started</span>
+                <i class="fa-solid fa-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+
+    <!-- ================= 2. MAIN DASHBOARD SCREEN (hidden initially) ================= -->
+    <div id="main-dashboard" class="hidden min-h-screen flex flex-col justify-between">
+        
+        <!-- Top Header -->
+        <div class="p-4 flex justify-between items-center">
+            <div>
+                <p class="text-xs text-gray-500">Good Morning</p>
+                <h1 class="text-base font-bold text-gray-900">abukar</h1>
+            </div>
+            <div class="text-lg text-gray-700">
+                <i class="fa-brands fa-tiktok"></i>
+            </div>
+        </div>
+
+        <!-- Main Content Area -->
+        <div class="px-4 flex-1">
+            <!-- Green Card -->
+            <div class="bg-emerald-700 text-white p-5 rounded-2xl shadow-md mb-5 relative overflow-hidden">
+                <h2 class="text-2xl font-bold tracking-wide">Adeega Macaash</h2>
+                <p class="text-xs mt-1 opacity-90">Macmiil iibso oo dhibco aruurso</p>
+            </div>
+
+            <!-- Services Grid -->
+            <div class="grid grid-cols-3 gap-3 mb-6">
+                <!-- Hormuud -->
+                <button onclick="selectService('Hormuud')" class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:border hover:border-emerald-500 transition">
+                    <div class="text-emerald-600 font-bold text-2xl mb-1">H</div>
+                    <span class="text-xs font-bold text-gray-900">Hormuud</span>
+                </button>
+
+                <!-- Somnet -->
+                <button onclick="selectService('Somnet')" class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:border hover:border-blue-500 transition">
+                    <div class="text-blue-600 font-bold text-sm">SOMNET</div>
+                    <span class="text-xs font-bold text-gray-900 mt-1">Somnet</span>
+                </button>
+
+                <!-- Somtel Yellow -->
+                <button onclick="selectService('Somtel')" class="bg-yellow-300 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:opacity-90 transition">
+                    <div class="text-black font-bold text-sm">somtel</div>
+                    <span class="text-xs font-bold text-gray-900 mt-1">Somtel</span>
+                </button>
+
+                <!-- SomLink -->
+                <button onclick="selectService('SomLink')" class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:border hover:border-purple-500 transition">
+                    <div class="text-purple-700 font-bold text-xs">SomLink</div>
+                    <span class="text-xs font-bold text-gray-900 mt-1">SomLink</span>
+                </button>
+
+                <!-- Amtel Red -->
+                <button onclick="selectService('Amtel')" class="bg-red-700 text-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:bg-red-800 transition">
+                    <div class="font-bold text-sm">Amtel</div>
+                    <span class="text-[10px] opacity-90">Friendly partner</span>
+                </button>
+
+                <!-- Rukumo -->
+                <button onclick="selectService('Rukumo')" class="bg-red-50 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 border border-red-100 hover:bg-red-100 transition">
+                    <div class="text-red-500 text-lg mb-1"><i class="fa-solid fa-ban"></i></div>
+                    <span class="text-xs font-bold text-gray-900">Rukumo</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="bg-white border-t border-gray-200 py-3 px-6 flex justify-between items-center text-xs text-gray-500">
+            <div class="flex flex-col items-center text-emerald-800 font-semibold cursor-pointer">
+                <i class="fa-solid fa-house text-lg mb-1"></i>
+                <span>Home</span>
+            </div>
+            <div class="flex flex-col items-center hover:text-emerald-800 cursor-pointer">
+                <i class="fa-solid fa-gift text-lg mb-1"></i>
+                <span>Macaash</span>
+            </div>
+            <div class="flex flex-col items-center hover:text-emerald-800 cursor-pointer">
+                <i class="fa-solid fa-clock-rotate-left text-lg mb-1"></i>
+                <span>Orders</span>
+            </div>
+            <div class="flex flex-col items-center hover:text-emerald-800 cursor-pointer">
+                <i class="fa-solid fa-user text-lg mb-1"></i>
+                <span>My Profile</span>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- ================= 3. JAVASCRIPT ================= -->
+    <script>
+        // Waxaa la wacayaa marka 'Get Started' lagu dhufto
+        function startApp() {
+            document.getElementById('welcome-screen').classList.add('hidden');
+            document.getElementById('main-dashboard').classList.remove('hidden');
+        }
+
+        // Action marka badhamada kale lagu dhufto
+        function selectService(name) {
+            alert('Waxaad dooratay adeegga: ' + name);
+        }
+    </script>
+    
   </main>    <!-- 3. Footer -->    <footer class="w-full border-t border-amber-200/60 py-6 text-center text-xs text-slate-500" id="footerText">  
     <p>© 2026 Bayan App. Dhammaan xuquuqda waa la dhowray.</p>  
   </footer>    <!-- JavaScript si uu Batoonka Iftiinka u Beddelo Muuqaalka -->    <script>  

@@ -1,0 +1,21 @@
+{
+  "name": "Bayan App",
+  "short_name": "Bayan",
+  "description": "Bayan App - Quran, Mobile Data, Camera, Calculator, and Shopping",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#FEFBEA",
+  "theme_color": "#047857",
+  "icons": [
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "https://cdn-icons-png.flaticon.com/512/684/684908.png",
+      "sizes": "512x512",
+      "type": "image/png"
+    }
+  ]
+}

@@ -1,224 +1,362 @@
-<!DOCTYPE html>  
-<html lang="so">  
-<head>  
-  <meta charset="UTF-8" />  
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />  
-  <title>Bayan App</title>  
-  <!-- Tailwind CSS CDN -->  
-  <script src="https://cdn.tailwindcss.com"></script>  
-  <!-- FontAwesome Icons -->  
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-</head>  
-<body class="bg-[#FEFBEA] text-slate-800 font-sans antialiased min-h-screen flex flex-col justify-between transition-colors duration-300">    
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bayan App - Adeega Macaash</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+        }
+        /* Custom smooth transition for page switching */
+        .page-fade {
+            transition: opacity 0.3s ease-in-out, transform 0.3s ease-in-out;
+        }
+        .hide-page {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(10px);
+            display: none !important;
+        }
+        .show-page {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0);
+            display: flex !important;
+        }
+    </style>
+</head>
+<body class="bg-[#FEFBEA] text-slate-800 min-h-screen flex justify-center items-center p-0 md:p-4 transition-colors duration-300">
 
-  <!-- ================= 1. LANDING PAGE / BOGGA KOOWAAD ================= -->
-  <div id="landing-screen" class="min-h-screen flex flex-col justify-between">
-    
-    <!-- Header / Navigation -->    
-    <header class="w-full max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">  
-      <!-- Logo -->  
-      <div class="text-2xl font-bold tracking-wider text-slate-900" id="appLogo">  
-        BAY<span class="text-amber-600">AN</span>  
-      </div>  
+    <!-- ==========================================
+         SCREEN 1: BAYAN APP LANDING PAGE
+    =========================================== -->
+    <div id="landingScreen" class="page-fade show-page w-full min-h-screen flex-col justify-between p-0">
+        <div class="w-full flex flex-col justify-between min-h-screen">
+            <!-- 1. Header / Navigation -->    
+            <header class="w-full max-w-6xl mx-auto px-6 py-4 flex items-center justify-between">  
+                <!-- Logo -->  
+                <div class="text-2xl font-bold tracking-wider text-slate-900" id="appLogo">  
+                    BAY<span class="text-amber-600">AN</span>  
+                </div>  
 
-      <!-- Navigation Links -->  
-      <nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-700" id="navLinks">  
-        <a href="#features" class="hover:text-amber-700 transition">Features</a>  
-        <a href="#about" class="hover:text-amber-700 transition">Kusaabsan</a>  
-        <a href="#contact" class="hover:text-amber-700 transition">Xiriir</a>  
-      </nav>  
+                <!-- Navigation Links -->  
+                <nav class="hidden md:flex space-x-6 text-sm font-medium text-slate-700" id="navLinks">  
+                    <a href="#features" class="hover:text-amber-700 transition">Features</a>  
+                    <a href="#about" class="hover:text-amber-700 transition">Kusaabsan</a>  
+                    <a href="#contact" class="hover:text-amber-700 transition">Xiriir</a>  
+                </nav>  
 
-      <!-- Batoonka Iftiinka (Light/Dark Toggle Button) -->  
-      <button id="themeToggle" onclick="toggleTheme()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300/60 p-2.5 rounded-xl transition flex items-center gap-2 text-sm font-medium shadow-sm">  
-        <!-- Sun Icon -->  
-        <svg id="sunIcon" class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />  
-        </svg>  
-        <!-- Moon Icon -->  
-        <svg id="moonIcon" class="w-5 h-5 text-slate-700 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />  
-        </svg>  
-        <span id="themeText" class="text-xs font-semibold">Iftiin</span>  
-      </button>
-    </header>    
+                <!-- Batoonka Iftiinka (Light/Dark Toggle Button) -->  
+                <button id="themeToggle" onclick="toggleTheme()" class="bg-amber-100 hover:bg-amber-200 text-amber-900 border border-amber-300/60 p-2.5 rounded-xl transition flex items-center gap-2 text-sm font-medium shadow-sm">  
+                    <!-- Sun Icon -->  
+                    <svg id="sunIcon" class="w-5 h-5 text-amber-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />  
+                    </svg>  
+                    <!-- Moon Icon -->  
+                    <svg id="moonIcon" class="w-5 h-5 text-slate-700 hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24">  
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />  
+                    </svg>  
+                    <span id="themeText" class="text-xs font-semibold">Iftiin</span>  
+                </button>
+            </header>    
 
-    <!-- Hero Section -->    
-    <main class="w-full max-w-4xl mx-auto px-6 py-16 text-center flex-1 flex flex-col items-center justify-center">  
-      <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full mb-4 border border-amber-200">  
-        Welcome to Bayan App  
-      </span>  
-      
-      <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6" id="mainTitle">  
-        Kusoo Dhawoow Bayan-app  
-      </h1>  
-    
-      <p class="text-lg md:text-xl text-slate-600 max-w-2xl mb-8 leading-relaxed" id="mainDesc">  
-        App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo shopping, si dadka ay adeegyo badan hal app uga wada isticmaalaan.  
-      </p>  
+            <!-- 2. Hero Section -->    
+            <main class="w-full max-w-4xl mx-auto px-6 py-16 text-center flex-1 flex flex-col items-center justify-center">  
+                <span class="bg-amber-100 text-amber-800 text-xs font-semibold px-3 py-1 rounded-full mb-4 border border-amber-200">  
+                    Welcome to Bayan App  
+                </span>  
+                
+                <h1 class="text-4xl md:text-6xl font-extrabold text-slate-900 leading-tight mb-6" id="mainTitle">  
+                    Kusoo Dhawoow Bayan-app  
+                </h1>  
+            
+                <p class="text-lg md:text-xl text-slate-600 max-w-2xl mb-8 leading-relaxed" id="mainDesc">  
+                    App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo shopping, si dadka ay adeegyo badan hal app uga wada isticmaalaan.  
+                </p>  
 
-      <!-- Buttons -->  
-      <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">  
-        <button onclick="startApp()" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-3.5 rounded-xl shadow-md transition text-center cursor-pointer">  
-          Get Started  
-        </button>  
-        <a href="#about" class="bg-white/80 hover:bg-white text-slate-800 border border-slate-300 font-semibold px-8 py-3.5 rounded-xl shadow-sm transition text-center">  
-          Sii Akhri  
-        </a>  
-      </div>
-    </main>    
+                <!-- Buttons -->  
+                <div class="flex flex-col sm:flex-row gap-4 w-full sm:w-auto">  
+                    <button onclick="switchScreen('mainDashboard')" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-8 py-3.5 rounded-xl shadow-md transition text-center cursor-pointer">  
+                        Get Started  
+                    </button>  
+                    <a href="#about" class="bg-white/80 hover:bg-white text-slate-800 border border-slate-300 font-semibold px-8 py-3.5 rounded-xl shadow-sm transition text-center">  
+                        Sii Akhri  
+                    </a>  
+                </div>
+            </main>    
 
-    <!-- Footer -->    
-    <footer class="w-full border-t border-amber-200/60 py-6 text-center text-xs text-slate-500" id="footerText">  
-      <p>© 2026 Bayan App. Dhammaan xuquuqda waa la dhowray.</p>  
-    </footer>  
-
-  </div>
-
-
-  <!-- ================= 2. MAIN APP DASHBOARD (Hidden Initially) ================= -->
-  <div id="main-dashboard" class="hidden min-h-screen flex flex-col justify-between">
-      
-      <!-- Top Header -->
-      <div class="p-4 flex justify-between items-center max-w-md mx-auto w-full">
-          <div>
-              <p class="text-xs text-gray-500">Good Morning</p>
-              <h1 class="text-base font-bold text-gray-900">abukar</h1>
-          </div>
-          <div class="text-lg text-gray-700">
-              <i class="fa-brands fa-tiktok"></i>
-          </div>
-      </div>
-
-      <!-- Main Content Area -->
-      <div class="px-4 flex-1 max-w-md mx-auto w-full">
-          <!-- Green Card -->
-          <div class="bg-emerald-700 text-white p-5 rounded-2xl shadow-md mb-5 relative overflow-hidden">
-              <h2 class="text-2xl font-bold tracking-wide">Adeega Macaash</h2>
-              <p class="text-xs mt-1 opacity-90">Macmiil iibso oo dhibco aruurso</p>
-          </div>
-
-          <!-- Services Grid -->
-          <div class="grid grid-cols-3 gap-3 mb-6">
-              <!-- Hormuud -->
-              <button onclick="selectService('Hormuud')" class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:border hover:border-emerald-500 transition">
-                  <div class="text-emerald-600 font-bold text-2xl mb-1">H</div>
-                  <span class="text-xs font-bold text-gray-900">Hormuud</span>
-              </button>
-
-              <!-- Somnet -->
-              <button onclick="selectService('Somnet')" class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:border hover:border-blue-500 transition">
-                  <div class="text-blue-600 font-bold text-sm">SOMNET</div>
-                  <span class="text-xs font-bold text-gray-900 mt-1">Somnet</span>
-              </button>
-
-              <!-- Somtel Yellow -->
-              <button onclick="selectService('Somtel')" class="bg-yellow-300 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:opacity-90 transition">
-                  <div class="text-black font-bold text-sm">somtel</div>
-                  <span class="text-xs font-bold text-gray-900 mt-1">Somtel</span>
-              </button>
-
-              <!-- SomLink -->
-              <button onclick="selectService('SomLink')" class="bg-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:border hover:border-purple-500 transition">
-                  <div class="text-purple-700 font-bold text-xs">SomLink</div>
-                  <span class="text-xs font-bold text-gray-900 mt-1">SomLink</span>
-              </button>
-
-              <!-- Amtel Red -->
-              <button onclick="selectService('Amtel')" class="bg-red-700 text-white p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 hover:bg-red-800 transition">
-                  <div class="font-bold text-sm">Amtel</div>
-                  <span class="text-[10px] opacity-90">Friendly partner</span>
-              </button>
-
-              <!-- Rukumo -->
-              <button onclick="selectService('Rukumo')" class="bg-red-50 p-3 rounded-xl shadow-sm flex flex-col items-center justify-center text-center h-24 border border-red-100 hover:bg-red-100 transition">
-                  <div class="text-red-500 text-lg mb-1"><i class="fa-solid fa-ban"></i></div>
-                  <span class="text-xs font-bold text-gray-900">Rukumo</span>
-              </button>
-          </div>
-      </div>
-
-      <!-- Bottom Navigation Bar -->
-      <div class="bg-white border-t border-gray-200 py-3 px-6 flex justify-between items-center text-xs text-gray-500 max-w-md mx-auto w-full">
-          <div class="flex flex-col items-center text-emerald-800 font-semibold cursor-pointer">
-              <i class="fa-solid fa-house text-lg mb-1"></i>
-              <span>Home</span>
-          </div>
-          <div class="flex flex-col items-center hover:text-emerald-800 cursor-pointer">
-              <i class="fa-solid fa-gift text-lg mb-1"></i>
-              <span>Macaash</span>
-          </div>
-          <div class="flex flex-col items-center hover:text-emerald-800 cursor-pointer">
-              <i class="fa-solid fa-clock-rotate-left text-lg mb-1"></i>
-              <span>Orders</span>
-          </div>
-          <div class="flex flex-col items-center hover:text-emerald-800 cursor-pointer">
-              <i class="fa-solid fa-user text-lg mb-1"></i>
-              <span>My Profile</span>
-          </div>
-      </div>
-
-  </div>
+            <!-- 3. Footer -->    
+            <footer class="w-full border-t border-amber-200/60 py-6 text-center text-xs text-slate-500" id="footerText">  
+                <p>© 2026 Bayan App. Dhammaan xuquuqda waa la dhowray.</p>  
+            </footer>
+        </div>
+    </div>
 
 
-  <!-- ================= JAVASCRIPT ================= -->    
-  <script>  
-    // 1. Shaqada lagu furayo App-ka marka Get Started la taabto
-    function startApp() {
-      document.getElementById('landing-screen').classList.add('hidden');
-      document.getElementById('main-dashboard').classList.remove('hidden');
-    }
+    <!-- ==========================================
+         SCREEN 2: MAIN DASHBOARD FRAME
+    =========================================== -->
+    <div id="mainDashboard" class="page-fade hide-page w-full max-w-md bg-[#FEFBEA] min-h-screen md:min-h-[844px] md:max-h-[900px] md:rounded-[40px] md:shadow-2xl overflow-hidden flex-col relative border-0 md:border-8 md:border-gray-900 justify-between">
+        
+        <!-- Scrollable Content Area -->
+        <div class="flex-1 overflow-y-auto p-4 pb-20">
+            
+            <!-- Top Header -->
+            <div class="flex justify-between items-center pt-2 pb-4">
+                <div>
+                    <p class="text-xs font-semibold text-gray-500">Good Morning</p>
+                    <h1 class="text-xl font-extrabold text-gray-900 tracking-tight">abukar</h1>
+                </div>
+                <div class="flex items-center space-x-3">
+                    <!-- Logout / Back to Landing -->
+                    <button onclick="switchScreen('landingScreen')" title="Ka bax" class="text-gray-500 hover:text-red-600 p-2 text-sm transition">
+                        <i class="fa-solid fa-arrow-right-from-bracket"></i>
+                    </button>
+                    <!-- TikTok Icon -->
+                    <div class="w-9 h-9 bg-black text-white rounded-full flex items-center justify-center text-sm shadow">
+                        <i class="fa-brands fa-tiktok"></i>
+                    </div>
+                </div>
+            </div>
 
-    // 2. Shaqada badhamada adeegyada
-    function selectService(name) {
-      alert('Waxaad dooratay adeegga: ' + name);
-    }
+            <!-- Main Green Card -->
+            <div class="bg-emerald-700 text-white p-5 rounded-3xl shadow-lg mb-6 relative overflow-hidden">
+                <div class="relative z-10">
+                    <h2 class="text-2xl font-black tracking-tight mb-1">Adeega Macaash</h2>
+                    <p class="text-xs text-emerald-100 font-medium">Macmiil iibso oo dhibco aruurso</p>
+                </div>
+                <!-- Card Background Accents -->
+                <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-emerald-600 rounded-full opacity-50"></div>
+                <div class="absolute right-8 top-2 w-8 h-8 bg-emerald-500 rounded-full opacity-40"></div>
+            </div>
 
-    // 3. Shaqada Beddalaada Iftiinka / Madowga (Light/Dark Toggle)
-    function toggleTheme() {  
-      const body = document.body;  
-      const sunIcon = document.getElementById('sunIcon');  
-      const moonIcon = document.getElementById('moonIcon');  
-      const themeText = document.getElementById('themeText');  
-      const appLogo = document.getElementById('appLogo');  
-      const mainTitle = document.getElementById('mainTitle');  
-      const mainDesc = document.getElementById('mainDesc');  
-  
-      if (body.classList.contains('bg-[#FEFBEA]')) {  
-        // Beddel oo ka dhig Gaawis / Madow (Dark Mode)  
-        body.classList.remove('bg-[#FEFBEA]', 'text-slate-800');  
-        body.classList.add('bg-slate-900', 'text-slate-100');  
-          
-        sunIcon.classList.add('hidden');  
-        moonIcon.classList.remove('hidden');  
-        themeText.innerText = "Gaawis";  
-          
-        appLogo.classList.remove('text-slate-900');  
-        appLogo.classList.add('text-white');  
-  
-        mainTitle.classList.remove('text-slate-900');  
-        mainTitle.classList.add('text-white');  
-  
-        mainDesc.classList.remove('text-slate-600');  
-        mainDesc.classList.add('text-slate-300');  
-      } else {  
-        // Dib ugu celi Iftiinka dabiiciga ah (#FEFBEA)  
-        body.classList.remove('bg-slate-900', 'text-slate-100');  
-        body.classList.add('bg-[#FEFBEA]', 'text-slate-800');  
-          
-        sunIcon.classList.remove('hidden');  
-        moonIcon.classList.add('hidden');  
-        themeText.innerText = "Iftiin";  
-          
-        appLogo.classList.remove('text-white');  
-        appLogo.classList.add('text-slate-900');  
-  
-        mainTitle.classList.remove('text-white');  
-        mainTitle.classList.add('text-slate-900');  
-  
-        mainDesc.classList.remove('text-slate-300');  
-        mainDesc.classList.add('text-slate-600');  
-      }  
-    }  
-  </script>  
-</body>  
+            <!-- Services Grid (3 Columns) -->
+            <div class="mb-6">
+                <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha</h3>
+                <div class="grid grid-cols-3 gap-3">
+                    
+                    <!-- 1. Hormuud -->
+                    <button onclick="selectService('Hormuud', 'Shabakada Hormuud Telecom')" 
+                            class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md transition active:scale-95">
+                        <div class="w-12 h-12 rounded-full border-2 border-emerald-600 flex items-center justify-center text-emerald-600 font-black text-2xl mb-1 bg-emerald-50">
+                            H
+                        </div>
+                        <span class="text-xs font-bold text-gray-900">Hormuud</span>
+                    </button>
+
+                    <!-- 2. Somnet Telecom -->
+                    <button onclick="selectService('Somnet', 'Shabakada Somnet Telecom')" 
+                            class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md transition active:scale-95">
+                        <div class="text-sky-600 mb-1">
+                            <i class="fa-solid fa-wifi text-2xl"></i>
+                        </div>
+                        <span class="text-[10px] font-bold text-sky-800 uppercase leading-none mt-1">SOMNET</span>
+                        <span class="text-xs font-bold text-gray-900">Somnet</span>
+                    </button>
+
+                    <!-- 3. Somtel (Yellow tile) -->
+                    <button onclick="selectService('Somtel', 'Shabakada Somtel')" 
+                            class="bg-[#FFDC00] p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md transition active:scale-95">
+                        <div class="text-black font-extrabold text-sm mb-1 tracking-wider">
+                            somtel
+                        </div>
+                        <span class="text-xs font-bold text-gray-900 mt-2">Somtel</span>
+                    </button>
+
+                    <!-- 4. SomLink Telecom -->
+                    <button onclick="selectService('SomLink', 'Shabakada SomLink Telecom')" 
+                            class="bg-white p-3 rounded-2xl shadow-sm border border-gray-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md transition active:scale-95">
+                        <div class="text-purple-700 font-black text-sm tracking-tighter">
+                            SomLink
+                        </div>
+                        <span class="text-[9px] text-gray-400 font-semibold mb-1">telecom</span>
+                        <span class="text-xs font-bold text-gray-900">SomLink</span>
+                    </button>
+
+                    <!-- 5. Amtel (Red tile) -->
+                    <button onclick="selectService('Amtel', 'Shabakada Amtel')" 
+                            class="bg-red-700 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md transition active:scale-95">
+                        <div class="font-black text-base italic tracking-wide">
+                            Amtel
+                        </div>
+                        <span class="text-[8px] opacity-80 leading-tight my-1">Friendly calling partner</span>
+                        <span class="text-xs font-bold text-white mt-1">Amtel</span>
+                    </button>
+
+                    <!-- 6. Rukumo -->
+                    <button onclick="selectService('Rukumo', 'Adeegga Rukumada')" 
+                            class="bg-red-50 p-3 rounded-2xl shadow-sm border border-red-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md transition active:scale-95">
+                        <div class="w-10 h-10 rounded-full bg-red-100 text-red-500 flex items-center justify-center text-lg mb-1">
+                            <i class="fa-solid fa-ban"></i>
+                        </div>
+                        <span class="text-xs font-bold text-gray-900">Rukumo</span>
+                    </button>
+
+                </div>
+            </div>
+
+            <!-- Support Icon -->
+            <div class="flex justify-end pr-2 pt-2">
+                <button onclick="selectService('Support', 'Adeega Caawimaada Macmiilka')" class="w-12 h-12 bg-indigo-950 text-emerald-400 rounded-full flex items-center justify-center shadow-lg hover:scale-110 transition active:scale-95 border-2 border-emerald-400">
+                    <i class="fa-solid fa-headset text-xl"></i>
+                </button>
+            </div>
+
+        </div>
+
+        <!-- Bottom Navigation Bar -->
+        <div class="bg-white border-t border-gray-200 py-3 px-6 flex justify-between items-center text-xs text-gray-400 rounded-b-none md:rounded-b-[32px]">
+            <button onclick="setActiveTab(this)" class="nav-item flex flex-col items-center text-indigo-950 font-bold">
+                <i class="fa-solid fa-house text-lg mb-1"></i>
+                <span>Home</span>
+            </button>
+            <button onclick="setActiveTab(this)" class="nav-item flex flex-col items-center hover:text-indigo-950 transition">
+                <i class="fa-solid fa-gift text-lg mb-1"></i>
+                <span>Macaash</span>
+            </button>
+            <button onclick="setActiveTab(this)" class="nav-item flex flex-col items-center hover:text-indigo-950 transition">
+                <i class="fa-solid fa-clock-rotate-left text-lg mb-1"></i>
+                <span>Orders</span>
+            </button>
+            <button onclick="setActiveTab(this)" class="nav-item flex flex-col items-center hover:text-indigo-950 transition">
+                <i class="fa-solid fa-user text-lg mb-1"></i>
+                <span>My Profile</span>
+            </button>
+        </div>
+
+    </div>
+
+    <!-- Interactive Popup Modal -->
+    <div id="serviceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl transform scale-90 transition-transform duration-200" id="modalCard">
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3">
+                <i class="fa-solid fa-check-circle"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900" id="modalTitle">Doorashada Shirkadda</h3>
+            <p class="text-xs text-gray-500 mt-2" id="modalMessage">Waxaad dooratay adeeggan.</p>
+            
+            <button onclick="closeModal()" class="mt-5 w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 rounded-xl text-xs transition active:scale-95">
+                Waan gartay
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Logic -->
+    <script>
+        // Screen Switcher Logic
+        function switchScreen(targetScreenId) {
+            const landing = document.getElementById('landingScreen');
+            const dashboard = document.getElementById('mainDashboard');
+
+            if (targetScreenId === 'mainDashboard') {
+                landing.classList.remove('show-page');
+                landing.classList.add('hide-page');
+
+                setTimeout(() => {
+                    dashboard.classList.remove('hide-page');
+                    dashboard.classList.add('show-page');
+                }, 150);
+            } else {
+                dashboard.classList.remove('show-page');
+                dashboard.classList.add('hide-page');
+
+                setTimeout(() => {
+                    landing.classList.remove('hide-page');
+                    landing.classList.add('show-page');
+                }, 150);
+            }
+        }
+
+        // Service Card Selection Popup
+        function selectService(name, detail) {
+            const modal = document.getElementById('serviceModal');
+            const modalCard = document.getElementById('modalCard');
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalMessage').innerText = `Doorashada: ${detail}. Adeegani dhawaan wuu diyaar noqon doonaa.`;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalCard.classList.remove('scale-90');
+                modalCard.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('serviceModal');
+            const modalCard = document.getElementById('modalCard');
+            
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-90');
+            modal.classList.add('opacity-0');
+
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 200);
+        }
+
+        // Tab selection highlighter
+        function setActiveTab(button) {
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('text-indigo-950', 'font-bold');
+                btn.classList.add('text-gray-400');
+            });
+            button.classList.remove('text-gray-400');
+            button.classList.add('text-indigo-950', 'font-bold');
+        }
+
+        // Light / Dark Theme Toggle for Landing Page
+        function toggleTheme() {  
+            const body = document.body;  
+            const sunIcon = document.getElementById('sunIcon');  
+            const moonIcon = document.getElementById('moonIcon');  
+            const themeText = document.getElementById('themeText');  
+            const appLogo = document.getElementById('appLogo');  
+            const mainTitle = document.getElementById('mainTitle');  
+            const mainDesc = document.getElementById('mainDesc');  
+        
+            if (body.classList.contains('bg-[#FEFBEA]')) {  
+                body.classList.remove('bg-[#FEFBEA]', 'text-slate-800');  
+                body.classList.add('bg-slate-900', 'text-slate-100');  
+                
+                sunIcon.classList.add('hidden');  
+                moonIcon.classList.remove('hidden');  
+                themeText.innerText = "Gaawis";  
+                
+                appLogo.classList.remove('text-slate-900');  
+                appLogo.classList.add('text-white');  
+        
+                mainTitle.classList.remove('text-slate-900');  
+                mainTitle.classList.add('text-white');  
+        
+                mainDesc.classList.remove('text-slate-600');  
+                mainDesc.classList.add('text-slate-300');  
+            } else {  
+                body.classList.remove('bg-slate-900', 'text-slate-100');  
+                body.classList.add('bg-[#FEFBEA]', 'text-slate-800');  
+                
+                sunIcon.classList.remove('hidden');  
+                moonIcon.classList.add('hidden');  
+                themeText.innerText = "Iftiin";  
+                
+                appLogo.classList.remove('text-white');  
+                appLogo.classList.add('text-slate-900');  
+        
+                mainTitle.classList.remove('text-white');  
+                mainTitle.classList.add('text-slate-900');  
+        
+                mainDesc.classList.remove('text-slate-300');  
+                mainDesc.classList.add('text-slate-600');  
+            }  
+        }  
+    </script>
+</body>
 </html>

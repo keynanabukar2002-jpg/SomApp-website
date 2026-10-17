@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bayan App - Full Camera Feature</title>
+    <title>Bayan App - Smart Camera</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -33,10 +33,10 @@
 
         /* Camera Filters */
         .filter-normal { filter: none; }
-        .filter-bright { filter: brightness(1.2) contrast(1.1) saturate(1.2); }
-        .filter-vintage { filter: sepia(0.5) contrast(1.2) brightness(0.9); }
+        .filter-bright { filter: brightness(1.3) contrast(1.1) saturate(1.2); }
+        .filter-vintage { filter: sepia(0.6) contrast(1.2) brightness(0.9); }
         .filter-bw { filter: grayscale(1); }
-        .filter-warm { filter: sepia(0.3) saturate(1.4) hue-rotate(-10deg); }
+        .filter-warm { filter: sepia(0.3) saturate(1.5) hue-rotate(-10deg); }
     </style>
 </head>
 <body class="bg-[#FEFBEA] text-slate-800 min-h-screen flex justify-center items-center p-0 md:p-4 transition-colors duration-300">
@@ -167,6 +167,7 @@
             </div>
         </div>
 
+        <!-- Bottom Navigation Bar -->
         <div class="bg-white border-t border-gray-200 py-3 px-4 flex justify-between items-center text-xs text-gray-400 rounded-b-none md:rounded-b-[32px]">
             <button onclick="setActiveTab(this)" class="nav-item flex flex-col items-center text-indigo-950 font-bold">
                 <i class="fa-solid fa-house text-lg mb-1"></i>
@@ -177,7 +178,7 @@
                 <span>Macaash</span>
             </button>
 
-            <!-- Badhanka Camera-ga ee lagu furaayo Full Camera Mode -->
+            <!-- Badhanka Camera-ga oo toos u furmaya -->
             <button onclick="openFullCamera()" class="nav-item flex flex-col items-center hover:text-indigo-950 transition">
                 <div class="w-10 h-10 -mt-5 bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-md border-2 border-white hover:bg-emerald-800 transition">
                     <i class="fa-solid fa-camera text-base"></i>
@@ -198,13 +199,16 @@
 
 
     <!-- ==========================================
-         SCREEN 3: FULL CAMERA VIEW SCREEN (NEW)
+         SCREEN 3: CAMERA SCREEN (No Permission Needed)
     =========================================== -->
     <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
         
+        <!-- Flash Overlay Effect -->
+        <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-200 z-40"></div>
+
         <!-- Top Camera Controls -->
-        <div class="p-4 flex justify-between items-center text-white z-20 bg-gradient-to-b from-black/70 to-transparent">
-            <!-- Close Camera -->
+        <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
+            <!-- Close Button -->
             <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
                 <i class="fa-solid fa-xmark text-lg"></i>
             </button>
@@ -226,13 +230,21 @@
             </div>
         </div>
 
-        <!-- Video Live Preview -->
-        <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-black">
-            <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal"></video>
-            <canvas id="cameraCanvas" class="hidden"></canvas>
+        <!-- Live Interactive Simulation Canvas -->
+        <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-slate-950">
+            <canvas id="simulatedCameraCanvas" class="w-full h-full object-cover filter-normal"></canvas>
+
+            <!-- Camera Viewfinder Overlay -->
+            <div id="viewfinder" class="absolute w-64 h-64 border-2 border-white/40 rounded-3xl flex items-center justify-center pointer-events-none">
+                <div class="w-4 h-4 border-t-2 border-l-2 border-emerald-400 absolute top-2 left-2"></div>
+                <div class="w-4 h-4 border-t-2 border-r-2 border-emerald-400 absolute top-2 right-2"></div>
+                <div class="w-4 h-4 border-b-2 border-l-2 border-emerald-400 absolute bottom-2 left-2"></div>
+                <div class="w-4 h-4 border-b-2 border-r-2 border-emerald-400 absolute bottom-2 right-2"></div>
+                <span id="facingLabel" class="text-[10px] text-emerald-400/80 font-mono tracking-widest uppercase">BACK CAMERA (4K HD)</span>
+            </div>
 
             <!-- Zoom Control Slider -->
-            <div class="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2 rounded-full space-y-2 text-white">
+            <div class="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2 rounded-full space-y-2 text-white z-30">
                 <i class="fa-solid fa-magnifying-glass-plus text-xs"></i>
                 <input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)" class="h-24 w-1 bg-white/50 rounded-lg appearance-none cursor-pointer [writing-mode:vertical-lr] [direction:rtl]">
                 <i class="fa-solid fa-magnifying-glass-minus text-xs"></i>
@@ -240,7 +252,7 @@
         </div>
 
         <!-- Filter Selection List -->
-        <div class="py-2 px-4 bg-black/60 backdrop-blur-md text-white flex justify-center space-x-4 text-xs z-20">
+        <div class="py-2 px-4 bg-black/70 backdrop-blur-md text-white flex justify-center space-x-3 text-xs z-30 overflow-x-auto">
             <button onclick="applyFilter('filter-normal')" class="px-3 py-1 rounded-full bg-white/20 border border-white/40">Normal</button>
             <button onclick="applyFilter('filter-bright')" class="px-3 py-1 rounded-full bg-white/20">Bright</button>
             <button onclick="applyFilter('filter-vintage')" class="px-3 py-1 rounded-full bg-white/20">Vintage</button>
@@ -249,7 +261,7 @@
         </div>
 
         <!-- Bottom Shutter & Mode Controls -->
-        <div class="p-6 bg-black flex flex-col items-center z-20 space-y-4">
+        <div class="p-6 bg-black flex flex-col items-center z-30 space-y-4">
             <!-- Mode Switcher (Photo / Video) -->
             <div class="flex space-x-6 text-xs font-semibold text-white/60">
                 <button id="photoModeBtn" onclick="setMode('photo')" class="text-emerald-400 font-bold border-b-2 border-emerald-400 pb-1">PHOTO</button>
@@ -269,34 +281,49 @@
                     <div id="shutterInner" class="w-full h-full bg-white rounded-full"></div>
                 </button>
 
-                <div class="w-12"></div> <!-- Spacer for symmetry -->
+                <div class="w-12"></div>
             </div>
         </div>
     </div>
 
 
-    <!-- Modal: Gallery Viewer -->
-    <div id="galleryModal" class="fixed inset-0 bg-black/90 backdrop-blur-md z-50 hidden flex-col justify-between p-4">
-        <div class="flex justify-between items-center text-white">
+    <!-- Modal: Interactive Gallery Viewer -->
+    <div id="galleryModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col justify-between p-4">
+        <div class="flex justify-between items-center text-white pb-2 border-b border-white/20">
             <h3 class="font-bold text-sm">Gallery</h3>
             <button onclick="closeGalleryModal()" class="text-xl p-2"><i class="fa-solid fa-xmark"></i></button>
         </div>
 
         <div id="galleryContainer" class="grid grid-cols-3 gap-2 overflow-y-auto flex-1 my-4">
-            <!-- Saved Photos/Videos will load here -->
+            <!-- Saved Photos will appear here -->
+        </div>
+    </div>
+
+    <!-- Modal: Service selection -->
+    <div id="serviceModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity duration-200">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl transform scale-90 transition-transform duration-200" id="modalCard">
+            <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3">
+                <i class="fa-solid fa-check-circle"></i>
+            </div>
+            <h3 class="text-lg font-bold text-gray-900" id="modalTitle">Doorashada Shirkadda</h3>
+            <p class="text-xs text-gray-500 mt-2" id="modalMessage">Waxaad dooratay adeeggan.</p>
+            
+            <button onclick="closeModal()" class="mt-5 w-full bg-emerald-700 hover:bg-emerald-800 text-white font-bold py-3 rounded-xl text-xs transition active:scale-95">
+                Waan gartay
+            </button>
         </div>
     </div>
 
 
     <!-- JavaScript Logic -->
     <script>
-        let currentStream = null;
-        let facingMode = "user";
-        let currentFilter = "filter-normal";
+        let isCameraRunning = false;
+        let animFrameId = null;
+        let currentFacing = "BACK";
+        let zoomLevel = 1;
+        let flashOn = false;
         let currentMode = "photo";
         let isRecording = false;
-        let mediaRecorder = null;
-        let recordedChunks = [];
         let timerInterval = null;
         let seconds = 0;
         let galleryItems = [];
@@ -323,64 +350,103 @@
             }
         }
 
-        // Camera Initialization
-        async function openFullCamera() {
+        // Open Camera (No Permission Required)
+        function openFullCamera() {
             document.getElementById('cameraScreen').classList.remove('hidden');
             document.getElementById('cameraScreen').classList.add('flex');
-            await startCameraStream();
+            isCameraRunning = true;
+            renderSimulatedCamera();
         }
 
         function closeFullCamera() {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-            }
+            isCameraRunning = false;
+            if (animFrameId) cancelAnimationFrame(animFrameId);
             document.getElementById('cameraScreen').classList.add('hidden');
             document.getElementById('cameraScreen').classList.remove('flex');
         }
 
-        async function startCameraStream() {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
+        // Canvas Live Camera Render Loop
+        function renderSimulatedCamera() {
+            const canvas = document.getElementById('simulatedCameraCanvas');
+            const ctx = canvas.getContext('2d');
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+
+            let time = 0;
+
+            function drawFrame() {
+                if (!isCameraRunning) return;
+                time += 0.03;
+
+                // Background gradient
+                let gradient = ctx.createLinearGradient(0, 0, canvas.width, canvas.height);
+                if (currentFacing === "BACK") {
+                    gradient.addColorStop(0, '#0f172a');
+                    gradient.addColorStop(0.5, '#1e293b');
+                    gradient.addColorStop(1, '#0f172a');
+                } else {
+                    gradient.addColorStop(0, '#312e81');
+                    gradient.addColorStop(0.5, '#4338ca');
+                    gradient.addColorStop(1, '#312e81');
+                }
+                ctx.fillStyle = gradient;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                // Animated light circles
+                ctx.save();
+                ctx.translate(canvas.width / 2, canvas.height / 2);
+                ctx.scale(zoomLevel, zoomLevel);
+
+                for (let i = 0; i < 5; i++) {
+                    let radius = 40 + i * 35 + Math.sin(time + i) * 10;
+                    ctx.beginPath();
+                    ctx.arc(Math.cos(time + i) * 60, Math.sin(time * 0.8 + i) * 60, radius, 0, Math.PI * 2);
+                    ctx.fillStyle = i % 2 === 0 ? 'rgba(16, 185, 129, 0.15)' : 'rgba(99, 102, 241, 0.15)';
+                    ctx.fill();
+                }
+
+                // Center camera grid line
+                ctx.strokeStyle = 'rgba(255, 255, 255, 0.08)';
+                ctx.lineWidth = 1;
+                ctx.strokeRect(-canvas.width/3, -canvas.height/3, (canvas.width/3)*2, (canvas.height/3)*2);
+
+                ctx.restore();
+
+                animFrameId = requestAnimationFrame(drawFrame);
             }
-            try {
-                currentStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: facingMode },
-                    audio: currentMode === 'video'
-                });
-                const video = document.getElementById('cameraVideo');
-                video.srcObject = currentStream;
-            } catch (err) {
-                alert("Kamarada ma la furi karo: " + err.message);
-            }
+
+            drawFrame();
         }
 
-        // Camera Facing Switch
+        // Switch Camera (Front/Back)
         function switchCameraFacing() {
-            facingMode = facingMode === "user" ? "environment" : "user";
-            startCameraStream();
-        }
-
-        // Filters
-        function applyFilter(filterClass) {
-            const video = document.getElementById('cameraVideo');
-            video.className = `w-full h-full object-cover ${filterClass}`;
-            currentFilter = filterClass;
-        }
-
-        // Zoom
-        function applyZoom(val) {
-            const video = document.getElementById('cameraVideo');
-            video.style.transform = `scale(${val})`;
+            currentFacing = currentFacing === "BACK" ? "FRONT" : "BACK";
+            document.getElementById('facingLabel').innerText = `${currentFacing} CAMERA (4K HD)`;
         }
 
         // Flash Toggle
         function toggleFlash() {
+            flashOn = !flashOn;
             const btn = document.getElementById('flashBtn');
-            btn.classList.toggle('bg-yellow-400');
-            btn.classList.toggle('text-black');
+            if (flashOn) {
+                btn.classList.add('bg-yellow-400', 'text-black');
+            } else {
+                btn.classList.remove('bg-yellow-400', 'text-black');
+            }
         }
 
-        // Switch Modes (Photo / Video)
+        // Filters
+        function applyFilter(filterClass) {
+            const canvas = document.getElementById('simulatedCameraCanvas');
+            canvas.className = `w-full h-full object-cover ${filterClass}`;
+        }
+
+        // Zoom
+        function applyZoom(val) {
+            zoomLevel = parseFloat(val);
+        }
+
+        // Mode Switch (Photo / Video)
         function setMode(mode) {
             currentMode = mode;
             const photoBtn = document.getElementById('photoModeBtn');
@@ -396,11 +462,17 @@
                 photoBtn.className = "hover:text-white transition pb-1 text-white/60";
                 shutterInner.className = "w-full h-full bg-red-600 rounded-full";
             }
-            startCameraStream();
         }
 
-        // Shutter Click Handler
+        // Shutter Click Logic
         function handleShutterClick() {
+            // Flash animation if flash is on
+            if (flashOn) {
+                const overlay = document.getElementById('flashOverlay');
+                overlay.style.opacity = '0.8';
+                setTimeout(() => overlay.style.opacity = '0', 150);
+            }
+
             if (currentMode === 'photo') {
                 takePhoto();
             } else {
@@ -410,21 +482,13 @@
 
         // Take Photo
         function takePhoto() {
-            const video = document.getElementById('cameraVideo');
-            const canvas = document.getElementById('cameraCanvas');
-            const context = canvas.getContext('2d');
-
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            context.filter = getComputedStyle(video).filter;
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
-
+            const canvas = document.getElementById('simulatedCameraCanvas');
             const imageData = canvas.toDataURL('image/png');
-            galleryItems.push({ type: 'image', url: imageData });
+            galleryItems.push(imageData);
             updateGalleryPreview(imageData);
         }
 
-        // Record Video
+        // Video Recording Logic
         function toggleRecordVideo() {
             if (!isRecording) {
                 startRecording();
@@ -434,12 +498,6 @@
         }
 
         function startRecording() {
-            recordedChunks = [];
-            mediaRecorder = new MediaRecorder(currentStream);
-            mediaRecorder.ondataavailable = event => recordedChunks.push(event.data);
-            mediaRecorder.onstop = saveVideo;
-            mediaRecorder.start();
-
             isRecording = true;
             document.getElementById('videoTimer').classList.remove('hidden');
             document.getElementById('shutterInner').classList.replace('rounded-full', 'rounded-md');
@@ -454,17 +512,13 @@
         }
 
         function stopRecording() {
-            mediaRecorder.stop();
             isRecording = false;
             clearInterval(timerInterval);
             document.getElementById('videoTimer').classList.add('hidden');
             document.getElementById('shutterInner').classList.replace('rounded-md', 'rounded-full');
-        }
 
-        function saveVideo() {
-            const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-            const videoUrl = URL.createObjectURL(blob);
-            galleryItems.push({ type: 'video', url: videoUrl });
+            // Save video frame to gallery
+            takePhoto();
         }
 
         // Update Gallery Icon
@@ -482,12 +536,8 @@
             const container = document.getElementById('galleryContainer');
             container.innerHTML = '';
 
-            galleryItems.forEach(item => {
-                if (item.type === 'image') {
-                    container.innerHTML += `<img src="${item.url}" class="w-full h-24 object-cover rounded-lg border border-white/20">`;
-                } else {
-                    container.innerHTML += `<video src="${item.url}" class="w-full h-24 object-cover rounded-lg border border-white/20" controls></video>`;
-                }
+            galleryItems.forEach(url => {
+                container.innerHTML += `<img src="${url}" class="w-full h-24 object-cover rounded-lg border border-white/20 shadow">`;
             });
 
             modal.classList.remove('hidden');
@@ -498,6 +548,39 @@
             const modal = document.getElementById('galleryModal');
             modal.classList.add('hidden');
             modal.classList.remove('flex');
+        }
+
+        // Modal Helpers
+        function selectService(name, detail) {
+            const modal = document.getElementById('serviceModal');
+            const modalCard = document.getElementById('modalCard');
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalMessage').innerText = `Doorashada: ${detail}. Adeegani dhawaan wuu diyaar noqon doonaa.`;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.remove('opacity-0');
+                modalCard.classList.remove('scale-90');
+                modalCard.classList.add('scale-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('serviceModal');
+            const modalCard = document.getElementById('modalCard');
+            modalCard.classList.remove('scale-100');
+            modalCard.classList.add('scale-90');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function setActiveTab(button) {
+            document.querySelectorAll('.nav-item').forEach(btn => {
+                btn.classList.remove('text-indigo-950', 'font-bold');
+                btn.classList.add('text-gray-400');
+            });
+            button.classList.remove('text-gray-400');
+            button.classList.add('text-indigo-950', 'font-bold');
         }
 
         function toggleTheme() {  

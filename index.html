@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bayan App - Live Front Camera</title>
+    <title>Bayan App - GitHub Real Camera</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
@@ -33,8 +33,8 @@
 
         /* Camera Filters */
         .filter-normal { filter: none; }
-        .filter-bright { filter: brightness(1.2) contrast(1.1) saturate(1.2); }
-        .filter-vintage { filter: sepia(0.5) contrast(1.2) brightness(0.9); }
+        .filter-bright { filter: brightness(1.3) contrast(1.1) saturate(1.2); }
+        .filter-vintage { filter: sepia(0.6) contrast(1.2) brightness(0.9); }
         .filter-bw { filter: grayscale(1); }
         .filter-warm { filter: sepia(0.3) saturate(1.5) hue-rotate(-10deg); }
     </style>
@@ -178,7 +178,7 @@
                 <span>Macaash</span>
             </button>
 
-            <!-- Badhanka Camera-ga -->
+            <!-- Camera Button -->
             <button onclick="openFullCamera()" class="nav-item flex flex-col items-center hover:text-indigo-950 transition">
                 <div class="w-10 h-10 -mt-5 bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-md border-2 border-white hover:bg-emerald-800 transition">
                     <i class="fa-solid fa-camera text-base"></i>
@@ -199,26 +199,12 @@
 
 
     <!-- ==========================================
-         SCREEN 3: REAL CAMERA SCREEN (Front Facing)
+         SCREEN 3: REAL CAMERA SCREEN FOR GITHUB PAGES
     =========================================== -->
     <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
         
-        <!-- Flash Effect Overlay -->
+        <!-- Flash Overlay Effect -->
         <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-200 z-40"></div>
-
-        <!-- Permission Request Warning Box (Haddii Permission La Diado) -->
-        <div id="permissionNotice" class="absolute inset-0 bg-black/90 z-50 hidden flex-col items-center justify-center p-6 text-center text-white space-y-4">
-            <div class="w-16 h-16 bg-red-500/20 text-red-500 rounded-full flex items-center justify-center text-3xl mb-2">
-                <i class="fa-solid fa-camera-rotate"></i>
-            </div>
-            <h3 class="text-xl font-bold">Fasax kaamarad ayaa loo baahan yahay</h3>
-            <p class="text-xs text-gray-300 max-w-xs leading-relaxed">
-                Si aad wejigaaga u aragto, fadlan taabo badhanka hoose si aad barnaamijka ugu ogolaato isticmaalka kaamerada dhabta ah.
-            </p>
-            <button onclick="requestCameraAccess()" class="bg-emerald-600 hover:bg-emerald-700 text-white font-bold py-3 px-6 rounded-xl text-xs transition active:scale-95 shadow-lg">
-                Ogoloow Kaamerada (Allow Camera)
-            </button>
-        </div>
 
         <!-- Top Camera Controls -->
         <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
@@ -232,7 +218,7 @@
                 <span id="timerText">00:00</span>
             </div>
 
-            <!-- Switch Camera (Front / Back) -->
+            <!-- Controls -->
             <div class="flex items-center space-x-3">
                 <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
                     <i class="fa-solid fa-bolt text-lg"></i>
@@ -243,11 +229,10 @@
             </div>
         </div>
 
-        <!-- Live Real Video Feed (Wajigaaga Si Toos Ah) -->
+        <!-- Real Device Camera Video Preview -->
         <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-black">
-            <!-- Video Tag-ga oo si toos ah loo oynayo stream-ka kaamerada -->
-            <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal transform -scale-x-100"></video>
-            <canvas id="photoCanvas" class="hidden"></canvas>
+            <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal"></video>
+            <canvas id="cameraCanvas" class="hidden"></canvas>
 
             <!-- Zoom Control Slider -->
             <div class="absolute right-4 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2 rounded-full space-y-2 text-white z-30">
@@ -274,13 +259,11 @@
             </div>
 
             <div class="w-full flex justify-between items-center px-4">
-                <!-- Gallery Thumbnail Preview -->
                 <button onclick="openGalleryModal()" class="w-12 h-12 rounded-xl bg-white/20 overflow-hidden border-2 border-white flex items-center justify-center">
                     <img id="galleryPreview" src="" class="w-full h-full object-cover hidden">
                     <i id="galleryPlaceholder" class="fa-solid fa-images text-white"></i>
                 </button>
 
-                <!-- Main Shutter Button -->
                 <button id="shutterBtn" onclick="handleShutterClick()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 transition active:scale-90">
                     <div id="shutterInner" class="w-full h-full bg-white rounded-full"></div>
                 </button>
@@ -299,7 +282,7 @@
         </div>
 
         <div id="galleryContainer" class="grid grid-cols-3 gap-2 overflow-y-auto flex-1 my-4">
-            <!-- Saved Photos will appear here -->
+            <!-- Saved Photos/Videos will appear here -->
         </div>
     </div>
 
@@ -322,7 +305,8 @@
     <!-- JavaScript Logic -->
     <script>
         let currentStream = null;
-        let facingMode = "user"; // "user" kaamarada hore si aad wajigaaga u aragto
+        let facingMode = "environment"; // Deeqda dambe
+        let zoomLevel = 1;
         let flashOn = false;
         let currentMode = "photo";
         let isRecording = false;
@@ -354,11 +338,11 @@
             }
         }
 
-        // Open Real Camera Stream (Front Camera default)
+        // Open Camera for Real Devices (GitHub Pages HTTPS supported)
         async function openFullCamera() {
             document.getElementById('cameraScreen').classList.remove('hidden');
             document.getElementById('cameraScreen').classList.add('flex');
-            await startCameraStream();
+            await startRealCamera();
         }
 
         function closeFullCamera() {
@@ -367,49 +351,33 @@
             }
             document.getElementById('cameraScreen').classList.add('hidden');
             document.getElementById('cameraScreen').classList.remove('flex');
-            document.getElementById('permissionNotice').classList.add('hidden');
         }
 
-        async function startCameraStream() {
+        async function startRealCamera() {
             if (currentStream) {
                 currentStream.getTracks().forEach(track => track.stop());
             }
+
             try {
-                // Toos u wac kamarada hore (user) si wejigu u muuqdo
-                currentStream = await navigator.mediaDevices.getUserMedia({
+                const constraints = {
                     video: { facingMode: facingMode },
                     audio: currentMode === 'video'
-                });
-                
+                };
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
                 const video = document.getElementById('cameraVideo');
                 video.srcObject = currentStream;
-                document.getElementById('permissionNotice').classList.add('hidden');
             } catch (err) {
-                // Haddii permission-ka la diado ama error ka dhaco
-                console.error("Camera permission error:", err);
-                document.getElementById('permissionNotice').classList.remove('hidden');
+                alert("Kamarada dhabta ah ee mobaylka: Fadlan oggolaanshaha kamarada ka bixi biraawsarka/browser-ka.");
             }
         }
 
-        function requestCameraAccess() {
-            startCameraStream();
-        }
-
-        // Switch Camera (Front / Back)
+        // Switch Front / Back Camera
         function switchCameraFacing() {
             facingMode = facingMode === "user" ? "environment" : "user";
-            const video = document.getElementById('cameraVideo');
-            
-            // Mirror flip keliya kamarada hore
-            if (facingMode === "user") {
-                video.classList.add('transform', '-scale-x-100');
-            } else {
-                video.classList.remove('transform', '-scale-x-100');
-            }
-            startCameraStream();
+            startRealCamera();
         }
 
-        // Flash Effect
+        // Flash Light Effect
         function toggleFlash() {
             flashOn = !flashOn;
             const btn = document.getElementById('flashBtn');
@@ -423,14 +391,14 @@
         // Filters
         function applyFilter(filterClass) {
             const video = document.getElementById('cameraVideo');
-            let mirror = facingMode === "user" ? "transform -scale-x-100" : "";
-            video.className = `w-full h-full object-cover ${filterClass} ${mirror}`;
+            video.className = `w-full h-full object-cover ${filterClass}`;
         }
 
-        // Zoom
+        // Zoom Effect
         function applyZoom(val) {
+            zoomLevel = parseFloat(val);
             const video = document.getElementById('cameraVideo');
-            video.style.transform = `scale(${val}) ${facingMode === "user" ? "scaleX(-1)" : ""}`;
+            video.style.transform = `scale(${zoomLevel})`;
         }
 
         // Mode Switch (Photo / Video)
@@ -449,7 +417,7 @@
                 photoBtn.className = "hover:text-white transition pb-1 text-white/60";
                 shutterInner.className = "w-full h-full bg-red-600 rounded-full";
             }
-            startCameraStream();
+            startRealCamera();
         }
 
         // Shutter Click Logic
@@ -461,34 +429,30 @@
             }
 
             if (currentMode === 'photo') {
-                takePhoto();
+                takeRealPhoto();
             } else {
                 toggleRecordVideo();
             }
         }
 
-        // Take Photo (Capture Real Video Frame)
-        function takePhoto() {
+        // Take Real Snapshot
+        function takeRealPhoto() {
             const video = document.getElementById('cameraVideo');
-            const canvas = document.getElementById('photoCanvas');
-            const context = canvas.getContext('2d');
+            const canvas = document.getElementById('cameraCanvas');
+            const ctx = canvas.getContext('2d');
 
             canvas.width = video.videoWidth || 640;
             canvas.height = video.videoHeight || 480;
 
-            if (facingMode === "user") {
-                context.translate(canvas.width, 0);
-                context.scale(-1, 1);
-            }
-
-            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            ctx.filter = getComputedStyle(video).filter;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
 
             const imageData = canvas.toDataURL('image/png');
-            galleryItems.push(imageData);
+            galleryItems.push({ type: 'image', url: imageData });
             updateGalleryPreview(imageData);
         }
 
-        // Record Video Logic
+        // Real Video Recording Logic
         function toggleRecordVideo() {
             if (!isRecording) {
                 startRecording();
@@ -498,28 +462,31 @@
         }
 
         function startRecording() {
-            if (!currentStream) return;
             recordedChunks = [];
-            mediaRecorder = new MediaRecorder(currentStream);
-            mediaRecorder.ondataavailable = event => recordedChunks.push(event.data);
-            mediaRecorder.onstop = saveVideo;
-            mediaRecorder.start();
+            try {
+                mediaRecorder = new MediaRecorder(currentStream);
+                mediaRecorder.ondataavailable = event => recordedChunks.push(event.data);
+                mediaRecorder.onstop = saveVideo;
+                mediaRecorder.start();
 
-            isRecording = true;
-            document.getElementById('videoTimer').classList.remove('hidden');
-            document.getElementById('shutterInner').classList.replace('rounded-full', 'rounded-md');
+                isRecording = true;
+                document.getElementById('videoTimer').classList.remove('hidden');
+                document.getElementById('shutterInner').classList.replace('rounded-full', 'rounded-md');
 
-            seconds = 0;
-            timerInterval = setInterval(() => {
-                seconds++;
-                let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-                let secs = (seconds % 60).toString().padStart(2, '0');
-                document.getElementById('timerText').innerText = `${mins}:${secs}`;
-            }, 1000);
+                seconds = 0;
+                timerInterval = setInterval(() => {
+                    seconds++;
+                    let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                    let secs = (seconds % 60).toString().padStart(2, '0');
+                    document.getElementById('timerText').innerText = `${mins}:${secs}`;
+                }, 1000);
+            } catch (e) {
+                alert("Duubista muuqaalka: " + e.message);
+            }
         }
 
         function stopRecording() {
-            mediaRecorder.stop();
+            if (mediaRecorder) mediaRecorder.stop();
             isRecording = false;
             clearInterval(timerInterval);
             document.getElementById('videoTimer').classList.add('hidden');
@@ -529,10 +496,10 @@
         function saveVideo() {
             const blob = new Blob(recordedChunks, { type: 'video/mp4' });
             const videoUrl = URL.createObjectURL(blob);
-            galleryItems.push(videoUrl);
+            galleryItems.push({ type: 'video', url: videoUrl });
         }
 
-        // Gallery Functions
+        // Update Gallery Thumbnail
         function updateGalleryPreview(url) {
             const preview = document.getElementById('galleryPreview');
             const placeholder = document.getElementById('galleryPlaceholder');
@@ -541,13 +508,18 @@
             placeholder.classList.add('hidden');
         }
 
+        // Gallery Modal
         function openGalleryModal() {
             const modal = document.getElementById('galleryModal');
             const container = document.getElementById('galleryContainer');
             container.innerHTML = '';
 
-            galleryItems.forEach(url => {
-                container.innerHTML += `<img src="${url}" class="w-full h-24 object-cover rounded-lg border border-white/20 shadow">`;
+            galleryItems.forEach(item => {
+                if (item.type === 'image') {
+                    container.innerHTML += `<img src="${item.url}" class="w-full h-24 object-cover rounded-lg border border-white/20 shadow">`;
+                } else {
+                    container.innerHTML += `<video src="${item.url}" class="w-full h-24 object-cover rounded-lg border border-white/20 shadow" controls></video>`;
+                }
             });
 
             modal.classList.remove('hidden');
@@ -560,7 +532,7 @@
             modal.classList.remove('flex');
         }
 
-        // Service Modal Helpers
+        // Modal Helpers
         function selectService(name, detail) {
             const modal = document.getElementById('serviceModal');
             const modalCard = document.getElementById('modalCard');

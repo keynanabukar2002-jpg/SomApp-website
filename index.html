@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="so" class="h-full">
 <head>
@@ -32,7 +33,7 @@
         .filter-bw { filter: grayscale(1); }
         .filter-warm { filter: sepia(0.3) saturate(1.4) hue-rotate(-10deg); }
 
-        /* Custom Scrollbar */
+        /* Custom Scrollbar Hide */
         ::-webkit-scrollbar {
             width: 0px;
             background: transparent;
@@ -52,7 +53,7 @@
                 <div class="text-3xl font-black tracking-wider text-slate-900">
                     BAY<span class="text-amber-600">AN</span>
                 </div>
-                <button onclick="toggleTheme()" class="w-10 h-10 bg-amber-100/80 rounded-2xl flex items-center justify-center text-amber-800 shadow-sm active:scale-95 transition">
+                <button onclick="toggleTheme()" class="w-10 h-10 bg-amber-100/80 rounded-2xl flex items-center justify-center text-amber-800 shadow-sm active:scale-95 transition" aria-label="Toggle Theme">
                     <i class="fa-solid fa-moon text-lg"></i>
                 </button>
             </div>
@@ -93,7 +94,7 @@
                         <h2 class="text-sm font-extrabold text-slate-900 leading-tight">Bayan User</h2>
                     </div>
                 </div>
-                <button onclick="switchScreen('landingScreen')" title="Ka bax" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center transition active:scale-95">
+                <button onclick="switchScreen('landingScreen')" title="Ka bax" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center transition active:scale-95" aria-label="Sign out">
                     <i class="fa-solid fa-right-from-bracket text-xs"></i>
                 </button>
             </div>
@@ -103,22 +104,24 @@
                 
                 <!-- TAB 1: HOME -->
                 <div id="tabHome" class="tab-content space-y-5">
-                    <div class="bg-gradient-to-br from-emerald-800 to-emerald-600 text-white p-5 rounded-3xl shadow-lg relative overflow-hidden">
-                        <div class="relative z-10">
-                            <h2 class="text-2xl font-black tracking-tight mb-1">Adeega Macaash</h2>
-                            <p class="text-xs text-emerald-100 font-medium">Macmiil iibso oo dhibco aruurso</p>
+                    
+                    <!-- REPLACED GREEN BANNER WITH FEATURED GIF CARD -->
+                    <div class="bg-white p-2.5 rounded-3xl shadow-md border border-slate-100 text-center relative overflow-hidden">
+                        <div class="overflow-hidden rounded-2xl border-4 border-white shadow-sm relative">
+                            <img src="https://i.ibb.co/r2DyM0Tc/YTShort-18-Oct2026-22-09-19-001-1.gif" alt="Bayan Featured Clip" class="w-full h-48 object-cover">
+                            <!-- Overlay Badge -->
+                            <div class="absolute top-2 left-2 bg-black/60 backdrop-blur-md text-white px-2.5 py-0.5 rounded-full text-[9px] font-bold uppercase tracking-wider flex items-center gap-1">
+                                <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                                Featured
+                            </div>
                         </div>
-                        <div class="absolute -right-4 -bottom-4 w-20 h-20 bg-white/10 rounded-full blur-sm"></div>
+                        <div class="flex items-center justify-between px-2 pt-2">
+                            <span class="text-xs font-black text-slate-800">Bayan Featured Clip</span>
+                            <span class="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-lg">Adeega Macaash</span>
+                        </div>
                     </div>
 
-                    <!-- GIF Display Section with White Border & Rounded Style -->
-                    <div class="bg-white p-3 rounded-3xl shadow-md border border-slate-100 text-center">
-                        <div class="overflow-hidden rounded-2xl border-4 border-white shadow-lg">
-                            <img src="https://i.ibb.co/r2DyM0Tc/YTShort-18-Oct2026-22-09-19-001-1.gif" alt="Bayan GIF Animation" class="w-full h-44 object-cover">
-                        </div>
-                        <p class="text-[11px] font-bold text-slate-500 mt-2">Bayan Featured Clip</p>
-                    </div>
-
+                    <!-- Network Services Grid -->
                     <div>
                         <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha</h3>
                         <div class="grid grid-cols-3 gap-3">
@@ -210,7 +213,7 @@
                 </button>
 
                 <!-- Floating Center Camera Button -->
-                <button onclick="openFullCamera()" class="flex flex-col items-center -mt-5">
+                <button onclick="openFullCamera()" class="flex flex-col items-center -mt-5" aria-label="Open Camera">
                     <div class="w-12 h-12 bg-emerald-700 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] active:scale-90 transition">
                         <i class="fa-solid fa-camera text-lg"></i>
                     </div>
@@ -244,7 +247,7 @@
 
             <!-- Camera Header -->
             <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
-                <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center active:scale-90">
+                <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center active:scale-90" aria-label="Close Camera">
                     <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
 
@@ -254,10 +257,10 @@
                 </div>
 
                 <div class="flex items-center space-x-2">
-                    <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                    <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center" aria-label="Toggle Flash">
                         <i class="fa-solid fa-bolt text-base"></i>
                     </button>
-                    <button onclick="switchCameraFacing()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                    <button onclick="switchCameraFacing()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center" aria-label="Switch Camera">
                         <i class="fa-solid fa-rotate text-base"></i>
                     </button>
                 </div>
@@ -292,12 +295,12 @@
                 </div>
 
                 <div class="w-full flex justify-between items-center px-4">
-                    <button onclick="openGalleryModal()" class="w-12 h-12 rounded-xl bg-white/10 overflow-hidden border border-white/30 flex items-center justify-center">
-                        <img id="galleryPreview" class="w-full h-full object-cover hidden">
+                    <button onclick="openGalleryModal()" class="w-12 h-12 rounded-xl bg-white/10 overflow-hidden border border-white/30 flex items-center justify-center" aria-label="Open Gallery">
+                        <img id="galleryPreview" alt="Gallery Preview" class="w-full h-full object-cover hidden">
                         <i id="galleryPlaceholder" class="fa-solid fa-images text-white/70"></i>
                     </button>
 
-                    <button id="shutterBtn" onclick="handleShutterClick()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 active:scale-90 transition">
+                    <button id="shutterBtn" onclick="handleShutterClick()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 active:scale-90 transition" aria-label="Take Photo or Record">
                         <div id="shutterInner" class="w-full h-full bg-white rounded-full"></div>
                     </button>
 
@@ -559,3 +562,4 @@
     </script>
 </body>
 </html>
+```

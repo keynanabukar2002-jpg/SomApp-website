@@ -193,7 +193,7 @@
                     <span>Home</span>
                 </button>
 
-                <!-- TikTok Launch Button -->
+                <!-- TikTok Direct App Button -->
                 <button onclick="openTikTokApp()" class="nav-btn flex flex-col items-center text-slate-900 hover:text-black">
                     <div class="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs mb-0.5 shadow-sm">
                         <i class="fa-brands fa-tiktok"></i>
@@ -209,7 +209,7 @@
                     <span class="text-slate-700 mt-0.5">Camera</span>
                 </button>
 
-                <!-- Facebook Launch Button -->
+                <!-- Facebook Direct App Button -->
                 <button onclick="openFacebookApp()" class="nav-btn flex flex-col items-center text-blue-600 hover:text-blue-700">
                     <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mb-0.5 shadow-sm">
                         <i class="fa-brands fa-facebook-f"></i>
@@ -335,16 +335,25 @@
         let seconds = 0;
         let galleryItems = [];
 
-        // Direct Android Intent for TikTok (App-ka ku qasbaya inuu furo TikTok ee uusan Chrome aadin)
+        // Si toos ah app-ka TikTok u furaya iyadousan Chrome aadin
         function openTikTokApp() {
-            const intentUrl = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
-            window.location.href = intentUrl;
+            // Isticmaalka Custom Scheme si loo qasbo furitaanka App-ka
+            window.location.href = "snssdk1128://";
+            
+            // Haddii uusan app-ku furmin ama uusan jirin, wuxuu ku hakinayaa gudaha app-ka iyadousan Chrome marin
+            setTimeout(function() {
+                // Waqtiga la joogo haddii uusan app-ku kicin, wax dhibaato ah ma keeneyso
+            }, 500);
         }
 
-        // Direct Android Intent for Facebook
+        // Si toos ah app-ka Facebook u furaya iyadousan Chrome aadin
         function openFacebookApp() {
-            const intentUrl = "intent://page/#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
-            window.location.href = intentUrl;
+            // Isticmaalka Facebook URI Scheme
+            window.location.href = "fb://feed";
+            
+            setTimeout(function() {
+                // Kuma celin doonto Chrome
+            }, 500);
         }
 
         function switchScreen(screenId) {

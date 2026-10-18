@@ -335,25 +335,15 @@
         let seconds = 0;
         let galleryItems = [];
 
-        // Si toos ah app-ka TikTok u furaya iyadousan Chrome aadin
+        // Si toos ah app-ka TikTok oo kaliya u furaya (iyadousan Chrome marin)
         function openTikTokApp() {
-            // Isticmaalka Custom Scheme si loo qasbo furitaanka App-ka
+            // Isticmaalka Direct Application URI Scheme
             window.location.href = "snssdk1128://";
-            
-            // Haddii uusan app-ku furmin ama uusan jirin, wuxuu ku hakinayaa gudaha app-ka iyadousan Chrome marin
-            setTimeout(function() {
-                // Waqtiga la joogo haddii uusan app-ku kicin, wax dhibaato ah ma keeneyso
-            }, 500);
         }
 
-        // Si toos ah app-ka Facebook u furaya iyadousan Chrome aadin
+        // Si toos ah app-ka Facebook oo kaliya u furaya
         function openFacebookApp() {
-            // Isticmaalka Facebook URI Scheme
             window.location.href = "fb://feed";
-            
-            setTimeout(function() {
-                // Kuma celin doonto Chrome
-            }, 500);
         }
 
         function switchScreen(screenId) {

@@ -49,9 +49,10 @@
         =========================================== -->
         <div id="landingScreen" class="w-full h-full flex flex-col justify-between p-6 bg-gradient-to-b from-[#FEFBEA] via-[#FFF9E6] to-[#F7F2D5] relative overflow-hidden">
             
-            <!-- Background Video oo Automatic u shaqeynaya -->
-            <video autoplay muted loop playsinline class="absolute inset-0 w-full h-full object-cover z-0 opacity-20">
+            <!-- Background Video oo Automatic u shaqeynaya oo wata JavaScript Trigger -->
+            <video id="bgVideo" autoplay muted loop playsinline preload="auto" class="absolute inset-0 w-full h-full object-cover z-0 opacity-40">
                 <source src="1000091335.mp4" type="video/mp4">
+                Your browser does not support the video tag.
             </video>
 
             <div class="flex justify-between items-center pt-2 relative z-10">
@@ -63,14 +64,14 @@
                 </button>
             </div>
 
-            <div class="my-auto text-center px-2 relative z-10">               
+            <div class="my-auto text-center px-2 relative z-10 bg-white/40 backdrop-blur-sm p-4 rounded-3xl border border-white/50 shadow-sm">               
                 <span class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-widest">
                     Welcome to Bayan App
                 </span>
                 <h1 class="text-3xl font-black text-slate-900 mt-4 mb-3 leading-snug">
                     Kusoo Dhawoow Bayan-app
                 </h1>
-                <p class="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto font-medium">
+                <p class="text-xs text-slate-700 leading-relaxed max-w-xs mx-auto font-medium">
                     App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo shopping.
                 </p>
             </div>
@@ -331,6 +332,19 @@
 
     <!-- JavaScript Mobile Logic -->
     <script>
+        // Force video playback on load
+        window.addEventListener('DOMContentLoaded', () => {
+            const bgVideo = document.getElementById('bgVideo');
+            if (bgVideo) {
+                bgVideo.play().catch(error => {
+                    console.log("Auto-play prevented, waiting for user interaction:", error);
+                    document.body.addEventListener('click', () => {
+                        bgVideo.play();
+                    }, { once: true });
+                });
+            }
+        });
+
         let currentStream = null;
         let facingMode = "environment";
         let zoomLevel = 1;
@@ -367,6 +381,9 @@
                 document.getElementById('mainDashboard').classList.add('hidden');
                 document.getElementById('mainDashboard').classList.remove('flex');
                 document.getElementById('landingScreen').classList.remove('hidden');
+                // Play video again when returning to landing screen
+                const bgVideo = document.getElementById('bgVideo');
+                if(bgVideo) bgVideo.play();
             }
         }
 
@@ -521,6 +538,7 @@
         function openGalleryModal() {
             const container = document.getElementById('galleryContainer');
             container.innerHTML = '';
+            galleryItems.item(item => { ... }); // handled safely via loop below
             galleryItems.forEach(item => {
                 if (item.type === 'image') {
                     container.innerHTML += `<img src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20">`;

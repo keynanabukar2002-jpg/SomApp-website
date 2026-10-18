@@ -187,17 +187,18 @@
 
             <!-- Bottom Mobile Navigation Bar -->
             <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
+                <!-- Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
                     <i class="fa-solid fa-house text-base mb-0.5"></i>
                     <span>Home</span>
                 </button>
-                
-                <!-- Facebook Launch Button -->
-                <button onclick="openFacebookApp()" class="nav-btn flex flex-col items-center text-blue-600 hover:text-blue-700">
-                    <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mb-0.5 shadow-sm">
-                        <i class="fa-brands fa-facebook-f"></i>
+
+                <!-- TikTok Launch Button -->
+                <button onclick="openTikTokApp()" class="nav-btn flex flex-col items-center text-slate-900 hover:text-black">
+                    <div class="w-6 h-6 rounded-full bg-black text-white flex items-center justify-center text-xs mb-0.5 shadow-sm">
+                        <i class="fa-brands fa-tiktok"></i>
                     </div>
-                    <span class="font-extrabold text-blue-600">Facebook</span>
+                    <span class="font-extrabold text-slate-900">TikTok</span>
                 </button>
 
                 <!-- Floating Center Camera Button -->
@@ -208,10 +209,15 @@
                     <span class="text-slate-700 mt-0.5">Camera</span>
                 </button>
 
-                <button onclick="switchTab('tabOrders', this)" class="nav-btn flex flex-col items-center hover:text-slate-800">
-                    <i class="fa-solid fa-clock-rotate-left text-base mb-0.5"></i>
-                    <span>Orders</span>
+                <!-- Facebook Launch Button -->
+                <button onclick="openFacebookApp()" class="nav-btn flex flex-col items-center text-blue-600 hover:text-blue-700">
+                    <div class="w-6 h-6 rounded-full bg-blue-600 text-white flex items-center justify-center text-xs mb-0.5 shadow-sm">
+                        <i class="fa-brands fa-facebook-f"></i>
+                    </div>
+                    <span class="font-extrabold text-blue-600">Facebook</span>
                 </button>
+
+                <!-- Profile Button -->
                 <button onclick="switchTab('tabProfile', this)" class="nav-btn flex flex-col items-center hover:text-slate-800">
                     <i class="fa-solid fa-user text-base mb-0.5"></i>
                     <span>Profile</span>
@@ -329,11 +335,25 @@
         let seconds = 0;
         let galleryItems = [];
 
+        // TikTok Launcher Logic
+        function openTikTokApp() {
+            const tiktokAppScheme = "snssdk1128://";
+            const tiktokWebUrl = "https://www.tiktok.com";
+
+            const now = Date.now();
+            window.location.href = tiktokAppScheme;
+
+            setTimeout(function() {
+                if (Date.now() - now < 1800) {
+                    window.location.href = tiktokWebUrl;
+                }
+            }, 1200);
+        }
+
         // Facebook Launcher Logic
         function openFacebookApp() {
             const fbAppScheme = "fb://page/";
             const fbWebUrl = "https://www.facebook.com";
-            const fbPlayStore = "https://play.google.com/store/apps/details?id=com.facebook.katana";
 
             const now = Date.now();
             window.location.href = fbAppScheme;

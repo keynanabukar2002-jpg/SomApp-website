@@ -335,34 +335,16 @@
         let seconds = 0;
         let galleryItems = [];
 
-        // TikTok Launcher Logic
+        // Direct Android Intent for TikTok (App-ka ku qasbaya inuu furo TikTok ee uusan Chrome aadin)
         function openTikTokApp() {
-            const tiktokAppScheme = "snssdk1128://";
-            const tiktokWebUrl = "https://www.tiktok.com";
-
-            const now = Date.now();
-            window.location.href = tiktokAppScheme;
-
-            setTimeout(function() {
-                if (Date.now() - now < 1800) {
-                    window.location.href = tiktokWebUrl;
-                }
-            }, 1200);
+            const intentUrl = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
+            window.location.href = intentUrl;
         }
 
-        // Facebook Launcher Logic
+        // Direct Android Intent for Facebook
         function openFacebookApp() {
-            const fbAppScheme = "fb://page/";
-            const fbWebUrl = "https://www.facebook.com";
-
-            const now = Date.now();
-            window.location.href = fbAppScheme;
-
-            setTimeout(function() {
-                if (Date.now() - now < 1800) {
-                    window.location.href = fbWebUrl;
-                }
-            }, 1200);
+            const intentUrl = "intent://page/#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
+            window.location.href = intentUrl;
         }
 
         function switchScreen(screenId) {

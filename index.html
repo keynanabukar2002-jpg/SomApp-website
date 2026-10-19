@@ -104,9 +104,9 @@
                 <!-- TAB 1: HOME -->
                 <div id="tabHome" class="tab-content space-y-5">
                     
-                    <!-- GIF Display Section (Dhererka 110px, Aspect Ratio 3.05:1 & Link-ga Cusub) -->
+                    <!-- GIF Display Section (Dhererka 110px & Aspect Ratio 3.05:1) -->
                     <div class="rounded-2xl overflow-hidden shadow-md border-2 border-white aspect-[3.05/1] h-[110px] w-full bg-emerald-900/10 flex items-center justify-center relative mx-auto">
-                        <img id="mainBayanGif" src="https://i.ibb.co/yB6p3fzc/20261020-024814.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover">
+                        <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover">
                     </div>
 
                     <div>
@@ -183,7 +183,7 @@
 
             </div>
 
-            <!-- Bottom Mobile Navigation Bar (Oo leh WAAFI, TikTok iyo Facebook) -->
+            <!-- Bottom Mobile Navigation Bar (Oo leh Official WAAFI App Logo) -->
             <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
                 <!-- Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
@@ -191,12 +191,16 @@
                     <span>Home</span>
                 </button>
 
-                <!-- WAAFI Button -->
-                <button onclick="openWaafiApp()" class="nav-btn flex flex-col items-center text-emerald-600 hover:text-emerald-700">
-                    <div class="w-6 h-6 rounded-full bg-emerald-600 text-white flex items-center justify-center text-[10px] font-black mb-0.5 shadow-sm">
-                        WF
+                <!-- Official WAAFI App Logo Button -->
+                <button onclick="openWaafiApp()" class="nav-btn flex flex-col items-center group">
+                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-[#81C784] via-[#66BB6A] to-[#4CAF50] p-[2px] shadow-md flex items-center justify-center relative transition group-active:scale-95">
+                        <div class="w-full h-full bg-white rounded-full flex items-center justify-center relative overflow-hidden">
+                            <!-- Official WAAFI Green Arc & Dot -->
+                            <div class="absolute top-0.5 left-0.5 w-2 h-2 rounded-full bg-[#7CB342]"></div>
+                            <span class="text-[9px] font-black tracking-tighter text-[#4CAF50] italic z-10 leading-none">WF</span>
+                        </div>
                     </div>
-                    <span class="font-extrabold text-emerald-600">WAAFI</span>
+                    <span class="font-black text-[9px] text-[#388E3C] mt-0.5">WAAFI</span>
                 </button>
 
                 <!-- Floating Center Camera Button -->

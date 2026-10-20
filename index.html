@@ -183,7 +183,7 @@
 
             </div>
 
-            <!-- Bottom Mobile Navigation Bar (Oo leh Official WAAFI App Logo) -->
+            <!-- Bottom Mobile Navigation Bar (Oo leh WAAFI Custom Play Store Icon Design) -->
             <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
                 <!-- Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
@@ -191,16 +191,13 @@
                     <span>Home</span>
                 </button>
 
-                <!-- Official WAAFI App Logo Button -->
-                <button onclick="openWaafiApp()" class="nav-btn flex flex-col items-center group">
-                    <div class="w-7 h-7 rounded-full bg-gradient-to-br from-[#81C784] via-[#66BB6A] to-[#4CAF50] p-[2px] shadow-md flex items-center justify-center relative transition group-active:scale-95">
-                        <div class="w-full h-full bg-white rounded-full flex items-center justify-center relative overflow-hidden">
-                            <!-- Official WAAFI Green Arc & Dot -->
-                            <div class="absolute top-0.5 left-0.5 w-2 h-2 rounded-full bg-[#7CB342]"></div>
-                            <span class="text-[9px] font-black tracking-tighter text-[#4CAF50] italic z-10 leading-none">WF</span>
-                        </div>
+                <!-- WAAFI Button (Updated Play Store Icon Design) -->
+                <button onclick="openWaafiApp()" class="nav-btn flex flex-col items-center hover:opacity-90 active:scale-95 transition">
+                    <div class="w-7 h-7 rounded-lg bg-gradient-to-br from-emerald-500 via-lime-500 to-emerald-600 flex items-center justify-center mb-0.5 shadow-sm p-0.5 border border-emerald-400/30 relative overflow-hidden">
+                        <div class="absolute inset-0 bg-white/10 rounded-lg"></div>
+                        <span class="font-black text-white text-[10px] tracking-tighter z-10 font-sans italic drop-shadow-sm">WF</span>
                     </div>
-                    <span class="font-black text-[9px] text-[#388E3C] mt-0.5">WAAFI</span>
+                    <span class="font-extrabold text-emerald-600 leading-tight">WAAFI</span>
                 </button>
 
                 <!-- Floating Center Camera Button -->

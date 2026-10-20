@@ -1,484 +1,604 @@
-package com.bayantube.app
+<!DOCTYPE html>
+<html lang="so" class="h-full">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Bayan Mobile App</title>
+    
+    <!-- PWA / Native App Mobile Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#047857">
 
-import android.os.Bundle
-import androidx.activity.ComponentActivity
-import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-
-private val Red = Color(0xFFD71920)
-private val Background = Color(0xFFF7F7F7)
-
-data class Video(
-    val title: String,
-    val channel: String,
-    val views: String,
-    val duration: String
-)
-
-class MainActivity : ComponentActivity() {
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-
-        setContent {
-            BayanTubeApp()
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
         }
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun BayanTubeApp() {
-    var page by remember { mutableStateOf("Home") }
-    var search by remember { mutableStateOf("") }
+        /* Camera Filters */
+        .filter-normal { filter: none; }
+        .filter-bright { filter: brightness(1.25) contrast(1.1) saturate(1.2); }
+        .filter-vintage { filter: sepia(0.5) contrast(1.2) brightness(0.9); }
+        .filter-bw { filter: grayscale(1); }
+        .filter-warm { filter: sepia(0.3) saturate(1.4) hue-rotate(-10deg); }
 
-    val videos = listOf(
-        Video(
-            "Barashada English-ka",
-            "English Somali",
-            "1.2K daawasho",
-            "08:20"
-        ),
-        Video(
-            "Sida ganacsi loo bilaabo",
-            "Ganacsi Somali",
-            "850 daawasho",
-            "12:40"
-        ),
-        Video(
-            "Barashada computer-ka",
-            "Bayan Academy",
-            "3.5K daawasho",
-            "10:15"
-        )
-    )
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 md:bg-slate-800 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
 
-    MaterialTheme(
-        colorScheme = lightColorScheme(
-            primary = Red,
-            background = Background
-        )
-    ) {
-        Scaffold(
-            topBar = {
-                TopAppBar(
-                    title = {
-                        Row(
-                            verticalAlignment =
-                                Alignment.CenterVertically
-                        ) {
-                            Icon(
-                                Icons.Default.PlayCircleFilled,
-                                contentDescription = null,
-                                tint = Red,
-                                modifier = Modifier.size(34.dp)
-                            )
+    <!-- APP CONTAINER FRAME -->
+    <div class="w-full h-full md:max-w-[410px] md:h-[844px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900">
 
-                            Spacer(Modifier.width(8.dp))
+        <!-- ==========================================
+             SCREEN 1: LANDING / WELCOME SCREEN
+        =========================================== -->
+        <div id="landingScreen" class="w-full h-full flex flex-col justify-between p-6 bg-gradient-to-b from-[#FEFBEA] via-[#FFF9E6] to-[#F7F2D5]">
+            <div class="flex justify-between items-center pt-2">
+                <div class="text-3xl font-black tracking-wider text-slate-900">
+                    BAY<span class="text-amber-600">AN</span>
+                </div>
+                <button onclick="toggleTheme()" class="w-10 h-10 bg-amber-100/80 rounded-2xl flex items-center justify-center text-amber-800 shadow-sm active:scale-95 transition">
+                    <i class="fa-solid fa-moon text-lg"></i>
+                </button>
+            </div>
 
-                            Text(
-                                "BayanTube",
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 23.sp
-                            )
-                        }
-                    },
-                    actions = {
-                        IconButton(
-                            onClick = { page = "Search" }
-                        ) {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = "Search"
-                            )
-                        }
-                    },
-                    colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = Color.White
-                    )
-                )
-            },
-            bottomBar = {
-                NavigationBar(
-                    containerColor = Color.White
-                ) {
-                    NavigationBarItem(
-                        selected = page == "Home",
-                        onClick = { page = "Home" },
-                        icon = {
-                            Icon(
-                                Icons.Default.Home,
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text("Home") }
-                    )
+            <div class="my-auto text-center px-2">               
+                <span class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-widest">
+                    Welcome to Bayan App
+                </span>
+                <h1 class="text-3xl font-black text-slate-900 mt-4 mb-3 leading-snug">
+                    Kusoo Dhawoow Bayan-app
+                </h1>
+                <p class="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto font-medium">
+                    App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo shopping.
+                </p>
+            </div>
 
-                    NavigationBarItem(
-                        selected = page == "Search",
-                        onClick = { page = "Search" },
-                        icon = {
-                            Icon(
-                                Icons.Default.Search,
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text("Raadi") }
-                    )
+            <div class="pb-4 space-y-3">
+                <button onclick="switchScreen('mainDashboard')" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold py-4 rounded-2xl shadow-xl transition flex items-center justify-center gap-2 text-sm">
+                    <span>Get Started</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
 
-                    NavigationBarItem(
-                        selected = page == "Upload",
-                        onClick = { page = "Upload" },
-                        icon = {
-                            Icon(
-                                Icons.Default.AddBox,
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text("Upload") }
-                    )
+        <!-- ==========================================
+             SCREEN 2: MAIN DASHBOARD FRAME
+        =========================================== -->
+        <div id="mainDashboard" class="hidden w-full h-full flex-col justify-between bg-[#FEFBEA]">
+            
+            <!-- Header Bar -->
+            <div class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shadow-md text-sm">
+                        B
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Good Morning</p>
+                        <h2 class="text-sm font-extrabold text-slate-900 leading-tight">Bayan User</h2>
+                    </div>
+                </div>
+                <button onclick="switchScreen('landingScreen')" title="Ka bax" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center transition active:scale-95">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                </button>
+            </div>
 
-                    NavigationBarItem(
-                        selected = page == "Channel",
-                        onClick = { page = "Channel" },
-                        icon = {
-                            Icon(
-                                Icons.Default.Subscriptions,
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text("Kanaal") }
-                    )
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-5">
+                
+                <!-- TAB 1: HOME -->
+                <div id="tabHome" class="tab-content space-y-5">
+                    
+                    <!-- GIF Display Section -->
+                    <div class="rounded-3xl overflow-hidden shadow-2xl border-2 border-white/80 aspect-[3.05/1] h-[110px] w-full bg-emerald-900/10 flex items-center justify-center relative mx-auto transform transition duration-300">
+                        <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover rounded-3xl">
+                    </div>
 
-                    NavigationBarItem(
-                        selected = page == "Profile",
-                        onClick = { page = "Profile" },
-                        icon = {
-                            Icon(
-                                Icons.Default.Person,
-                                contentDescription = null
-                            )
-                        },
-                        label = { Text("Akoon") }
-                    )
+                    <div>
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha & Apps</h3>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="selectService('Hormuud', 'Shabakada Hormuud Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-11 h-11 rounded-2xl border-2 border-emerald-600 flex items-center justify-center text-emerald-600 font-black text-xl mb-1 bg-emerald-50">H</div>
+                                <span class="text-xs font-bold text-slate-800">Hormuud</span>
+                            </button>
+
+                            <button onclick="selectService('Somnet', 'Shabakada Somnet Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="text-sky-600 mb-1"><i class="fa-solid fa-wifi text-xl"></i></div>
+                                <span class="text-[9px] font-bold text-sky-800 uppercase leading-none mt-1">SOMNET</span>
+                                <span class="text-xs font-bold text-slate-800">Somnet</span>
+                            </button>
+
+                            <button onclick="selectService('Somtel', 'Shabakada Somtel')" class="bg-[#FFDC00] p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="text-slate-900 font-black text-sm mb-1 tracking-wider">somtel</div>
+                                <span class="text-xs font-bold text-slate-900">Somtel</span>
+                            </button>
+
+                            <button onclick="selectService('SomLink', 'Shabakada SomLink Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="text-purple-700 font-black text-sm">SomLink</div>
+                                <span class="text-[9px] text-slate-400 font-semibold mb-1">telecom</span>
+                                <span class="text-xs font-bold text-slate-800">SomLink</span>
+                            </button>
+
+                            <button onclick="selectService('Amtel', 'Shabakada Amtel')" class="bg-red-700 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="font-black text-sm italic">Amtel</div>
+                                <span class="text-xs font-bold text-white mt-1">Amtel</span>
+                            </button>
+
+                            <button onclick="selectService('Rukumo', 'Adeegga Rukumada')" class="bg-red-50 p-3 rounded-2xl shadow-sm border border-red-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-9 h-9 rounded-xl bg-red-100 text-red-500 flex items-center justify-center text-base mb-1"><i class="fa-solid fa-ban"></i></div>
+                                <span class="text-xs font-bold text-slate-800">Rukumo</span>
+                            </button>
+
+                            <!-- Camera -->
+                            <button onclick="openFullCamera()" class="bg-emerald-600 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">Camera</span>
+                            </button>
+
+                            <!-- TikTok (Home Grid) -->
+                            <button onclick="openTikTokApp()" class="bg-black text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-brands fa-tiktok"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">TikTok</span>
+                            </button>
+
+                            <!-- Facebook (Home Grid) -->
+                            <button onclick="openFacebookApp()" class="bg-[#1877F2] text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">Facebook</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: INTERNET SERVICES PAGE -->
+                <div id="tabInternet" class="tab-content hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-extrabold text-slate-900">Adeegyada Internet-ka & Shabakadaha</h3>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">Automated</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectService('Hormuud', 'Internet-ka Hormuud Data Package')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-500 text-emerald-600 font-black flex items-center justify-center text-lg shrink-0">H</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Hormuud</h4>
+                                <p class="text-[10px] text-slate-400">Data Packages</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Somnet', 'Internet-ka Somnet Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 font-black flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-wifi"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Somnet</h4>
+                                <p class="text-[10px] text-slate-400">Internet Bundles</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Somtel', 'Internet-ka Somtel Data')" class="bg-[#FFDC00] p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 text-yellow-400 font-black flex items-center justify-center text-xs shrink-0">ST</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Somtel</h4>
+                                <p class="text-[10px] text-slate-800">4G / 5G Bundles</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('SomLink', 'Internet-ka SomLink Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 font-black flex items-center justify-center text-xs shrink-0">SL</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">SomLink</h4>
+                                <p class="text-[10px] text-slate-400">Broadband Data</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Amtel', 'Internet-ka Amtel Data')" class="bg-red-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-white/20 text-white font-black flex items-center justify-center text-xs shrink-0">AM</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-white">Amtel</h4>
+                                <p class="text-[10px] text-red-100">Quick Internet</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Rukumo', 'Adeegga Rukumada Internet-ka')" class="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 font-black flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-ban"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Rukumo</h4>
+                                <p class="text-[10px] text-slate-400">Services & Unsub</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 3: MACAASH -->
+                <div id="tabMacaash" class="tab-content hidden space-y-4">
+                    <h3 class="text-sm font-bold text-slate-900">Dhibcahaaga & Abaal-marinta</h3>
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm text-center">
+                        <p class="text-xs text-slate-500">Dhibcaha Hada Kuu Dhiman</p>
+                        <h1 class="text-3xl font-black text-emerald-600 my-2">500 PTS</h1>
+                        <p class="text-[11px] text-slate-400">Ku beddello Data ama Dhaqan lacageed</p>
+                    </div>
+                </div>
+
+                <!-- TAB 4: PROFILE -->
+                <div id="tabProfile" class="tab-content hidden space-y-4">
+                    <div class="bg-white p-5 rounded-2xl border border-slate-200/60 text-center shadow-sm">
+                        <div class="w-16 h-16 rounded-full bg-emerald-700 text-white text-2xl font-black flex items-center justify-center mx-auto mb-2">B</div>
+                        <h3 class="text-base font-extrabold text-slate-900">Bayan User</h3>
+                        <p class="text-xs text-slate-500">user@bayan.app</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Mobile Navigation Bar -->
+            <div class="bg-white border-t border-slate-200/80 px-6 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
+                <!-- 1. Home Button -->
+                <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
+                    <i class="fa-solid fa-house text-base mb-0.5"></i>
+                    <span>Home</span>
+                </button>
+
+                <!-- 2. Floating Internet Button -->
+                <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                        <img src="https://i.ibb.co/MxZmZR9j/wireless-network-symbol-1284-42447.jpg" alt="Internet Logo" class="w-full h-full object-cover rounded-full mix-blend-multiply">
+                    </div>
+                    <span class="font-black text-slate-900 mt-0.5">Internet</span>
+                </button>
+
+                <!-- 3. Floating Center WAAFI Button -->
+                <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                        <img src="https://i.ibb.co/HfjgqSdg/file-00000000e88c81f4a88cb2648ccfc850.png" alt="WAAFI Custom Logo" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <span class="font-black text-slate-900 mt-0.5">WAAFI</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SCREEN 3: CAMERA SCREEN
+        =========================================== -->
+        <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
+            
+            <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-150 z-40"></div>
+
+            <!-- Camera Header -->
+            <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
+                <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center active:scale-90">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+
+                <div id="videoTimer" class="hidden text-xs font-mono bg-red-600 text-white px-3 py-1 rounded-full animate-pulse flex items-center gap-1">
+                    <div class="w-2 h-2 rounded-full bg-white"></div>
+                    <span id="timerText">00:00</span>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-base"></i>
+                    </button>
+                    <button onclick="switchCameraFacing()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-rotate text-base"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Camera Viewfinder -->
+            <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-black">
+                <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal"></video>
+                <canvas id="cameraCanvas" class="hidden"></canvas>
+
+                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2 rounded-full space-y-2 text-white z-30">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)" class="h-20 w-1 bg-white/40 rounded-lg appearance-none cursor-pointer [writing-mode:vertical-lr] [direction:rtl]">
+                    <i class="fa-solid fa-minus text-[10px]"></i>
+                </div>
+            </div>
+
+            <!-- Camera Filters -->
+            <div class="py-2 px-4 bg-black/80 backdrop-blur-md text-white flex justify-center space-x-2 text-[11px] z-30 overflow-x-auto">
+                <button onclick="applyFilter('filter-normal')" class="px-3 py-1 rounded-full bg-white/20 border border-white/40">Normal</button>
+                <button onclick="applyFilter('filter-bright')" class="px-3 py-1 rounded-full bg-white/20">Bright</button>
+                <button onclick="applyFilter('filter-vintage')" class="px-3 py-1 rounded-full bg-white/20">Vintage</button>
+                <button onclick="applyFilter('filter-bw')" class="px-3 py-1 rounded-full bg-white/20">B&W</button>
+                <button onclick="applyFilter('filter-warm')" class="px-3 py-1 rounded-full bg-white/20">Warm</button>
+            </div>
+
+            <!-- Shutter Controls -->
+            <div class="p-6 bg-black flex flex-col items-center z-30 space-y-4">
+                <div class="flex space-x-6 text-xs font-bold text-white/50">
+                    <button id="photoModeBtn" onclick="setMode('photo')" class="text-emerald-400 border-b-2 border-emerald-400 pb-1">PHOTO</button>
+                    <button id="videoModeBtn" onclick="setMode('video')" class="hover:text-white pb-1">VIDEO</button>
+                </div>
+
+                <div class="w-full flex justify-between items-center px-4">
+                    <button onclick="openGalleryModal()" class="w-12 h-12 rounded-xl bg-white/10 overflow-hidden border border-white/30 flex items-center justify-center">
+                        <img id="galleryPreview" class="w-full h-full object-cover hidden">
+                        <i id="galleryPlaceholder" class="fa-solid fa-images text-white/70"></i>
+                    </button>
+
+                    <button id="shutterBtn" onclick="handleShutterClick()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 active:scale-90 transition">
+                        <div id="shutterInner" class="w-full h-full bg-white rounded-full"></div>
+                    </button>
+
+                    <div class="w-12"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal: Gallery -->
+    <div id="galleryModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col justify-between p-4">
+        <div class="flex justify-between items-center text-white pb-3 border-b border-white/20">
+            <h3 class="font-bold text-sm">Gallery</h3>
+            <button onclick="closeGalleryModal()" class="text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="galleryContainer" class="grid grid-cols-3 gap-2 overflow-y-auto flex-1 my-4"></div>
+    </div>
+
+    <!-- Modal: Services -->
+    <div id="serviceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900" id="modalTitle">Adeegga</h3>
+            <p class="text-xs text-slate-500 mt-2" id="modalMessage">Doorashada shabakada dhawaan waa la bilaabayaa.</p>
+            <button onclick="closeModal()" class="mt-5 w-full bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs active:scale-95 transition">
+                Waan gartay
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Mobile Logic -->
+    <script>
+        let currentStream = null;
+        let facingMode = "environment";
+        let zoomLevel = 1;
+        let flashOn = false;
+        let currentMode = "photo";
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let timerInterval = null;
+        let seconds = 0;
+        let galleryItems = [];
+
+        // Direct Launch for WAAFI App
+        function openWaafiApp() {
+            window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
+        }
+
+        // Direct Android Intent for TikTok
+        function openTikTokApp() {
+            window.location.href = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
+        }
+
+        // Direct App Scheme for Facebook
+        function openFacebookApp() {
+            window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
+        }
+
+        function switchScreen(screenId) {
+            if(screenId === 'mainDashboard') {
+                document.getElementById('landingScreen').classList.add('hidden');
+                document.getElementById('mainDashboard').classList.remove('hidden');
+                document.getElementById('mainDashboard').classList.add('flex');
+            } else {
+                document.getElementById('mainDashboard').classList.add('hidden');
+                document.getElementById('mainDashboard').classList.remove('flex');
+                document.getElementById('landingScreen').classList.remove('hidden');
+            }
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('text-indigo-950', 'font-bold');
+                b.classList.add('text-slate-400');
+            });
+            if(btn && btn.classList.contains('nav-btn')) {
+                btn.classList.remove('text-slate-400');
+                btn.classList.add('text-indigo-950', 'font-bold');
+            }
+        }
+
+        async function openFullCamera() {
+            document.getElementById('cameraScreen').classList.remove('hidden');
+            document.getElementById('cameraScreen').classList.add('flex');
+            await startRealCamera();
+        }
+
+        function closeFullCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('cameraScreen').classList.add('hidden');
+            document.getElementById('cameraScreen').classList.remove('flex');
+        }
+
+        async function startRealCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            try {
+                const constraints = {
+                    video: { facingMode: facingMode },
+                    audio: currentMode === 'video'
+                };
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                document.getElementById('cameraVideo').srcObject = currentStream;
+            } catch (err) {
+                alert("Fadlan oggolaanshada kamarada sii App-ka.");
+            }
+        }
+
+        function switchCameraFacing() {
+            facingMode = facingMode === "user" ? "environment" : "user";
+            startRealCamera();
+        }
+
+        function toggleFlash() {
+            flashOn = !flashOn;
+            document.getElementById('flashBtn').classList.toggle('bg-yellow-400');
+            document.getElementById('flashBtn').classList.toggle('text-black');
+        }
+
+        function applyFilter(filterClass) {
+            document.getElementById('cameraVideo').className = `w-full h-full object-cover ${filterClass}`;
+        }
+
+        function applyZoom(val) {
+            zoomLevel = parseFloat(val);
+            document.getElementById('cameraVideo').style.transform = `scale(${zoomLevel})`;
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            const photoBtn = document.getElementById('photoModeBtn');
+            const videoBtn = document.getElementById('videoModeBtn');
+            const shutterInner = document.getElementById('shutterInner');
+
+            if (mode === 'photo') {
+                photoBtn.className = "text-emerald-400 font-bold border-b-2 border-emerald-400 pb-1";
+                videoBtn.className = "hover:text-white pb-1 text-white/50";
+                shutterInner.className = "w-full h-full bg-white rounded-full";
+            } else {
+                videoBtn.className = "text-red-500 font-bold border-b-2 border-red-500 pb-1";
+                photoBtn.className = "hover:text-white pb-1 text-white/50";
+                shutterInner.className = "w-full h-full bg-red-600 rounded-full";
+            }
+            startRealCamera();
+        }
+
+        function handleShutterClick() {
+            if (flashOn) {
+                const overlay = document.getElementById('flashOverlay');
+                overlay.style.opacity = '0.8';
+                setTimeout(() => overlay.style.opacity = '0', 150);
+            }
+
+            if (currentMode === 'photo') {
+                takeRealPhoto();
+            } else {
+                toggleRecordVideo();
+            }
+        }
+
+        function takeRealPhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            ctx.filter = getComputedStyle(video).filter;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = canvas.toDataURL('image/png');
+            galleryItems.push({ type: 'image', url: imageData });
+            
+            const preview = document.getElementById('galleryPreview');
+            preview.src = imageData;
+            preview.classList.remove('hidden');
+            document.getElementById('galleryPlaceholder').classList.add('hidden');
+        }
+
+        function toggleRecordVideo() {
+            if (!isRecording) {
+                recordedChunks = [];
+                try {
+                    mediaRecorder = new MediaRecorder(currentStream);
+                    mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+                        galleryItems.push({ type: 'video', url: URL.createObjectURL(blob) });
+                    };
+                    mediaRecorder.start();
+
+                    isRecording = true;
+                    document.getElementById('videoTimer').classList.remove('hidden');
+                    document.getElementById('shutterInner').classList.replace('rounded-full', 'rounded-md');
+
+                    seconds = 0;
+                    timerInterval = setInterval(() => {
+                        seconds++;
+                        let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                        let secs = (seconds % 60).toString().padStart(2, '0');
+                        document.getElementById('timerText').innerText = `${mins}:${secs}`;
+                    }, 1000);
+                } catch (e) {
+                    alert("Duubista: " + e.message);
                 }
+            } else {
+                if (mediaRecorder) mediaRecorder.stop();
+                isRecording = false;
+                clearInterval(timerInterval);
+                document.getElementById('videoTimer').classList.add('hidden');
+                document.getElementById('shutterInner').classList.replace('rounded-md', 'rounded-full');
             }
-        ) { padding ->
+        }
 
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Background)
-                    .padding(padding)
-            ) {
-                when (page) {
-
-                    "Home" -> {
-                        LazyColumn {
-                            item {
-                                Text(
-                                    "Muuqaallada BayanTube",
-                                    modifier = Modifier.padding(16.dp),
-                                    fontSize = 21.sp,
-                                    fontWeight = FontWeight.Bold
-                                )
-                            }
-
-                            items(videos) { video ->
-                                VideoCard(video)
-                            }
-                        }
-                    }
-
-                    "Search" -> {
-                        Column(
-                            Modifier.padding(16.dp)
-                        ) {
-                            Text(
-                                "Raadi muuqaallo",
-                                fontSize = 23.sp,
-                                fontWeight = FontWeight.Bold
-                            )
-
-                            Spacer(Modifier.height(12.dp))
-
-                            OutlinedTextField(
-                                value = search,
-                                onValueChange = {
-                                    search = it
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                label = {
-                                    Text("Magaca muuqaalka")
-                                },
-                                leadingIcon = {
-                                    Icon(
-                                        Icons.Default.Search,
-                                        contentDescription = null
-                                    )
-                                }
-                            )
-
-                            Spacer(Modifier.height(12.dp))
-
-                            videos.filter {
-                                it.title.contains(
-                                    search,
-                                    ignoreCase = true
-                                ) ||
-                                it.channel.contains(
-                                    search,
-                                    ignoreCase = true
-                                )
-                            }.forEach { video ->
-                                Text(
-                                    video.title,
-                                    modifier = Modifier.padding(12.dp)
-                                )
-                            }
-                        }
-                    }
-
-                    "Upload" -> UploadPage()
-
-                    "Channel" -> ChannelPage()
-
-                    "Profile" -> ProfilePage()
+        function openGalleryModal() {
+            const container = document.getElementById('galleryContainer');
+            container.innerHTML = '';
+            galleryItems.forEach(item => {
+                if (item.type === 'image') {
+                    container.innerHTML += `<img src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20">`;
+                } else {
+                    container.innerHTML += `<video src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20" controls></video>`;
                 }
-            }
-        }
-    }
-}
-
-@Composable
-fun VideoCard(video: Video) {
-    var liked by remember { mutableStateOf(false) }
-
-    Column(
-        Modifier
-            .fillMaxWidth()
-            .padding(bottom = 14.dp)
-            .background(Color.White)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(205.dp)
-                .background(Color(0xFF242424)),
-            contentAlignment = Alignment.Center
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    Icons.Default.PlayCircleFilled,
-                    contentDescription = "Daawo",
-                    tint = Color.White,
-                    modifier = Modifier.size(60.dp)
-                )
-
-                Text(
-                    "BayanTube",
-                    color = Color.White,
-                    fontWeight = FontWeight.Bold
-                )
-            }
-
-            Text(
-                video.duration,
-                color = Color.White,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd)
-                    .padding(8.dp)
-                    .background(Color.Black)
-                    .padding(4.dp)
-            )
+            });
+            document.getElementById('galleryModal').classList.remove('hidden');
+            document.getElementById('galleryModal').classList.add('flex');
         }
 
-        Row(
-            modifier = Modifier.padding(12.dp),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Icon(
-                Icons.Default.AccountCircle,
-                contentDescription = null,
-                tint = Red,
-                modifier = Modifier.size(42.dp)
-            )
-
-            Spacer(Modifier.width(10.dp))
-
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
-                Text(
-                    video.title,
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 16.sp
-                )
-
-                Text(
-                    video.channel,
-                    color = Color.Gray
-                )
-
-                Text(
-                    video.views,
-                    color = Color.Gray,
-                    fontSize = 12.sp
-                )
-            }
-
-            IconButton(
-                onClick = { liked = !liked }
-            ) {
-                Icon(
-                    if (liked)
-                        Icons.Default.Favorite
-                    else
-                        Icons.Default.FavoriteBorder,
-                    contentDescription = "Like",
-                    tint = if (liked) Red else Color.Gray
-                )
-            }
-        }
-    }
-}
-
-@Composable
-fun UploadPage() {
-    var title by remember { mutableStateOf("") }
-
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(18.dp)
-    ) {
-        Text(
-            "Soo geli muuqaal",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(Modifier.height(15.dp))
-
-        OutlinedTextField(
-            value = title,
-            onValueChange = { title = it },
-            modifier = Modifier.fillMaxWidth(),
-            label = { Text("Cinwaanka muuqaalka") }
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        Button(
-            onClick = { },
-            modifier = Modifier.fillMaxWidth()
-        ) {
-            Icon(
-                Icons.Default.VideoLibrary,
-                contentDescription = null
-            )
-
-            Spacer(Modifier.width(8.dp))
-
-            Text("Dooro muuqaal")
+        function closeGalleryModal() {
+            document.getElementById('galleryModal').classList.add('hidden');
+            document.getElementById('galleryModal').classList.remove('flex');
         }
 
-        Spacer(Modifier.height(16.dp))
-
-        Text(
-            "Upload-ka dhabta ah iyo baaritaanka muusigga " +
-            "waxay u baahan yihiin server iyo adeegyo dheeraad ah.",
-            color = Color.Gray
-        )
-    }
-}
-
-@Composable
-fun ChannelPage() {
-    var subscribed by remember { mutableStateOf(false) }
-
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(20.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Icon(
-            Icons.Default.AccountCircle,
-            contentDescription = null,
-            tint = Red,
-            modifier = Modifier.size(90.dp)
-        )
-
-        Text(
-            "Bayan Academy",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
-
-        Spacer(Modifier.height(14.dp))
-
-        Button(
-            onClick = { subscribed = !subscribed }
-        ) {
-            Text(
-                if (subscribed)
-                    "Waad Subscribe-garaysay"
-                else
-                    "Subscribe"
-            )
+        function selectService(name, detail) {
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalMessage').innerText = `Waxaad dooratay: ${detail}. Adeeggan dhawaan wuu diyaar noqon doonaa.`;
+            const modal = document.getElementById('serviceModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
         }
-    }
-}
 
-@Composable
-fun ProfilePage() {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(20.dp)
-    ) {
-        Text(
-            "Akoonkaaga",
-            fontSize = 24.sp,
-            fontWeight = FontWeight.Bold
-        )
+        function closeModal() {
+            const modal = document.getElementById('serviceModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
 
-        Spacer(Modifier.height(20.dp))
-
-        Icon(
-            Icons.Default.AccountCircle,
-            contentDescription = null,
-            tint = Red,
-            modifier = Modifier.size(70.dp)
-        )
-
-        Text("BayanTube User")
-
-        Spacer(Modifier.height(18.dp))
-
-        Text("Creator Earnings")
-
-        Text(
-            "Lacag-samayntu waxay shaqayn doontaa " +
-            "marka nidaamka lacag-bixinta iyo backend-ka la dhiso.",
-            color = Color.Gray
-        )
-    }
-}
+        function toggleTheme() {
+            document.body.classList.toggle('bg-slate-900');
+        }
+    </script>
+</body>
+</html>

@@ -104,7 +104,7 @@
                 <!-- TAB 1: HOME -->
                 <div id="tabHome" class="tab-content space-y-5">
                     
-                    <!-- GIF Display Section (Geesaha oo wareegsan rounded-3xl iyo Hoos Madow shadow-2xl) -->
+                    <!-- GIF Display Section -->
                     <div class="rounded-3xl overflow-hidden shadow-2xl border-2 border-white/80 aspect-[3.05/1] h-[110px] w-full bg-emerald-900/10 flex items-center justify-center relative mx-auto transform transition duration-300">
                         <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover rounded-3xl">
                     </div>
@@ -142,6 +142,14 @@
                             <button onclick="selectService('Rukumo', 'Adeegga Rukumada')" class="bg-red-50 p-3 rounded-2xl shadow-sm border border-red-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="w-9 h-9 rounded-xl bg-red-100 text-red-500 flex items-center justify-center text-base mb-1"><i class="fa-solid fa-ban"></i></div>
                                 <span class="text-xs font-bold text-slate-800">Rukumo</span>
+                            </button>
+
+                            <!-- Camera (Waxaa la keenay SomLink Hoostiisa) -->
+                            <button onclick="openFullCamera()" class="bg-emerald-600 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition col-start-1">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">Camera</span>
                             </button>
                         </div>
                     </div>
@@ -184,19 +192,11 @@
             </div>
 
             <!-- Bottom Mobile Navigation Bar -->
-            <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
+            <div class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
                 <!-- Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
                     <i class="fa-solid fa-house text-base mb-0.5"></i>
                     <span>Home</span>
-                </button>
-
-                <!-- Camera Button -->
-                <button onclick="openFullCamera()" class="nav-btn flex flex-col items-center text-emerald-700 hover:text-emerald-800 active:scale-95 transition">
-                    <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm mb-0.5 shadow-sm">
-                        <i class="fa-solid fa-camera"></i>
-                    </div>
-                    <span class="font-extrabold text-slate-700">Camera</span>
                 </button>
 
                 <!-- Floating Center WAAFI Button -->

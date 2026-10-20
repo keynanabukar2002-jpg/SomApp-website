@@ -99,7 +99,7 @@
             </div>
 
             <!-- Scrollable Content Area -->
-            <div id="scrollableArea" class="flex-1 overflow-y-auto p-4 space-y-5">
+            <div class="flex-1 overflow-y-auto p-4 space-y-5">
                 
                 <!-- TAB 1: HOME -->
                 <div id="tabHome" class="tab-content space-y-5">
@@ -109,12 +109,8 @@
                         <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover rounded-3xl">
                     </div>
 
-                    <!-- Network Services Section Container (Target for Internet Auto-Scroll) -->
-                    <div id="networkServicesSection" class="p-2 rounded-3xl transition-all duration-500">
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1 flex items-center justify-between">
-                            <span>Uadeeg shabakadaha</span>
-                            <span class="text-[10px] text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full font-extrabold">Internet Active</span>
-                        </h3>
+                    <div>
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha</h3>
                         <div class="grid grid-cols-3 gap-3">
                             <button onclick="selectService('Hormuud', 'Shabakada Hormuud Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="w-11 h-11 rounded-2xl border-2 border-emerald-600 flex items-center justify-center text-emerald-600 font-black text-xl mb-1 bg-emerald-50">H</div>
@@ -159,28 +155,71 @@
                     </div>
                 </div>
 
-                <!-- TAB 2: MACAASH -->
+                <!-- TAB 2: INTERNET SERVICES PAGE -->
+                <div id="tabInternet" class="tab-content hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-extrabold text-slate-900">Adeegyada Internet-ka & Shabakadaha</h3>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">Automated</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectService('Hormuud', 'Internet-ka Hormuud Data Package')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-500 text-emerald-600 font-black flex items-center justify-center text-lg shrink-0">H</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Hormuud</h4>
+                                <p class="text-[10px] text-slate-400">Data Packages</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Somnet', 'Internet-ka Somnet Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 font-black flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-wifi"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Somnet</h4>
+                                <p class="text-[10px] text-slate-400">Internet Bundles</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Somtel', 'Internet-ka Somtel Data')" class="bg-[#FFDC00] p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 text-yellow-400 font-black flex items-center justify-center text-xs shrink-0">ST</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Somtel</h4>
+                                <p class="text-[10px] text-slate-800">4G / 5G Bundles</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('SomLink', 'Internet-ka SomLink Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 font-black flex items-center justify-center text-xs shrink-0">SL</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">SomLink</h4>
+                                <p class="text-[10px] text-slate-400">Broadband Data</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Amtel', 'Internet-ka Amtel Data')" class="bg-red-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-white/20 text-white font-black flex items-center justify-center text-xs shrink-0">AM</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-white">Amtel</h4>
+                                <p class="text-[10px] text-red-100">Quick Internet</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Rukumo', 'Adeegga Rukumada Internet-ka')" class="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 font-black flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-ban"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Rukumo</h4>
+                                <p class="text-[10px] text-slate-400">Services & Unsub</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 3: MACAASH -->
                 <div id="tabMacaash" class="tab-content hidden space-y-4">
                     <h3 class="text-sm font-bold text-slate-900">Dhibcahaaga & Abaal-marinta</h3>
                     <div class="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm text-center">
                         <p class="text-xs text-slate-500">Dhibcaha Hada Kuu Dhiman</p>
                         <h1 class="text-3xl font-black text-emerald-600 my-2">500 PTS</h1>
                         <p class="text-[11px] text-slate-400">Ku beddello Data ama Dhaqan lacageed</p>
-                    </div>
-                </div>
-
-                <!-- TAB 3: ORDERS -->
-                <div id="tabOrders" class="tab-content hidden space-y-3">
-                    <h3 class="text-sm font-bold text-slate-900">Taariikhda Dalabyada</h3>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/60 flex justify-between items-center shadow-sm">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-check"></i></div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-800">Hormuud $1 Data</p>
-                                <p class="text-[10px] text-slate-400">2026 • Successful</p>
-                            </div>
-                        </div>
-                        <span class="text-xs font-extrabold text-slate-900">$1.00</span>
                     </div>
                 </div>
 
@@ -198,15 +237,15 @@
             <!-- Bottom Mobile Navigation Bar -->
             <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
                 <!-- 1. Home Button -->
-                <button id="homeNavBtn" onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
+                <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
                     <i class="fa-solid fa-house text-base mb-0.5"></i>
                     <span>Home</span>
                 </button>
 
-                <!-- 2. Floating Internet Button (Auto-Open & Scroll into Network Services) -->
-                <button onclick="openInternetServices()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                <!-- 2. Floating Internet Button (Logo Nadiif ah wata) -->
+                <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
-                        <img src="https://i.ibb.co/JTS9wW3/file-000000004a68821193dc4ed128b1c699.png" alt="Internet Custom Logo" class="w-full h-full object-cover rounded-full">
+                        <img src="https://i.ibb.co/MxZmZR9j/wireless-network-symbol-1284-42447.jpg" alt="Internet Clean Wireless Logo" class="w-full h-full object-cover rounded-full mix-blend-multiply">
                     </div>
                     <span class="font-black text-slate-900 mt-0.5">Internet</span>
                 </button>
@@ -362,21 +401,6 @@
             window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
         }
 
-        // Auto-Open and Smooth Scroll to Internet Networks
-        function openInternetServices() {
-            switchTab('tabHome', document.getElementById('homeNavBtn'));
-            const networkSection = document.getElementById('networkServicesSection');
-            
-            // Smooth Scroll into View
-            networkSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
-            
-            // Visual Highlight Animation
-            networkSection.classList.add('bg-emerald-100/50', 'ring-2', 'ring-emerald-500');
-            setTimeout(() => {
-                networkSection.classList.remove('bg-emerald-100/50', 'ring-2', 'ring-emerald-500');
-            }, 1200);
-        }
-
         function switchScreen(screenId) {
             if(screenId === 'mainDashboard') {
                 document.getElementById('landingScreen').classList.add('hidden');
@@ -397,7 +421,7 @@
                 b.classList.remove('text-indigo-950', 'font-bold');
                 b.classList.add('text-slate-400');
             });
-            if(btn) {
+            if(btn && btn.classList.contains('nav-btn')) {
                 btn.classList.remove('text-slate-400');
                 btn.classList.add('text-indigo-950', 'font-bold');
             }
@@ -466,7 +490,7 @@
             } else {
                 videoBtn.className = "text-red-500 font-bold border-b-2 border-red-500 pb-1";
                 photoBtn.className = "hover:text-white pb-1 text-white/50";
-                shutterInner.className = "w-full h-full bg-white rounded-full";
+                shutterInner.className = "w-full h-full bg-red-600 rounded-full";
             }
             startRealCamera();
         }

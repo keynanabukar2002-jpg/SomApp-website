@@ -144,7 +144,7 @@
                                 <span class="text-xs font-bold text-slate-800">Rukumo</span>
                             </button>
 
-                            <!-- Camera (Waxaa la keenay SomLink Hoostiisa) -->
+                            <!-- Camera (SomLink Hoostiisa) -->
                             <button onclick="openFullCamera()" class="bg-emerald-600 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition col-start-1">
                                 <div class="w-10 h-10 rounded-xl bg-emerald-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
                                     <i class="fa-solid fa-camera"></i>
@@ -192,14 +192,22 @@
             </div>
 
             <!-- Bottom Mobile Navigation Bar -->
-            <div class="bg-white border-t border-slate-200/80 px-4 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
-                <!-- Home Button -->
+            <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
+                <!-- 1. Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
                     <i class="fa-solid fa-house text-base mb-0.5"></i>
                     <span>Home</span>
                 </button>
 
-                <!-- Floating Center WAAFI Button -->
+                <!-- 2. Batoonka Cusub: Internet (Home Ka Dib) -->
+                <button onclick="selectService('Internet', 'Adeegga Internet-ka')" class="nav-btn flex flex-col items-center active:scale-95 transition">
+                    <div class="w-7 h-7 rounded-xl bg-slate-100 flex items-center justify-center overflow-hidden mb-0.5 shadow-sm p-0.5">
+                        <img src="https://i.ibb.co/JTS9wW3/file-000000004a68821193dc4ed128b1c699.png" alt="Internet Logo" class="w-full h-full object-cover rounded-lg">
+                    </div>
+                    <span class="font-extrabold text-slate-900">Internet</span>
+                </button>
+
+                <!-- 3. Floating Center WAAFI Button -->
                 <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/HfjgqSdg/file-00000000e88c81f4a88cb2648ccfc850.png" alt="WAAFI Custom Logo" class="w-full h-full object-cover rounded-full">
@@ -207,7 +215,7 @@
                     <span class="font-black text-slate-900 mt-0.5">WAAFI</span>
                 </button>
 
-                <!-- TikTok Launch Button -->
+                <!-- 4. TikTok Launch Button -->
                 <button onclick="openTikTokApp()" class="nav-btn flex flex-col items-center text-slate-900 hover:text-black active:scale-95 transition">
                     <div class="w-7 h-7 rounded-xl bg-black text-white flex items-center justify-center text-sm mb-0.5 shadow-sm">
                         <i class="fa-brands fa-tiktok"></i>
@@ -215,7 +223,7 @@
                     <span class="font-extrabold text-slate-900">TikTok</span>
                 </button>
 
-                <!-- Facebook Launch Button -->
+                <!-- 5. Facebook Launch Button -->
                 <button onclick="openFacebookApp()" class="nav-btn flex flex-col items-center text-blue-600 hover:text-blue-700 active:scale-95 transition">
                     <div class="w-7 h-7 rounded-xl bg-[#1877F2] text-white flex items-center justify-center text-sm mb-0.5 shadow-sm">
                         <i class="fa-brands fa-facebook-f"></i>

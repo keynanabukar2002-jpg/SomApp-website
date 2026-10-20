@@ -99,7 +99,7 @@
             </div>
 
             <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-5">
+            <div id="scrollableArea" class="flex-1 overflow-y-auto p-4 space-y-5">
                 
                 <!-- TAB 1: HOME -->
                 <div id="tabHome" class="tab-content space-y-5">
@@ -109,8 +109,12 @@
                         <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover rounded-3xl">
                     </div>
 
-                    <div>
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha</h3>
+                    <!-- Network Services Section Container (Target for Internet Auto-Scroll) -->
+                    <div id="networkServicesSection" class="p-2 rounded-3xl transition-all duration-500">
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1 flex items-center justify-between">
+                            <span>Uadeeg shabakadaha</span>
+                            <span class="text-[10px] text-emerald-600 bg-emerald-100 px-2 py-0.5 rounded-full font-extrabold">Internet Active</span>
+                        </h3>
                         <div class="grid grid-cols-3 gap-3">
                             <button onclick="selectService('Hormuud', 'Shabakada Hormuud Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="w-11 h-11 rounded-2xl border-2 border-emerald-600 flex items-center justify-center text-emerald-600 font-black text-xl mb-1 bg-emerald-50">H</div>
@@ -194,13 +198,13 @@
             <!-- Bottom Mobile Navigation Bar -->
             <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
                 <!-- 1. Home Button -->
-                <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
+                <button id="homeNavBtn" onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
                     <i class="fa-solid fa-house text-base mb-0.5"></i>
                     <span>Home</span>
                 </button>
 
-                <!-- 2. Floating Internet Button (Design-ka WAAFI oo kale ah) -->
-                <button onclick="selectService('Internet', 'Adeegga Internet-ka')" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                <!-- 2. Floating Internet Button (Auto-Open & Scroll into Network Services) -->
+                <button onclick="openInternetServices()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/JTS9wW3/file-000000004a68821193dc4ed128b1c699.png" alt="Internet Custom Logo" class="w-full h-full object-cover rounded-full">
                     </div>
@@ -358,6 +362,21 @@
             window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
         }
 
+        // Auto-Open and Smooth Scroll to Internet Networks
+        function openInternetServices() {
+            switchTab('tabHome', document.getElementById('homeNavBtn'));
+            const networkSection = document.getElementById('networkServicesSection');
+            
+            // Smooth Scroll into View
+            networkSection.scrollIntoView({ behavior: 'smooth', block: 'start' });
+            
+            // Visual Highlight Animation
+            networkSection.classList.add('bg-emerald-100/50', 'ring-2', 'ring-emerald-500');
+            setTimeout(() => {
+                networkSection.classList.remove('bg-emerald-100/50', 'ring-2', 'ring-emerald-500');
+            }, 1200);
+        }
+
         function switchScreen(screenId) {
             if(screenId === 'mainDashboard') {
                 document.getElementById('landingScreen').classList.add('hidden');
@@ -378,8 +397,10 @@
                 b.classList.remove('text-indigo-950', 'font-bold');
                 b.classList.add('text-slate-400');
             });
-            btn.classList.remove('text-slate-400');
-            btn.classList.add('text-indigo-950', 'font-bold');
+            if(btn) {
+                btn.classList.remove('text-slate-400');
+                btn.classList.add('text-indigo-950', 'font-bold');
+            }
         }
 
         async function openFullCamera() {
@@ -445,7 +466,7 @@
             } else {
                 videoBtn.className = "text-red-500 font-bold border-b-2 border-red-500 pb-1";
                 photoBtn.className = "hover:text-white pb-1 text-white/50";
-                shutterInner.className = "w-full h-full bg-red-600 rounded-full";
+                shutterInner.className = "w-full h-full bg-white rounded-full";
             }
             startRealCamera();
         }

@@ -183,7 +183,7 @@
 
             </div>
 
-            <!-- Bottom Mobile Navigation Bar (Logo Rasmiga ah ee Waafi, TikTok & Facebook) -->
+            <!-- Bottom Mobile Navigation Bar -->
             <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
                 <!-- Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
@@ -191,7 +191,7 @@
                     <span>Home</span>
                 </button>
 
-                <!-- WAAFI Direct Launch Button (Official Logo) -->
+                <!-- WAAFI Direct Launch Button -->
                 <button onclick="openWaafiApp()" class="nav-btn flex flex-col items-center text-emerald-600 hover:text-emerald-700 active:scale-95 transition">
                     <div class="w-7 h-7 rounded-xl overflow-hidden shadow-sm mb-0.5 border border-emerald-100">
                         <img src="https://play-lh.googleusercontent.com/4E_YqA00Xb2A01iA2iM0XvL33G2Z3V1_M4T5=s180-rw" alt="WAAFI Logo" class="w-full h-full object-cover" onerror="this.onerror=null; this.src='https://ui-avatars.com/api/?name=WF&background=047857&color=fff&font-size=0.5';">
@@ -207,7 +207,7 @@
                     <span class="text-slate-700 mt-0.5">Camera</span>
                 </button>
 
-                <!-- TikTok Launch Button (Official Icon) -->
+                <!-- TikTok Launch Button -->
                 <button onclick="openTikTokApp()" class="nav-btn flex flex-col items-center text-slate-900 hover:text-black active:scale-95 transition">
                     <div class="w-7 h-7 rounded-xl bg-black text-white flex items-center justify-center text-sm mb-0.5 shadow-sm">
                         <i class="fa-brands fa-tiktok"></i>
@@ -215,7 +215,7 @@
                     <span class="font-extrabold text-slate-900">TikTok</span>
                 </button>
 
-                <!-- Facebook Launch Button (Official Icon) -->
+                <!-- Facebook Launch Button -->
                 <button onclick="openFacebookApp()" class="nav-btn flex flex-col items-center text-blue-600 hover:text-blue-700 active:scale-95 transition">
                     <div class="w-7 h-7 rounded-xl bg-[#1877F2] text-white flex items-center justify-center text-sm mb-0.5 shadow-sm">
                         <i class="fa-brands fa-facebook-f"></i>
@@ -335,19 +335,53 @@
         let seconds = 0;
         let galleryItems = [];
 
-        // Direct Launch for WAAFI App
+        // Direct Launch / Fallback logic for WAAFI App
         function openWaafiApp() {
-            window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
+            const playStoreUrl = "https://play.google.com/store/apps/details?id=com.safarifone.waafi";
+            const appSchemeUrl = "waafi://";
+            
+            // Diiwaangali waqtiga bilowga
+            const startTime = Date.now();
+            
+            // Isku day in aad furto App-ka
+            window.location.href = appSchemeUrl;
+
+            // Haddii app-ka uusan ku jirin telefoonka oo aan la furin 500ms dhexdeeda, Play Store u leexi
+            setTimeout(function() {
+                if (Date.now() - startTime < 1500) {
+                    window.location.href = playStoreUrl;
+                }
+            }, 500);
         }
 
         // Direct Android Intent for TikTok
         function openTikTokApp() {
-            window.location.href = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
+            const playStoreUrl = "https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically";
+            const appSchemeUrl = "snssdk1128://";
+            const startTime = Date.now();
+
+            window.location.href = appSchemeUrl;
+
+            setTimeout(function() {
+                if (Date.now() - startTime < 1500) {
+                    window.location.href = playStoreUrl;
+                }
+            }, 500);
         }
 
         // Direct App Scheme for Facebook
         function openFacebookApp() {
-            window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
+            const playStoreUrl = "https://play.google.com/store/apps/details?id=com.facebook.katana";
+            const appSchemeUrl = "fb://feed";
+            const startTime = Date.now();
+
+            window.location.href = appSchemeUrl;
+
+            setTimeout(function() {
+                if (Date.now() - startTime < 1500) {
+                    window.location.href = playStoreUrl;
+                }
+            }, 500);
         }
 
         function switchScreen(screenId) {

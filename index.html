@@ -183,7 +183,7 @@
 
             </div>
 
-            <!-- Bottom Mobile Navigation Bar (Oo dib loogu soo daray WAAFI) -->
+            <!-- Bottom Mobile Navigation Bar -->
             <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
                 <!-- Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
@@ -335,19 +335,19 @@
         let seconds = 0;
         let galleryItems = [];
 
-        // Direct Android Intent for WAAFI App
+        // Direct Launch for WAAFI App
         function openWaafiApp() {
-            window.location.href = "intent://com.mobicom.waafi/#Intent;scheme=android-app;package=com.mobicom.waafi;S.browser_fallback_url=market://details?id=com.mobicom.waafi;end";
+            window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
         }
 
         // Direct Android Intent for TikTok
         function openTikTokApp() {
-            window.location.href = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=market://details?id=com.zhiliaoapp.musically;end";
+            window.location.href = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
         }
 
         // Direct App Scheme for Facebook
         function openFacebookApp() {
-            window.location.replace("fb://feed");
+            window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
         }
 
         function switchScreen(screenId) {

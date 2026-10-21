@@ -1,507 +1,175 @@
 <!DOCTYPE html>
 <html lang="so">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<meta name="theme-color" content="#1686d9">
-<title>BAYAN WEATHER - AccuWeather</title>
-
-<style>
-*{box-sizing:border-box}
-
-body{
- margin:0;
- font-family:Arial,sans-serif;
- color:#102c46;
- min-height:100vh;
- background:linear-gradient(150deg,#1686d9,#b9e8ff,#fff0c4);
- transition:background .5s;
-}
-
-body[data-weather="cloudy"]{ background:linear-gradient(150deg,#71869b,#dce7ef); }
-body[data-weather="rain"]{ background:linear-gradient(150deg,#29465f,#a4c1d5); }
-body[data-weather="storm"]{ background:linear-gradient(150deg,#202c44,#8499b0); }
-body[data-weather="snow"]{ background:linear-gradient(150deg,#9ac9e8,#fff); }
-body[data-weather="clear"]{ background:linear-gradient(150deg,#1686d9,#b9e8ff,#fff0c4); }
-
-.app{
- max-width:720px;
- margin:auto;
- padding:18px;
-}
-
-header{
- display:flex;
- align-items:center;
- justify-content:space-between;
- gap:10px;
- margin-bottom:22px;
-}
-
-.logo{
- font-size:20px;
- font-weight:900;
- color:#123b60;
-}
-.logo span{color:#087cc1}
-
-button{
- border:0;
- border-radius:12px;
- padding:12px 15px;
- background:#087cc1;
- color:white;
- font-weight:bold;
- cursor:pointer;
-}
-
-#unit{
- background:white;
- color:#087cc1;
-}
-
-.search{
- display:flex;
- gap:8px;
- margin-bottom:12px;
-}
-
-input{
- flex:1;
- min-width:0;
- padding:14px;
- border:1px solid #d4e4ef;
- border-radius:13px;
- font-size:15px;
- outline:none;
-}
-
-#location{
- width:100%;
- background:white;
- color:#087cc1;
- border:1px solid #d4e4ef;
-}
-
-#status{
- min-height:20px;
- font-size:12px;
- color:#254b6d;
-}
-
-.card{
- background:rgba(255,255,255,.85);
- border:1px solid rgba(255,255,255,.8);
- border-radius:24px;
- padding:22px;
- margin-top:17px;
- box-shadow:0 12px 35px rgba(25,65,100,.12);
- backdrop-filter:blur(12px);
-}
-
-.label{
- font-size:11px;
- letter-spacing:2px;
- color:#627f98;
- font-weight:bold;
-}
-
-h1{
- margin:8px 0 4px;
- font-size:34px;
-}
-
-.muted{color:#71849a}
-
-.weather-top{
- display:flex;
- justify-content:space-between;
- align-items:center;
-}
-
-#icon{
- font-size:70px;
-}
-
-.temperature{
- font-size:82px;
- font-weight:bold;
- letter-spacing:-5px;
- margin-top:18px;
-}
-
-.temperature sup{
- font-size:23px;
- letter-spacing:0;
-}
-
-#condition{
- font-size:18px;
- font-weight:bold;
-}
-
-#feels{
- color:#71849a;
- font-size:13px;
-}
-
-.highlow{
- display:flex;
- gap:18px;
- color:#4d6b84;
-}
-
-.details{
- display:grid;
- grid-template-columns:repeat(2,1fr);
- gap:10px;
- margin-top:25px;
-}
-
-.detail{
- background:rgba(255,255,255,.65);
- border:1px solid #dce8f0;
- border-radius:15px;
- padding:14px;
- font-size:13px;
-}
-
-.detail strong{
- display:block;
- margin-top:7px;
- font-size:17px;
-}
-
-.updated{
- font-size:11px;
- color:#71849a;
- text-align:right;
- margin-top:17px;
-}
-
-.forecast-row{
- display:grid;
- grid-template-columns:1fr auto 1fr auto;
- align-items:center;
- gap:8px;
- padding:15px 0;
- border-bottom:1px solid #dce8f0;
- font-size:12px;
-}
-
-.forecast-row:last-child{border-bottom:0}
-.forecast-icon{font-size:22px}
-.forecast-condition{color:#71849a}
-.forecast-temp{font-weight:bold;white-space:nowrap}
-.forecast-temp span{color:#8193a5;margin-left:4px}
-
-footer{
- text-align:center;
- padding:25px 5px;
- color:#294e6b;
- font-size:12px;
- line-height:1.8;
-}
-
-footer a{color:#075f9e}
-
-@media(max-width:420px){
- .app{padding:12px}
- .card{padding:17px}
- .logo{font-size:17px}
- .temperature{font-size:70px}
- .forecast-row{gap:5px;font-size:11px}
- .forecast-condition{font-size:10px}
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BAYANTUBE Mobile App with Weather</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        ::-webkit-scrollbar { display: none; }
+        * { -ms-overflow-style: none; scrollbar-width: none; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #0f0f0f; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
+        .short-card { aspect-ratio: 9 / 16; }
+        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+        .touch-active:active { opacity: 0.7; transform: scale(0.96); transition: transform 0.1s ease; }
+    </style>
 </head>
-
-<body data-weather="clear">
-
-<main class="app">
-
-<header>
- <div class="logo">🌦️ BAYAN <span>WEATHER</span></div>
- <button id="unit">°C / °F</button>
-</header>
-
-<form class="search" id="searchForm">
- <input id="cityInput" placeholder="Raadi magaalo..." required>
- <button type="submit">Raadi</button>
-</form>
-
-<button id="location" type="button">📍 Isticmaal goobtayda</button>
-
-<p id="status">Cimilada ayaa la soo rarayaa...</p>
-
-<section class="card">
-
- <div class="weather-top">
-  <div>
-   <p class="label">CIMILADA HADDA</p>
-   <h1 id="city">Muqdisho</h1>
-   <div id="country" class="muted">Somalia</div>
-  </div>
-  <div id="icon">☀️</div>
- </div>
-
- <div class="temperature">
-  <span id="temp">--</span><sup id="unitMark">°C</sup>
- </div>
-
- <div id="condition">Xogta cimilada</div>
- <p id="feels">Dareen ahaan: --</p>
-
- <div class="highlow">
-  <span>↑ <b id="high">--</b></span>
-  <span>↓ <b id="low">--</b></span>
- </div>
-
- <div class="details">
-
-  <div class="detail">
-   💧 Qoyaanka
-   <strong id="humidity">--%</strong>
-  </div>
-
-  <div class="detail">
-   💨 Dabaysha
-   <strong id="wind">-- km/h</strong>
-  </div>
-
-  <div class="detail">
-   🌧️ Fursadda roobka
-   <strong id="rain">--%</strong>
-  </div>
-
-  <div class="detail">
-   🌡️ Cadaadiska hawada
-   <strong id="pressure">-- hPa</strong>
-  </div>
-
- </div>
-
- <p class="updated">
-  Cusboonaysiintii ugu dambaysay:
-  <span id="updated">--</span>
- </p>
-
-</section>
-
-<section class="card">
- <p class="label">SAADAASHA TODDOBAADKA</p>
- <h2>📅 5-ta maalmood</h2>
- <div id="forecast">Saadaasha ayaa la soo rarayaa...</div>
-</section>
-
-<footer>
- <strong>BAYAN WEATHER</strong><br>
- Cimilo dunida oo dhan 🌍<br>
- Xogta: <a href="https://developer.accuweather.com/" target="_blank">AccuWeather</a><br>
- <small>Saadaashu waa qiyaas, xogtuna way isbeddeli kartaa.</small>
-</footer>
-
-</main>
-
-<script>
-const ACCU_KEY = "Zpka_2db5bc893c634abf82640722656a686a_de3f3f82";
-const API_BASE = "https://dataservice.accuweather.com";
-
-const $ = id => document.getElementById(id);
-
-let fahrenheit = false;
-let currentPlace = { key: "305417", name: "Mogadishu", country: "Somalia" };
-
-const maalmaha = ["Axd", "Esn", "Tla", "Arb", "Khm", "Jmc", "Sbt"];
-
-function showStatus(text, error = false) {
-  $("status").textContent = text;
-  $("status").style.color = error ? "#a12626" : "#254b6d";
-}
-
-function dayName(dateStr, index) {
-  if (index === 0) return "Maanta";
-  const d = new Date(dateStr);
-  return maalmaha[d.getDay()];
-}
-
-function getWeatherTheme(iconNumber) {
-  if ([1, 2, 3, 4, 5, 33, 34].includes(iconNumber)) return "clear";
-  if ([6, 7, 8, 11, 35, 36, 37, 38].includes(iconNumber)) return "cloudy";
-  if ([12, 13, 14, 18, 26, 39, 40].includes(iconNumber)) return "rain";
-  if ([15, 16, 17, 41, 42].includes(iconNumber)) return "storm";
-  if ([19, 20, 21, 22, 23, 24, 43, 44].includes(iconNumber)) return "snow";
-  return "clear";
-}
-
-async function loadWeather(place) {
-  showStatus("Xogta cimilada ayaa la soo rarayaa...");
-
-  try {
-    // 1. Current Conditions
-    const resCurrent = await fetch(`${API_BASE}/currentconditions/v1/${place.key}?apikey=${ACCU_KEY}&details=true`);
-    if (!resCurrent.ok) throw new Error();
-    const dataCurrent = await resCurrent.json();
-    const now = dataCurrent[0];
-
-    // 2. 5-Day Forecast
-    const resForecast = await fetch(`${API_BASE}/forecasts/v1/daily/5day/${place.key}?apikey=${ACCU_KEY}&metric=${!fahrenheit}&details=true`);
-    if (!resForecast.ok) throw new Error();
-    const dataForecast = await resForecast.json();
-
-    // UI Updates
-    $("city").textContent = place.name;
-    $("country").textContent = place.country;
-
-    const tempVal = fahrenheit ? now.Temperature.Imperial.Value : now.Temperature.Metric.Value;
-    const feelsVal = fahrenheit ? now.RealFeelTemperature.Imperial.Value : now.RealFeelTemperature.Metric.Value;
-    const windVal = fahrenheit ? now.Wind.Speed.Imperial.Value : now.Wind.Speed.Metric.Value;
-    const windUnit = fahrenheit ? "mph" : "km/h";
-
-    $("temp").textContent = Math.round(tempVal);
-    $("unitMark").textContent = fahrenheit ? "°F" : "°C";
-    $("condition").textContent = now.WeatherText;
-    $("feels").textContent = "Dareen ahaan: " + Math.round(feelsVal) + (fahrenheit ? "°F" : "°C");
-
-    $("humidity").textContent = (now.RelativeHumidity || "--") + "%";
-    $("wind").textContent = Math.round(windVal) + " " + windUnit;
-    $("pressure").textContent = Math.round(now.Pressure.Metric.Value) + " hPa";
-
-    const todayForecast = dataForecast.DailyForecasts[0];
-    $("high").textContent = Math.round(todayForecast.Temperature.Maximum.Value) + (fahrenheit ? "°F" : "°C");
-    $("low").textContent = Math.round(todayForecast.Temperature.Minimum.Value) + (fahrenheit ? "°F" : "°C");
-    $("rain").textContent = (todayForecast.Day.PrecipitationProbability || 0) + "%";
-
-    const updateTime = new Date(now.LocalObservationDateTime);
-    $("updated").textContent = updateTime.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-    document.body.dataset.weather = getWeatherTheme(now.WeatherIcon);
-
-    renderForecast(dataForecast.DailyForecasts);
-    currentPlace = place;
-
-    showStatus("Cimilada " + place.name + " waa la cusboonaysiiyey.");
-
-  } catch (err) {
-    showStatus("Xogta lama helin. Hubi internetka ama API Key-gaaga.", true);
-  }
-}
-
-function renderForecast(dailyList) {
-  const box = $("forecast");
-  box.innerHTML = "";
-
-  dailyList.forEach((item, index) => {
-    const row = document.createElement("div");
-    row.className = "forecast-row";
-
-    const day = document.createElement("span");
-    day.textContent = dayName(item.Date, index);
-
-    const icon = document.createElement("span");
-    icon.className = "forecast-icon";
-    icon.textContent = "🌤️";
-
-    const condition = document.createElement("span");
-    condition.className = "forecast-condition";
-    condition.textContent = item.Day.IconPhrase;
-
-    const temperatures = document.createElement("span");
-    temperatures.className = "forecast-temp";
-    temperatures.textContent = Math.round(item.Temperature.Maximum.Value) + (fahrenheit ? "°F " : "°C ");
-
-    const low = document.createElement("span");
-    low.textContent = Math.round(item.Temperature.Minimum.Value) + (fahrenheit ? "°F" : "°C");
-
-    temperatures.appendChild(low);
-    row.append(day, icon, condition, temperatures);
-    box.appendChild(row);
-  });
-}
-
-async function searchCity(cityName) {
-  cityName = cityName.trim();
-  if (!cityName) return;
-
-  showStatus("Magaalada ayaa la raadinayaa...");
-
-  try {
-    const res = await fetch(`${API_BASE}/locations/v1/cities/search?apikey=${ACCU_KEY}&q=${encodeURIComponent(cityName)}`);
-    if (!res.ok) throw new Error();
-    const data = await res.json();
-
-    if (!data || data.length === 0) {
-      showStatus("Magaalada lama helin. Isku day magac kale.", true);
-      return;
-    }
-
-    const city = data[0];
-    loadWeather({
-      key: city.Key,
-      name: city.LocalizedName,
-      country: city.Country.LocalizedName
-    });
-
-  } catch (err) {
-    showStatus("Raadinta magaalada way fashilantay.", true);
-  }
-}
-
-$("searchForm").addEventListener("submit", event => {
-  event.preventDefault();
-  searchCity($("cityInput").value);
-});
-
-$("unit").addEventListener("click", () => {
-  fahrenheit = !fahrenheit;
-  $("unit").textContent = fahrenheit ? "°F / °C" : "°C / °F";
-  loadWeather(currentPlace);
-});
-
-$("location").addEventListener("click", () => {
-  if (!navigator.geolocation) {
-    showStatus("Goobta telefoonka lama heli karo.", true);
-    return;
-  }
-
-  showStatus("Sug oggolaanshaha goobta...");
-
-  navigator.geolocation.getCurrentPosition(
-    async position => {
-      try {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
-        const res = await fetch(`${API_BASE}/locations/v1/cities/geoposition/search?apikey=${ACCU_KEY}&q=${lat},${lon}`);
-        const data = await res.json();
-
-        loadWeather({
-          key: data.Key,
-          name: data.LocalizedName,
-          country: data.Country.LocalizedName
-        });
-      } catch (e) {
-        showStatus("Lama ogaan karo magaalada aad joogto.", true);
-      }
-    },
-    () => showStatus("Goobta lama helin. Raadi magaalo.", true),
-    { timeout: 10000 }
-  );
-});
-
-// Bilow
-loadWeather(currentPlace);
-
-// Auto Refresh 5 min
-setInterval(() => {
-  loadWeather(currentPlace);
-}, 5 * 60 * 1000);
-
-document.addEventListener("visibilitychange", () => {
-  if (document.visibilityState === "visible") {
-    loadWeather(currentPlace);
-  }
-});
-</script>
-
+<body class="bg-[#0f0f0f] text-white flex flex-col h-screen overflow-hidden max-w-md mx-auto relative border-x border-zinc-800">
+
+    <!-- TOP APP BAR -->
+    <header class="flex items-center justify-between px-4 py-2 bg-[#0f0f0f] z-20 shrink-0 border-b border-zinc-900">
+        <!-- Logo -->
+        <div class="flex items-center gap-1.5 cursor-pointer" onclick="setActiveTab('home')">
+            <div class="bg-red-600 text-white p-1 rounded-lg flex items-center justify-center">
+                <i class="fa-solid font-black fa-play text-xs pl-0.5"></i>
+            </div>
+            <span class="font-bold text-lg tracking-tight">BAYANTUBE</span>
+        </div>
+
+        <!-- Right Icons -->
+        <div class="flex items-center gap-4 text-lg">
+            <!-- Weather Quick Badge -->
+            <div onclick="openWeatherDetails()" class="bg-zinc-800/80 hover:bg-zinc-700 px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs text-amber-400 font-medium cursor-pointer touch-active border border-zinc-700">
+                <i class="fa-solid fa-sun text-amber-400"></i>
+                <span id="header-temp">30°C</span>
+            </div>
+
+            <button onclick="toggleNotifications()" class="relative touch-active">
+                <i class="fa-regular fa-bell"></i>
+                <span class="absolute -top-1.5 -right-2 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full">9+</span>
+            </button>
+            <button onclick="openSearch()" class="touch-active">
+                <i class="fa-solid fa-magnifying-glass text-lg"></i>
+            </button>
+        </div>
+    </header>
+
+    <!-- MAIN SCROLLABLE CONTENT -->
+    <main class="flex-1 overflow-y-auto pb-16 relative" id="main-content">
+        
+        <!-- CATEGORY PILLS BAR -->
+        <div class="flex items-center gap-2 px-3 py-2 overflow-x-auto whitespace-nowrap sticky top-0 bg-[#0f0f0f]/95 backdrop-blur-md z-10 border-b border-zinc-900">
+            <!-- Weather Trigger Pill -->
+            <button onclick="openWeatherDetails()" class="bg-amber-500/20 text-amber-400 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 touch-active">
+                <i class="fa-solid fa-cloud-sun"></i> Cimilada Weather.com
+            </button>
+            <button onclick="filterCategory(this, 'all')" class="category-pill active bg-white text-black px-3.5 py-1.5 rounded-lg text-xs font-medium touch-active">Dhamaan</button>
+            <button onclick="filterCategory(this, 'music')" class="category-pill bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium touch-active">Music</button>
+            <button onclick="filterCategory(this, 'tech')" class="category-pill bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium touch-active">Tiknoolajiyad</button>
+        </div>
+
+        <!-- WEATHER WIDGET BANNER -->
+        <div id="weather-banner" class="mx-3 mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-blue-900/60 to-indigo-900/60 border border-blue-500/30 flex items-center justify-between shadow-lg">
+            <div>
+                <div class="flex items-center gap-2 text-xs text-blue-300 font-medium">
+                    <i class="fa-solid fa-location-dot"></i>
+                    <span>Mogadishu, SO</span>
+                    <span class="text-[10px] bg-blue-500/20 px-1.5 py-0.5 rounded text-blue-200">Weather.com</span>
+                </div>
+                <div class="text-2xl font-bold mt-0.5">30°C <span class="text-sm font-normal text-zinc-300">| Qorax leh</span></div>
+                <p class="text-[11px] text-zinc-400 mt-0.5">Ugu sareeya: 32° • Ugu hooseeya: 26°</p>
+            </div>
+            <div class="text-right flex flex-col items-end">
+                <i class="fa-solid fa-sun-cloud text-amber-400 text-3xl mb-1"></i>
+                <a href="https://weather.com" target="_blank" class="text-[10px] text-blue-400 underline font-medium">Furo Weather.com</a>
+            </div>
+        </div>
+
+        <!-- SHORTS SECTION HEADER -->
+        <div class="flex items-center justify-between px-3 pt-4 pb-2">
+            <div class="flex items-center gap-2">
+                <i class="fa-solid fa-bolt text-red-600 text-xl"></i>
+                <span class="font-bold text-lg tracking-tight">Shorts</span>
+            </div>
+        </div>
+
+        <!-- 2-COLUMN SHORTS GRID -->
+        <div class="grid grid-cols-2 gap-2.5 px-3" id="shorts-grid">
+            <!-- Shorts Grid Item -->
+            <div class="short-card relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer touch-active border border-zinc-800 shadow-md">
+                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                <div class="absolute bottom-3 left-2.5 right-2.5 text-white">
+                    <p class="text-xs font-semibold leading-snug line-clamp-2">Odkac aad u macaan.... 😋🍲</p>
+                </div>
+            </div>
+
+            <div class="short-card relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer touch-active border border-zinc-800 shadow-md">
+                <img src="https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
+                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
+                <div class="absolute bottom-3 left-2.5 right-2.5 text-white">
+                    <p class="text-xs font-semibold leading-snug line-clamp-2">Ha Jiidin Gacanta Inat Helicopter-ka...</p>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <!-- BOTTOM MOBILE NAVIGATION BAR -->
+    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center h-14 z-30">
+        <button class="flex flex-col items-center gap-0.5 text-white w-1/5">
+            <i class="fa-solid fa-house text-lg"></i>
+            <span class="text-[10px]">Home</span>
+        </button>
+        <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+            <i class="fa-solid fa-bolt text-lg"></i>
+            <span class="text-[10px]">Shorts</span>
+        </button>
+        <button class="flex flex-col items-center justify-center text-white w-1/5">
+            <div class="w-9 h-9 border border-zinc-600 rounded-full flex items-center justify-center text-xl bg-zinc-900">+</div>
+        </button>
+        <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+            <i class="fa-solid fa-layer-group text-lg"></i>
+            <span class="text-[10px]">Subscriptions</span>
+        </button>
+        <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+            <div class="w-6 h-6 rounded-full bg-orange-600 text-white font-bold text-xs flex items-center justify-center">B</div>
+            <span class="text-[10px]">You</span>
+        </button>
+    </nav>
+
+    <!-- WEATHER POPUP MODAL -->
+    <div id="weather-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex-col justify-end max-w-md mx-auto">
+        <div class="bg-zinc-900 border-t border-zinc-700 rounded-t-3xl p-5 space-y-4">
+            <div class="flex justify-between items-center">
+                <h3 class="font-bold text-lg flex items-center gap-2">
+                    <i class="fa-solid fa-cloud-sun text-amber-400"></i> Warbixinta Cimilada (Weather.com)
+                </h3>
+                <button onclick="closeWeatherModal()" class="text-zinc-400 hover:text-white p-1">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <div class="bg-zinc-800 p-4 rounded-xl flex justify-between items-center">
+                <div>
+                    <p class="text-xs text-zinc-400">Magaalada Hada</p>
+                    <p class="text-lg font-bold">Mogadishu, Banadir</p>
+                    <p class="text-3xl font-extrabold text-amber-400 mt-1">30°C</p>
+                </div>
+                <div class="text-right text-xs space-y-1 text-zinc-300">
+                    <p><i class="fa-solid fa-droplet text-blue-400"></i> Qoyaan: 74%</p>
+                    <p><i class="fa-solid fa-wind text-teal-400"></i> Dabeyl: 18 km/h</p>
+                    <p><i class="fa-solid fa-eye text-purple-400"></i> Muuqaal: 10 km</p>
+                </div>
+            </div>
+
+            <a href="https://weather.com/weather/today/l/Mogadishu+Somalia" target="_blank" class="block w-full py-3 bg-blue-600 hover:bg-blue-700 text-center font-semibold text-sm rounded-xl text-white transition">
+                Ka eeg Weather.com Toos
+            </a>
+        </div>
+    </div>
+
+    <script>
+        function openWeatherDetails() {
+            document.getElementById('weather-modal').classList.remove('hidden');
+            document.getElementById('weather-modal').classList.add('flex');
+        }
+        function closeWeatherModal() {
+            document.getElementById('weather-modal').classList.add('hidden');
+            document.getElementById('weather-modal').classList.remove('flex');
+        }
+    </script>
 </body>
 </html>

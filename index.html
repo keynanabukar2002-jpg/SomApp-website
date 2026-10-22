@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Bayan Mobile App</title>
+    <title>Bayan Mobile App & SOMedia</title>
     
     <!-- PWA / Native App Mobile Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
@@ -19,7 +19,7 @@
     
     <style>
         body {
-            font-family: 'Inter', sans-serif;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, 'Inter', sans-serif;
             -webkit-tap-highlight-color: transparent;
             user-select: none;
             -webkit-user-select: none;
@@ -36,6 +36,64 @@
         ::-webkit-scrollbar {
             width: 0px;
             background: transparent;
+        }
+
+        /* SOMedia YouTube Specific Styles */
+        .somedia-brand-logo-img {
+            height: 32px;
+            width: 32px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 1.5px solid #ffffff;
+            box-shadow: 0 4px 10px rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
+            transition: all 0.3s ease;
+        }
+
+        .somedia-chip {
+            background-color: #272727;
+            color: #ffffff;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            border: none;
+            white-space: nowrap;
+        }
+
+        .somedia-chip.active {
+            background-color: #ffffff;
+            color: #0f0f0f;
+        }
+
+        .somedia-short-card {
+            position: relative;
+            aspect-ratio: 9/16;
+            border-radius: 12px;
+            overflow: hidden;
+            background-color: #1f1f1f;
+            cursor: pointer;
+        }
+
+        .somedia-short-overlay {
+            position: absolute;
+            inset: 0;
+            background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            padding: 10px;
+        }
+
+        .somedia-nav-custom-img {
+            height: 28px;
+            width: 28px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1.5px solid #ffffff;
+            box-shadow: 0 3px 8px rgba(255, 255, 255, 0.25);
+            transform: translateY(-2px);
         }
     </style>
 </head>
@@ -229,32 +287,6 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: SOMEDIA PAGE -->
-                <div id="tabSomedia" class="tab-content hidden space-y-4">
-                    <div class="flex items-center justify-between">
-                        <h3 class="text-sm font-extrabold text-slate-900">SOMEDIA Social Apps</h3>
-                        <span class="text-[10px] bg-purple-100 text-purple-800 font-bold px-2.5 py-0.5 rounded-full">Social Center</span>
-                    </div>
-
-                    <div class="grid grid-cols-2 gap-3">
-                        <button onclick="openTikTokApp()" class="bg-black text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
-                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-white text-lg shrink-0"><i class="fa-brands fa-tiktok"></i></div>
-                            <div class="text-left">
-                                <h4 class="text-xs font-bold text-white">TikTok</h4>
-                                <p class="text-[10px] text-slate-400">Launch App</p>
-                            </div>
-                        </button>
-
-                        <button onclick="openFacebookApp()" class="bg-[#1877F2] text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
-                            <div class="w-10 h-10 rounded-xl bg-blue-500/80 flex items-center justify-center text-white text-lg shrink-0"><i class="fa-brands fa-facebook-f"></i></div>
-                            <div class="text-left">
-                                <h4 class="text-xs font-bold text-white">Facebook</h4>
-                                <p class="text-[10px] text-blue-100">Launch App</p>
-                            </div>
-                        </button>
-                    </div>
-                </div>
-
             </div>
 
             <!-- Bottom Mobile Navigation Bar -->
@@ -274,7 +306,7 @@
                 </button>
 
                 <!-- 3. Floating SOMEDIA Button -->
-                <button onclick="switchTab('tabSomedia', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                <button onclick="openSomediaScreen()" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Custom Logo" class="w-full h-full object-cover rounded-full">
                     </div>
@@ -292,7 +324,186 @@
         </div>
 
         <!-- ==========================================
-             SCREEN 3: CAMERA SCREEN
+             SCREEN 3: SOMEDIA YOUTUBE MOBILE CLONE
+        =========================================== -->
+        <div id="somediaScreen" class="hidden w-full h-full flex-col justify-between bg-[#0f0f0f] text-white">
+            
+            <!-- HEADER -->
+            <header class="sticky top-0 z-10 bg-[#0f0f0f] flex justify-between items-center px-4 py-2.5 shrink-0">
+                <div class="flex items-center gap-2 cursor-pointer" onclick="closeSomediaScreen()">
+                    <span class="text-xl font-black uppercase tracking-tight text-white shadow-sm">SOMedia</span>
+                    <div class="relative flex items-center justify-center">
+                        <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMedia Logo" class="somedia-brand-logo-img">
+                    </div>
+                </div>
+                <div class="flex items-center gap-4">
+                    <button class="text-white text-lg" onclick="openSearch()">
+                        <i class="fa-solid fa-magnifying-glass"></i>
+                    </button>
+                    <button class="text-white text-lg relative">
+                        <i class="fa-regular fa-bell"></i>
+                        <span class="absolute -top-1 -right-2 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full">9+</span>
+                    </button>
+                    <button onclick="closeSomediaScreen()" class="text-xs bg-white/20 hover:bg-white/30 text-white font-bold px-2 py-1 rounded-lg">
+                        <i class="fa-solid fa-arrow-left"></i> Bayan
+                    </button>
+                </div>
+            </header>
+
+            <!-- SEARCH OVERLAY -->
+            <div class="fixed inset-0 bg-[#0f0f0f] z-50 p-3 hidden" id="searchOverlay">
+                <div class="flex items-center gap-3">
+                    <button class="text-white text-xl" onclick="closeSearch()">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <input type="text" class="flex-1 bg-[#222] border border-[#333] rounded-full px-4 py-2 text-white text-sm outline-none" id="searchInput" placeholder="Search SOMedia" onkeyup="filterShorts()">
+                </div>
+            </div>
+
+            <!-- Scrollable Video Hub -->
+            <div class="flex-1 overflow-y-auto pb-16">
+                <!-- CATEGORIES -->
+                <div class="flex items-center gap-2 px-3 py-2 overflow-x-auto whitespace-nowrap">
+                    <button class="somedia-chip px-2.5 py-1.5"><i class="fa-regular fa-compass"></i></button>
+                    <button class="somedia-chip active">All</button>
+                    <button class="somedia-chip">Mixes</button>
+                    <button class="somedia-chip">Music</button>
+                    <button class="somedia-chip">Podcasts</button>
+                    <button class="somedia-chip">Live</button>
+                    <button class="somedia-chip">Somali Tech</button>
+                    <button class="somedia-chip">Gaming</button>
+                </div>
+
+                <!-- SHORTS TITLE -->
+                <div class="flex items-center justify-between px-4 py-3">
+                    <div class="flex items-center gap-2 text-lg font-bold">
+                        <i class="fa-solid fa-bolt text-red-600 text-xl"></i>
+                        <span>Shorts</span>
+                    </div>
+                    <button class="text-slate-400"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+
+                <!-- SHORTS GRID -->
+                <div class="grid grid-cols-2 gap-2.5 px-3" id="shortsGrid">
+                    <!-- Card 1 -->
+                    <div class="somedia-short-card" onclick="openPlayer('Sirta Miraha Cad! 😳', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">
+                        <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80" alt="Short 1" class="w-full h-full object-cover">
+                        <div class="somedia-short-overlay">
+                            <div class="flex justify-end">
+                                <button class="text-white text-sm"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            </div>
+                            <div class="text-white">
+                                <div class="card-title text-sm font-semibold line-clamp-2 leading-tight drop-shadow">Sirta Miraha Cad! 😳</div>
+                                <div class="text-[11px] text-slate-300">1.2M views</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 2 -->
+                    <div class="somedia-short-card" onclick="openPlayer('Gatos 🐆 inteligentes 😲 y Gr...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4')">
+                        <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80" alt="Short 2" class="w-full h-full object-cover">
+                        <div class="somedia-short-overlay">
+                            <div class="flex justify-end">
+                                <button class="text-white text-sm"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            </div>
+                            <div class="text-white">
+                                <div class="card-title text-sm font-semibold line-clamp-2 leading-tight drop-shadow">Gatos 🐆 inteligentes 😲 y Gr...</div>
+                                <div class="text-[11px] text-slate-300">850K views</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 3 -->
+                    <div class="somedia-short-card" onclick="openPlayer('BOQORKA INGIRIISKA AYAA ...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4')">
+                        <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=500&q=80" alt="Short 3" class="w-full h-full object-cover">
+                        <div class="somedia-short-overlay">
+                            <div class="flex justify-end">
+                                <button class="text-white text-sm"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            </div>
+                            <div class="text-white">
+                                <div class="card-title text-sm font-semibold line-clamp-2 leading-tight drop-shadow">BOQORKA INGIRIISKA AYAA ...</div>
+                                <div class="text-[11px] text-slate-300">430K views</div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Card 4 -->
+                    <div class="somedia-short-card" onclick="openPlayer('5 Wild Animals That Have Been Enemie...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4')">
+                        <img src="https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=500&q=80" alt="Short 4" class="w-full h-full object-cover">
+                        <div class="somedia-short-overlay">
+                            <div class="flex justify-end">
+                                <button class="text-white text-sm"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                            </div>
+                            <div class="text-white">
+                                <div class="card-title text-sm font-semibold line-clamp-2 leading-tight drop-shadow">5 Wild Animals That Have Been Enemie...</div>
+                                <div class="text-[11px] text-slate-300">2.5M views</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- SOMEDIA BOTTOM NAV BAR -->
+            <nav class="fixed bottom-0 left-0 right-0 h-[52px] bg-[#0f0f0f] border-t border-[#272727] flex justify-around items-center z-20">
+                <button class="flex flex-col items-center justify-center text-white text-[10px] gap-0.5 w-1/5" onclick="closeSomediaScreen()">
+                    <i class="fa-solid fa-house text-base"></i>
+                    <span>Home</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-white text-[10px] gap-0.5 w-1/5">
+                    <i class="fa-solid fa-bolt text-base"></i>
+                    <span>Shorts</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-white text-[10px] gap-0.5 w-1/5">
+                    <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Upload" class="somedia-nav-custom-img">
+                    <span>Upload</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-white text-[10px] gap-0.5 w-1/5">
+                    <i class="fa-solid fa-layer-group text-base"></i>
+                    <span>Subscriptions</span>
+                </button>
+                <button class="flex flex-col items-center justify-center text-white text-[10px] gap-0.5 w-1/5">
+                    <div class="w-6 h-6 rounded-full bg-orange-700 text-white flex items-center justify-center font-bold text-xs">B</div>
+                    <span>You</span>
+                </button>
+            </nav>
+
+            <!-- FULLSCREEN PLAYER MODAL -->
+            <div class="fixed inset-0 bg-black z-50 hidden" id="playerModal">
+                <button class="absolute top-4 left-4 text-white text-xl bg-black/50 w-10 h-10 rounded-full flex items-center justify-center z-10" onclick="closePlayer()">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+                <div class="relative w-full h-full flex justify-center items-center">
+                    <video id="videoPlayer" loop autoplay controls class="w-full h-full object-cover"></video>
+                    <div class="absolute bottom-5 left-4 right-4 flex justify-between items-end pointer-events-none">
+                        <div class="max-w-[75%]">
+                            <div class="text-sm font-semibold text-white drop-shadow" id="playerTitle">Video Title</div>
+                        </div>
+                        <div class="flex flex-col items-center gap-4 pointer-events-auto">
+                            <button class="flex flex-col items-center text-white text-xs gap-1" onclick="toggleLike(this)">
+                                <i class="fa-regular fa-thumbs-up text-2xl"></i>
+                                <span>12K</span>
+                            </button>
+                            <button class="flex flex-col items-center text-white text-xs gap-1">
+                                <i class="fa-regular fa-thumbs-down text-2xl"></i>
+                                <span>Dislike</span>
+                            </button>
+                            <button class="flex flex-col items-center text-white text-xs gap-1">
+                                <i class="fa-solid fa-comment-dots text-2xl"></i>
+                                <span>450</span>
+                            </button>
+                            <button class="flex flex-col items-center text-white text-xs gap-1">
+                                <i class="fa-solid fa-share text-2xl"></i>
+                                <span>Share</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- ==========================================
+             SCREEN 4: CAMERA SCREEN
         =========================================== -->
         <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
             
@@ -401,31 +612,46 @@
         let seconds = 0;
         let galleryItems = [];
 
-        // Direct Launch for WAAFI App
+        // Direct Launch for External Apps
         function openWaafiApp() {
             window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
         }
 
-        // Direct Android Intent for TikTok
         function openTikTokApp() {
             window.location.href = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
         }
 
-        // Direct App Scheme for Facebook
         function openFacebookApp() {
             window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
         }
 
+        // Screen Switcher
         function switchScreen(screenId) {
             if(screenId === 'mainDashboard') {
                 document.getElementById('landingScreen').classList.add('hidden');
+                document.getElementById('somediaScreen').classList.add('hidden');
                 document.getElementById('mainDashboard').classList.remove('hidden');
                 document.getElementById('mainDashboard').classList.add('flex');
             } else {
                 document.getElementById('mainDashboard').classList.add('hidden');
                 document.getElementById('mainDashboard').classList.remove('flex');
+                document.getElementById('somediaScreen').classList.add('hidden');
                 document.getElementById('landingScreen').classList.remove('hidden');
             }
+        }
+
+        function openSomediaScreen() {
+            document.getElementById('mainDashboard').classList.add('hidden');
+            document.getElementById('mainDashboard').classList.remove('flex');
+            document.getElementById('somediaScreen').classList.remove('hidden');
+            document.getElementById('somediaScreen').classList.add('flex');
+        }
+
+        function closeSomediaScreen() {
+            document.getElementById('somediaScreen').classList.add('hidden');
+            document.getElementById('somediaScreen').classList.remove('flex');
+            document.getElementById('mainDashboard').classList.remove('hidden');
+            document.getElementById('mainDashboard').classList.add('flex');
         }
 
         function switchTab(tabId, btn) {
@@ -442,6 +668,61 @@
             }
         }
 
+        // SOMedia Logic
+        function openPlayer(title, videoSrc) {
+            const modal = document.getElementById('playerModal');
+            const player = document.getElementById('videoPlayer');
+            const titleElem = document.getElementById('playerTitle');
+            
+            titleElem.innerText = title;
+            player.src = videoSrc;
+            modal.classList.remove('hidden');
+            player.play();
+        }
+
+        function closePlayer() {
+            const modal = document.getElementById('playerModal');
+            const player = document.getElementById('videoPlayer');
+            player.pause();
+            modal.classList.add('hidden');
+        }
+
+        function openSearch() {
+            document.getElementById('searchOverlay').classList.remove('hidden');
+            document.getElementById('searchInput').focus();
+        }
+
+        function closeSearch() {
+            document.getElementById('searchOverlay').classList.add('hidden');
+        }
+
+        function filterShorts() {
+            const query = document.getElementById('searchInput').value.toLowerCase();
+            const cards = document.querySelectorAll('.somedia-short-card');
+            cards.forEach(card => {
+                const title = card.querySelector('.card-title').innerText.toLowerCase();
+                if (title.includes(query)) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function toggleLike(btn) {
+            const icon = btn.querySelector('i');
+            if (icon.classList.contains('fa-regular')) {
+                icon.classList.remove('fa-regular');
+                icon.classList.add('fa-solid');
+                icon.style.color = '#ff0000';
+            } else {
+                icon.classList.remove('fa-solid');
+                icon.classList.add('fa-regular');
+                icon.style.color = '#ffffff';
+            }
+        }
+
+        // Camera System Logic
         async function openFullCamera() {
             document.getElementById('cameraScreen').classList.remove('hidden');
             document.getElementById('cameraScreen').classList.add('flex');

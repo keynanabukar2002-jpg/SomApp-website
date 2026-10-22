@@ -165,7 +165,6 @@
 
     <div class="z-20 flex flex-col gap-5 mb-2">
       <div class="flex items-center justify-around">
-        <!-- ADD FROM GALLERY BUTTON (OPENS PHONE GALLERY DIRECTLY) -->
         <button onclick="triggerDeviceGallery()" class="flex flex-col items-center gap-1">
           <div class="w-11 h-11 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
             <i class="fa-solid fa-folder-open text-white"></i>
@@ -173,12 +172,10 @@
           <span class="text-[11px] font-bold text-white">Add</span>
         </button>
 
-        <!-- RECORD BUTTON -->
         <button id="recordBtn" onclick="toggleRecording()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform">
           <div id="recordInnerCircle" class="w-12 h-12 rounded-full bg-red-600 transition-all duration-200"></div>
         </button>
 
-        <!-- DRAFTS BUTTON -->
         <button onclick="showToast('Drafts waa eber')" class="flex flex-col items-center gap-1">
           <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-lg">
             <i class="fa-regular fa-file-lines"></i>
@@ -197,32 +194,33 @@
 
   <!-- 2. TRIM / ADJUST VIDEO MODAL -->
   <div id="trimModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
-    <div class="flex items-center justify-between z-10">
+    <div class="flex items-center justify-between z-10 pt-2 px-1">
       <button onclick="backToCamera()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
-        <i class="fa-solid fa-arrow-left"></i>
+        <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
     <div class="flex-1 flex items-center justify-center py-2 relative">
-      <div class="aspect-[9/16] h-full max-h-[70vh] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl">
-        <video id="trimVideoPlayer" class="w-full h-full object-cover" loop playsinline autoplay></video>
+      <div class="aspect-[9/16] h-full max-h-[68vh] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl flex items-center justify-center">
+        <!-- MUTED & DISABLE PIP/DISABLING MEDIA SESSION TO PREVENT EXTERNAL NOTIFICATIONS -->
+        <video id="trimVideoPlayer" class="w-full h-full object-cover" loop playsinline muted></video>
       </div>
     </div>
 
-    <div class="space-y-3 mb-2 px-2">
-      <div class="bg-zinc-900 border border-zinc-700 rounded-xl p-2 relative flex items-center justify-center">
-        <div class="w-full h-10 bg-zinc-800 rounded flex items-center justify-between px-1 relative overflow-hidden">
-          <div class="absolute left-1/4 right-1/4 top-0 bottom-0 border-2 border-white bg-white/10 rounded flex items-center justify-between px-1">
-            <div class="w-1 h-6 bg-white rounded-full"></div>
-            <span class="bg-white text-black text-[10px] font-bold px-2 py-0.5 rounded-full shadow">10.0s</span>
-            <div class="w-1 h-6 bg-white rounded-full"></div>
+    <div class="space-y-3 mb-3 px-2">
+      <div class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-3 relative flex items-center justify-center shadow-inner">
+        <div class="w-full h-12 bg-zinc-950 rounded-xl flex items-center justify-between px-2 relative overflow-hidden border border-zinc-700">
+          <div class="absolute left-[30%] right-[30%] top-1 bottom-1 border-2 border-white bg-white/20 rounded-lg flex items-center justify-between px-1.5 shadow-lg">
+            <div class="w-1.5 h-7 bg-white rounded-full"></div>
+            <span class="bg-white text-black text-[11px] font-black px-3 py-0.5 rounded-full shadow-md">10.0s</span>
+            <div class="w-1.5 h-7 bg-white rounded-full"></div>
           </div>
         </div>
       </div>
 
-      <div class="flex items-center justify-between text-xs">
-        <span class="text-zinc-400 text-[11px]">Drag to adjust video</span>
-        <button onclick="goToEditorStep()" class="bg-white text-black font-bold px-6 py-2 rounded-full text-xs hover:bg-zinc-200 shadow-lg">
+      <div class="flex items-center justify-between px-2">
+        <span class="text-zinc-400 text-xs">Drag to adjust video</span>
+        <button onclick="goToEditorStep()" class="bg-white text-black font-bold px-7 py-2.5 rounded-full text-xs hover:bg-zinc-200 shadow-lg transition-transform active:scale-95">
           Next
         </button>
       </div>
@@ -247,7 +245,7 @@
     </div>
 
     <div class="absolute inset-0 z-0 flex items-center justify-center bg-black">
-      <video id="editorVideoPlayer" class="w-full h-full object-cover" loop playsinline autoplay></video>
+      <video id="editorVideoPlayer" class="w-full h-full object-cover" loop playsinline muted></video>
       <span class="absolute bottom-16 text-xs text-white/70 font-semibold tracking-wide drop-shadow">Swipe up to edit</span>
     </div>
 
@@ -284,7 +282,7 @@
     <div class="flex-1 py-4 space-y-4 overflow-y-auto no-scrollbar">
       <div class="flex gap-3">
         <div class="w-24 aspect-[9/16] bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0">
-          <video id="finalPreviewThumbnail" class="w-full h-full object-cover"></video>
+          <video id="finalPreviewThumbnail" class="w-full h-full object-cover" muted></video>
         </div>
         <div class="flex-1">
           <textarea id="finalTitleInput" rows="3" placeholder="Caption your Short... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
@@ -344,6 +342,9 @@
     let selectedThumbnail = '';
 
     window.addEventListener('DOMContentLoaded', () => {
+      if ('mediaSession' in navigator) {
+        navigator.mediaSession.metadata = null;
+      }
       renderGrid();
     });
 
@@ -405,7 +406,6 @@
       }
     }
 
-    // BADHANKA ADD OO TOOS UGA FURAYA GALLERY-GA TALEEFANKA
     function triggerDeviceGallery() {
       document.getElementById('deviceVideoInput').click();
     }
@@ -419,11 +419,11 @@
 
       closeCameraModal();
 
-      // U gudub Trim Modal
       const trimPlayer = document.getElementById('trimVideoPlayer');
       trimPlayer.src = selectedVideoUrl;
       document.getElementById('trimModal').classList.remove('hidden');
       document.getElementById('trimModal').classList.add('flex');
+      trimPlayer.play().catch(e => console.log(e));
     }
 
     function backToCamera() {
@@ -437,6 +437,7 @@
       editorPlayer.src = selectedVideoUrl;
       document.getElementById('editorModal').classList.remove('hidden');
       document.getElementById('editorModal').classList.add('flex');
+      editorPlayer.play().catch(e => console.log(e));
     }
 
     function backToTrim() {
@@ -450,6 +451,7 @@
       finalPlayer.src = selectedVideoUrl;
       document.getElementById('finalUploadModal').classList.remove('hidden');
       document.getElementById('finalUploadModal').classList.add('flex');
+      finalPlayer.play().catch(e => console.log(e));
     }
 
     function backToEditor() {
@@ -484,7 +486,7 @@
       player.src = videoList[idx].url;
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      player.play();
+      player.play().catch(e => console.log(e));
     }
 
     function closePlayer() {

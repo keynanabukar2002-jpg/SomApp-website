@@ -1,636 +1,619 @@
 <!DOCTYPE html>
-<html lang="so">
+<html lang="so" class="h-full">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>SOMedia - YouTube Mobile Clone</title>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      -webkit-tap-highlight-color: transparent;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <title>Bayan Mobile App</title>
+    
+    <!-- PWA / Native App Mobile Meta Tags -->
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="theme-color" content="#047857">
 
-    body {
-      background-color: #0f0f0f;
-      color: #ffffff;
-      padding-bottom: 60px;
-    }
-
-    /* TOP HEADER */
-    header {
-      position: sticky;
-      top: 0;
-      z-index: 100;
-      background-color: #0f0f0f;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 10px 16px;
-    }
-
-    .brand {
-      display: flex;
-      align-items: center;
-      gap: 10px;
-      cursor: pointer;
-    }
-
-    /* SOMEDIA OO CADAN AH */
-    .brand-title {
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      color: #ffffff;
-      text-transform: uppercase;
-      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-    }
-
-    .brand-logo-container {
-      position: relative;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* LOGADA SAARE: AFAARGEES, BORDER CAD, IYO KOR U SOO KACSAN */
-    .brand-logo-img {
-      height: 32px;
-      width: 32px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1.5px solid #ffffff;
-      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
-      transition: all 0.3s ease;
-    }
-
-    .brand-logo-img:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 6px 14px rgba(255, 255, 255, 0.4);
-    }
-
-    .header-icons {
-      display: flex;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-size: 20px;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .badge {
-      position: absolute;
-      top: -4px;
-      right: -8px;
-      background-color: #cc0000;
-      color: white;
-      font-size: 10px;
-      font-weight: bold;
-      padding: 1px 4px;
-      border-radius: 10px;
-    }
-
-    /* CATEGORIES BAR */
-    .categories {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 6px 12px 10px;
-      overflow-x: auto;
-      white-space: nowrap;
-      scrollbar-width: none;
-    }
-    .categories::-webkit-scrollbar { display: none; }
-
-    .chip {
-      background-color: #272727;
-      color: #ffffff;
-      padding: 6px 12px;
-      border-radius: 8px;
-      font-size: 14px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-    }
-
-    .chip.active {
-      background-color: #ffffff;
-      color: #0f0f0f;
-    }
-
-    .chip-explore {
-      padding: 6px 10px;
-    }
-
-    /* SECTION TITLE */
-    .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 12px 16px 8px;
-    }
-
-    .shorts-brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 18px;
-      font-weight: 700;
-    }
-
-    .shorts-logo {
-      color: #ff0000;
-      font-size: 20px;
-    }
-
-    /* SHORTS GRID */
-    .shorts-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      padding: 0 12px 16px;
-    }
-
-    .short-card {
-      position: relative;
-      aspect-ratio: 9/16;
-      border-radius: 12px;
-      overflow: hidden;
-      background-color: #1f1f1f;
-      cursor: pointer;
-    }
-
-    .short-card img {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .short-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      padding: 10px;
-    }
-
-    .card-top {
-      display: flex;
-      justify-content: flex-end;
-    }
-
-    .card-top button {
-      background: none;
-      border: none;
-      color: white;
-      font-size: 16px;
-      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-    }
-
-    .card-bottom {
-      color: white;
-    }
-
-    .card-title {
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.3;
-      margin-bottom: 4px;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    .card-views {
-      font-size: 11px;
-      color: #cccccc;
-    }
-
-    /* BOTTOM NAV BAR */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 52px;
-      background-color: #0f0f0f;
-      border-top: 1px solid #272727;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 100;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-size: 10px;
-      gap: 3px;
-      cursor: pointer;
-      width: 20%;
-    }
-
-    .nav-item i {
-      font-size: 18px;
-    }
-
-    /* BOTTOM NAV BUTTONKA DHEXDA OO LA MID AH QAABKA LOGADA */
-    .custom-nav-img-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      cursor: pointer;
-      width: 20%;
-      gap: 3px;
-    }
-
-    .nav-custom-img {
-      height: 28px;
-      width: 28px;
-      object-fit: cover;
-      border-radius: 6px;
-      border: 1.5px solid #ffffff;
-      box-shadow: 0 3px 8px rgba(255, 255, 255, 0.25);
-      transform: translateY(-2px);
-      transition: all 0.3s ease;
-    }
-
-    .nav-custom-img:hover {
-      transform: translateY(-4px);
-      box-shadow: 0 5px 12px rgba(255, 255, 255, 0.4);
-    }
-
-    .nav-custom-label {
-      font-size: 10px;
-      color: #ffffff;
-    }
-
-    .profile-avatar {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      background-color: #e65100;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 12px;
-    }
-
-    /* FULLSCREEN PLAYER MODAL */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background-color: #000;
-      z-index: 200;
-    }
-
-    .modal-content {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      color: white;
-      font-size: 24px;
-      background: rgba(0,0,0,0.5);
-      border: none;
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    .player-overlay {
-      position: absolute;
-      bottom: 20px;
-      left: 16px;
-      right: 16px;
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-    }
-
-    .player-info {
-      max-width: 75%;
-    }
-
-    .player-title {
-      font-size: 15px;
-      font-weight: 600;
-      margin-bottom: 10px;
-    }
-
-    .player-actions {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 18px;
-    }
-
-    .action-btn {
-      background: none;
-      border: none;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .action-btn i {
-      font-size: 24px;
-    }
-
-    /* SEARCH BAR OVERLAY */
-    .search-overlay {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background-color: #0f0f0f;
-      z-index: 150;
-      padding: 10px 16px;
-    }
-
-    .search-header {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .search-input {
-      flex: 1;
-      background-color: #222;
-      border: 1px solid #333;
-      border-radius: 20px;
-      padding: 8px 16px;
-      color: white;
-      font-size: 15px;
-      outline: none;
-    }
-  </style>
-</head>
-<body>
-
-  <!-- HEADER -->
-  <header>
-    <div class="brand">
-      <span class="brand-title">SOMedia</span>
-      <div class="brand-logo-container">
-        <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="SOMedia Logo" class="brand-logo-img">
-      </div>
-    </div>
-    <div class="header-icons">
-      <button class="icon-btn" onclick="openSearch()">
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </button>
-      <button class="icon-btn">
-        <i class="fa-regular fa-bell"></i>
-        <span class="badge">9+</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- SEARCH OVERLAY -->
-  <div class="search-overlay" id="searchOverlay">
-    <div class="search-header">
-      <button class="icon-btn" onclick="closeSearch()">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
-      <input type="text" class="search-input" id="searchInput" placeholder="Search SOMedia" onkeyup="filterShorts()">
-    </div>
-  </div>
-
-  <!-- CATEGORIES -->
-  <div class="categories">
-    <button class="chip chip-explore"><i class="fa-regular fa-compass"></i></button>
-    <button class="chip active">All</button>
-    <button class="chip">Mixes</button>
-    <button class="chip">Music</button>
-    <button class="chip">Podcasts</button>
-    <button class="chip">Live</button>
-    <button class="chip">Somali Tech</button>
-    <button class="chip">Gaming</button>
-  </div>
-
-  <!-- SHORTS TITLE -->
-  <div class="section-title">
-    <div class="shorts-brand">
-      <i class="fa-solid fa-bolt shorts-logo"></i>
-      <span>Shorts</span>
-    </div>
-    <button class="icon-btn" style="color: #aaa;"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-  </div>
-
-  <!-- SHORTS GRID -->
-  <div class="shorts-grid" id="shortsGrid">
-    <!-- Card 1 -->
-    <div class="short-card" onclick="openPlayer('Sirta Miraha Cad! 😳', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">
-      <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80" alt="Short 1">
-      <div class="short-overlay">
-        <div class="card-top">
-          <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
-        </div>
-        <div class="card-bottom">
-          <div class="card-title">Sirta Miraha Cad! 😳</div>
-          <div class="card-views">1.2M views</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 2 -->
-    <div class="short-card" onclick="openPlayer('Gatos 🐆 inteligentes 😲 y Gr...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4')">
-      <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80" alt="Short 2">
-      <div class="short-overlay">
-        <div class="card-top">
-          <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
-        </div>
-        <div class="card-bottom">
-          <div class="card-title">Gatos 🐆 inteligentes 😲 y Gr...</div>
-          <div class="card-views">850K views</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 3 -->
-    <div class="short-card" onclick="openPlayer('BOQORKA INGIRIISKA AYAA ...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4')">
-      <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=500&q=80" alt="Short 3">
-      <div class="short-overlay">
-        <div class="card-top">
-          <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
-        </div>
-        <div class="card-bottom">
-          <div class="card-title">BOQORKA INGIRIISKA AYAA ...</div>
-          <div class="card-views">430K views</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- Card 4 -->
-    <div class="short-card" onclick="openPlayer('5 Wild Animals That Have Been Enemie...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4')">
-      <img src="https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=500&q=80" alt="Short 4">
-      <div class="short-overlay">
-        <div class="card-top">
-          <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
-        </div>
-        <div class="card-bottom">
-          <div class="card-title">5 Wild Animals That Have Been Enemie...</div>
-          <div class="card-views">2.5M views</div>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- BOTTOM NAV BAR -->
-  <nav class="bottom-nav">
-    <button class="nav-item">
-      <i class="fa-solid fa-house"></i>
-      <span>Home</span>
-    </button>
-    <button class="nav-item">
-      <i class="fa-solid fa-bolt"></i>
-      <span>Shorts</span>
-    </button>
-    <!-- BUTTONKA DHEXDA OO AH LOGADA CALANKA OO QAABKAN LA ISKU WAAFAJIYAY -->
-    <button class="custom-nav-img-container">
-      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="Upload/Center" class="nav-custom-img">
-      <span class="nav-custom-label">Upload</span>
-    </button>
-    <button class="nav-item">
-      <i class="fa-solid fa-layer-group"></i>
-      <span>Subscriptions</span>
-    </button>
-    <button class="nav-item">
-      <div class="profile-avatar">B</div>
-      <span>You</span>
-    </button>
-  </nav>
-
-  <!-- FULLSCREEN PLAYER MODAL -->
-  <div class="modal" id="playerModal">
-    <button class="close-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
-    <div class="modal-content">
-      <video id="videoPlayer" loop autoplay controls></video>
-      <div class="player-overlay">
-        <div class="player-info">
-          <div class="player-title" id="playerTitle">Video Title</div>
-        </div>
-        <div class="player-actions">
-          <button class="action-btn" onclick="toggleLike(this)">
-            <i class="fa-regular fa-thumbs-up"></i>
-            <span>12K</span>
-          </button>
-          <button class="action-btn">
-            <i class="fa-regular fa-thumbs-down"></i>
-            <span>Dislike</span>
-          </button>
-          <button class="action-btn">
-            <i class="fa-solid fa-comment-dots"></i>
-            <span>450</span>
-          </button>
-          <button class="action-btn">
-            <i class="fa-solid fa-share"></i>
-            <span>Share</span>
-          </button>
-        </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- JAVASCRIPT LOGIC -->
-  <script>
-    function openPlayer(title, videoSrc) {
-      const modal = document.getElementById('playerModal');
-      const player = document.getElementById('videoPlayer');
-      const titleElem = document.getElementById('playerTitle');
-      
-      titleElem.innerText = title;
-      player.src = videoSrc;
-      modal.style.display = 'block';
-      player.play();
-    }
-
-    function closePlayer() {
-      const modal = document.getElementById('playerModal');
-      const player = document.getElementById('videoPlayer');
-      player.pause();
-      modal.style.display = 'none';
-    }
-
-    function openSearch() {
-      document.getElementById('searchOverlay').style.display = 'block';
-      document.getElementById('searchInput').focus();
-    }
-
-    function closeSearch() {
-      document.getElementById('searchOverlay').style.display = 'none';
-    }
-
-    function filterShorts() {
-      const query = document.getElementById('searchInput').value.toLowerCase();
-      const cards = document.querySelectorAll('.short-card');
-      cards.forEach(card => {
-        const title = card.querySelector('.card-title').innerText.toLowerCase();
-        if (title.includes(query)) {
-          card.style.display = 'block';
-        } else {
-          card.style.display = 'none';
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts Inter -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+    
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            -webkit-tap-highlight-color: transparent;
+            user-select: none;
+            -webkit-user-select: none;
         }
-      });
-    }
 
-    function toggleLike(btn) {
-      const icon = btn.querySelector('i');
-      if (icon.classList.contains('fa-regular')) {
-        icon.classList.remove('fa-regular');
-        icon.classList.add('fa-solid');
-        icon.style.color = '#ff0000';
-      } else {
-        icon.classList.remove('fa-solid');
-        icon.classList.add('fa-regular');
-        icon.style.color = '#ffffff';
-      }
-    }
-  </script>
+        /* Camera Filters */
+        .filter-normal { filter: none; }
+        .filter-bright { filter: brightness(1.25) contrast(1.1) saturate(1.2); }
+        .filter-vintage { filter: sepia(0.5) contrast(1.2) brightness(0.9); }
+        .filter-bw { filter: grayscale(1); }
+        .filter-warm { filter: sepia(0.3) saturate(1.4) hue-rotate(-10deg); }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 0px;
+            background: transparent;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 md:bg-slate-800 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
+
+    <!-- APP CONTAINER FRAME -->
+    <div class="w-full h-full md:max-w-[410px] md:h-[844px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900">
+
+        <!-- ==========================================
+             SCREEN 1: LANDING / WELCOME SCREEN
+        =========================================== -->
+        <div id="landingScreen" class="w-full h-full flex flex-col justify-between p-6 bg-gradient-to-b from-[#FEFBEA] via-[#FFF9E6] to-[#F7F2D5]">
+            <div class="flex justify-between items-center pt-2">
+                <div class="text-3xl font-black tracking-wider text-slate-900">
+                    BAY<span class="text-amber-600">AN</span>
+                </div>
+                <button onclick="toggleTheme()" class="w-10 h-10 bg-amber-100/80 rounded-2xl flex items-center justify-center text-amber-800 shadow-sm active:scale-95 transition">
+                    <i class="fa-solid fa-moon text-lg"></i>
+                </button>
+            </div>
+
+            <div class="my-auto text-center px-2">               
+                <span class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-widest">
+                    Welcome to Bayan App
+                </span>
+                <h1 class="text-3xl font-black text-slate-900 mt-4 mb-3 leading-snug">
+                    Kusoo Dhawoow Bayan-app
+                </h1>
+                <p class="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto font-medium">
+                    App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo shopping.
+                </p>
+            </div>
+
+            <div class="pb-4 space-y-3">
+                <button onclick="switchScreen('mainDashboard')" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold py-4 rounded-2xl shadow-xl transition flex items-center justify-center gap-2 text-sm">
+                    <span>Get Started</span>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SCREEN 2: MAIN DASHBOARD FRAME
+        =========================================== -->
+        <div id="mainDashboard" class="hidden w-full h-full flex-col justify-between bg-[#FEFBEA]">
+            
+            <!-- Header Bar -->
+            <div class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0">
+                <div class="flex items-center space-x-3">
+                    <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shadow-md text-sm">
+                        B
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Good Morning</p>
+                        <h2 class="text-sm font-extrabold text-slate-900 leading-tight">Bayan User</h2>
+                    </div>
+                </div>
+                <button onclick="switchScreen('landingScreen')" title="Ka bax" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center transition active:scale-95">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
+                </button>
+            </div>
+
+            <!-- Scrollable Content Area -->
+            <div class="flex-1 overflow-y-auto p-4 space-y-5">
+                
+                <!-- TAB 1: HOME -->
+                <div id="tabHome" class="tab-content space-y-5">
+                    
+                    <!-- GIF Display Section -->
+                    <div class="rounded-3xl overflow-hidden shadow-2xl border-2 border-white/80 aspect-[3.05/1] h-[110px] w-full bg-emerald-900/10 flex items-center justify-center relative mx-auto transform transition duration-300">
+                        <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover rounded-3xl">
+                    </div>
+
+                    <div>
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha & Apps</h3>
+                        <div class="grid grid-cols-3 gap-3">
+                            <button onclick="selectService('Hormuud', 'Shabakada Hormuud Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-11 h-11 rounded-2xl border-2 border-emerald-600 flex items-center justify-center text-emerald-600 font-black text-xl mb-1 bg-emerald-50">H</div>
+                                <span class="text-xs font-bold text-slate-800">Hormuud</span>
+                            </button>
+
+                            <button onclick="selectService('Somnet', 'Shabakada Somnet Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="text-sky-600 mb-1"><i class="fa-solid fa-wifi text-xl"></i></div>
+                                <span class="text-[9px] font-bold text-sky-800 uppercase leading-none mt-1">SOMNET</span>
+                                <span class="text-xs font-bold text-slate-800">Somnet</span>
+                            </button>
+
+                            <button onclick="selectService('Somtel', 'Shabakada Somtel')" class="bg-[#FFDC00] p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="text-slate-900 font-black text-sm mb-1 tracking-wider">somtel</div>
+                                <span class="text-xs font-bold text-slate-900">Somtel</span>
+                            </button>
+
+                            <button onclick="selectService('SomLink', 'Shabakada SomLink Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="text-purple-700 font-black text-sm">SomLink</div>
+                                <span class="text-[9px] text-slate-400 font-semibold mb-1">telecom</span>
+                                <span class="text-xs font-bold text-slate-800">SomLink</span>
+                            </button>
+
+                            <button onclick="selectService('Amtel', 'Shabakada Amtel')" class="bg-red-700 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="font-black text-sm italic">Amtel</div>
+                                <span class="text-xs font-bold text-white mt-1">Amtel</span>
+                            </button>
+
+                            <button onclick="selectService('Rukumo', 'Adeegga Rukumada')" class="bg-red-50 p-3 rounded-2xl shadow-sm border border-red-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-9 h-9 rounded-xl bg-red-100 text-red-500 flex items-center justify-center text-base mb-1"><i class="fa-solid fa-ban"></i></div>
+                                <span class="text-xs font-bold text-slate-800">Rukumo</span>
+                            </button>
+
+                            <!-- Camera -->
+                            <button onclick="openFullCamera()" class="bg-emerald-600 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">Camera</span>
+                            </button>
+
+                            <!-- TikTok -->
+                            <button onclick="openTikTokApp()" class="bg-black text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-brands fa-tiktok"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">TikTok</span>
+                            </button>
+
+                            <!-- Facebook -->
+                            <button onclick="openFacebookApp()" class="bg-[#1877F2] text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">Facebook</span>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- TAB 2: INTERNET SERVICES PAGE -->
+                <div id="tabInternet" class="tab-content hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-extrabold text-slate-900">Adeegyada Internet-ka & Shabakadaha</h3>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">Automated</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectService('Hormuud', 'Internet-ka Hormuud Data Package')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-500 text-emerald-600 font-black flex items-center justify-center text-lg shrink-0">H</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Hormuud</h4>
+                                <p class="text-[10px] text-slate-400">Data Packages</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Somnet', 'Internet-ka Somnet Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 font-black flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-wifi"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Somnet</h4>
+                                <p class="text-[10px] text-slate-400">Internet Bundles</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Somtel', 'Internet-ka Somtel Data')" class="bg-[#FFDC00] p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 text-yellow-400 font-black flex items-center justify-center text-xs shrink-0">ST</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Somtel</h4>
+                                <p class="text-[10px] text-slate-800">4G / 5G Bundles</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('SomLink', 'Internet-ka SomLink Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 font-black flex items-center justify-center text-xs shrink-0">SL</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">SomLink</h4>
+                                <p class="text-[10px] text-slate-400">Broadband Data</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Amtel', 'Internet-ka Amtel Data')" class="bg-red-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-white/20 text-white font-black flex items-center justify-center text-xs shrink-0">AM</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-white">Amtel</h4>
+                                <p class="text-[10px] text-red-100">Quick Internet</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Rukumo', 'Adeegga Rukumada Internet-ka')" class="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 font-black flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-ban"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Rukumo</h4>
+                                <p class="text-[10px] text-slate-400">Services & Unsub</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- TAB 3: SOMEDIA PAGE -->
+                <div id="tabSomedia" class="tab-content hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-extrabold text-slate-900">SOMEDIA Social Apps</h3>
+                        <span class="text-[10px] bg-purple-100 text-purple-800 font-bold px-2.5 py-0.5 rounded-full">Social Center</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="openTikTokApp()" class="bg-black text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-white text-lg shrink-0"><i class="fa-brands fa-tiktok"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-white">TikTok</h4>
+                                <p class="text-[10px] text-slate-400">Launch App</p>
+                            </div>
+                        </button>
+
+                        <button onclick="openFacebookApp()" class="bg-[#1877F2] text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-blue-500/80 flex items-center justify-center text-white text-lg shrink-0"><i class="fa-brands fa-facebook-f"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-white">Facebook</h4>
+                                <p class="text-[10px] text-blue-100">Launch App</p>
+                            </div>
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Bottom Mobile Navigation Bar -->
+            <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
+                <!-- 1. Home Button -->
+                <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
+                    <i class="fa-solid fa-house text-base mb-0.5"></i>
+                    <span>Home</span>
+                </button>
+
+                <!-- 2. Floating Internet Button -->
+                <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                        <img src="https://i.ibb.co/MxZmZR9j/wireless-network-symbol-1284-42447.jpg" alt="Internet Logo" class="w-full h-full object-cover rounded-full mix-blend-multiply">
+                    </div>
+                    <span class="font-black text-slate-900 mt-0.5">Internet</span>
+                </button>
+
+                <!-- 3. Floating SOMEDIA Button -->
+                <button onclick="switchTab('tabSomedia', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                        <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Custom Logo" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <span class="font-black text-slate-900 mt-0.5">SOMEDIA</span>
+                </button>
+
+                <!-- 4. Floating Center WAAFI Button -->
+                <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                        <img src="https://i.ibb.co/HfjgqSdg/file-00000000e88c81f4a88cb2648ccfc850.png" alt="WAAFI Custom Logo" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <span class="font-black text-slate-900 mt-0.5">WAAFI</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             SCREEN 3: CAMERA SCREEN
+        =========================================== -->
+        <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
+            
+            <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-150 z-40"></div>
+
+            <!-- Camera Header -->
+            <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
+                <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center active:scale-90">
+                    <i class="fa-solid fa-xmark text-lg"></i>
+                </button>
+
+                <div id="videoTimer" class="hidden text-xs font-mono bg-red-600 text-white px-3 py-1 rounded-full animate-pulse flex items-center gap-1">
+                    <div class="w-2 h-2 rounded-full bg-white"></div>
+                    <span id="timerText">00:00</span>
+                </div>
+
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-base"></i>
+                    </button>
+                    <button onclick="switchCameraFacing()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-rotate text-base"></i>
+                    </button>
+                </div>
+            </div>
+
+            <!-- Camera Viewfinder -->
+            <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-black">
+                <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal"></video>
+                <canvas id="cameraCanvas" class="hidden"></canvas>
+
+                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2 rounded-full space-y-2 text-white z-30">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
+                    <input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)" class="h-20 w-1 bg-white/40 rounded-lg appearance-none cursor-pointer [writing-mode:vertical-lr] [direction:rtl]">
+                    <i class="fa-solid fa-minus text-[10px]"></i>
+                </div>
+            </div>
+
+            <!-- Camera Filters -->
+            <div class="py-2 px-4 bg-black/80 backdrop-blur-md text-white flex justify-center space-x-2 text-[11px] z-30 overflow-x-auto">
+                <button onclick="applyFilter('filter-normal')" class="px-3 py-1 rounded-full bg-white/20 border border-white/40">Normal</button>
+                <button onclick="applyFilter('filter-bright')" class="px-3 py-1 rounded-full bg-white/20">Bright</button>
+                <button onclick="applyFilter('filter-vintage')" class="px-3 py-1 rounded-full bg-white/20">Vintage</button>
+                <button onclick="applyFilter('filter-bw')" class="px-3 py-1 rounded-full bg-white/20">B&W</button>
+                <button onclick="applyFilter('filter-warm')" class="px-3 py-1 rounded-full bg-white/20">Warm</button>
+            </div>
+
+            <!-- Shutter Controls -->
+            <div class="p-6 bg-black flex flex-col items-center z-30 space-y-4">
+                <div class="flex space-x-6 text-xs font-bold text-white/50">
+                    <button id="photoModeBtn" onclick="setMode('photo')" class="text-emerald-400 border-b-2 border-emerald-400 pb-1">PHOTO</button>
+                    <button id="videoModeBtn" onclick="setMode('video')" class="hover:text-white pb-1">VIDEO</button>
+                </div>
+
+                <div class="w-full flex justify-between items-center px-4">
+                    <button onclick="openGalleryModal()" class="w-12 h-12 rounded-xl bg-white/10 overflow-hidden border border-white/30 flex items-center justify-center">
+                        <img id="galleryPreview" class="w-full h-full object-cover hidden">
+                        <i id="galleryPlaceholder" class="fa-solid fa-images text-white/70"></i>
+                    </button>
+
+                    <button id="shutterBtn" onclick="handleShutterClick()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 active:scale-90 transition">
+                        <div id="shutterInner" class="w-full h-full bg-white rounded-full"></div>
+                    </button>
+
+                    <div class="w-12"></div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- Modal: Gallery -->
+    <div id="galleryModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col justify-between p-4">
+        <div class="flex justify-between items-center text-white pb-3 border-b border-white/20">
+            <h3 class="font-bold text-sm">Gallery</h3>
+            <button onclick="closeGalleryModal()" class="text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
+        </div>
+        <div id="galleryContainer" class="grid grid-cols-3 gap-2 overflow-y-auto flex-1 my-4"></div>
+    </div>
+
+    <!-- Modal: Services -->
+    <div id="serviceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
+        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
+            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
+                <i class="fa-solid fa-circle-check"></i>
+            </div>
+            <h3 class="text-base font-bold text-slate-900" id="modalTitle">Adeegga</h3>
+            <p class="text-xs text-slate-500 mt-2" id="modalMessage">Doorashada shabakada dhawaan waa la bilaabayaa.</p>
+            <button onclick="closeModal()" class="mt-5 w-full bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs active:scale-95 transition">
+                Waan gartay
+            </button>
+        </div>
+    </div>
+
+    <!-- JavaScript Mobile Logic -->
+    <script>
+        let currentStream = null;
+        let facingMode = "environment";
+        let zoomLevel = 1;
+        let flashOn = false;
+        let currentMode = "photo";
+        let isRecording = false;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let timerInterval = null;
+        let seconds = 0;
+        let galleryItems = [];
+
+        // Direct Launch for WAAFI App
+        function openWaafiApp() {
+            window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
+        }
+
+        // Direct Android Intent for TikTok
+        function openTikTokApp() {
+            window.location.href = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
+        }
+
+        // Direct App Scheme for Facebook
+        function openFacebookApp() {
+            window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
+        }
+
+        function switchScreen(screenId) {
+            if(screenId === 'mainDashboard') {
+                document.getElementById('landingScreen').classList.add('hidden');
+                document.getElementById('mainDashboard').classList.remove('hidden');
+                document.getElementById('mainDashboard').classList.add('flex');
+            } else {
+                document.getElementById('mainDashboard').classList.add('hidden');
+                document.getElementById('mainDashboard').classList.remove('flex');
+                document.getElementById('landingScreen').classList.remove('hidden');
+            }
+        }
+
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+            document.getElementById(tabId).classList.remove('hidden');
+            
+            document.querySelectorAll('.nav-btn').forEach(b => {
+                b.classList.remove('text-indigo-950', 'font-bold');
+                b.classList.add('text-slate-400');
+            });
+            if(btn && btn.classList.contains('nav-btn')) {
+                btn.classList.remove('text-slate-400');
+                btn.classList.add('text-indigo-950', 'font-bold');
+            }
+        }
+
+        async function openFullCamera() {
+            document.getElementById('cameraScreen').classList.remove('hidden');
+            document.getElementById('cameraScreen').classList.add('flex');
+            await startRealCamera();
+        }
+
+        function closeFullCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('cameraScreen').classList.add('hidden');
+            document.getElementById('cameraScreen').classList.remove('flex');
+        }
+
+        async function startRealCamera() {
+            if (currentStream) {
+                currentStream.getTracks().forEach(track => track.stop());
+            }
+            try {
+                const constraints = {
+                    video: { facingMode: facingMode },
+                    audio: currentMode === 'video'
+                };
+                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                document.getElementById('cameraVideo').srcObject = currentStream;
+            } catch (err) {
+                alert("Fadlan oggolaanshada kamarada sii App-ka.");
+            }
+        }
+
+        function switchCameraFacing() {
+            facingMode = facingMode === "user" ? "environment" : "user";
+            startRealCamera();
+        }
+
+        function toggleFlash() {
+            flashOn = !flashOn;
+            document.getElementById('flashBtn').classList.toggle('bg-yellow-400');
+            document.getElementById('flashBtn').classList.toggle('text-black');
+        }
+
+        function applyFilter(filterClass) {
+            document.getElementById('cameraVideo').className = `w-full h-full object-cover ${filterClass}`;
+        }
+
+        function applyZoom(val) {
+            zoomLevel = parseFloat(val);
+            document.getElementById('cameraVideo').style.transform = `scale(${zoomLevel})`;
+        }
+
+        function setMode(mode) {
+            currentMode = mode;
+            const photoBtn = document.getElementById('photoModeBtn');
+            const videoBtn = document.getElementById('videoModeBtn');
+            const shutterInner = document.getElementById('shutterInner');
+
+            if (mode === 'photo') {
+                photoBtn.className = "text-emerald-400 font-bold border-b-2 border-emerald-400 pb-1";
+                videoBtn.className = "hover:text-white pb-1 text-white/50";
+                shutterInner.className = "w-full h-full bg-white rounded-full";
+            } else {
+                videoBtn.className = "text-red-500 font-bold border-b-2 border-red-500 pb-1";
+                photoBtn.className = "hover:text-white pb-1 text-white/50";
+                shutterInner.className = "w-full h-full bg-red-600 rounded-full";
+            }
+            startRealCamera();
+        }
+
+        function handleShutterClick() {
+            if (flashOn) {
+                const overlay = document.getElementById('flashOverlay');
+                overlay.style.opacity = '0.8';
+                setTimeout(() => overlay.style.opacity = '0', 150);
+            }
+
+            if (currentMode === 'photo') {
+                takeRealPhoto();
+            } else {
+                toggleRecordVideo();
+            }
+        }
+
+        function takeRealPhoto() {
+            const video = document.getElementById('cameraVideo');
+            const canvas = document.getElementById('cameraCanvas');
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = video.videoWidth || 640;
+            canvas.height = video.videoHeight || 480;
+            ctx.filter = getComputedStyle(video).filter;
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageData = canvas.toDataURL('image/png');
+            galleryItems.push({ type: 'image', url: imageData });
+            
+            const preview = document.getElementById('galleryPreview');
+            preview.src = imageData;
+            preview.classList.remove('hidden');
+            document.getElementById('galleryPlaceholder').classList.add('hidden');
+        }
+
+        function toggleRecordVideo() {
+            if (!isRecording) {
+                recordedChunks = [];
+                try {
+                    mediaRecorder = new MediaRecorder(currentStream);
+                    mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
+                    mediaRecorder.onstop = () => {
+                        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
+                        galleryItems.push({ type: 'video', url: URL.createObjectURL(blob) });
+                    };
+                    mediaRecorder.start();
+
+                    isRecording = true;
+                    document.getElementById('videoTimer').classList.remove('hidden');
+                    document.getElementById('shutterInner').classList.replace('rounded-full', 'rounded-md');
+
+                    seconds = 0;
+                    timerInterval = setInterval(() => {
+                        seconds++;
+                        let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
+                        let secs = (seconds % 60).toString().padStart(2, '0');
+                        document.getElementById('timerText').innerText = `${mins}:${secs}`;
+                    }, 1000);
+                } catch (e) {
+                    alert("Duubista: " + e.message);
+                }
+            } else {
+                if (mediaRecorder) mediaRecorder.stop();
+                isRecording = false;
+                clearInterval(timerInterval);
+                document.getElementById('videoTimer').classList.add('hidden');
+                document.getElementById('shutterInner').classList.replace('rounded-md', 'rounded-full');
+            }
+        }
+
+        function openGalleryModal() {
+            const container = document.getElementById('galleryContainer');
+            container.innerHTML = '';
+            galleryItems.forEach(item => {
+                if (item.type === 'image') {
+                    container.innerHTML += `<img src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20">`;
+                } else {
+                    container.innerHTML += `<video src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20" controls></video>`;
+                }
+            });
+            document.getElementById('galleryModal').classList.remove('hidden');
+            document.getElementById('galleryModal').classList.add('flex');
+        }
+
+        function closeGalleryModal() {
+            document.getElementById('galleryModal').classList.add('hidden');
+            document.getElementById('galleryModal').classList.remove('flex');
+        }
+
+        function selectService(name, detail) {
+            document.getElementById('modalTitle').innerText = name;
+            document.getElementById('modalMessage').innerText = `Waxaad dooratay: ${detail}. Adeeggan dhawaan wuu diyaar noqon doonaa.`;
+            const modal = document.getElementById('serviceModal');
+            modal.classList.remove('hidden');
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('serviceModal');
+            modal.classList.add('opacity-0');
+            setTimeout(() => modal.classList.add('hidden'), 200);
+        }
+
+        function toggleTheme() {
+            document.body.classList.toggle('bg-slate-900');
+        }
+    </script>
 </body>
 </html>

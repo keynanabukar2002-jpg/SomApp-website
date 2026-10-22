@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>YouTube Mobile Clone</title>
+  <title>SOMedia - YouTube Mobile Clone</title>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
@@ -35,11 +35,19 @@
     .brand {
       display: flex;
       align-items: center;
+      gap: 8px;
       cursor: pointer;
     }
 
+    .brand-title {
+      font-size: 18px;
+      font-weight: 800;
+      letter-spacing: -0.5px;
+      color: #ffffff;
+    }
+
     .brand-logo-img {
-      height: 28px;
+      height: 26px;
       width: auto;
       object-fit: contain;
     }
@@ -357,6 +365,7 @@
   <!-- HEADER -->
   <header>
     <div class="brand">
+      <span class="brand-title">SOMedia</span>
       <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="YouTube Logo" class="brand-logo-img">
     </div>
     <div class="header-icons">
@@ -376,7 +385,7 @@
       <button class="icon-btn" onclick="closeSearch()">
         <i class="fa-solid fa-arrow-left"></i>
       </button>
-      <input type="text" class="search-input" id="searchInput" placeholder="Search YouTube" onkeyup="filterShorts()">
+      <input type="text" class="search-input" id="searchInput" placeholder="Search SOMedia" onkeyup="filterShorts()">
     </div>
   </div>
 

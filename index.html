@@ -312,7 +312,7 @@
     </button>
   </div>
 
-  <!-- YOUTUBE STANDARD CLEAN PLAYER -->
+  <!-- YOUTUBE STANDARD PLAYER -->
   <div id="playerModal" class="fixed inset-0 z-50 bg-[#0f0f0f] hidden flex-col overflow-y-auto no-scrollbar">
     <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3 py-2 flex items-center justify-between border-b border-zinc-800">
       <button onclick="closePlayer()" class="text-white text-lg">
@@ -330,25 +330,24 @@
     </div>
 
     <div class="p-3 space-y-3">
-      <h1 id="playerVideoTitle" class="text-base font-bold text-white leading-snug">Mohamed mao songs</h1>
+      <h1 id="playerVideoTitle" class="text-base font-bold text-white leading-snug">Muuqaal Cusub</h1>
       
       <div class="flex items-center gap-2 text-xs text-zinc-400">
-        <span class="font-semibold text-zinc-300">@hassankamal6042</span>
+        <span class="font-semibold text-zinc-300">@SOMEDIA_Channel</span>
         <span>•</span>
-        <span>494 likes</span>
+        <span>0 likes</span>
         <span>•</span>
-        <span>65K views</span>
+        <span>1 view</span>
         <span>•</span>
-        <span>9 yr ago</span>
-        <span class="text-white font-bold cursor-pointer">more</span>
+        <span>Right now</span>
       </div>
 
       <div class="flex items-center justify-between py-1 border-t border-b border-zinc-800/80">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm">H</div>
+          <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-sm">S</div>
           <div>
-            <h3 class="text-xs font-bold text-white">hassankamal</h3>
-            <p class="text-[10px] text-zinc-400">1.2K subscribers</p>
+            <h3 class="text-xs font-bold text-white">SOMEDIA Channel</h3>
+            <p class="text-[10px] text-zinc-400">1 subscriber</p>
           </div>
         </div>
         <button onclick="showToast('Subscribed!')" class="bg-white text-black text-xs font-bold px-4 py-1.5 rounded-full shadow hover:bg-zinc-200">
@@ -361,7 +360,7 @@
         <div class="flex items-center bg-zinc-800/80 rounded-full text-xs font-medium shrink-0">
           <button onclick="showToast('Liked!')" class="px-3 py-1.5 flex items-center gap-1.5 border-r border-zinc-700 hover:bg-zinc-700 rounded-l-full">
             <i class="fa-regular fa-thumbs-up"></i>
-            <span>494</span>
+            <span>0</span>
           </button>
           <button onclick="showToast('Disliked')" class="px-3 py-1.5 hover:bg-zinc-700 rounded-r-full">
             <i class="fa-regular fa-thumbs-down"></i>
@@ -382,43 +381,17 @@
       <!-- COMMENTS SECTION -->
       <div onclick="showToast('Comments active')" class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 space-y-2 cursor-pointer">
         <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-white">Comments <span class="text-zinc-400 font-normal">17</span></span>
+          <span class="font-bold text-white">Comments <span class="text-zinc-400 font-normal">0</span></span>
           <i class="fa-solid fa-chevron-down text-zinc-500 text-[10px]"></i>
         </div>
-        <div class="flex items-center gap-2 text-xs text-zinc-300">
-          <i class="fa-solid fa-headphones text-zinc-400"></i>
-          <p class="text-zinc-400 truncate">Perfect soundtrack for...</p>
-        </div>
+        <p class="text-xs text-zinc-400">Qor faallo cusub...</p>
       </div>
     </div>
 
-    <!-- UP NEXT / RECOMMENDED LIST -->
+    <!-- DYNAMIC RECOMMENDED VIDEOS (WAXA KA MUUQANAYA FIIDIYOWYADAADA DHABTA AH OO KALIYA) -->
     <div class="p-3 border-t border-zinc-800 space-y-3 mb-8">
-      <h2 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Up Next</h2>
-
-      <div class="flex gap-3 cursor-pointer" onclick="showToast('Playing recommended video')">
-        <div class="w-36 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
-          <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
-          <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">4:12</span>
-        </div>
-        <div class="flex-1 space-y-1">
-          <h3 class="text-xs font-bold text-white line-clamp-2 leading-snug">KHADAR KEEYOW || WALAAL | Official Video</h3>
-          <p class="text-[11px] text-zinc-400">Mix – Mohamed mao songs</p>
-          <p class="text-[10px] text-zinc-500">120K views • 2 years ago</p>
-        </div>
-      </div>
-
-      <div class="flex gap-3 cursor-pointer" onclick="showToast('Playing recommended video')">
-        <div class="w-36 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
-          <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
-          <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">3:45</span>
-        </div>
-        <div class="flex-1 space-y-1">
-          <h3 class="text-xs font-bold text-white line-clamp-2 leading-snug">Aashiqur 2 Hits Songs Collection</h3>
-          <p class="text-[11px] text-zinc-400">Music Channel</p>
-          <p class="text-[10px] text-zinc-500">850K views • 1 year ago</p>
-        </div>
-      </div>
+      <h2 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Fiidiyowga Xiga (Up Next)</h2>
+      <div id="playerUpNextList" class="flex flex-col gap-3"></div>
     </div>
   </div>
 
@@ -469,7 +442,6 @@
       renderGrid();
     });
 
-    // RENDER STANDARD YOUTUBE SINGLE COLUMN FEED
     function renderGrid() {
       const grid = document.getElementById('shortsGrid');
       grid.innerHTML = '';
@@ -486,13 +458,11 @@
           card.className = "w-full cursor-pointer group";
           card.onclick = () => openPlayer(idx);
           card.innerHTML = `
-            <!-- THUMBNAIL CONTAINER (16:9 STANDARD ASPECT RATIO) -->
             <div class="w-full aspect-video bg-black relative overflow-hidden">
               <img src="${vid.thumbnail}" class="w-full h-full object-cover">
               <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">0:10</span>
             </div>
 
-            <!-- METADATA CONTAINER (SIDA YOUTUBE FEED-KA) -->
             <div class="p-3 flex gap-3">
               <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                 S
@@ -717,8 +687,37 @@
       const modal = document.getElementById('playerModal');
       const player = document.getElementById('mainVideoPlayer');
       const vid = videoList[idx];
+
       player.src = vid.url;
       document.getElementById('playerVideoTitle').innerText = vid.title;
+
+      // FILL UP NEXT LIST WITH OTHER REAL UPLOADED VIDEOS
+      const nextContainer = document.getElementById('playerUpNextList');
+      nextContainer.innerHTML = '';
+
+      const otherVideos = videoList.filter((_, i) => i !== idx);
+      if(otherVideos.length === 0) {
+        nextContainer.innerHTML = `<p class="text-xs text-zinc-500">Wax fiidiyowyo kale oo aad soo gelisay ma jiraan.</p>`;
+      } else {
+        otherVideos.forEach((oVid) => {
+          const item = document.createElement('div');
+          item.className = "flex gap-3 cursor-pointer";
+          item.onclick = () => openPlayer(videoList.indexOf(oVid));
+          item.innerHTML = `
+            <div class="w-36 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
+              <img src="${oVid.thumbnail}" class="w-full h-full object-cover">
+              <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">0:10</span>
+            </div>
+            <div class="flex-1 space-y-1">
+              <h3 class="text-xs font-bold text-white line-clamp-2 leading-snug">${oVid.title}</h3>
+              <p class="text-[11px] text-zinc-400">SOMEDIA Channel</p>
+              <p class="text-[10px] text-zinc-500">${oVid.views}</p>
+            </div>
+          `;
+          nextContainer.appendChild(item);
+        });
+      }
+
       modal.classList.remove('hidden');
       modal.classList.add('flex');
       player.play().then(() => suppressMediaSession()).catch(e => console.log(e));

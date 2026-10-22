@@ -3,738 +3,723 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SOMEDIA - Shorts & Video App</title>
+  <title>SOMEDIA - YouTube Mobile Clone</title>
+  <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       -webkit-tap-highlight-color: transparent;
+      user-select: none;
+      box-sizing: border-box;
     }
-
     body {
       background-color: #0f0f0f;
       color: #ffffff;
-      padding-top: 56px;
-      padding-bottom: 60px;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
       overflow-x: hidden;
     }
 
-    /* HEADER FIX */
-    header {
-      position: fixed;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 56px;
-      z-index: 1000;
-      background-color: #0f0f0f;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 0 16px;
-      border-bottom: 1px solid #1f1f1f;
+    /* Scrollbar Hidden */
+    .no-scrollbar::-webkit-scrollbar {
+      display: none;
     }
-
-    .header-left {
-      display: flex;
-      align-items: center;
-      gap: 12px;
-    }
-
-    .brand-title {
-      font-size: 20px;
-      font-weight: 900;
-      letter-spacing: -0.5px;
-      color: #ffffff;
-      text-transform: uppercase;
-    }
-
-    .brand-logo-img {
-      height: 30px;
-      width: 30px;
-      object-fit: cover;
-      border-radius: 8px;
-      border: 1.5px solid #ffffff;
-      box-shadow: 0 0 10px rgba(255, 255, 255, 0.3);
-    }
-
-    .header-right {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-    }
-
-    .icon-btn {
-      background: none;
-      border: none;
-      color: #ffffff;
-      font-size: 18px;
-      position: relative;
-      cursor: pointer;
-    }
-
-    .badge {
-      position: absolute;
-      top: -4px;
-      right: -8px;
-      background-color: #e50914;
-      color: white;
-      font-size: 9px;
-      font-weight: bold;
-      padding: 1px 4px;
-      border-radius: 10px;
-    }
-
-    /* CATEGORIES BAR */
-    .categories {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      padding: 10px 12px;
-      overflow-x: auto;
-      white-space: nowrap;
+    .no-scrollbar {
+      -ms-overflow-style: none;
       scrollbar-width: none;
     }
-    .categories::-webkit-scrollbar { display: none; }
 
-    .chip {
-      background-color: #272727;
-      color: #ffffff;
-      padding: 6px 14px;
-      border-radius: 8px;
-      font-size: 13px;
-      font-weight: 500;
-      cursor: pointer;
-      border: none;
-    }
-
-    .chip.active {
-      background-color: #ffffff;
-      color: #0f0f0f;
-      font-weight: 600;
-    }
-
-    /* SECTION TITLE */
-    .section-title {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      padding: 8px 16px 12px;
-    }
-
-    .shorts-brand {
-      display: flex;
-      align-items: center;
-      gap: 8px;
-      font-size: 17px;
-      font-weight: 700;
-    }
-
-    .shorts-logo {
-      color: #ff0000;
-      font-size: 18px;
-    }
-
-    /* SHORTS GRID */
-    .shorts-grid {
-      display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 10px;
-      padding: 0 12px 16px;
-    }
-
-    .short-card {
-      position: relative;
-      aspect-ratio: 9/16;
-      border-radius: 12px;
-      overflow: hidden;
-      background-color: #1f1f1f;
-      cursor: pointer;
-    }
-
-    .short-card img, .short-card video {
-      width: 100%;
-      height: 100%;
+    /* Elevated Logo Styling */
+    .brand-logo-img {
+      height: 28px;
+      width: 28px;
       object-fit: cover;
-    }
-
-    .tag-badge {
-      position: absolute;
-      top: 8px;
-      left: 8px;
-      background: rgba(0, 0, 0, 0.6);
-      backdrop-filter: blur(4px);
-      color: #fff;
-      font-size: 11px;
-      font-weight: 600;
-      padding: 3px 8px;
       border-radius: 6px;
-      z-index: 2;
-    }
-
-    .short-overlay {
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(180deg, rgba(0,0,0,0.1) 50%, rgba(0,0,0,0.85) 100%);
-      display: flex;
-      flex-direction: column;
-      justify-content: flex-end;
-      padding: 10px;
-    }
-
-    .card-title {
-      font-size: 13px;
-      font-weight: 600;
-      line-height: 1.3;
-      margin-bottom: 4px;
-      color: #ffffff;
-      display: -webkit-box;
-      -webkit-line-clamp: 2;
-      -webkit-box-orient: vertical;
-      overflow: hidden;
-    }
-
-    /* BOTTOM NAV BAR */
-    .bottom-nav {
-      position: fixed;
-      bottom: 0;
-      left: 0;
-      right: 0;
-      height: 52px;
-      background-color: #0f0f0f;
-      border-top: 1px solid #1f1f1f;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      z-index: 1000;
-    }
-
-    .nav-item {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      background: none;
-      border: none;
-      color: #aaaaaa;
-      font-size: 10px;
-      gap: 3px;
-      cursor: pointer;
-      width: 20%;
-    }
-
-    .nav-item.active {
-      color: #ffffff;
-    }
-
-    .nav-item i {
-      font-size: 18px;
-    }
-
-    .nav-custom-img {
-      height: 28px;
-      width: 28px;
-      object-fit: cover;
-      border-radius: 8px;
       border: 1.5px solid #ffffff;
-      box-shadow: 0 2px 8px rgba(255, 255, 255, 0.3);
+      box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
     }
 
-    .profile-avatar {
-      width: 22px;
-      height: 22px;
-      border-radius: 50%;
-      background-color: #e65100;
-      color: white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: bold;
-      font-size: 11px;
-    }
-
-    /* SHORTS CAMERA CREATION SCREEN */
-    .camera-screen {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background-color: #000000;
-      z-index: 3000;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-
-    .camera-screen.active {
-      display: flex;
-    }
-
-    .camera-preview {
-      position: absolute;
-      inset: 0;
-      width: 100%;
-      height: 100%;
+    .upload-nav-img {
+      height: 26px;
+      width: 26px;
       object-fit: cover;
-      z-index: 1;
+      border-radius: 6px;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+      transition: transform 0.2s ease;
     }
-
-    /* CAMERA TOP BAR */
-    .camera-top-bar {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      padding: 16px;
-    }
-
-    .cam-close-btn {
-      background: rgba(0,0,0,0.4);
-      border: none;
-      color: white;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .add-sound-btn {
-      background: rgba(0, 0, 0, 0.5);
-      backdrop-filter: blur(8px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
-      color: white;
-      padding: 6px 16px;
-      border-radius: 20px;
-      font-size: 13px;
-      font-weight: 600;
-      display: flex;
-      align-items: center;
-      gap: 6px;
-    }
-
-    .magic-effect-btn {
-      background: linear-gradient(135deg, #a855f7, #ec4899);
-      border: none;
-      color: white;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      font-size: 18px;
-      cursor: pointer;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    /* CAMERA SIDE TOOLBAR */
-    .camera-side-tools {
-      position: absolute;
-      right: 16px;
-      top: 90px;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      gap: 18px;
-      background: rgba(0,0,0,0.3);
-      padding: 12px 8px;
-      border-radius: 20px;
-      backdrop-filter: blur(4px);
-    }
-
-    .tool-icon {
-      background: none;
-      border: none;
-      color: white;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 2px;
-      font-size: 18px;
-      cursor: pointer;
-    }
-
-    .tool-icon span {
-      font-size: 10px;
-      font-weight: 600;
-    }
-
-    /* CAMERA BOTTOM CONTROLS */
-    .camera-bottom-controls {
-      position: relative;
-      z-index: 10;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 16px;
-      padding-bottom: 30px;
-    }
-
-    .action-row {
-      width: 100%;
-      display: flex;
-      justify-content: space-around;
-      align-items: center;
-      padding: 0 20px;
-    }
-
-    .gallery-add-btn, .drafts-btn {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      gap: 4px;
-      background: none;
-      border: none;
-      color: white;
-      font-size: 12px;
-      cursor: pointer;
-    }
-
-    .gallery-add-btn img {
-      width: 36px;
-      height: 36px;
-      border-radius: 8px;
-      border: 2px solid white;
-      object-fit: cover;
-    }
-
-    .record-btn-outer {
-      width: 72px;
-      height: 72px;
-      border-radius: 50%;
-      border: 4px solid white;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      cursor: pointer;
-      background: transparent;
-    }
-
-    .record-btn-inner {
-      width: 58px;
-      height: 58px;
-      border-radius: 50%;
-      background-color: #ff0000;
-      transition: all 0.2s ease;
-    }
-
-    .record-btn-outer.recording .record-btn-inner {
-      width: 28px;
-      height: 28px;
-      border-radius: 4px;
-    }
-
-    .mode-selector {
-      display: flex;
-      gap: 16px;
-      align-items: center;
-    }
-
-    .mode-btn {
-      background: none;
-      border: none;
-      color: rgba(255,255,255,0.6);
-      font-size: 14px;
-      font-weight: 600;
-      cursor: pointer;
-    }
-
-    .mode-btn.active {
-      color: white;
-      background: rgba(255, 255, 255, 0.2);
-      padding: 4px 14px;
-      border-radius: 16px;
-    }
-
-    /* FULLSCREEN PLAYER MODAL */
-    .modal {
-      display: none;
-      position: fixed;
-      inset: 0;
-      background-color: #000;
-      z-index: 2000;
-    }
-
-    .modal-content {
-      position: relative;
-      width: 100%;
-      height: 100%;
-      display: flex;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .modal video {
-      width: 100%;
-      height: 100%;
-      object-fit: cover;
-    }
-
-    .close-btn {
-      position: absolute;
-      top: 16px;
-      left: 16px;
-      color: white;
-      font-size: 22px;
-      background: rgba(0,0,0,0.5);
-      border: none;
-      width: 36px;
-      height: 36px;
-      border-radius: 50%;
-      cursor: pointer;
-      z-index: 10;
-    }
-
-    #galleryInput {
-      display: none;
+    .upload-nav-img:active {
+      transform: scale(0.9);
     }
   </style>
 </head>
-<body>
+<body class="pt-14 pb-16 min-h-screen flex flex-col justify-between">
 
-  <!-- FIXED HEADER -->
-  <header>
-    <div class="header-left">
-      <span class="brand-title">SOMEDIA</span>
-      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="Logo" class="brand-logo-img">
+  <!-- FIXED TOP HEADER -->
+  <header class="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f] border-b border-zinc-800 z-40 flex items-center justify-between px-4">
+    <div class="flex items-center gap-2.5">
+      <button onclick="showToast('Home View')" class="text-white text-base">
+        <i class="fa-solid fa-chevron-left"></i>
+      </button>
+      <span class="text-xl font-black uppercase tracking-tight text-white">SOMEDIA</span>
+      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img" onerror="this.src='https://placehold.co/100x100/0088cc/ffffff?text=SO'">
     </div>
-    <div class="header-right">
-      <button class="icon-btn"><i class="fa-solid fa-magnifying-glass"></i></button>
-      <button class="icon-btn">
+    <div class="flex items-center gap-4">
+      <button onclick="toggleSearch(true)" class="text-white text-lg">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+      <button onclick="showToast('Notifiyada waa kuwo firfircoon')" class="relative text-white text-lg">
         <i class="fa-regular fa-bell"></i>
-        <span class="badge">9+</span>
+        <span class="absolute -top-1 -right-2 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full">9+</span>
       </button>
     </div>
   </header>
 
-  <!-- CATEGORIES -->
-  <div class="categories">
-    <button class="chip"><i class="fa-regular fa-compass"></i></button>
-    <button class="chip active">Dhammaan</button>
-    <button class="chip">Somali Tech</button>
-    <button class="chip">Musig</button>
-    <button class="chip">Ciyaaro</button>
-    <button class="chip">Podcasts</button>
-  </div>
-
-  <!-- SHORTS TITLE -->
-  <div class="section-title">
-    <div class="shorts-brand">
-      <i class="fa-solid fa-bolt shorts-logo"></i>
-      <span>Shorts Feed</span>
+  <!-- SEARCH OVERLAY -->
+  <div id="searchOverlay" class="fixed inset-0 bg-[#0f0f0f] z-50 p-3 hidden flex-col">
+    <div class="flex items-center gap-3 border-b border-zinc-800 pb-3">
+      <button onclick="toggleSearch(false)" class="text-white text-xl p-1">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <input type="text" id="searchInput" oninput="handleSearch()" placeholder="Raadi muuqaal ama Short..." class="flex-1 bg-zinc-900 border border-zinc-700 rounded-full px-4 py-2 text-white text-sm focus:outline-none">
+      <button onclick="clearSearch()" class="text-zinc-400 text-sm p-1">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
     </div>
-    <span style="font-size: 12px; color: #888;">4 videos</span>
+    <div id="searchResultsCount" class="text-xs text-zinc-400 mt-2 px-2"></div>
   </div>
 
-  <!-- SHORTS GRID -->
-  <div class="shorts-grid" id="shortsGrid">
-    <div class="short-card" onclick="openPlayer('Sirta Miraha Cad...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">
-      <span class="tag-badge">Somali Tech</span>
-      <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80" alt="Short 1">
-      <div class="short-overlay">
-        <div class="card-title">Sirta Miraha Cad iyo Waxtarkooda...</div>
+  <!-- CATEGORIES BAR -->
+  <nav class="flex items-center gap-2 px-3 py-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
+    <button onclick="filterCategory('Explore')" class="bg-zinc-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center justify-center shrink-0">
+      <i class="fa-regular fa-compass"></i>
+    </button>
+    <button onclick="filterCategory('All')" class="cat-btn bg-white text-black px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0">Dhammaan</button>
+    <button onclick="filterCategory('Somali Tech')" class="cat-btn bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0">Somali Tech</button>
+    <button onclick="filterCategory('Musig')" class="cat-btn bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0">Musig</button>
+    <button onclick="filterCategory('Ciyaaro')" class="cat-btn bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0">Ciyaaro</button>
+    <button onclick="filterCategory('Podcasts')" class="cat-btn bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0">Podcasts</button>
+  </nav>
+
+  <!-- MAIN FEED CONTAINER -->
+  <main class="p-3 max-w-md mx-auto w-full flex-1">
+    <div class="flex items-center justify-between mb-3 px-1">
+      <div class="flex items-center gap-2 text-base font-bold">
+        <i class="fa-solid fa-bolt text-red-600"></i>
+        <span>Shorts Feed</span>
+      </div>
+      <div class="flex items-center gap-2">
+        <span id="videoCountBadge" class="text-xs bg-zinc-800 px-2.5 py-0.5 rounded-full text-zinc-400">0 videos</span>
+        <button onclick="triggerFileSelect()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
+          <i class="fa-solid fa-plus"></i> Soo geli
+        </button>
       </div>
     </div>
 
-    <div class="short-card" onclick="openPlayer('Gatos inteligentes...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4')">
-      <span class="tag-badge">Gaming</span>
-      <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80" alt="Short 2">
-      <div class="short-overlay">
-        <div class="card-title">Gatos inteligentes y Gr...</div>
-      </div>
+    <!-- SHORTS GRID (2 COLUMNS) -->
+    <div id="shortsGrid" class="grid grid-cols-2 gap-2.5 min-h-[300px]">
+      <!-- Dynamic Video Cards Inserted Here -->
     </div>
-  </div>
+  </main>
+
+  <!-- HIDDEN REAL VIDEO FILE INPUT -->
+  <input type="file" id="realFileInput" accept="video/*" onchange="handleFileSelected(event)" class="hidden">
 
   <!-- BOTTOM NAVIGATION BAR -->
-  <nav class="bottom-nav">
-    <button class="nav-item active">
-      <i class="fa-solid fa-house"></i>
-      <span>Home</span>
+  <nav class="fixed bottom-0 left-0 right-0 h-13 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center z-40 max-w-md mx-auto">
+    <button onclick="filterCategory('All')" class="flex flex-col items-center gap-0.5 text-white w-1/5 py-1">
+      <i class="fa-solid fa-house text-base"></i>
+      <span class="text-[10px]">Home</span>
     </button>
-    <button class="nav-item">
-      <i class="fa-solid fa-bolt"></i>
-      <span>Shorts</span>
+    <button onclick="filterCategory('Shorts')" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-white w-1/5 py-1">
+      <i class="fa-solid fa-bolt text-base"></i>
+      <span class="text-[10px]">Shorts</span>
     </button>
-    <!-- SOO GELI BUTTON (OPEN CAMERA) -->
-    <button class="nav-item" onclick="openCameraScreen()">
-      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="Soo geli" class="nav-custom-img">
-      <span>Soo geli</span>
+    
+    <!-- CENTER REAL UPLOAD BUTTON -->
+    <button onclick="triggerFileSelect()" class="flex flex-col items-center justify-center w-1/5 py-1">
+      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="Soo geli" class="upload-nav-img" onerror="this.src='https://placehold.co/100x100/0088cc/ffffff?text=+'">
+      <span class="text-[10px] text-white font-medium mt-0.5">Soo geli</span>
     </button>
-    <button class="nav-item">
-      <i class="fa-solid fa-layer-group"></i>
-      <span>Subscriptions</span>
+
+    <button onclick="showToast('Rukunadaada')" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-white w-1/5 py-1">
+      <i class="fa-solid fa-layer-group text-base"></i>
+      <span class="text-[10px]">Subscriptions</span>
     </button>
-    <button class="nav-item">
-      <div class="profile-avatar">S</div>
-      <span>Adiga</span>
+    <button onclick="showToast('Profile-kaaga')" class="flex flex-col items-center gap-0.5 text-zinc-400 hover:text-white w-1/5 py-1">
+      <div class="w-5 h-5 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[10px]">S</div>
+      <span class="text-[10px]">Adiga</span>
     </button>
   </nav>
 
-  <!-- SHORTS CAMERA SCREEN (SI DA SAWIRKAAGA) -->
-  <div class="camera-screen" id="cameraScreen">
-    <video class="camera-preview" id="cameraVideo" autoplay playsinline muted></video>
+  <!-- UPLOAD PREVIEW & TITLE MODAL -->
+  <div id="uploadMetadataModal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md hidden flex-col justify-center items-center p-4">
+    <div class="bg-zinc-900 border border-zinc-800 rounded-2xl w-full max-w-sm p-4 relative space-y-4">
+      <button onclick="closeUploadMetadataModal()" class="absolute top-3 right-3 text-zinc-400 hover:text-white text-lg">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
 
-    <!-- TOP CONTROL BAR -->
-    <div class="camera-top-bar">
-      <button class="cam-close-btn" onclick="closeCameraScreen()"><i class="fa-solid fa-xmark"></i></button>
-      <button class="add-sound-btn"><i class="fa-solid fa-music"></i> Add sound</button>
-      <button class="magic-effect-btn"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
+      <div class="flex items-center gap-2 border-b border-zinc-800 pb-2">
+        <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" class="w-6 h-6 rounded border border-white" alt="SOMEDIA">
+        <h2 class="text-sm font-bold text-white">Soo gelinta Muuqaalka Real-ka ah</h2>
+      </div>
+
+      <div class="aspect-[9/16] w-full max-h-48 bg-black rounded-xl overflow-hidden relative">
+        <video id="uploadVideoPreview" class="w-full h-full object-cover" controls muted></video>
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Ciwaanka Muuqaalka (Title) *</label>
+        <input type="text" id="uploadTitleInput" placeholder="Tusaale: Muuqaalkayga cusub #Somalia" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-white">
+      </div>
+
+      <div>
+        <label class="block text-[11px] font-semibold text-zinc-400 mb-1">Qaybta (Category)</label>
+        <select id="uploadCategorySelect" class="w-full bg-zinc-950 border border-zinc-700 rounded-lg p-2 text-xs text-white focus:outline-none focus:border-white">
+          <option value="Soo gelintaada">Soo gelintaada</option>
+          <option value="Somali Tech">Somali Tech</option>
+          <option value="Musig">Musig</option>
+          <option value="Ciyaaro">Ciyaaro</option>
+          <option value="Podcasts">Podcasts</option>
+        </select>
+      </div>
+
+      <button onclick="confirmRealVideoUpload()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-2 rounded-xl text-xs flex items-center justify-center gap-2 shadow-lg">
+        <i class="fa-solid fa-paper-plane"></i>
+        <span>Bilaab Muuqaalka</span>
+      </button>
+    </div>
+  </div>
+
+  <!-- FULLSCREEN VIDEO PLAYER MODAL -->
+  <div id="playerModal" class="fixed inset-0 z-50 bg-black hidden flex-col justify-between">
+    <!-- TOP HEADER OVERLAY -->
+    <div class="absolute top-0 inset-x-0 p-3 bg-gradient-to-b from-black/80 to-transparent z-20 flex justify-between items-center">
+      <button onclick="closePlayer()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg backdrop-blur-md active:scale-95">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+      <span class="text-xs font-bold text-white bg-red-600/90 px-2.5 py-0.5 rounded-full uppercase tracking-wider">SOMEDIA Short</span>
     </div>
 
-    <!-- RIGHT SIDE TOOLBAR -->
-    <div class="camera-side-tools">
-      <button class="tool-icon"><i class="fa-solid fa-rotate"></i><span>Flip</span></button>
-      <button class="tool-icon"><i class="fa-regular fa-clock"></i><span>Timer</span></button>
-      <button class="tool-icon"><span>3m</span></button>
-      <button class="tool-icon"><i class="fa-solid fa-sparkles"></i><span>Effects</span></button>
-      <button class="tool-icon"><span>1x</span><span>Speed</span></button>
-      <button class="tool-icon"><i class="fa-solid fa-chevron-down"></i></button>
-    </div>
+    <!-- VIDEO DISPLAY -->
+    <div class="relative w-full h-full flex items-center justify-center bg-black">
+      <video id="mainVideoPlayer" class="w-full h-full object-contain" loop playsinline onclick="togglePlayPause()"></video>
 
-    <!-- BOTTOM RECORD & GALLERY CONTROLS -->
-    <div class="camera-bottom-controls">
-      <div class="action-row">
-        <!-- Add / Gallery Button -->
-        <button class="gallery-add-btn" onclick="triggerGalleryPicker()">
-          <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100&q=80" alt="Add">
-          <span>Add</span>
-        </button>
-
-        <!-- Red Recording Button -->
-        <div class="record-btn-outer" id="recordBtn" onclick="toggleRecording()">
-          <div class="record-btn-inner"></div>
+      <!-- PLAY/PAUSE ICON OVERLAY -->
+      <div id="playPauseOverlay" class="absolute inset-0 flex items-center justify-center pointer-events-none opacity-0 transition-opacity duration-300">
+        <div class="w-14 h-14 rounded-full bg-black/60 text-white flex items-center justify-center text-2xl backdrop-blur-sm">
+          <i id="playPauseIcon" class="fa-solid fa-play"></i>
         </div>
+      </div>
 
-        <!-- Drafts Button -->
-        <button class="drafts-btn">
-          <i class="fa-regular fa-file-lines" style="font-size: 24px;"></i>
-          <span>Drafts</span>
+      <!-- RIGHT SIDE ACTION CONTROLS -->
+      <div class="absolute right-3 bottom-16 z-20 flex flex-col items-center gap-4 text-white">
+        <!-- LIKE BUTTON -->
+        <button onclick="togglePlayerLike()" class="flex flex-col items-center gap-1 group">
+          <div id="likeCircle" class="w-10 h-10 rounded-full bg-zinc-900/80 border border-zinc-700/60 flex items-center justify-center text-lg backdrop-blur-md">
+            <i id="likeIcon" class="fa-regular fa-thumbs-up"></i>
+          </div>
+          <span id="playerLikeCount" class="text-[10px] font-semibold text-zinc-200">0</span>
+        </button>
+
+        <!-- DISLIKE BUTTON -->
+        <button onclick="togglePlayerDislike()" class="flex flex-col items-center gap-1 group">
+          <div id="dislikeCircle" class="w-10 h-10 rounded-full bg-zinc-900/80 border border-zinc-700/60 flex items-center justify-center text-lg backdrop-blur-md">
+            <i id="dislikeIcon" class="fa-regular fa-thumbs-down"></i>
+          </div>
+          <span class="text-[10px] font-semibold text-zinc-200">Dislike</span>
+        </button>
+
+        <!-- COMMENT BUTTON -->
+        <button onclick="toggleCommentsSheet(true)" class="flex flex-col items-center gap-1 group">
+          <div class="w-10 h-10 rounded-full bg-zinc-900/80 border border-zinc-700/60 flex items-center justify-center text-lg backdrop-blur-md">
+            <i class="fa-solid fa-comment-dots"></i>
+          </div>
+          <span id="playerCommentCount" class="text-[10px] font-semibold text-zinc-200">0</span>
+        </button>
+
+        <!-- SHARE BUTTON -->
+        <button onclick="shareVideo()" class="flex flex-col items-center gap-1 group">
+          <div class="w-10 h-10 rounded-full bg-zinc-900/80 border border-zinc-700/60 flex items-center justify-center text-lg backdrop-blur-md">
+            <i class="fa-solid fa-share"></i>
+          </div>
+          <span class="text-[10px] font-semibold text-zinc-200">Wadaag</span>
         </button>
       </div>
 
-      <!-- Mode Selector -->
-      <div class="mode-selector">
-        <button class="mode-btn">Video</button>
-        <button class="mode-btn active">Short</button>
-        <button class="mode-btn">Live</button>
+      <!-- BOTTOM VIDEO METADATA OVERLAY -->
+      <div class="absolute bottom-3 left-3 right-16 z-20 text-white">
+        <div class="flex items-center gap-2 mb-1.5">
+          <div class="w-7 h-7 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-600 border border-white/40 flex items-center justify-center text-[10px] font-bold">SO</div>
+          <span id="playerAuthorName" class="text-xs font-bold">@SOMEDIA_User</span>
+          <button class="bg-white text-black font-bold text-[9px] px-2 py-0.5 rounded-full">Rukunso</button>
+        </div>
+        <p id="playerVideoTitle" class="text-xs font-semibold line-clamp-2 drop-shadow">Video Title</p>
       </div>
     </div>
-  </div>
 
-  <input type="file" id="galleryInput" accept="video/*" onchange="handleGalleryVideo(event)">
+    <!-- COMMENTS BOTTOM SHEET -->
+    <div id="commentsSheet" class="absolute inset-x-0 bottom-0 h-[60%] bg-zinc-900 border-t border-zinc-800 rounded-t-2xl z-30 transform translate-y-full transition-transform duration-300 flex flex-col p-3.5">
+      <div class="flex items-center justify-between border-b border-zinc-800 pb-2.5 mb-2.5">
+        <div class="flex items-center gap-2">
+          <h3 class="text-xs font-bold text-white">Aragtiyaha (Comments)</h3>
+          <span id="sheetCommentBadge" class="text-[10px] text-zinc-400">(0)</span>
+        </div>
+        <button onclick="toggleCommentsSheet(false)" class="text-zinc-400 hover:text-white">
+          <i class="fa-solid fa-xmark text-base"></i>
+        </button>
+      </div>
 
-  <!-- FULLSCREEN PLAYER MODAL -->
-  <div class="modal" id="playerModal">
-    <button class="close-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
-    <div class="modal-content">
-      <video id="videoPlayer" loop autoplay controls></video>
+      <div id="commentsList" class="flex-1 overflow-y-auto space-y-2.5 text-xs no-scrollbar">
+        <!-- Dynamic Comments -->
+      </div>
+
+      <form onsubmit="handleAddComment(event)" class="mt-2 pt-2 border-t border-zinc-800 flex items-center gap-2">
+        <input type="text" id="commentInput" required placeholder="Geli aragtidaada..." class="flex-1 bg-zinc-950 border border-zinc-700 rounded-full px-3 py-1.5 text-xs text-white focus:outline-none">
+        <button type="submit" class="bg-red-600 text-white w-7 h-7 rounded-full flex items-center justify-center text-xs">
+          <i class="fa-solid fa-paper-plane"></i>
+        </button>
+      </form>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC -->
+  <!-- TOAST NOTIFICATION -->
+  <div id="toastNotification" class="fixed top-16 left-1/2 -translate-x-1/2 bg-zinc-800/95 border border-zinc-700 text-white px-4 py-1.5 rounded-full text-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300 shadow-xl flex items-center gap-2">
+    <i class="fa-solid fa-circle-check text-green-400"></i>
+    <span id="toastMessage">Sida saxda ah ayaa loo samayeeyay</span>
+  </div>
+
   <script>
-    let cameraStream = null;
-    let mediaRecorder = null;
-    let recordedChunks = [];
-    let isRecording = false;
-
-    async function openCameraScreen() {
-      const camScreen = document.getElementById('cameraScreen');
-      const camVideo = document.getElementById('cameraVideo');
-      camScreen.classList.add('active');
-
-      try {
-        cameraStream = await navigator.mediaDevices.getUserMedia({
-          video: { facingMode: 'user' },
-          audio: true
-        });
-        camVideo.srcObject = cameraStream;
-      } catch (err) {
-        console.warn("Camera access fallback:", err);
+    // DEFAULT PRE-LOADED VIDEOS
+    const DEFAULT_VIDEOS = [
+      {
+        id: 'v1',
+        title: 'Sirta Miraha Cad iyo Waxtarkooda Caafimaad!',
+        views: '1.2M views',
+        category: 'Somali Tech',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4',
+        thumbnail: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80',
+        likes: 12400,
+        liked: false,
+        disliked: false,
+        comments: [{ author: "Farhan", text: "Muuqaal aad u wanaagsan!" }]
+      },
+      {
+        id: 'v2',
+        title: 'Gatos inteligentes y Graciosos 2026',
+        views: '850K views',
+        category: 'Ciyaaro',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4',
+        thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80',
+        likes: 8500,
+        liked: false,
+        disliked: false,
+        comments: []
+      },
+      {
+        id: 'v3',
+        title: 'Ciyaaraha iyo Kubadda Barnaamij Cusub',
+        views: '430K views',
+        category: 'Podcasts',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4',
+        thumbnail: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=500&q=80',
+        likes: 3200,
+        liked: false,
+        disliked: false,
+        comments: []
+      },
+      {
+        id: 'v4',
+        title: '5 Wild Animals That Have Been Enemie...',
+        views: '2.5M views',
+        category: 'Musig',
+        url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4',
+        thumbnail: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=500&q=80',
+        likes: 45000,
+        liked: false,
+        disliked: false,
+        comments: []
       }
-    }
+    ];
 
-    function closeCameraScreen() {
-      const camScreen = document.getElementById('cameraScreen');
-      camScreen.classList.remove('active');
-      if (cameraStream) {
-        cameraStream.getTracks().forEach(track => track.stop());
-        cameraStream = null;
-      }
-    }
+    // STATE VARIABLES
+    let videoList = [];
+    let currentCategory = 'All';
+    let currentVideoIndex = -1;
+    let pendingRealFile = null;
+    let pendingFileUrl = null;
 
-    function toggleRecording() {
-      const recBtn = document.getElementById('recordBtn');
-      if (!isRecording) {
-        isRecording = true;
-        recBtn.classList.add('recording');
-        if (cameraStream) {
-          recordedChunks = [];
-          mediaRecorder = new MediaRecorder(cameraStream);
-          mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
-          mediaRecorder.onstop = saveRecordedVideo;
-          mediaRecorder.start();
+    // INITIALIZATION
+    window.addEventListener('DOMContentLoaded', () => {
+      loadVideos();
+      renderGrid();
+    });
+
+    function loadVideos() {
+      const stored = localStorage.getItem('somedia_video_meta');
+      if (stored) {
+        try {
+          videoList = JSON.parse(stored);
+        } catch (e) {
+          videoList = [...DEFAULT_VIDEOS];
         }
       } else {
-        isRecording = false;
-        recBtn.classList.remove('recording');
-        if (mediaRecorder) {
-          mediaRecorder.stop();
-        }
+        videoList = [...DEFAULT_VIDEOS];
+        saveVideos();
       }
     }
 
-    function saveRecordedVideo() {
-      const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-      const videoUrl = URL.createObjectURL(blob);
-      closeCameraScreen();
-      addNewShortToGrid("Muuqaal Cusub (Recorded)", videoUrl);
+    function saveVideos() {
+      // Save metadata; blob URLs are non-persistent over reboot, so fallback to sample if invalidated
+      const meta = videoList.map(v => ({
+        ...v,
+        url: v.url.startsWith('blob:') ? 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' : v.url
+      }));
+      localStorage.setItem('somedia_video_meta', JSON.stringify(meta));
     }
 
-    function triggerGalleryPicker() {
-      document.getElementById('galleryInput').click();
-    }
-
-    function handleGalleryVideo(event) {
-      const file = event.target.files[0];
-      if (file) {
-        const videoUrl = URL.createObjectURL(file);
-        closeCameraScreen();
-        addNewShortToGrid(file.name, videoUrl);
-      }
-    }
-
-    function addNewShortToGrid(title, url) {
+    // RENDER VIDEO CARDS
+    function renderGrid(searchFilter = '') {
       const grid = document.getElementById('shortsGrid');
-      const card = document.createElement('div');
-      card.className = 'short-card';
-      card.onclick = () => openPlayer(title, url);
-      card.innerHTML = `
-        <span class="tag-badge">Shorts</span>
-        <video src="${url}" preload="metadata"></video>
-        <div class="short-overlay">
-          <div class="card-title">${title}</div>
-        </div>
-      `;
-      grid.prepend(card);
-      openPlayer(title, url);
+      grid.innerHTML = '';
+
+      let filtered = videoList;
+
+      if (currentCategory !== 'All' && currentCategory !== 'Explore' && currentCategory !== 'Shorts') {
+        filtered = filtered.filter(v => v.category === currentCategory);
+      }
+
+      if (searchFilter.trim() !== '') {
+        const q = searchFilter.toLowerCase();
+        filtered = filtered.filter(v => v.title.toLowerCase().includes(q) || v.category.toLowerCase().includes(q));
+      }
+
+      document.getElementById('videoCountBadge').innerText = `${filtered.length} videos`;
+
+      if (filtered.length === 0) {
+        grid.innerHTML = `
+          <div class="col-span-2 py-10 text-center text-zinc-500">
+            <i class="fa-solid fa-video-slash text-2xl mb-1"></i>
+            <p class="text-xs">Muuqaal la helay ma jiro.</p>
+          </div>
+        `;
+        return;
+      }
+
+      filtered.forEach((vid) => {
+        const globalIndex = videoList.findIndex(v => v.id === vid.id);
+        const card = document.createElement('div');
+        card.className = "relative aspect-[9/16] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 cursor-pointer shadow-md group";
+        card.onclick = () => openPlayer(globalIndex);
+
+        card.innerHTML = `
+          <span class="absolute top-2 left-2 z-10 bg-black/60 backdrop-blur-md text-white text-[10px] font-semibold px-2 py-0.5 rounded-md border border-white/10">${vid.category}</span>
+          <i class="fa-solid fa-ellipsis-vertical absolute top-2 right-2 z-10 text-white text-xs drop-shadow"></i>
+          
+          <!-- Video / Thumbnail rendering -->
+          <img src="${vid.thumbnail}" alt="${vid.title}" class="w-full h-full object-cover group-hover:scale-105 transition duration-300" onerror="this.src='https://placehold.co/400x700/111111/ffffff?text=SOMEDIA'">
+          
+          <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-2.5 flex flex-col justify-end">
+            <h3 class="text-xs font-semibold text-white line-clamp-2 leading-snug mb-1 drop-shadow">${vid.title}</h3>
+            <div class="flex items-center gap-1 text-[10px] text-zinc-300">
+              <i class="fa-regular fa-eye"></i>
+              <span>${vid.views}</span>
+            </div>
+          </div>
+        `;
+        grid.appendChild(card);
+      });
     }
 
-    function openPlayer(title, videoSrc) {
+    // REAL VIDEO FILE UPLOAD SYSTEM
+    function triggerFileSelect() {
+      document.getElementById('realFileInput').click();
+    }
+
+    function handleFileSelected(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      pendingRealFile = file;
+      pendingFileUrl = URL.createObjectURL(file);
+
+      // Show Metadata Confirmation Modal
+      const modal = document.getElementById('uploadMetadataModal');
+      const preview = document.getElementById('uploadVideoPreview');
+      preview.src = pendingFileUrl;
+      document.getElementById('uploadTitleInput').value = file.name.replace(/\.[^/.]+$/, "");
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+    }
+
+    function closeUploadMetadataModal() {
+      const modal = document.getElementById('uploadMetadataModal');
+      const preview = document.getElementById('uploadVideoPreview');
+      preview.pause();
+      preview.src = '';
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      document.getElementById('realFileInput').value = '';
+    }
+
+    function confirmRealVideoUpload() {
+      const title = document.getElementById('uploadTitleInput').value.trim() || 'Muuqaal cusub';
+      const category = document.getElementById('uploadCategorySelect').value;
+
+      const newShort = {
+        id: 'real_' + Date.now(),
+        title: title,
+        views: '1 view • Right now',
+        category: category,
+        url: pendingFileUrl,
+        thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80',
+        likes: 1,
+        liked: true,
+        disliked: false,
+        comments: []
+      };
+
+      videoList.unshift(newShort);
+      saveVideos();
+      renderGrid();
+
+      closeUploadMetadataModal();
+      showToast('Muuqaalka si guul leh ayaa loo soo geliyay! 🚀');
+
+      // Auto-play the uploaded real video immediately
+      openPlayer(0);
+    }
+
+    // FULLSCREEN PLAYER LOGIC
+    function openPlayer(index) {
+      if (index < 0 || index >= videoList.length) return;
+      currentVideoIndex = index;
+      const vid = videoList[index];
+
       const modal = document.getElementById('playerModal');
-      const player = document.getElementById('videoPlayer');
-      player.src = videoSrc;
-      modal.style.display = 'block';
-      player.play();
+      const player = document.getElementById('mainVideoPlayer');
+
+      player.src = vid.url;
+      document.getElementById('playerVideoTitle').innerText = vid.title;
+      document.getElementById('playerLikeCount').innerText = formatNum(vid.likes);
+      document.getElementById('playerCommentCount').innerText = vid.comments.length;
+
+      updatePlayerInteractionUI();
+      renderComments();
+
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      player.play().catch(err => console.log('Autoplay handled:', err));
     }
 
     function closePlayer() {
       const modal = document.getElementById('playerModal');
-      const player = document.getElementById('videoPlayer');
+      const player = document.getElementById('mainVideoPlayer');
       player.pause();
-      modal.style.display = 'none';
+      player.src = '';
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+      toggleCommentsSheet(false);
+    }
+
+    function togglePlayPause() {
+      const player = document.getElementById('mainVideoPlayer');
+      const overlay = document.getElementById('playPauseOverlay');
+      const icon = document.getElementById('playPauseIcon');
+
+      if (player.paused) {
+        player.play();
+        icon.className = "fa-solid fa-play";
+      } else {
+        player.pause();
+        icon.className = "fa-solid fa-pause";
+      }
+
+      overlay.style.opacity = '1';
+      setTimeout(() => {
+        overlay.style.opacity = '0';
+      }, 500);
+    }
+
+    function togglePlayerLike() {
+      if (currentVideoIndex < 0) return;
+      const vid = videoList[currentVideoIndex];
+
+      if (vid.liked) {
+        vid.liked = false;
+        vid.likes -= 1;
+      } else {
+        vid.liked = true;
+        vid.likes += 1;
+        vid.disliked = false;
+      }
+
+      document.getElementById('playerLikeCount').innerText = formatNum(vid.likes);
+      updatePlayerInteractionUI();
+      saveVideos();
+    }
+
+    function togglePlayerDislike() {
+      if (currentVideoIndex < 0) return;
+      const vid = videoList[currentVideoIndex];
+
+      if (vid.disliked) {
+        vid.disliked = false;
+      } else {
+        vid.disliked = true;
+        if (vid.liked) {
+          vid.liked = false;
+          vid.likes -= 1;
+        }
+      }
+
+      document.getElementById('playerLikeCount').innerText = formatNum(vid.likes);
+      updatePlayerInteractionUI();
+      saveVideos();
+    }
+
+    function updatePlayerInteractionUI() {
+      const vid = videoList[currentVideoIndex];
+      const likeCircle = document.getElementById('likeCircle');
+      const likeIcon = document.getElementById('likeIcon');
+      const dislikeCircle = document.getElementById('dislikeCircle');
+      const dislikeIcon = document.getElementById('dislikeIcon');
+
+      if (vid.liked) {
+        likeCircle.className = "w-10 h-10 rounded-full bg-red-600 border border-red-500 flex items-center justify-center text-lg backdrop-blur-md";
+        likeIcon.className = "fa-solid fa-thumbs-up text-white";
+      } else {
+        likeCircle.className = "w-10 h-10 rounded-full bg-zinc-900/80 border border-zinc-700/60 flex items-center justify-center text-lg backdrop-blur-md";
+        likeIcon.className = "fa-regular fa-thumbs-up text-white";
+      }
+
+      if (vid.disliked) {
+        dislikeCircle.className = "w-10 h-10 rounded-full bg-zinc-700 border border-zinc-500 flex items-center justify-center text-lg backdrop-blur-md";
+        dislikeIcon.className = "fa-solid fa-thumbs-down text-white";
+      } else {
+        dislikeCircle.className = "w-10 h-10 rounded-full bg-zinc-900/80 border border-zinc-700/60 flex items-center justify-center text-lg backdrop-blur-md";
+        dislikeIcon.className = "fa-regular fa-thumbs-down text-white";
+      }
+    }
+
+    // COMMENTS MANAGEMENT
+    function toggleCommentsSheet(show) {
+      const sheet = document.getElementById('commentsSheet');
+      if (show) {
+        sheet.classList.remove('translate-y-full');
+      } else {
+        sheet.classList.add('translate-y-full');
+      }
+    }
+
+    function renderComments() {
+      if (currentVideoIndex < 0) return;
+      const vid = videoList[currentVideoIndex];
+      const container = document.getElementById('commentsList');
+      container.innerHTML = '';
+
+      document.getElementById('sheetCommentBadge').innerText = `(${vid.comments.length})`;
+
+      if (vid.comments.length === 0) {
+        container.innerHTML = `<p class="text-zinc-500 text-center py-4">No comments yet.</p>`;
+        return;
+      }
+
+      vid.comments.forEach(c => {
+        const el = document.createElement('div');
+        el.className = "bg-zinc-950 p-2 rounded-lg border border-zinc-800 flex gap-2 items-start";
+        el.innerHTML = `
+          <div class="w-5 h-5 rounded-full bg-zinc-700 text-white flex items-center justify-center font-bold text-[9px] shrink-0">${c.author[0].toUpperCase()}</div>
+          <div>
+            <span class="font-bold text-zinc-300 text-[10px] block">${c.author}</span>
+            <p class="text-zinc-200 text-xs">${c.text}</p>
+          </div>
+        `;
+        container.appendChild(el);
+      });
+    }
+
+    function handleAddComment(e) {
+      e.preventDefault();
+      if (currentVideoIndex < 0) return;
+      const input = document.getElementById('commentInput');
+      const val = input.value.trim();
+      if (!val) return;
+
+      const vid = videoList[currentVideoIndex];
+      vid.comments.push({ author: 'You', text: val });
+      input.value = '';
+
+      document.getElementById('playerCommentCount').innerText = vid.comments.length;
+      renderComments();
+      saveVideos();
+    }
+
+    // CATEGORY FILTER & SEARCH
+    function filterCategory(cat) {
+      currentCategory = cat;
+      const btns = document.querySelectorAll('.cat-btn');
+      btns.forEach(b => {
+        if (b.innerText.trim() === cat || (cat === 'All' && b.innerText.includes('Dhammaan'))) {
+          b.className = "cat-btn bg-white text-black px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0";
+        } else {
+          b.className = "cat-btn bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold whitespace-nowrap shrink-0";
+        }
+      });
+      renderGrid();
+    }
+
+    function toggleSearch(show) {
+      const overlay = document.getElementById('searchOverlay');
+      if (show) {
+        overlay.classList.remove('hidden');
+        overlay.classList.add('flex');
+        document.getElementById('searchInput').focus();
+      } else {
+        overlay.classList.add('hidden');
+        overlay.classList.remove('flex');
+        document.getElementById('searchInput').value = '';
+        renderGrid();
+      }
+    }
+
+    function handleSearch() {
+      const val = document.getElementById('searchInput').value;
+      renderGrid(val);
+      const count = document.querySelectorAll('#shortsGrid > div').length;
+      document.getElementById('searchResultsCount').innerText = `Waxaa la helay ${count} muuqaal`;
+    }
+
+    function clearSearch() {
+      document.getElementById('searchInput').value = '';
+      handleSearch();
+    }
+
+    function shareVideo() {
+      if (navigator.share) {
+        navigator.share({
+          title: 'SOMEDIA Short',
+          text: videoList[currentVideoIndex]?.title,
+          url: window.location.href
+        }).catch(() => {});
+      } else {
+        showToast('Link-ka waa la koobiyey!');
+      }
+    }
+
+    function showToast(msg) {
+      const toast = document.getElementById('toastNotification');
+      document.getElementById('toastMessage').innerText = msg;
+      toast.classList.remove('opacity-0', 'pointer-events-none');
+      setTimeout(() => {
+        toast.classList.add('opacity-0', 'pointer-events-none');
+      }, 2500);
+    }
+
+    function formatNum(n) {
+      if (n >= 1000000) return (n / 1000000).toFixed(1) + 'M';
+      if (n >= 1000) return (n / 1000).toFixed(1) + 'K';
+      return n;
     }
   </script>
 </body>

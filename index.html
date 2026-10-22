@@ -352,12 +352,22 @@
     let selectedVideoUrl = '';
     let selectedThumbnail = '';
 
-    window.addEventListener('DOMContentLoaded', () => {
-      // TOTAL BLOCKING OF MEDIA SESSION TO PREVENT NOTIFICATION PLAYER
+    // HARD DISABLE SYSTEM MEDIA SESSION NOTIFICATIONS
+    function suppressMediaSession() {
       if ('mediaSession' in navigator) {
-        navigator.mediaSession.setActionHandler('play', null);
-        navigator.mediaSession.setActionHandler('pause', null);
+        try {
+          navigator.mediaSession.metadata = null;
+          navigator.mediaSession.playbackState = 'none';
+          const noop = () => {};
+          ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack', 'stop'].forEach(action => {
+            try { navigator.mediaSession.setActionHandler(action, null); } catch(e){}
+          });
+        } catch (e) {}
       }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      suppressMediaSession();
       renderGrid();
     });
 
@@ -433,11 +443,11 @@
       closeCameraModal();
 
       const trimPlayer = document.getElementById('trimVideoPlayer');
-      trimPlayer.removeAttribute('controls');
       trimPlayer.src = selectedVideoUrl;
       document.getElementById('trimModal').classList.remove('hidden');
       document.getElementById('trimModal').classList.add('flex');
-      trimPlayer.play().catch(e => console.log(e));
+      
+      trimPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
     }
 
     function toggleTrimVideoPlay() {
@@ -446,7 +456,7 @@
       const icon = document.getElementById('trimPlayPauseIcon');
 
       if (player.paused) {
-        player.play();
+        player.play().then(() => suppressMediaSession());
         icon.className = "fa-solid fa-pause";
       } else {
         player.pause();
@@ -470,7 +480,7 @@
       editorPlayer.src = selectedVideoUrl;
       document.getElementById('editorModal').classList.remove('hidden');
       document.getElementById('editorModal').classList.add('flex');
-      editorPlayer.play().catch(e => console.log(e));
+      editorPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
     }
 
     function backToTrim() {
@@ -484,7 +494,7 @@
       finalPlayer.src = selectedVideoUrl;
       document.getElementById('finalUploadModal').classList.remove('hidden');
       document.getElementById('finalUploadModal').classList.add('flex');
-      finalPlayer.play().catch(e => console.log(e));
+      finalPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
     }
 
     function backToEditor() {
@@ -519,7 +529,7 @@
       player.src = videoList[idx].url;
       modal.classList.remove('hidden');
       modal.classList.add('flex');
-      player.play().catch(e => console.log(e));
+      player.play().then(() => suppressMediaSession()).catch(e => console.log(e));
     }
 
     function closePlayer() {

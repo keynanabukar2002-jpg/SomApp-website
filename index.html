@@ -37,23 +37,16 @@
       align-items: center;
       gap: 10px;
       cursor: pointer;
-      transition: transform 0.2s ease;
     }
 
-    .brand:active {
-      transform: scale(0.97);
-    }
-
-    /* QURXINTA LOGO-DA SOMEDIA */
+    /* SOMEDIA OO CADAN AH */
     .brand-title {
       font-size: 20px;
       font-weight: 900;
       letter-spacing: -0.5px;
-      background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 50%, #8a2be2 100%);
-      -webkit-background-clip: text;
-      -webkit-text-fill-color: transparent;
-      filter: drop-shadow(0 2px 8px rgba(255, 65, 108, 0.4));
+      color: #ffffff;
       text-transform: uppercase;
+      text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
     }
 
     .brand-logo-container {
@@ -63,15 +56,21 @@
       justify-content: center;
     }
 
-    /* SAWIRKA OO LA GAADHSIIYAY KUUS (ROUNDED/CIRCLE) IYO BORDER CAD */
+    /* AFAARGEES (ROUNDED SQUARE), BORDER CAD, IYO KOR U SOO KACSAN */
     .brand-logo-img {
       height: 32px;
       width: 32px;
       object-fit: cover;
-      border-radius: 50%;
-      border: 2px solid #ffffff;
-      box-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+      border-radius: 8px; /* Afo-gees / Rounded Square */
+      border: 1.5px solid #ffffff; /* Caddaan yar oo ku wareegsan */
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.25); /* Kor u soo kacsan / Shadow */
+      transform: translateY(-2px); /* Kor u soo kacsan */
       transition: all 0.3s ease;
+    }
+
+    .brand-logo-img:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 6px 14px rgba(255, 255, 255, 0.4);
     }
 
     .header-icons {

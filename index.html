@@ -192,32 +192,49 @@
     </div>
   </div>
 
-  <!-- 2. TRIM / ADJUST VIDEO MODAL -->
+  <!-- 2. TRIM / ADJUST VIDEO MODAL (SIDA SAWIRKAAGA) -->
   <div id="trimModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
+    <!-- TOP CLOSE BUTTON -->
     <div class="flex items-center justify-between z-10 pt-2 px-1">
       <button onclick="backToCamera()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
         <i class="fa-solid fa-xmark"></i>
       </button>
     </div>
 
+    <!-- VIDEO PREVIEW WITH CENTER PLAY/PAUSE OVERLAY -->
     <div class="flex-1 flex items-center justify-center py-2 relative">
-      <div class="aspect-[9/16] h-full max-h-[68vh] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl flex items-center justify-center">
-        <!-- CODKA WAA LA FURAY (MUTED WAA LA SAARAY) -->
+      <div onclick="toggleTrimVideoPlay()" class="aspect-[9/16] h-full max-h-[66vh] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl flex items-center justify-center cursor-pointer">
         <video id="trimVideoPlayer" class="w-full h-full object-cover" loop playsinline></video>
+        
+        <!-- CENTER PLAY/PAUSE BUTTON OVERLAY -->
+        <div id="trimPlayPauseOverlay" class="absolute w-14 h-14 rounded-full bg-black/60 text-white flex items-center justify-center text-xl backdrop-blur-sm opacity-0 transition-opacity duration-200">
+          <i id="trimPlayPauseIcon" class="fa-solid fa-pause"></i>
+        </div>
       </div>
     </div>
 
-    <div class="space-y-3 mb-3 px-2">
-      <div class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-3 relative flex items-center justify-center shadow-inner">
-        <div class="w-full h-12 bg-zinc-950 rounded-xl flex items-center justify-between px-2 relative overflow-hidden border border-zinc-700">
-          <div class="absolute left-[30%] right-[30%] top-1 bottom-1 border-2 border-white bg-white/20 rounded-lg flex items-center justify-between px-1.5 shadow-lg">
+    <!-- FILMSTRIP TIMELINE BAR (SIDA SAWIRKAAGA) -->
+    <div class="space-y-3 mb-3 px-1">
+      <div class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-2.5 relative flex items-center justify-center shadow-inner">
+        <!-- FILMSTRIP IMAGES CONTAINER -->
+        <div class="w-full h-12 bg-zinc-950 rounded-xl flex items-center gap-1 px-1 relative overflow-hidden border border-zinc-700">
+          <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100&q=80" class="h-full w-1/6 object-cover opacity-60 rounded">
+          <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=100&q=80" class="h-full w-1/6 object-cover opacity-60 rounded">
+          <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=100&q=80" class="h-full w-1/6 object-cover opacity-60 rounded">
+          <img src="https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=100&q=80" class="h-full w-1/6 object-cover opacity-60 rounded">
+          <img src="https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=100&q=80" class="h-full w-1/6 object-cover opacity-60 rounded">
+          <img src="https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=100&q=80" class="h-full w-1/6 object-cover opacity-60 rounded">
+
+          <!-- ACTIVE SELECTION BOX & WHITE BADGE (10.0s) -->
+          <div class="absolute left-[20%] right-[30%] top-0.5 bottom-0.5 border-2 border-white bg-white/10 rounded-lg flex items-center justify-between px-1 shadow-lg pointer-events-none">
             <div class="w-1.5 h-7 bg-white rounded-full"></div>
-            <span class="bg-white text-black text-[11px] font-black px-3 py-0.5 rounded-full shadow-md">10.0s</span>
+            <span class="bg-white text-black text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md">10.0s</span>
             <div class="w-1.5 h-7 bg-white rounded-full"></div>
           </div>
         </div>
       </div>
 
+      <!-- BOTTOM ACTION BAR -->
       <div class="flex items-center justify-between px-2">
         <span class="text-zinc-400 text-xs">Drag to adjust video</span>
         <button onclick="goToEditorStep()" class="bg-white text-black font-bold px-7 py-2.5 rounded-full text-xs hover:bg-zinc-200 shadow-lg transition-transform active:scale-95">
@@ -421,6 +438,26 @@
       document.getElementById('trimModal').classList.remove('hidden');
       document.getElementById('trimModal').classList.add('flex');
       trimPlayer.play().catch(e => console.log(e));
+    }
+
+    // TOGGLE PLAY/PAUSE ON TRIM PREVIEW TAP
+    function toggleTrimVideoPlay() {
+      const player = document.getElementById('trimVideoPlayer');
+      const overlay = document.getElementById('trimPlayPauseOverlay');
+      const icon = document.getElementById('trimPlayPauseIcon');
+
+      if (player.paused) {
+        player.play();
+        icon.className = "fa-solid fa-pause";
+      } else {
+        player.pause();
+        icon.className = "fa-solid fa-play";
+      }
+
+      overlay.classList.remove('opacity-0');
+      setTimeout(() => {
+        overlay.classList.add('opacity-0');
+      }, 800);
     }
 
     function backToCamera() {

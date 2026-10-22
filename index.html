@@ -202,8 +202,8 @@
 
     <div class="flex-1 flex items-center justify-center py-2 relative">
       <div class="aspect-[9/16] h-full max-h-[68vh] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl flex items-center justify-center">
-        <!-- MUTED & DISABLE PIP/DISABLING MEDIA SESSION TO PREVENT EXTERNAL NOTIFICATIONS -->
-        <video id="trimVideoPlayer" class="w-full h-full object-cover" loop playsinline muted></video>
+        <!-- CODKA WAA LA FURAY (MUTED WAA LA SAARAY) -->
+        <video id="trimVideoPlayer" class="w-full h-full object-cover" loop playsinline></video>
       </div>
     </div>
 
@@ -245,7 +245,7 @@
     </div>
 
     <div class="absolute inset-0 z-0 flex items-center justify-center bg-black">
-      <video id="editorVideoPlayer" class="w-full h-full object-cover" loop playsinline muted></video>
+      <video id="editorVideoPlayer" class="w-full h-full object-cover" loop playsinline></video>
       <span class="absolute bottom-16 text-xs text-white/70 font-semibold tracking-wide drop-shadow">Swipe up to edit</span>
     </div>
 
@@ -282,7 +282,7 @@
     <div class="flex-1 py-4 space-y-4 overflow-y-auto no-scrollbar">
       <div class="flex gap-3">
         <div class="w-24 aspect-[9/16] bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0">
-          <video id="finalPreviewThumbnail" class="w-full h-full object-cover" muted></video>
+          <video id="finalPreviewThumbnail" class="w-full h-full object-cover"></video>
         </div>
         <div class="flex-1">
           <textarea id="finalTitleInput" rows="3" placeholder="Caption your Short... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
@@ -342,9 +342,6 @@
     let selectedThumbnail = '';
 
     window.addEventListener('DOMContentLoaded', () => {
-      if ('mediaSession' in navigator) {
-        navigator.mediaSession.metadata = null;
-      }
       renderGrid();
     });
 

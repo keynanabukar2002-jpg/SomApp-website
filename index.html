@@ -4,7 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>YouTube Mobile Clone</title>
-  <link rel="stylesheet" href="https://i.ibb.co/dwDSVhQm/20261022-043354998.png/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
     * {
       box-sizing: border-box;
@@ -35,19 +35,13 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 4px;
       cursor: pointer;
     }
 
-    .logo-icon {
-      color: #ff0000;
-      font-size: 22px;
-    }
-
-    .brand-name {
-      font-size: 19px;
-      font-weight: 700;
-      letter-spacing: -0.8px;
+    .brand-logo-img {
+      height: 28px;
+      width: auto;
+      object-fit: contain;
     }
 
     .header-icons {
@@ -363,8 +357,7 @@
   <!-- HEADER -->
   <header>
     <div class="brand">
-      <i class="fa-brands fa-youtube logo-icon"></i>
-      <span class="brand-name">YouTube</span>
+      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="YouTube Logo" class="brand-logo-img">
     </div>
     <div class="header-icons">
       <button class="icon-btn" onclick="openSearch()">

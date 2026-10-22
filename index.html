@@ -76,12 +76,12 @@
     <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
   </nav>
 
-  <!-- MAIN FEED CONTAINER -->
-  <main class="p-3 max-w-md mx-auto w-full flex-1">
-    <div class="flex items-center justify-between mb-3 px-1">
+  <!-- MAIN STANDARD FEED CONTAINER -->
+  <main class="max-w-md mx-auto w-full flex-1 pb-4">
+    <div class="flex items-center justify-between p-3">
       <div class="flex items-center gap-2 text-base font-bold">
-        <i class="fa-solid fa-bolt text-red-600"></i>
-        <span>Video Feed</span>
+        <i class="fa-solid fa-circle-play text-red-600"></i>
+        <span>Home Feed</span>
       </div>
       <div class="flex items-center gap-2">
         <span id="videoCountBadge" class="text-xs bg-zinc-800 px-2.5 py-0.5 rounded-full text-zinc-400">0 videos</span>
@@ -91,8 +91,8 @@
       </div>
     </div>
 
-    <!-- VIDEOS GRID -->
-    <div id="shortsGrid" class="grid grid-cols-2 gap-2.5 min-h-[300px]"></div>
+    <!-- STANDARD YOUTUBE SINGLE-COLUMN FEED -->
+    <div id="shortsGrid" class="flex flex-col gap-5"></div>
   </main>
 
   <!-- DIRECT DEVICE GALLERY FILE INPUT -->
@@ -201,8 +201,8 @@
     </div>
 
     <div class="flex-1 flex items-center justify-center py-2 relative">
-      <div onclick="toggleTrimVideoPlay()" class="aspect-[9/16] h-full max-h-[66vh] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl flex items-center justify-center cursor-pointer">
-        <video id="trimVideoPlayer" class="w-full h-full object-cover" loop playsinline></video>
+      <div onclick="toggleTrimVideoPlay()" class="aspect-[16/9] w-full max-w-md bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl flex items-center justify-center cursor-pointer">
+        <video id="trimVideoPlayer" class="w-full h-full object-contain" loop playsinline></video>
         
         <div id="trimPlayPauseOverlay" class="absolute w-14 h-14 rounded-full bg-black/60 text-white flex items-center justify-center text-xl backdrop-blur-sm opacity-0 transition-opacity duration-200">
           <i id="trimPlayPauseIcon" class="fa-solid fa-pause"></i>
@@ -250,17 +250,7 @@
     </div>
 
     <div class="absolute inset-0 z-0 flex items-center justify-center bg-black">
-      <video id="editorVideoPlayer" class="w-full h-full object-cover" loop playsinline></video>
-      <span class="absolute bottom-16 text-xs text-white/70 font-semibold tracking-wide drop-shadow">Swipe up to edit</span>
-    </div>
-
-    <div class="absolute right-3 top-20 z-20 flex flex-col items-center gap-4 text-white bg-black/40 p-2 rounded-2xl border border-white/10 backdrop-blur-md">
-      <button class="w-8 h-8 flex items-center justify-center text-sm font-bold">Aa</button>
-      <button class="w-8 h-8 flex items-center justify-center text-sm"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
-      <button class="w-8 h-8 flex items-center justify-center text-sm"><i class="fa-solid fa-circle-half-stroke"></i></button>
-      <button class="w-8 h-8 flex items-center justify-center text-sm"><i class="fa-regular fa-face-smile"></i></button>
-      <button class="w-8 h-8 flex items-center justify-center text-sm"><i class="fa-solid fa-closed-captioning"></i></button>
-      <button class="w-8 h-8 flex items-center justify-center text-xs"><i class="fa-solid fa-chevron-down"></i></button>
+      <video id="editorVideoPlayer" class="w-full aspect-video object-contain" loop playsinline></video>
     </div>
 
     <div class="z-20 flex items-center justify-between px-2 mb-2">
@@ -286,11 +276,11 @@
 
     <div class="flex-1 py-4 space-y-4 overflow-y-auto no-scrollbar">
       <div class="flex gap-3">
-        <div class="w-24 aspect-[9/16] bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0">
-          <video id="finalPreviewThumbnail" class="w-full h-full object-cover"></video>
+        <div class="w-32 aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0">
+          <video id="finalPreviewThumbnail" class="w-full h-full object-contain"></video>
         </div>
         <div class="flex-1">
-          <textarea id="finalTitleInput" rows="3" placeholder="Caption your Video... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
+          <textarea id="finalTitleInput" rows="3" placeholder="Write video title... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
         </div>
       </div>
 
@@ -322,7 +312,7 @@
     </button>
   </div>
 
-  <!-- YOUTUBE STANDARD CLEAN PLAYER (PURA MADOW BG) -->
+  <!-- YOUTUBE STANDARD CLEAN PLAYER -->
   <div id="playerModal" class="fixed inset-0 z-50 bg-[#0f0f0f] hidden flex-col overflow-y-auto no-scrollbar">
     <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3 py-2 flex items-center justify-between border-b border-zinc-800">
       <button onclick="closePlayer()" class="text-white text-lg">
@@ -460,7 +450,6 @@
       }
     }
 
-    // FUNCTION TO CLOSE ALL MODALS CLEANLY
     function closeAllModals() {
       ['cameraModal', 'trimModal', 'editorModal', 'finalUploadModal'].forEach(id => {
         const el = document.getElementById(id);
@@ -469,7 +458,6 @@
           el.classList.remove('flex');
         }
       });
-      // Pause all sub-video players
       ['trimVideoPlayer', 'editorVideoPlayer', 'finalPreviewThumbnail'].forEach(id => {
         const vp = document.getElementById(id);
         if(vp) vp.pause();
@@ -481,27 +469,45 @@
       renderGrid();
     });
 
+    // RENDER STANDARD YOUTUBE SINGLE COLUMN FEED
     function renderGrid() {
       const grid = document.getElementById('shortsGrid');
       grid.innerHTML = '';
       if(videoList.length === 0) {
         grid.innerHTML = `
-          <div class="col-span-2 flex flex-col items-center justify-center p-8 text-center text-zinc-500 gap-2">
-            <i class="fa-solid fa-film text-3xl"></i>
+          <div class="flex flex-col items-center justify-center p-12 text-center text-zinc-500 gap-3">
+            <i class="fa-solid fa-play-circle text-4xl text-zinc-700"></i>
             <p class="text-xs">Wali wax video ah ma soo gelinin. Taabo <strong class="text-white">+ Soo geli</strong> si aad fiidiyow cusub u soo gelisid.</p>
           </div>
         `;
       } else {
         videoList.forEach((vid, idx) => {
           const card = document.createElement('div');
-          card.className = "relative aspect-[9/16] rounded-xl overflow-hidden bg-zinc-900 border border-zinc-800 cursor-pointer shadow-md";
+          card.className = "w-full cursor-pointer group";
           card.onclick = () => openPlayer(idx);
           card.innerHTML = `
-            <span class="absolute top-2 left-2 z-10 bg-black/60 text-white text-[10px] font-semibold px-2 py-0.5 rounded-md">${vid.category}</span>
-            <img src="${vid.thumbnail}" class="w-full h-full object-cover">
-            <div class="absolute inset-0 bg-gradient-to-t from-black/90 via-black/20 to-transparent p-2.5 flex flex-col justify-end">
-              <h3 class="text-xs font-semibold text-white line-clamp-2 leading-snug mb-1">${vid.title}</h3>
-              <span class="text-[10px] text-zinc-300">${vid.views}</span>
+            <!-- THUMBNAIL CONTAINER (16:9 STANDARD ASPECT RATIO) -->
+            <div class="w-full aspect-video bg-black relative overflow-hidden">
+              <img src="${vid.thumbnail}" class="w-full h-full object-cover">
+              <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">0:10</span>
+            </div>
+
+            <!-- METADATA CONTAINER (SIDA YOUTUBE FEED-KA) -->
+            <div class="p-3 flex gap-3">
+              <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                S
+              </div>
+              <div class="flex-1 pr-2">
+                <h3 class="text-xs font-bold text-white leading-snug line-clamp-2 mb-1">${vid.title}</h3>
+                <div class="text-[11px] text-zinc-400 flex items-center gap-1.5 flex-wrap">
+                  <span>SOMEDIA Channel</span>
+                  <span>•</span>
+                  <span>${vid.views}</span>
+                </div>
+              </div>
+              <button onclick="event.stopPropagation(); showToast('More options');" class="text-zinc-400 text-sm h-6 w-6 flex items-center justify-center">
+                <i class="fa-solid fa-ellipsis-vertical"></i>
+              </button>
             </div>
           `;
           grid.appendChild(card);
@@ -607,8 +613,8 @@
 
       tempVideo.onloadeddata = () => {
         const canvas = document.createElement('canvas');
-        canvas.width = tempVideo.videoWidth || 300;
-        canvas.height = tempVideo.videoHeight || 500;
+        canvas.width = tempVideo.videoWidth || 640;
+        canvas.height = tempVideo.videoHeight || 360;
         const ctx = canvas.getContext('2d');
         ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
         selectedThumbnail = canvas.toDataURL('image/jpeg');
@@ -694,18 +700,15 @@
         views: '1 view • Right now',
         category: category,
         url: selectedVideoUrl,
-        thumbnail: selectedThumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80'
+        thumbnail: selectedThumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80'
       };
 
       videoList.unshift(newVideo);
       renderGrid();
 
-      // CLEANLY CLOSE ALL UPLOAD STEPS
       closeAllModals();
-
       showToast('Video-gaaga si guul leh ayaa loo soo geliyay! 🚀');
       
-      // OPEN CLEAN YOUTUBE PLAYER FOR THIS NEW VIDEO
       openPlayer(0);
     }
 

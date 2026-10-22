@@ -95,9 +95,6 @@
     <div id="shortsGrid" class="grid grid-cols-2 gap-2.5 min-h-[300px]"></div>
   </main>
 
-  <!-- HIDDEN MULTI-FILE INPUT FOR AUTOMATIC GALLERY LOADING -->
-  <input type="file" id="bulkDeviceFileInput" accept="video/*" multiple onchange="handleBulkFilesSelected(event)" class="hidden">
-
   <!-- BOTTOM NAVIGATION BAR -->
   <nav class="fixed bottom-0 left-0 right-0 h-13 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center z-30 max-w-md mx-auto">
     <button class="flex flex-col items-center gap-0.5 text-white w-1/5 py-1">
@@ -149,7 +146,7 @@
         <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-2xl text-zinc-400">
           <i class="fa-solid fa-video"></i>
         </div>
-        <p class="text-xs max-w-xs text-zinc-400">Kamarada waa nool tahay. Taabo <strong class="text-white">Add</strong> hoose si aad muuqaallo badan uga soo gurtid taleefankaaga[span_0](start_span)[span_0](end_span).</p>
+        <p class="text-xs max-w-xs text-zinc-400">Kamarada waa nool tahay. Taabo <strong class="text-white">Add</strong> hoose si aad u furto Gallery-ga.</p>
       </div>
     </div>
 
@@ -165,10 +162,10 @@
 
     <div class="z-20 flex flex-col gap-5 mb-2">
       <div class="flex items-center justify-around">
-        <!-- ADD FROM GALLERY BUTTON (OPENS AUTOMATIC BULK PICKER) -->
+        <!-- ADD FROM GALLERY BUTTON -->
         <button onclick="openGalleryFromCamera()" class="flex flex-col items-center gap-1">
           <div class="w-11 h-11 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
-            <i class="fa-solid fa-image text-white"></i>
+            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100&q=80" class="w-full h-full object-cover">
           </div>
           <span class="text-[11px] font-bold text-white">Add</span>
         </button>
@@ -195,8 +192,9 @@
     </div>
   </div>
 
-  <!-- 2. AUTOMATIC GALLERY UPLOAD MODAL -->
+  <!-- 2. AUTOMATIC GALLERY UPLOAD MODAL (SIDA SAWIRKAAGA) -->
   <div id="galleryModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between">
+    <!-- TOP HEADER -->
     <div class="flex items-center justify-between p-3.5 border-b border-zinc-900 bg-black relative z-10">
       <div class="flex items-center gap-4">
         <button onclick="closeGalleryModal()" class="text-white text-xl">
@@ -223,17 +221,14 @@
       </div>
     </div>
 
-    <!-- DYNAMIC AUTOMATIC GALLERY GRID -->
-    <div class="flex-1 overflow-y-auto no-scrollbar relative p-1">
-      <div id="autoGalleryGrid" class="grid grid-cols-3 gap-1">
-        <!-- Trigger Card to select multiple videos automatically -->
-        <div onclick="document.getElementById('bulkDeviceFileInput').click()" class="aspect-square bg-zinc-900 rounded-lg flex flex-col items-center justify-center cursor-pointer border border-zinc-800 hover:border-red-600 transition">
-          <i class="fa-solid fa-folder-plus text-2xl text-red-500 mb-1"></i>
-          <span class="text-[10px] font-bold text-white text-center px-1">Soo Xulo Muuqaallo</span>
-        </div>
+    <!-- GALLERY GRID (SI OTOMAATIG AH U SOO BANDHIGAYA MUUQAALLADA) -->
+    <div class="flex-1 overflow-y-auto no-scrollbar relative p-0.5 bg-black">
+      <div id="galleryGridContainer" class="grid grid-cols-3 gap-0.5">
+        <!-- Muuqaallada otomaatiga ah ayaa halkan ka muuqda -->
       </div>
     </div>
 
+    <!-- BOTTOM SWITCHER -->
     <div class="bg-black py-3 border-t border-zinc-900 flex justify-center items-center gap-6">
       <button class="bg-zinc-800 text-white text-xs font-bold px-5 py-1.5 rounded-full border border-zinc-700">Video</button>
       <button class="text-zinc-400 text-xs font-bold hover:text-white">Short</button>
@@ -384,7 +379,19 @@
       { id: 'v2', title: 'Gatos inteligentes y Graciosos', views: '850K views', category: 'Ciyaaro', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80' }
     ];
 
-    let userGalleryVideos = []; // Muuqaallada otomaatiga ah ee uu adeegsaduhu soo xusho
+    // MUUQAALLADA OTOMAATIGA AH EE KU JIRA GALLERY-GA (SIDA SAWIRKAAGA OO KALE)[span_1](start_span)[span_1](end_span)
+    const AUTOMATIC_GALLERY_ITEMS = [
+      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
+      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
+      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
+      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4' },
+      { duration: '2:27', thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4' },
+      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' },
+      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1512621776951-a57141f2eefd?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/SubaruOutbackSeeTheWorld.mp4' },
+      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1498837167922-ddd27525d352?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WeAreGoingOnBullrun.mp4' },
+      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1493976040374-85c8e12f0c0e?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/WhatCarCanYouGetForAGrand.mp4' }
+    ];
+
     let mediaStream = null;
     let isRecording = false;
     let selectedVideoUrl = '';
@@ -392,6 +399,7 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       renderGrid();
+      renderGalleryGrid();
     });
 
     function renderGrid() {
@@ -412,6 +420,23 @@
         grid.appendChild(card);
       });
       document.getElementById('videoCountBadge').innerText = `${videoList.length} videos`;
+    }
+
+    // RENDER GALLERY AUTOMATICALLY
+    function renderGalleryGrid() {
+      const container = document.getElementById('galleryGridContainer');
+      container.innerHTML = '';
+
+      AUTOMATIC_GALLERY_ITEMS.forEach(item => {
+        const card = document.createElement('div');
+        card.className = "aspect-square relative bg-zinc-900 cursor-pointer overflow-hidden group";
+        card.onclick = () => selectGalleryMedia(item.url, item.thumbnail);
+        card.innerHTML = `
+          <img src="${item.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition">
+          <span class="absolute bottom-1 right-1 bg-black/80 text-white font-bold text-[10px] px-1 rounded">${item.duration}</span>
+        `;
+        container.appendChild(card);
+      });
     }
 
     async function openCameraModal() {
@@ -469,47 +494,6 @@
     function selectAlbum(albumName) {
       document.getElementById('currentAlbumText').innerText = albumName;
       toggleAlbumDropdown();
-    }
-
-    // MARKII FIIDIIYAYAASHA SI AUTOMATIC AH LOOSOO XUSHO
-    function handleBulkFilesSelected(e) {
-      const files = e.target.files;
-      if (!files || files.length === 0) return;
-
-      for (let i = 0; i < files.length; i++) {
-        const file = files[i];
-        const url = URL.createObjectURL(file);
-        userGalleryVideos.push({
-          url: url,
-          name: file.name,
-          thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80'
-        });
-      }
-
-      renderAutoGalleryGrid();
-      showToast('Muuqaallada si otomaatig ah ayay u soo baxeen! 🚀');
-    }
-
-    function renderAutoGalleryGrid() {
-      const grid = document.getElementById('autoGalleryGrid');
-      // Dib u soo celi badhanka add-ka ee koowaad
-      grid.innerHTML = `
-        <div onclick="document.getElementById('bulkDeviceFileInput').click()" class="aspect-square bg-zinc-900 rounded-lg flex flex-col items-center justify-center cursor-pointer border border-zinc-800 hover:border-red-600 transition">
-          <i class="fa-solid fa-folder-plus text-2xl text-red-500 mb-1"></i>
-          <span class="text-[10px] font-bold text-white text-center px-1">Kordhi Muuqaal</span>
-        </div>
-      `;
-
-      userGalleryVideos.forEach((vid) => {
-        const card = document.createElement('div');
-        card.className = "aspect-square relative bg-zinc-900 rounded-lg cursor-pointer overflow-hidden group border border-zinc-800";
-        card.onclick = () => selectGalleryMedia(vid.url, vid.thumbnail);
-        card.innerHTML = `
-          <img src="${vid.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition">
-          <span class="absolute bottom-1 right-1 bg-black/80 text-white font-bold text-[9px] px-1 rounded">0:10</span>
-        `;
-        grid.appendChild(card);
-      });
     }
 
     function selectGalleryMedia(url, thumbnail) {

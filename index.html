@@ -35,21 +35,41 @@
     .brand {
       display: flex;
       align-items: center;
-      gap: 8px;
+      gap: 10px;
       cursor: pointer;
+      transition: transform 0.2s ease;
     }
 
+    .brand:active {
+      transform: scale(0.97);
+    }
+
+    /* QURXINTA LOGO-DA SOMEDIA */
     .brand-title {
-      font-size: 18px;
-      font-weight: 800;
+      font-size: 20px;
+      font-weight: 900;
       letter-spacing: -0.5px;
-      color: #ffffff;
+      background: linear-gradient(135deg, #ff416c 0%, #ff4b2b 50%, #8a2be2 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      filter: drop-shadow(0 2px 8px rgba(255, 65, 108, 0.4));
+      text-transform: uppercase;
+    }
+
+    .brand-logo-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .brand-logo-img {
-      height: 26px;
+      height: 28px;
       width: auto;
       object-fit: contain;
+      border-radius: 6px;
+      box-shadow: 0 0 10px rgba(255, 0, 0, 0.3);
+      transition: all 0.3s ease;
     }
 
     .header-icons {
@@ -366,7 +386,9 @@
   <header>
     <div class="brand">
       <span class="brand-title">SOMedia</span>
-      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="YouTube Logo" class="brand-logo-img">
+      <div class="brand-logo-container">
+        <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="YouTube Logo" class="brand-logo-img">
+      </div>
     </div>
     <div class="header-icons">
       <button class="icon-btn" onclick="openSearch()">

@@ -322,7 +322,7 @@
     </button>
   </div>
 
-  <!-- STANDARD YOUTUBE VIDEO PLAYER PAGE (BUUXA OO GUDAHA APP-KA AH) -->
+  <!-- YOUTUBE STANDARD CLEAN PLAYER (PURA MADOW BG) -->
   <div id="playerModal" class="fixed inset-0 z-50 bg-[#0f0f0f] hidden flex-col overflow-y-auto no-scrollbar">
     <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3 py-2 flex items-center justify-between border-b border-zinc-800">
       <button onclick="closePlayer()" class="text-white text-lg">
@@ -334,8 +334,8 @@
       </div>
     </div>
 
-    <!-- HORIZONTAL STANDARD VIDEO PLAYER -->
-    <div class="w-full bg-black aspect-video relative shrink-0">
+    <!-- CLEAN PURE BLACK VIDEO CONTAINER -->
+    <div class="w-full bg-black aspect-video relative shrink-0 flex items-center justify-center">
       <video id="mainVideoPlayer" class="w-full h-full object-contain" loop controls playsinline></video>
     </div>
 
@@ -460,6 +460,22 @@
       }
     }
 
+    // FUNCTION TO CLOSE ALL MODALS CLEANLY
+    function closeAllModals() {
+      ['cameraModal', 'trimModal', 'editorModal', 'finalUploadModal'].forEach(id => {
+        const el = document.getElementById(id);
+        if(el) {
+          el.classList.add('hidden');
+          el.classList.remove('flex');
+        }
+      });
+      // Pause all sub-video players
+      ['trimVideoPlayer', 'editorVideoPlayer', 'finalPreviewThumbnail'].forEach(id => {
+        const vp = document.getElementById(id);
+        if(vp) vp.pause();
+      });
+    }
+
     window.addEventListener('DOMContentLoaded', () => {
       suppressMediaSession();
       renderGrid();
@@ -495,6 +511,7 @@
     }
 
     async function openCameraModal() {
+      closeAllModals();
       const modal = document.getElementById('cameraModal');
       modal.classList.remove('hidden');
       modal.classList.add('flex');
@@ -508,7 +525,7 @@
         }
         mediaStream = await navigator.mediaDevices.getUserMedia({ 
           video: { facingMode: cameraFacing }, 
-          audio: true 
+          audio: { echoCancellation: true, noiseSuppression: true } 
         });
         const videoElem = document.getElementById('liveCameraStream');
         videoElem.srcObject = mediaStream;
@@ -525,12 +542,11 @@
     }
 
     function closeCameraModal() {
-      const modal = document.getElementById('cameraModal');
       if (mediaStream) {
         mediaStream.getTracks().forEach(track => track.stop());
       }
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
+      document.getElementById('cameraModal').classList.add('hidden');
+      document.getElementById('cameraModal').classList.remove('flex');
     }
 
     function toggleRecording() {
@@ -634,12 +650,12 @@
     }
 
     function backToCamera() {
-      document.getElementById('trimModal').classList.add('hidden');
+      closeAllModals();
       openCameraModal();
     }
 
     function goToEditorStep() {
-      document.getElementById('trimModal').classList.add('hidden');
+      closeAllModals();
       const editorPlayer = document.getElementById('editorVideoPlayer');
       editorPlayer.src = selectedVideoUrl;
       document.getElementById('editorModal').classList.remove('hidden');
@@ -648,12 +664,13 @@
     }
 
     function backToTrim() {
-      document.getElementById('editorModal').classList.add('hidden');
+      closeAllModals();
       document.getElementById('trimModal').classList.remove('hidden');
+      document.getElementById('trimModal').classList.add('flex');
     }
 
     function goToFinalUploadDetails() {
-      document.getElementById('editorModal').classList.add('hidden');
+      closeAllModals();
       const finalPlayer = document.getElementById('finalPreviewThumbnail');
       finalPlayer.src = selectedVideoUrl;
       document.getElementById('finalUploadModal').classList.remove('hidden');
@@ -662,8 +679,9 @@
     }
 
     function backToEditor() {
-      document.getElementById('finalUploadModal').classList.add('hidden');
+      closeAllModals();
       document.getElementById('editorModal').classList.remove('hidden');
+      document.getElementById('editorModal').classList.add('flex');
     }
 
     function publishVideoToFeed() {
@@ -682,14 +700,17 @@
       videoList.unshift(newVideo);
       renderGrid();
 
-      document.getElementById('finalUploadModal').classList.add('hidden');
+      // CLEANLY CLOSE ALL UPLOAD STEPS
+      closeAllModals();
+
       showToast('Video-gaaga si guul leh ayaa loo soo geliyay! 🚀');
       
-      // SI TOOS AH U FUR PLAYER-KA GUDHAHA APP-KA EE CAADIGA AH
+      // OPEN CLEAN YOUTUBE PLAYER FOR THIS NEW VIDEO
       openPlayer(0);
     }
 
     function openPlayer(idx) {
+      closeAllModals();
       const modal = document.getElementById('playerModal');
       const player = document.getElementById('mainVideoPlayer');
       const vid = videoList[idx];
@@ -705,6 +726,7 @@
       const player = document.getElementById('mainVideoPlayer');
       player.pause();
       modal.classList.add('hidden');
+      modal.classList.remove('flex');
     }
 
     function showToast(msg) {

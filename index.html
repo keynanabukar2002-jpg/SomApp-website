@@ -239,7 +239,7 @@
         <i class="fa-solid fa-arrow-left"></i>
       </button>
 
-      <button onclick="showToast('Music selector active')" class="bg-zinc-800/90 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-zinc-700 backdrop-blur-md">
+      <button onclick="showToast('Music picker active')" class="bg-zinc-800/90 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-zinc-700 backdrop-blur-md">
         <i class="fa-solid fa-music"></i>
         <span>Add sound</span>
       </button>
@@ -322,7 +322,7 @@
     </button>
   </div>
 
-  <!-- STANDARD YOUTUBE VIDEO PLAYER PAGE (SIDA SAWIRKAAGA) -->
+  <!-- STANDARD YOUTUBE VIDEO PLAYER PAGE (BUUXA OO GUDAHA APP-KA AH) -->
   <div id="playerModal" class="fixed inset-0 z-50 bg-[#0f0f0f] hidden flex-col overflow-y-auto no-scrollbar">
     <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3 py-2 flex items-center justify-between border-b border-zinc-800">
       <button onclick="closePlayer()" class="text-white text-lg">
@@ -389,7 +389,7 @@
         </button>
       </div>
 
-      <!-- COMMENTS SECTION (SIDA SAWIRKAAGA) -->
+      <!-- COMMENTS SECTION -->
       <div onclick="showToast('Comments active')" class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 space-y-2 cursor-pointer">
         <div class="flex items-center justify-between text-xs">
           <span class="font-bold text-white">Comments <span class="text-zinc-400 font-normal">17</span></span>
@@ -684,6 +684,8 @@
 
       document.getElementById('finalUploadModal').classList.add('hidden');
       showToast('Video-gaaga si guul leh ayaa loo soo geliyay! 🚀');
+      
+      // SI TOOS AH U FUR PLAYER-KA GUDHAHA APP-KA EE CAADIGA AH
       openPlayer(0);
     }
 

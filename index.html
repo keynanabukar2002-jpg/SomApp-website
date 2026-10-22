@@ -56,15 +56,15 @@
       justify-content: center;
     }
 
-    /* AFAARGEES (ROUNDED SQUARE), BORDER CAD, IYO KOR U SOO KACSAN */
+    /* LOGADA SAARE: AFAARGEES, BORDER CAD, IYO KOR U SOO KACSAN */
     .brand-logo-img {
       height: 32px;
       width: 32px;
       object-fit: cover;
-      border-radius: 8px; /* Afo-gees / Rounded Square */
-      border: 1.5px solid #ffffff; /* Caddaan yar oo ku wareegsan */
-      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.25); /* Kor u soo kacsan / Shadow */
-      transform: translateY(-2px); /* Kor u soo kacsan */
+      border-radius: 8px;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 4px 10px rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
       transition: all 0.3s ease;
     }
 
@@ -253,9 +253,38 @@
       font-size: 18px;
     }
 
-    .plus-btn i {
-      font-size: 26px;
-      font-weight: 300;
+    /* BOTTOM NAV BUTTONKA DHEXDA OO LA MID AH QAABKA LOGADA */
+    .custom-nav-img-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      cursor: pointer;
+      width: 20%;
+      gap: 3px;
+    }
+
+    .nav-custom-img {
+      height: 28px;
+      width: 28px;
+      object-fit: cover;
+      border-radius: 6px;
+      border: 1.5px solid #ffffff;
+      box-shadow: 0 3px 8px rgba(255, 255, 255, 0.25);
+      transform: translateY(-2px);
+      transition: all 0.3s ease;
+    }
+
+    .nav-custom-img:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 5px 12px rgba(255, 255, 255, 0.4);
+    }
+
+    .nav-custom-label {
+      font-size: 10px;
+      color: #ffffff;
     }
 
     .profile-avatar {
@@ -502,8 +531,10 @@
       <i class="fa-solid fa-bolt"></i>
       <span>Shorts</span>
     </button>
-    <button class="nav-item plus-btn">
-      <i class="fa-regular fa-square-plus"></i>
+    <!-- BUTTONKA DHEXDA OO AH LOGADA CALANKA OO QAABKAN LA ISKU WAAFAJIYAY -->
+    <button class="custom-nav-img-container">
+      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="Upload/Center" class="nav-custom-img">
+      <span class="nav-custom-label">Upload</span>
     </button>
     <button class="nav-item">
       <i class="fa-solid fa-layer-group"></i>

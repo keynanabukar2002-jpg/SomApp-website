@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SOMEDIA - YouTube Shorts Platform</title>
+  <title>SOMEDIA - YouTube Shorts Full Experience</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -55,7 +55,7 @@
       <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
     </div>
     <div class="flex items-center gap-4">
-      <button onclick="toggleSearch(true)" class="text-white text-lg">
+      <button onclick="showToast('Search active')" class="text-white text-lg">
         <i class="fa-solid fa-magnifying-glass"></i>
       </button>
       <button onclick="showToast('Notifiyada waa kuwo firfircoon')" class="relative text-white text-lg">
@@ -85,13 +85,13 @@
       </div>
       <div class="flex items-center gap-2">
         <span id="videoCountBadge" class="text-xs bg-zinc-800 px-2.5 py-0.5 rounded-full text-zinc-400">4 videos</span>
-        <button onclick="openGalleryOverlay()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
+        <button onclick="openCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
           <i class="fa-solid fa-plus"></i> Soo geli
         </button>
       </div>
     </div>
 
-    <!-- SHORTS GRID (2 COLUMNS) -->
+    <!-- SHORTS GRID -->
     <div id="shortsGrid" class="grid grid-cols-2 gap-2.5 min-h-[300px]"></div>
   </main>
 
@@ -109,8 +109,8 @@
       <span class="text-[10px]">Shorts</span>
     </button>
 
-    <!-- CENTER UPLOAD BUTTON -->
-    <button onclick="openGalleryOverlay()" class="flex flex-col items-center justify-center w-1/5 py-1">
+    <!-- CENTER UPLOAD BUTTON (OPENS CAMERA OVERLAY FIRST) -->
+    <button onclick="openCameraModal()" class="flex flex-col items-center justify-center w-1/5 py-1">
       <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="Soo geli" class="upload-nav-img">
       <span class="text-[10px] text-white font-medium mt-0.5">Soo geli</span>
     </button>
@@ -125,7 +125,83 @@
     </button>
   </nav>
 
-  <!-- 1. GALLERY UPLOAD MODAL -->
+  <!-- 1. SHORTS CAMERA CREATION MODAL -->
+  <div id="cameraModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-4">
+    <!-- TOP CONTROL BAR -->
+    <div class="flex items-center justify-between z-20">
+      <button onclick="closeCameraModal()" class="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center text-xl backdrop-blur-md">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+
+      <button onclick="showToast('Music selector active')" class="bg-zinc-900/80 border border-zinc-700/80 text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 backdrop-blur-md">
+        <i class="fa-solid fa-music text-xs"></i>
+        <span>Add sound</span>
+      </button>
+
+      <button class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center text-lg shadow-lg">
+        <i class="fa-solid fa-wand-magic-sparkles"></i>
+      </button>
+    </div>
+
+    <!-- CAMERA PREVIEW AREA -->
+    <div class="absolute inset-0 z-0 flex items-center justify-center bg-zinc-950 overflow-hidden">
+      <video id="liveCameraStream" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+
+      <!-- FALLBACK DISPLAY -->
+      <div id="cameraPlaceholder" class="flex flex-col items-center justify-center text-zinc-500 gap-3 p-6 text-center">
+        <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-2xl text-zinc-400">
+          <i class="fa-solid fa-video"></i>
+        </div>
+        <p class="text-xs max-w-xs text-zinc-400">Kamarada waa nool tahay. Haddii aysan muuqan ama eber tahay, taabo <strong class="text-white">Add</strong> si aad muuqaal ugu doorato Gallery-ga.</p>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR TOOLBAR -->
+    <div class="absolute right-4 top-20 z-20 flex flex-col items-center gap-5 text-white bg-black/30 p-2 rounded-2xl backdrop-blur-md border border-white/10">
+      <button onclick="switchCamera()" class="flex flex-col items-center"><i class="fa-solid fa-rotate text-lg"></i></button>
+      <button class="flex flex-col items-center"><i class="fa-regular fa-clock text-lg"></i></button>
+      <span class="text-[11px] font-bold">3m</span>
+      <button class="flex flex-col items-center"><i class="fa-solid fa-wand-magic text-lg"></i></button>
+      <span class="text-[11px] font-bold">1x</span>
+      <button class="flex flex-col items-center"><i class="fa-solid fa-crop text-lg"></i></button>
+      <i class="fa-solid fa-chevron-down text-xs"></i>
+    </div>
+
+    <!-- BOTTOM CAMERA CONTROLS -->
+    <div class="z-20 flex flex-col gap-5 mb-2">
+      <div class="flex items-center justify-around">
+        <!-- ADD FROM GALLERY BUTTON -->
+        <button onclick="openGalleryFromCamera()" class="flex flex-col items-center gap-1">
+          <div class="w-11 h-11 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
+            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100&q=80" class="w-full h-full object-cover">
+          </div>
+          <span class="text-[11px] font-bold text-white">Add</span>
+        </button>
+
+        <!-- RECORD BUTTON -->
+        <button id="recordBtn" onclick="toggleRecording()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform">
+          <div id="recordInnerCircle" class="w-12 h-12 rounded-full bg-red-600 transition-all duration-200"></div>
+        </button>
+
+        <!-- DRAFTS BUTTON -->
+        <button onclick="showToast('Drafts waa eber')" class="flex flex-col items-center gap-1">
+          <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-lg">
+            <i class="fa-regular fa-file-lines"></i>
+          </div>
+          <span class="text-[11px] font-bold text-white">Drafts</span>
+        </button>
+      </div>
+
+      <!-- CAMERA MODE SWITCHER -->
+      <div class="flex items-center justify-center gap-6 text-xs font-bold text-zinc-400">
+        <button class="hover:text-white">Video</button>
+        <button class="bg-zinc-800 text-white px-4 py-1 rounded-full border border-white/20">Short</button>
+        <button class="hover:text-white">Live</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- 2. GALLERY UPLOAD MODAL -->
   <div id="galleryModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between">
     <!-- TOP HEADER -->
     <div class="flex items-center justify-between p-3.5 border-b border-zinc-900 bg-black relative z-10">
@@ -136,18 +212,17 @@
         <span class="text-base font-bold text-white">Upload from gallery</span>
       </div>
 
-      <!-- ALBUM DROPDOWN TOGGLE -->
+      <!-- ALBUM DROPDOWN -->
       <div class="relative">
         <button onclick="toggleAlbumDropdown()" class="text-sm font-bold text-white flex items-center gap-1">
           <span id="currentAlbumText">Videos</span>
           <i class="fa-solid fa-chevron-down text-xs"></i>
         </button>
 
-        <!-- DROPDOWN MENU -->
         <div id="albumDropdown" class="absolute right-0 top-8 bg-zinc-900 border border-zinc-800 rounded-xl p-1.5 w-44 hidden shadow-2xl z-30">
           <button onclick="selectAlbum('Videos')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-white hover:bg-zinc-800 flex items-center justify-between">
             <span class="flex items-center gap-2"><i class="fa-regular fa-square-caret-right"></i> Videos</span>
-            <i id="videosCheck" class="fa-solid fa-check text-xs"></i>
+            <i class="fa-solid fa-check text-xs"></i>
           </button>
           <button onclick="selectAlbum('All albums')" class="w-full text-left px-3 py-2 rounded-lg text-xs font-semibold text-white hover:bg-zinc-800 flex items-center gap-2">
             <i class="fa-solid fa-border-all"></i> All albums
@@ -156,12 +231,10 @@
       </div>
     </div>
 
-    <!-- MAIN GALLERY CONTENT AREA -->
+    <!-- MAIN GALLERY CONTENT -->
     <div class="flex-1 overflow-y-auto no-scrollbar relative">
-      <!-- 3-COLUMN VIDEOS GRID -->
       <div id="galleryVideoGrid" class="grid grid-cols-3 gap-0.5 bg-black p-0.5"></div>
 
-      <!-- ALBUMS LIST VIEW -->
       <div id="galleryAlbumsList" class="hidden flex-col divide-y divide-zinc-900 bg-black">
         <div onclick="selectAlbumFromList('Videos')" class="flex items-center gap-3.5 p-3.5 cursor-pointer hover:bg-zinc-950">
           <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=150&q=80" class="w-16 h-16 object-cover rounded-lg">
@@ -177,20 +250,6 @@
             <p class="text-xs text-zinc-400">553</p>
           </div>
         </div>
-        <div onclick="selectAlbumFromList('DCIM')" class="flex items-center gap-3.5 p-3.5 cursor-pointer hover:bg-zinc-950">
-          <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=150&q=80" class="w-16 h-16 object-cover rounded-lg">
-          <div>
-            <h4 class="text-sm font-bold text-white">DCIM</h4>
-            <p class="text-xs text-zinc-400">32</p>
-          </div>
-        </div>
-        <div onclick="selectAlbumFromList('Camera')" class="flex items-center gap-3.5 p-3.5 cursor-pointer hover:bg-zinc-950">
-          <img src="https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=150&q=80" class="w-16 h-16 object-cover rounded-lg">
-          <div>
-            <h4 class="text-sm font-bold text-white">Camera</h4>
-            <p class="text-xs text-zinc-400">80</p>
-          </div>
-        </div>
       </div>
     </div>
 
@@ -202,7 +261,7 @@
     </div>
   </div>
 
-  <!-- 2. TRIM / ADJUST VIDEO MODAL -->
+  <!-- 3. TRIM / ADJUST VIDEO MODAL -->
   <div id="trimModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
     <div class="flex items-center justify-between z-10">
       <button onclick="backToGallery()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
@@ -210,14 +269,12 @@
       </button>
     </div>
 
-    <!-- VIDEO PREVIEW AREA -->
     <div class="flex-1 flex items-center justify-center py-2 relative">
       <div class="aspect-[9/16] h-full max-h-[70vh] bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl">
         <video id="trimVideoPlayer" class="w-full h-full object-cover" loop playsinline autoplay></video>
       </div>
     </div>
 
-    <!-- TIMELINE SLIDER -->
     <div class="space-y-3 mb-2 px-2">
       <div class="bg-zinc-900 border border-zinc-700 rounded-xl p-2 relative flex items-center justify-center">
         <div class="w-full h-10 bg-zinc-800 rounded flex items-center justify-between px-1 relative overflow-hidden">
@@ -238,9 +295,8 @@
     </div>
   </div>
 
-  <!-- 3. VIDEO EDITOR / OVERLAY MODAL -->
+  <!-- 4. VIDEO EDITOR MODAL -->
   <div id="editorModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
-    <!-- TOP HEADER -->
     <div class="flex items-center justify-between z-20">
       <button onclick="backToTrim()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
         <i class="fa-solid fa-arrow-left"></i>
@@ -256,13 +312,11 @@
       </button>
     </div>
 
-    <!-- CANVAS PREVIEW -->
     <div class="absolute inset-0 z-0 flex items-center justify-center bg-black">
       <video id="editorVideoPlayer" class="w-full h-full object-cover" loop playsinline autoplay></video>
       <span class="absolute bottom-16 text-xs text-white/70 font-semibold tracking-wide drop-shadow">Swipe up to edit</span>
     </div>
 
-    <!-- RIGHT TOOLBAR -->
     <div class="absolute right-3 top-20 z-20 flex flex-col items-center gap-4 text-white bg-black/40 p-2 rounded-2xl border border-white/10 backdrop-blur-md">
       <button class="w-8 h-8 flex items-center justify-center text-sm font-bold">Aa</button>
       <button class="w-8 h-8 flex items-center justify-center text-sm"><i class="fa-solid fa-wand-magic-sparkles"></i></button>
@@ -272,7 +326,6 @@
       <button class="w-8 h-8 flex items-center justify-center text-xs"><i class="fa-solid fa-chevron-down"></i></button>
     </div>
 
-    <!-- BOTTOM ACTION BUTTONS -->
     <div class="z-20 flex items-center justify-between px-2 mb-2">
       <button onclick="showToast('Editing timeline')" class="bg-zinc-800 text-white font-bold px-6 py-2 rounded-full text-xs border border-zinc-700 flex items-center gap-2">
         <i class="fa-solid fa-sliders"></i>
@@ -285,7 +338,7 @@
     </div>
   </div>
 
-  <!-- 4. FINAL DETAILS MODAL -->
+  <!-- 5. FINAL DETAILS MODAL -->
   <div id="finalUploadModal" class="fixed inset-0 bg-[#0f0f0f] z-50 hidden flex-col justify-between p-4">
     <div class="flex items-center gap-4 border-b border-zinc-800 pb-3">
       <button onclick="backToEditor()" class="text-white text-lg">
@@ -351,8 +404,7 @@
       { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
       { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
       { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4' },
-      { duration: '2:27', thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4' },
-      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1550745165-9bc0b252726f?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/Sintel.mp4' }
+      { duration: '2:27', thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4' }
     ];
 
     let videoList = [
@@ -360,6 +412,8 @@
       { id: 'v2', title: 'Gatos inteligentes y Graciosos', views: '850K views', category: 'Ciyaaro', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80' }
     ];
 
+    let mediaStream = null;
+    let isRecording = false;
     let selectedVideoUrl = '';
     let selectedThumbnail = '';
 
@@ -387,11 +441,56 @@
       });
     }
 
+    // CAMERA LOGIC
+    async function openCameraModal() {
+      const modal = document.getElementById('cameraModal');
+      modal.classList.remove('hidden');
+      modal.classList.add('flex');
+
+      try {
+        mediaStream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: true });
+        const videoElem = document.getElementById('liveCameraStream');
+        videoElem.srcObject = mediaStream;
+        videoElem.classList.remove('hidden');
+        document.getElementById('cameraPlaceholder').classList.add('hidden');
+      } catch (err) {
+        console.log("Camera handled fallback:", err);
+      }
+    }
+
+    function closeCameraModal() {
+      const modal = document.getElementById('cameraModal');
+      if (mediaStream) {
+        mediaStream.getTracks().forEach(track => track.stop());
+      }
+      modal.classList.add('hidden');
+      modal.classList.remove('flex');
+    }
+
+    function toggleRecording() {
+      const circle = document.getElementById('recordInnerCircle');
+      if (!isRecording) {
+        isRecording = true;
+        circle.className = "w-6 h-6 rounded-sm bg-red-600 animate-pulse";
+        showToast('Duubistu waa bilaabatay...');
+      } else {
+        isRecording = false;
+        circle.className = "w-12 h-12 rounded-full bg-red-600";
+        showToast('Duubistu waa dhammaatay!');
+      }
+    }
+
+    // GALLERY LOGIC
+    function openGalleryFromCamera() {
+      closeCameraModal();
+      document.getElementById('galleryModal').classList.remove('hidden');
+      document.getElementById('galleryModal').classList.add('flex');
+    }
+
     function renderGalleryGrid() {
       const grid = document.getElementById('galleryVideoGrid');
       grid.innerHTML = '';
 
-      // First Box trigger device picker
       const triggerCard = document.createElement('div');
       triggerCard.className = "aspect-square bg-zinc-900 flex flex-col items-center justify-center cursor-pointer border border-zinc-800/60";
       triggerCard.onclick = () => document.getElementById('realFileInput').click();
@@ -408,12 +507,6 @@
         `;
         grid.appendChild(card);
       });
-    }
-
-    // MODAL FLOW NAVIGATION
-    function openGalleryOverlay() {
-      document.getElementById('galleryModal').classList.remove('hidden');
-      document.getElementById('galleryModal').classList.add('flex');
     }
 
     function closeGalleryModal() {
@@ -453,10 +546,8 @@
     function selectGalleryMedia(url, thumbnail) {
       selectedVideoUrl = url;
       selectedThumbnail = thumbnail;
-
       closeGalleryModal();
 
-      // Open Trim Modal
       const trimPlayer = document.getElementById('trimVideoPlayer');
       trimPlayer.src = url;
       document.getElementById('trimModal').classList.remove('hidden');
@@ -465,7 +556,8 @@
 
     function backToGallery() {
       document.getElementById('trimModal').classList.add('hidden');
-      openGalleryOverlay();
+      document.getElementById('galleryModal').classList.remove('hidden');
+      document.getElementById('galleryModal').classList.add('flex');
     }
 
     function goToEditorStep() {

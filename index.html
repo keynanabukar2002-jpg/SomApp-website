@@ -1,175 +1,580 @@
 <!DOCTYPE html>
 <html lang="so">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>BAYANTUBE Mobile App with Weather</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        ::-webkit-scrollbar { display: none; }
-        * { -ms-overflow-style: none; scrollbar-width: none; -webkit-tap-highlight-color: transparent; }
-        body { background-color: #0f0f0f; color: #ffffff; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; user-select: none; }
-        .short-card { aspect-ratio: 9 / 16; }
-        .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
-        .touch-active:active { opacity: 0.7; transform: scale(0.96); transition: transform 0.1s ease; }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>YouTube Mobile Clone</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      background-color: #0f0f0f;
+      color: #ffffff;
+      padding-bottom: 60px;
+    }
+
+    /* TOP HEADER */
+    header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background-color: #0f0f0f;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 10px 16px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      cursor: pointer;
+    }
+
+    .logo-icon {
+      color: #ff0000;
+      font-size: 22px;
+    }
+
+    .brand-name {
+      font-size: 19px;
+      font-weight: 700;
+      letter-spacing: -0.8px;
+    }
+
+    .header-icons {
+      display: flex;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .icon-btn {
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 20px;
+      position: relative;
+      cursor: pointer;
+    }
+
+    .badge {
+      position: absolute;
+      top: -4px;
+      right: -8px;
+      background-color: #cc0000;
+      color: white;
+      font-size: 10px;
+      font-weight: bold;
+      padding: 1px 4px;
+      border-radius: 10px;
+    }
+
+    /* CATEGORIES BAR */
+    .categories {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 12px 10px;
+      overflow-x: auto;
+      white-space: nowrap;
+      scrollbar-width: none;
+    }
+    .categories::-webkit-scrollbar { display: none; }
+
+    .chip {
+      background-color: #272727;
+      color: #ffffff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 14px;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+    }
+
+    .chip.active {
+      background-color: #ffffff;
+      color: #0f0f0f;
+    }
+
+    .chip-explore {
+      padding: 6px 10px;
+    }
+
+    /* SECTION TITLE */
+    .section-title {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px 16px 8px;
+    }
+
+    .shorts-brand {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 18px;
+      font-weight: 700;
+    }
+
+    .shorts-logo {
+      color: #ff0000;
+      font-size: 20px;
+    }
+
+    /* SHORTS GRID */
+    .shorts-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+      padding: 0 12px 16px;
+    }
+
+    .short-card {
+      position: relative;
+      aspect-ratio: 9/16;
+      border-radius: 12px;
+      overflow: hidden;
+      background-color: #1f1f1f;
+      cursor: pointer;
+    }
+
+    .short-card img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .short-overlay {
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(180deg, rgba(0,0,0,0.1) 0%, rgba(0,0,0,0.8) 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 10px;
+    }
+
+    .card-top {
+      display: flex;
+      justify-content: flex-end;
+    }
+
+    .card-top button {
+      background: none;
+      border: none;
+      color: white;
+      font-size: 16px;
+      text-shadow: 0 1px 3px rgba(0,0,0,0.8);
+    }
+
+    .card-bottom {
+      color: white;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 1.3;
+      margin-bottom: 4px;
+      text-shadow: 0 1px 2px rgba(0,0,0,0.8);
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      overflow: hidden;
+    }
+
+    .card-views {
+      font-size: 11px;
+      color: #cccccc;
+    }
+
+    /* BOTTOM NAV BAR */
+    .bottom-nav {
+      position: fixed;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      height: 52px;
+      background-color: #0f0f0f;
+      border-top: 1px solid #272727;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      z-index: 100;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      background: none;
+      border: none;
+      color: #ffffff;
+      font-size: 10px;
+      gap: 3px;
+      cursor: pointer;
+      width: 20%;
+    }
+
+    .nav-item i {
+      font-size: 18px;
+    }
+
+    .plus-btn i {
+      font-size: 26px;
+      font-weight: 300;
+    }
+
+    .profile-avatar {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background-color: #e65100;
+      color: white;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: bold;
+      font-size: 12px;
+    }
+
+    /* FULLSCREEN PLAYER MODAL */
+    .modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: #000;
+      z-index: 200;
+    }
+
+    .modal-content {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .modal video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .close-btn {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      color: white;
+      font-size: 24px;
+      background: rgba(0,0,0,0.5);
+      border: none;
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      cursor: pointer;
+      z-index: 10;
+    }
+
+    .player-overlay {
+      position: absolute;
+      bottom: 20px;
+      left: 16px;
+      right: 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+    }
+
+    .player-info {
+      max-width: 75%;
+    }
+
+    .player-title {
+      font-size: 15px;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+
+    .player-actions {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .action-btn {
+      background: none;
+      border: none;
+      color: white;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+
+    .action-btn i {
+      font-size: 24px;
+    }
+
+    /* SEARCH BAR OVERLAY */
+    .search-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background-color: #0f0f0f;
+      z-index: 150;
+      padding: 10px 16px;
+    }
+
+    .search-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .search-input {
+      flex: 1;
+      background-color: #222;
+      border: 1px solid #333;
+      border-radius: 20px;
+      padding: 8px 16px;
+      color: white;
+      font-size: 15px;
+      outline: none;
+    }
+  </style>
 </head>
-<body class="bg-[#0f0f0f] text-white flex flex-col h-screen overflow-hidden max-w-md mx-auto relative border-x border-zinc-800">
+<body>
 
-    <!-- TOP APP BAR -->
-    <header class="flex items-center justify-between px-4 py-2 bg-[#0f0f0f] z-20 shrink-0 border-b border-zinc-900">
-        <!-- Logo -->
-        <div class="flex items-center gap-1.5 cursor-pointer" onclick="setActiveTab('home')">
-            <div class="bg-red-600 text-white p-1 rounded-lg flex items-center justify-center">
-                <i class="fa-solid font-black fa-play text-xs pl-0.5"></i>
-            </div>
-            <span class="font-bold text-lg tracking-tight">BAYANTUBE</span>
+  <!-- HEADER -->
+  <header>
+    <div class="brand">
+      <i class="fa-brands fa-youtube logo-icon"></i>
+      <span class="brand-name">YouTube</span>
+    </div>
+    <div class="header-icons">
+      <button class="icon-btn" onclick="openSearch()">
+        <i class="fa-solid fa-magnifying-glass"></i>
+      </button>
+      <button class="icon-btn">
+        <i class="fa-regular fa-bell"></i>
+        <span class="badge">9+</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- SEARCH OVERLAY -->
+  <div class="search-overlay" id="searchOverlay">
+    <div class="search-header">
+      <button class="icon-btn" onclick="closeSearch()">
+        <i class="fa-solid fa-arrow-left"></i>
+      </button>
+      <input type="text" class="search-input" id="searchInput" placeholder="Search YouTube" onkeyup="filterShorts()">
+    </div>
+  </div>
+
+  <!-- CATEGORIES -->
+  <div class="categories">
+    <button class="chip chip-explore"><i class="fa-regular fa-compass"></i></button>
+    <button class="chip active">All</button>
+    <button class="chip">Mixes</button>
+    <button class="chip">Music</button>
+    <button class="chip">Podcasts</button>
+    <button class="chip">Live</button>
+    <button class="chip">Somali Tech</button>
+    <button class="chip">Gaming</button>
+  </div>
+
+  <!-- SHORTS TITLE -->
+  <div class="section-title">
+    <div class="shorts-brand">
+      <i class="fa-solid fa-bolt shorts-logo"></i>
+      <span>Shorts</span>
+    </div>
+    <button class="icon-btn" style="color: #aaa;"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+  </div>
+
+  <!-- SHORTS GRID -->
+  <div class="shorts-grid" id="shortsGrid">
+    <!-- Card 1 -->
+    <div class="short-card" onclick="openPlayer('Sirta Miraha Cad! 😳', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4')">
+      <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80" alt="Short 1">
+      <div class="short-overlay">
+        <div class="card-top">
+          <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
         </div>
-
-        <!-- Right Icons -->
-        <div class="flex items-center gap-4 text-lg">
-            <!-- Weather Quick Badge -->
-            <div onclick="openWeatherDetails()" class="bg-zinc-800/80 hover:bg-zinc-700 px-2.5 py-1 rounded-full flex items-center gap-1.5 text-xs text-amber-400 font-medium cursor-pointer touch-active border border-zinc-700">
-                <i class="fa-solid fa-sun text-amber-400"></i>
-                <span id="header-temp">30°C</span>
-            </div>
-
-            <button onclick="toggleNotifications()" class="relative touch-active">
-                <i class="fa-regular fa-bell"></i>
-                <span class="absolute -top-1.5 -right-2 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full">9+</span>
-            </button>
-            <button onclick="openSearch()" class="touch-active">
-                <i class="fa-solid fa-magnifying-glass text-lg"></i>
-            </button>
+        <div class="card-bottom">
+          <div class="card-title">Sirta Miraha Cad! 😳</div>
+          <div class="card-views">1.2M views</div>
         </div>
-    </header>
-
-    <!-- MAIN SCROLLABLE CONTENT -->
-    <main class="flex-1 overflow-y-auto pb-16 relative" id="main-content">
-        
-        <!-- CATEGORY PILLS BAR -->
-        <div class="flex items-center gap-2 px-3 py-2 overflow-x-auto whitespace-nowrap sticky top-0 bg-[#0f0f0f]/95 backdrop-blur-md z-10 border-b border-zinc-900">
-            <!-- Weather Trigger Pill -->
-            <button onclick="openWeatherDetails()" class="bg-amber-500/20 text-amber-400 border border-amber-500/40 px-3 py-1.5 rounded-lg text-xs font-semibold flex items-center gap-1.5 touch-active">
-                <i class="fa-solid fa-cloud-sun"></i> Cimilada Weather.com
-            </button>
-            <button onclick="filterCategory(this, 'all')" class="category-pill active bg-white text-black px-3.5 py-1.5 rounded-lg text-xs font-medium touch-active">Dhamaan</button>
-            <button onclick="filterCategory(this, 'music')" class="category-pill bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium touch-active">Music</button>
-            <button onclick="filterCategory(this, 'tech')" class="category-pill bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-medium touch-active">Tiknoolajiyad</button>
-        </div>
-
-        <!-- WEATHER WIDGET BANNER -->
-        <div id="weather-banner" class="mx-3 mt-3 p-3.5 rounded-2xl bg-gradient-to-r from-blue-900/60 to-indigo-900/60 border border-blue-500/30 flex items-center justify-between shadow-lg">
-            <div>
-                <div class="flex items-center gap-2 text-xs text-blue-300 font-medium">
-                    <i class="fa-solid fa-location-dot"></i>
-                    <span>Mogadishu, SO</span>
-                    <span class="text-[10px] bg-blue-500/20 px-1.5 py-0.5 rounded text-blue-200">Weather.com</span>
-                </div>
-                <div class="text-2xl font-bold mt-0.5">30°C <span class="text-sm font-normal text-zinc-300">| Qorax leh</span></div>
-                <p class="text-[11px] text-zinc-400 mt-0.5">Ugu sareeya: 32° • Ugu hooseeya: 26°</p>
-            </div>
-            <div class="text-right flex flex-col items-end">
-                <i class="fa-solid fa-sun-cloud text-amber-400 text-3xl mb-1"></i>
-                <a href="https://weather.com" target="_blank" class="text-[10px] text-blue-400 underline font-medium">Furo Weather.com</a>
-            </div>
-        </div>
-
-        <!-- SHORTS SECTION HEADER -->
-        <div class="flex items-center justify-between px-3 pt-4 pb-2">
-            <div class="flex items-center gap-2">
-                <i class="fa-solid fa-bolt text-red-600 text-xl"></i>
-                <span class="font-bold text-lg tracking-tight">Shorts</span>
-            </div>
-        </div>
-
-        <!-- 2-COLUMN SHORTS GRID -->
-        <div class="grid grid-cols-2 gap-2.5 px-3" id="shorts-grid">
-            <!-- Shorts Grid Item -->
-            <div class="short-card relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer touch-active border border-zinc-800 shadow-md">
-                <img src="https://images.unsplash.com/photo-1544025162-d76694265947?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                <div class="absolute bottom-3 left-2.5 right-2.5 text-white">
-                    <p class="text-xs font-semibold leading-snug line-clamp-2">Odkac aad u macaan.... 😋🍲</p>
-                </div>
-            </div>
-
-            <div class="short-card relative rounded-xl overflow-hidden bg-zinc-800 cursor-pointer touch-active border border-zinc-800 shadow-md">
-                <img src="https://images.unsplash.com/photo-1508614589041-895b88991e3e?auto=format&fit=crop&w=600&q=80" class="w-full h-full object-cover">
-                <div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-transparent"></div>
-                <div class="absolute bottom-3 left-2.5 right-2.5 text-white">
-                    <p class="text-xs font-semibold leading-snug line-clamp-2">Ha Jiidin Gacanta Inat Helicopter-ka...</p>
-                </div>
-            </div>
-        </div>
-    </main>
-
-    <!-- BOTTOM MOBILE NAVIGATION BAR -->
-    <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center h-14 z-30">
-        <button class="flex flex-col items-center gap-0.5 text-white w-1/5">
-            <i class="fa-solid fa-house text-lg"></i>
-            <span class="text-[10px]">Home</span>
-        </button>
-        <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
-            <i class="fa-solid fa-bolt text-lg"></i>
-            <span class="text-[10px]">Shorts</span>
-        </button>
-        <button class="flex flex-col items-center justify-center text-white w-1/5">
-            <div class="w-9 h-9 border border-zinc-600 rounded-full flex items-center justify-center text-xl bg-zinc-900">+</div>
-        </button>
-        <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
-            <i class="fa-solid fa-layer-group text-lg"></i>
-            <span class="text-[10px]">Subscriptions</span>
-        </button>
-        <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
-            <div class="w-6 h-6 rounded-full bg-orange-600 text-white font-bold text-xs flex items-center justify-center">B</div>
-            <span class="text-[10px]">You</span>
-        </button>
-    </nav>
-
-    <!-- WEATHER POPUP MODAL -->
-    <div id="weather-modal" class="fixed inset-0 bg-black/80 backdrop-blur-md z-50 hidden flex-col justify-end max-w-md mx-auto">
-        <div class="bg-zinc-900 border-t border-zinc-700 rounded-t-3xl p-5 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 class="font-bold text-lg flex items-center gap-2">
-                    <i class="fa-solid fa-cloud-sun text-amber-400"></i> Warbixinta Cimilada (Weather.com)
-                </h3>
-                <button onclick="closeWeatherModal()" class="text-zinc-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
-            </div>
-
-            <div class="bg-zinc-800 p-4 rounded-xl flex justify-between items-center">
-                <div>
-                    <p class="text-xs text-zinc-400">Magaalada Hada</p>
-                    <p class="text-lg font-bold">Mogadishu, Banadir</p>
-                    <p class="text-3xl font-extrabold text-amber-400 mt-1">30°C</p>
-                </div>
-                <div class="text-right text-xs space-y-1 text-zinc-300">
-                    <p><i class="fa-solid fa-droplet text-blue-400"></i> Qoyaan: 74%</p>
-                    <p><i class="fa-solid fa-wind text-teal-400"></i> Dabeyl: 18 km/h</p>
-                    <p><i class="fa-solid fa-eye text-purple-400"></i> Muuqaal: 10 km</p>
-                </div>
-            </div>
-
-            <a href="https://weather.com/weather/today/l/Mogadishu+Somalia" target="_blank" class="block w-full py-3 bg-blue-600 hover:bg-blue-700 text-center font-semibold text-sm rounded-xl text-white transition">
-                Ka eeg Weather.com Toos
-            </a>
-        </div>
+      </div>
     </div>
 
-    <script>
-        function openWeatherDetails() {
-            document.getElementById('weather-modal').classList.remove('hidden');
-            document.getElementById('weather-modal').classList.add('flex');
+    <!-- Card 2 -->
+    <div class="short-card" onclick="openPlayer('Gatos 🐆 inteligentes 😲 y Gr...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4')">
+      <img src="https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80" alt="Short 2">
+      <div class="short-overlay">
+        <div class="card-top">
+          <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
+        </div>
+        <div class="card-bottom">
+          <div class="card-title">Gatos 🐆 inteligentes 😲 y Gr...</div>
+          <div class="card-views">850K views</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 3 -->
+    <div class="short-card" onclick="openPlayer('BOQORKA INGIRIISKA AYAA ...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4')">
+      <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=500&q=80" alt="Short 3">
+      <div class="short-overlay">
+        <div class="card-top">
+          <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
+        </div>
+        <div class="card-bottom">
+          <div class="card-title">BOQORKA INGIRIISKA AYAA ...</div>
+          <div class="card-views">430K views</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Card 4 -->
+    <div class="short-card" onclick="openPlayer('5 Wild Animals That Have Been Enemie...', 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4')">
+      <img src="https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=500&q=80" alt="Short 4">
+      <div class="short-overlay">
+        <div class="card-top">
+          <button><i class="fa-solid fa-ellipsis-vertical"></i></button>
+        </div>
+        <div class="card-bottom">
+          <div class="card-title">5 Wild Animals That Have Been Enemie...</div>
+          <div class="card-views">2.5M views</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM NAV BAR -->
+  <nav class="bottom-nav">
+    <button class="nav-item">
+      <i class="fa-solid fa-house"></i>
+      <span>Home</span>
+    </button>
+    <button class="nav-item">
+      <i class="fa-solid fa-bolt"></i>
+      <span>Shorts</span>
+    </button>
+    <button class="nav-item plus-btn">
+      <i class="fa-regular fa-square-plus"></i>
+    </button>
+    <button class="nav-item">
+      <i class="fa-solid fa-layer-group"></i>
+      <span>Subscriptions</span>
+    </button>
+    <button class="nav-item">
+      <div class="profile-avatar">B</div>
+      <span>You</span>
+    </button>
+  </nav>
+
+  <!-- FULLSCREEN PLAYER MODAL -->
+  <div class="modal" id="playerModal">
+    <button class="close-btn" onclick="closePlayer()"><i class="fa-solid fa-xmark"></i></button>
+    <div class="modal-content">
+      <video id="videoPlayer" loop autoplay controls></video>
+      <div class="player-overlay">
+        <div class="player-info">
+          <div class="player-title" id="playerTitle">Video Title</div>
+        </div>
+        <div class="player-actions">
+          <button class="action-btn" onclick="toggleLike(this)">
+            <i class="fa-regular fa-thumbs-up"></i>
+            <span>12K</span>
+          </button>
+          <button class="action-btn">
+            <i class="fa-regular fa-thumbs-down"></i>
+            <span>Dislike</span>
+          </button>
+          <button class="action-btn">
+            <i class="fa-solid fa-comment-dots"></i>
+            <span>450</span>
+          </button>
+          <button class="action-btn">
+            <i class="fa-solid fa-share"></i>
+            <span>Share</span>
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    function openPlayer(title, videoSrc) {
+      const modal = document.getElementById('playerModal');
+      const player = document.getElementById('videoPlayer');
+      const titleElem = document.getElementById('playerTitle');
+      
+      titleElem.innerText = title;
+      player.src = videoSrc;
+      modal.style.display = 'block';
+      player.play();
+    }
+
+    function closePlayer() {
+      const modal = document.getElementById('playerModal');
+      const player = document.getElementById('videoPlayer');
+      player.pause();
+      modal.style.display = 'none';
+    }
+
+    function openSearch() {
+      document.getElementById('searchOverlay').style.display = 'block';
+      document.getElementById('searchInput').focus();
+    }
+
+    function closeSearch() {
+      document.getElementById('searchOverlay').style.display = 'none';
+    }
+
+    function filterShorts() {
+      const query = document.getElementById('searchInput').value.toLowerCase();
+      const cards = document.querySelectorAll('.short-card');
+      cards.forEach(card => {
+        const title = card.querySelector('.card-title').innerText.toLowerCase();
+        if (title.includes(query)) {
+          card.style.display = 'block';
+        } else {
+          card.style.display = 'none';
         }
-        function closeWeatherModal() {
-            document.getElementById('weather-modal').classList.add('hidden');
-            document.getElementById('weather-modal').classList.remove('flex');
-        }
-    </script>
+      });
+    }
+
+    function toggleLike(btn) {
+      const icon = btn.querySelector('i');
+      if (icon.classList.contains('fa-regular')) {
+        icon.classList.remove('fa-regular');
+        icon.classList.add('fa-solid');
+        icon.style.color = '#ff0000';
+      } else {
+        icon.classList.remove('fa-solid');
+        icon.classList.add('fa-regular');
+        icon.style.color = '#ffffff';
+      }
+    }
+  </script>
 </body>
 </html>

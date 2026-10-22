@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SOMEDIA - YouTube Shorts Full Experience</title>
+  <title>SOMEDIA - YouTube Shorts Platform</title>
   <script src="https://cdn.tailwindcss.com"></script>
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -84,7 +84,7 @@
         <span>Shorts Feed</span>
       </div>
       <div class="flex items-center gap-2">
-        <span id="videoCountBadge" class="text-xs bg-zinc-800 px-2.5 py-0.5 rounded-full text-zinc-400">4 videos</span>
+        <span id="videoCountBadge" class="text-xs bg-zinc-800 px-2.5 py-0.5 rounded-full text-zinc-400">2 videos</span>
         <button onclick="openCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
           <i class="fa-solid fa-plus"></i> Soo geli
         </button>
@@ -109,7 +109,7 @@
       <span class="text-[10px]">Shorts</span>
     </button>
 
-    <!-- CENTER UPLOAD BUTTON (OPENS CAMERA OVERLAY FIRST) -->
+    <!-- CENTER UPLOAD BUTTON -->
     <button onclick="openCameraModal()" class="flex flex-col items-center justify-center w-1/5 py-1">
       <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="Soo geli" class="upload-nav-img">
       <span class="text-[10px] text-white font-medium mt-0.5">Soo geli</span>
@@ -127,7 +127,6 @@
 
   <!-- 1. SHORTS CAMERA CREATION MODAL -->
   <div id="cameraModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-4">
-    <!-- TOP CONTROL BAR -->
     <div class="flex items-center justify-between z-20">
       <button onclick="closeCameraModal()" class="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center text-xl backdrop-blur-md">
         <i class="fa-solid fa-xmark"></i>
@@ -143,20 +142,17 @@
       </button>
     </div>
 
-    <!-- CAMERA PREVIEW AREA -->
     <div class="absolute inset-0 z-0 flex items-center justify-center bg-zinc-950 overflow-hidden">
       <video id="liveCameraStream" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
 
-      <!-- FALLBACK DISPLAY -->
       <div id="cameraPlaceholder" class="flex flex-col items-center justify-center text-zinc-500 gap-3 p-6 text-center">
         <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-2xl text-zinc-400">
           <i class="fa-solid fa-video"></i>
         </div>
-        <p class="text-xs max-w-xs text-zinc-400">Kamarada waa nool tahay. Haddii aysan muuqan ama eber tahay, taabo <strong class="text-white">Add</strong> si aad muuqaal ugu doorato Gallery-ga.</p>
+        <p class="text-xs max-w-xs text-zinc-400">Kamarada waa nool tahay. Taabo <strong class="text-white">Add</strong> hoose si aad muuqaal uga doorato Gallery-ga[span_1](start_span)[span_1](end_span).</p>
       </div>
     </div>
 
-    <!-- RIGHT SIDEBAR TOOLBAR -->
     <div class="absolute right-4 top-20 z-20 flex flex-col items-center gap-5 text-white bg-black/30 p-2 rounded-2xl backdrop-blur-md border border-white/10">
       <button onclick="switchCamera()" class="flex flex-col items-center"><i class="fa-solid fa-rotate text-lg"></i></button>
       <button class="flex flex-col items-center"><i class="fa-regular fa-clock text-lg"></i></button>
@@ -167,13 +163,12 @@
       <i class="fa-solid fa-chevron-down text-xs"></i>
     </div>
 
-    <!-- BOTTOM CAMERA CONTROLS -->
     <div class="z-20 flex flex-col gap-5 mb-2">
       <div class="flex items-center justify-around">
         <!-- ADD FROM GALLERY BUTTON -->
         <button onclick="openGalleryFromCamera()" class="flex flex-col items-center gap-1">
           <div class="w-11 h-11 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
-            <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=100&q=80" class="w-full h-full object-cover">
+            <i class="fa-solid fa-image text-white"></i>
           </div>
           <span class="text-[11px] font-bold text-white">Add</span>
         </button>
@@ -192,7 +187,6 @@
         </button>
       </div>
 
-      <!-- CAMERA MODE SWITCHER -->
       <div class="flex items-center justify-center gap-6 text-xs font-bold text-zinc-400">
         <button class="hover:text-white">Video</button>
         <button class="bg-zinc-800 text-white px-4 py-1 rounded-full border border-white/20">Short</button>
@@ -203,7 +197,6 @@
 
   <!-- 2. GALLERY UPLOAD MODAL -->
   <div id="galleryModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between">
-    <!-- TOP HEADER -->
     <div class="flex items-center justify-between p-3.5 border-b border-zinc-900 bg-black relative z-10">
       <div class="flex items-center gap-4">
         <button onclick="closeGalleryModal()" class="text-white text-xl">
@@ -212,7 +205,6 @@
         <span class="text-base font-bold text-white">Upload from gallery</span>
       </div>
 
-      <!-- ALBUM DROPDOWN -->
       <div class="relative">
         <button onclick="toggleAlbumDropdown()" class="text-sm font-bold text-white flex items-center gap-1">
           <span id="currentAlbumText">Videos</span>
@@ -231,29 +223,26 @@
       </div>
     </div>
 
-    <!-- MAIN GALLERY CONTENT -->
-    <div class="flex-1 overflow-y-auto no-scrollbar relative">
-      <div id="galleryVideoGrid" class="grid grid-cols-3 gap-0.5 bg-black p-0.5"></div>
+    <!-- CLEAN GALLERY CONTENT (ONLY DEVICE FILE SELECTOR) -->
+    <div class="flex-1 overflow-y-auto no-scrollbar relative p-4 flex flex-col items-center justify-center text-center">
+      <div id="galleryVideoGrid" class="w-full grid grid-cols-3 gap-2">
+        <div onclick="document.getElementById('realFileInput').click()" class="aspect-square bg-zinc-900 rounded-xl flex flex-col items-center justify-center cursor-pointer border border-zinc-800 hover:border-red-600 transition">
+          <i class="fa-solid fa-folder-plus text-2xl text-red-500 mb-2"></i>
+          <span class="text-[11px] font-bold text-white">Ka dooro Taleefanka</span>
+        </div>
+      </div>
 
-      <div id="galleryAlbumsList" class="hidden flex-col divide-y divide-zinc-900 bg-black">
+      <div id="galleryAlbumsList" class="hidden w-full flex-col divide-y divide-zinc-900 bg-black text-left">
         <div onclick="selectAlbumFromList('Videos')" class="flex items-center gap-3.5 p-3.5 cursor-pointer hover:bg-zinc-950">
-          <img src="https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=150&q=80" class="w-16 h-16 object-cover rounded-lg">
+          <div class="w-16 h-16 bg-zinc-800 rounded-lg flex items-center justify-center text-zinc-500"><i class="fa-solid fa-video"></i></div>
           <div>
             <h4 class="text-sm font-bold text-white">Videos</h4>
-            <p class="text-xs text-zinc-400">777</p>
-          </div>
-        </div>
-        <div onclick="selectAlbumFromList('WhatsApp Business Video')" class="flex items-center gap-3.5 p-3.5 cursor-pointer hover:bg-zinc-950">
-          <img src="https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=150&q=80" class="w-16 h-16 object-cover rounded-lg">
-          <div>
-            <h4 class="text-sm font-bold text-white">WhatsApp Business Video</h4>
-            <p class="text-xs text-zinc-400">553</p>
+            <p class="text-xs text-zinc-400">0</p>
           </div>
         </div>
       </div>
     </div>
 
-    <!-- BOTTOM SWITCHER -->
     <div class="bg-black py-3 border-t border-zinc-900 flex justify-center items-center gap-6">
       <button class="bg-zinc-800 text-white text-xs font-bold px-5 py-1.5 rounded-full border border-zinc-700">Video</button>
       <button class="text-zinc-400 text-xs font-bold hover:text-white">Short</button>
@@ -399,14 +388,6 @@
   </div>
 
   <script>
-    const GALLERY_ITEMS = [
-      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4' },
-      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1575361204480-aadea25e6e68?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4' },
-      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerFun.mp4' },
-      { duration: '0:10', thumbnail: 'https://images.unsplash.com/photo-1534188753412-3e26d0d618d6?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerJoylikes.mp4' },
-      { duration: '2:27', thumbnail: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4' }
-    ];
-
     let videoList = [
       { id: 'v1', title: 'Sirta Miraha Cad iyo Waxtarkooda...', views: '1.2M views', category: 'Somali Tech', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerBlazes.mp4', thumbnail: 'https://images.unsplash.com/photo-1546069901-ba9599a7e63c?auto=format&fit=crop&w=500&q=80' },
       { id: 'v2', title: 'Gatos inteligentes y Graciosos', views: '850K views', category: 'Ciyaaro', url: 'https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ForBiggerEscapes.mp4', thumbnail: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=500&q=80' }
@@ -419,7 +400,6 @@
 
     window.addEventListener('DOMContentLoaded', () => {
       renderGrid();
-      renderGalleryGrid();
     });
 
     function renderGrid() {
@@ -439,9 +419,9 @@
         `;
         grid.appendChild(card);
       });
+      document.getElementById('videoCountBadge').innerText = `${videoList.length} videos`;
     }
 
-    // CAMERA LOGIC
     async function openCameraModal() {
       const modal = document.getElementById('cameraModal');
       modal.classList.remove('hidden');
@@ -480,33 +460,10 @@
       }
     }
 
-    // GALLERY LOGIC
     function openGalleryFromCamera() {
       closeCameraModal();
       document.getElementById('galleryModal').classList.remove('hidden');
       document.getElementById('galleryModal').classList.add('flex');
-    }
-
-    function renderGalleryGrid() {
-      const grid = document.getElementById('galleryVideoGrid');
-      grid.innerHTML = '';
-
-      const triggerCard = document.createElement('div');
-      triggerCard.className = "aspect-square bg-zinc-900 flex flex-col items-center justify-center cursor-pointer border border-zinc-800/60";
-      triggerCard.onclick = () => document.getElementById('realFileInput').click();
-      triggerCard.innerHTML = `<i class="fa-solid fa-folder-plus text-xl text-red-500 mb-1"></i><span class="text-[9px] text-zinc-400">Device File</span>`;
-      grid.appendChild(triggerCard);
-
-      GALLERY_ITEMS.forEach((item) => {
-        const card = document.createElement('div');
-        card.className = "aspect-square relative bg-zinc-900 cursor-pointer overflow-hidden group";
-        card.onclick = () => selectGalleryMedia(item.url, item.thumbnail);
-        card.innerHTML = `
-          <img src="${item.thumbnail}" class="w-full h-full object-cover group-hover:scale-105 transition">
-          <span class="absolute bottom-1 right-1 bg-black/80 text-white font-bold text-[9px] px-1 rounded">${item.duration}</span>
-        `;
-        grid.appendChild(card);
-      });
     }
 
     function closeGalleryModal() {

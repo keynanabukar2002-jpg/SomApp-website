@@ -91,7 +91,7 @@
       </div>
     </div>
 
-    <!-- SHORTS/VIDEOS GRID -->
+    <!-- VIDEOS GRID -->
     <div id="shortsGrid" class="grid grid-cols-2 gap-2.5 min-h-[300px]"></div>
   </main>
 
@@ -125,7 +125,7 @@
     </button>
   </nav>
 
-  <!-- 1. SHORTS CAMERA CREATION MODAL -->
+  <!-- 1. CAMERA / RECORDING MODAL -->
   <div id="cameraModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-4">
     <div class="flex items-center justify-between z-20">
       <button onclick="closeCameraModal()" class="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center text-xl backdrop-blur-md">
@@ -142,7 +142,6 @@
       </button>
     </div>
 
-    <!-- LIVE CAMERA STREAM CONTAINER -->
     <div class="absolute inset-0 z-0 flex items-center justify-center bg-zinc-950 overflow-hidden">
       <video id="liveCameraStream" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
 
@@ -150,7 +149,7 @@
         <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-2xl text-zinc-400">
           <i class="fa-solid fa-video"></i>
         </div>
-        <p class="text-xs max-w-xs text-zinc-400">Si aad kimeerada dhabta ah u furto ama fiidiyow uga soo dooratid <strong class="text-white">Add</strong> hoose taabo.</p>
+        <p class="text-xs max-w-xs text-zinc-400">Taabo <strong class="text-white">Add</strong> hoose si aad fiidiyowga uga soo dooratid taleefankaaga.</p>
       </div>
     </div>
 
@@ -173,7 +172,6 @@
           <span class="text-[11px] font-bold text-white">Add</span>
         </button>
 
-        <!-- RECORD REAL CAMERA VIDEO BUTTON -->
         <button id="recordBtn" onclick="toggleRecording()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform">
           <div id="recordInnerCircle" class="w-12 h-12 rounded-full bg-red-600 transition-all duration-200"></div>
         </button>
@@ -194,7 +192,7 @@
     </div>
   </div>
 
-  <!-- 2. TRIM / ADJUST VIDEO MODAL -->
+  <!-- 2. TRIM / ADJUST MODAL -->
   <div id="trimModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
     <div class="flex items-center justify-between z-10 pt-2 px-1">
       <button onclick="backToCamera()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
@@ -219,7 +217,7 @@
 
           <div class="absolute left-[20%] right-[30%] top-0.5 bottom-0.5 border-2 border-white bg-white/10 rounded-lg flex items-center justify-between px-1 shadow-lg pointer-events-none">
             <div class="w-1.5 h-7 bg-white rounded-full"></div>
-            <span id="trimDurationBadge" class="bg-white text-black text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md">10.0s</span>
+            <span class="bg-white text-black text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md">10.0s</span>
             <div class="w-1.5 h-7 bg-white rounded-full"></div>
           </div>
         </div>
@@ -241,7 +239,7 @@
         <i class="fa-solid fa-arrow-left"></i>
       </button>
 
-      <button onclick="showToast('Music picker active')" class="bg-zinc-800/90 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-zinc-700 backdrop-blur-md">
+      <button onclick="showToast('Music selector active')" class="bg-zinc-800/90 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-zinc-700 backdrop-blur-md">
         <i class="fa-solid fa-music"></i>
         <span>Add sound</span>
       </button>
@@ -292,7 +290,7 @@
           <video id="finalPreviewThumbnail" class="w-full h-full object-cover"></video>
         </div>
         <div class="flex-1">
-          <textarea id="finalTitleInput" rows="3" placeholder="Caption your Short... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
+          <textarea id="finalTitleInput" rows="3" placeholder="Caption your Video... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
         </div>
       </div>
 
@@ -319,12 +317,12 @@
       </div>
     </div>
 
-    <button onclick="publishShortToFeed()" class="w-full bg-red-600 text-white font-bold py-3 rounded-full text-xs uppercase tracking-wider shadow-lg">
+    <button onclick="publishVideoToFeed()" class="w-full bg-red-600 text-white font-bold py-3 rounded-full text-xs uppercase tracking-wider shadow-lg">
       Upload Video
     </button>
   </div>
 
-  <!-- STANDARD YOUTUBE VIDEO PLAYER PAGE -->
+  <!-- STANDARD YOUTUBE VIDEO PLAYER PAGE (SIDA SAWIRKAAGA) -->
   <div id="playerModal" class="fixed inset-0 z-50 bg-[#0f0f0f] hidden flex-col overflow-y-auto no-scrollbar">
     <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3 py-2 flex items-center justify-between border-b border-zinc-800">
       <button onclick="closePlayer()" class="text-white text-lg">
@@ -336,29 +334,31 @@
       </div>
     </div>
 
+    <!-- HORIZONTAL STANDARD VIDEO PLAYER -->
     <div class="w-full bg-black aspect-video relative shrink-0">
       <video id="mainVideoPlayer" class="w-full h-full object-contain" loop controls playsinline></video>
     </div>
 
     <div class="p-3 space-y-3">
-      <h1 id="playerVideoTitle" class="text-base font-bold text-white leading-snug">Fiidiyow Cusub</h1>
+      <h1 id="playerVideoTitle" class="text-base font-bold text-white leading-snug">Mohamed mao songs</h1>
       
       <div class="flex items-center gap-2 text-xs text-zinc-400">
-        <span id="playerChannelHandle" class="font-semibold text-zinc-300">@adiga</span>
+        <span class="font-semibold text-zinc-300">@hassankamal6042</span>
         <span>•</span>
-        <span id="playerLikeCount">0 likes</span>
+        <span>494 likes</span>
         <span>•</span>
-        <span id="playerViewCount">1 view</span>
+        <span>65K views</span>
         <span>•</span>
-        <span>Right now</span>
+        <span>9 yr ago</span>
+        <span class="text-white font-bold cursor-pointer">more</span>
       </div>
 
       <div class="flex items-center justify-between py-1 border-t border-b border-zinc-800/80">
         <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-sm">S</div>
+          <div class="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center font-bold text-sm">H</div>
           <div>
-            <h3 class="text-xs font-bold text-white">Adiga</h3>
-            <p class="text-[10px] text-zinc-400">1 subscriber</p>
+            <h3 class="text-xs font-bold text-white">hassankamal</h3>
+            <p class="text-[10px] text-zinc-400">1.2K subscribers</p>
           </div>
         </div>
         <button onclick="showToast('Subscribed!')" class="bg-white text-black text-xs font-bold px-4 py-1.5 rounded-full shadow hover:bg-zinc-200">
@@ -366,11 +366,12 @@
         </button>
       </div>
 
+      <!-- ACTION BUTTONS -->
       <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
         <div class="flex items-center bg-zinc-800/80 rounded-full text-xs font-medium shrink-0">
           <button onclick="showToast('Liked!')" class="px-3 py-1.5 flex items-center gap-1.5 border-r border-zinc-700 hover:bg-zinc-700 rounded-l-full">
             <i class="fa-regular fa-thumbs-up"></i>
-            <span>Like</span>
+            <span>494</span>
           </button>
           <button onclick="showToast('Disliked')" class="px-3 py-1.5 hover:bg-zinc-700 rounded-r-full">
             <i class="fa-regular fa-thumbs-down"></i>
@@ -388,12 +389,45 @@
         </button>
       </div>
 
+      <!-- COMMENTS SECTION (SIDA SAWIRKAAGA) -->
       <div onclick="showToast('Comments active')" class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 space-y-2 cursor-pointer">
         <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-white">Comments <span class="text-zinc-400 font-normal">0</span></span>
+          <span class="font-bold text-white">Comments <span class="text-zinc-400 font-normal">17</span></span>
           <i class="fa-solid fa-chevron-down text-zinc-500 text-[10px]"></i>
         </div>
-        <p class="text-xs text-zinc-400">Soo qoor faallo ah...</p>
+        <div class="flex items-center gap-2 text-xs text-zinc-300">
+          <i class="fa-solid fa-headphones text-zinc-400"></i>
+          <p class="text-zinc-400 truncate">Perfect soundtrack for...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- UP NEXT / RECOMMENDED LIST -->
+    <div class="p-3 border-t border-zinc-800 space-y-3 mb-8">
+      <h2 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Up Next</h2>
+
+      <div class="flex gap-3 cursor-pointer" onclick="showToast('Playing recommended video')">
+        <div class="w-36 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
+          <img src="https://images.unsplash.com/photo-1511671782779-c97d3d27a1d4?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
+          <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">4:12</span>
+        </div>
+        <div class="flex-1 space-y-1">
+          <h3 class="text-xs font-bold text-white line-clamp-2 leading-snug">KHADAR KEEYOW || WALAAL | Official Video</h3>
+          <p class="text-[11px] text-zinc-400">Mix – Mohamed mao songs</p>
+          <p class="text-[10px] text-zinc-500">120K views • 2 years ago</p>
+        </div>
+      </div>
+
+      <div class="flex gap-3 cursor-pointer" onclick="showToast('Playing recommended video')">
+        <div class="w-36 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
+          <img src="https://images.unsplash.com/photo-1514525253161-7a46d19cd819?auto=format&fit=crop&w=300&q=80" class="w-full h-full object-cover">
+          <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">3:45</span>
+        </div>
+        <div class="flex-1 space-y-1">
+          <h3 class="text-xs font-bold text-white line-clamp-2 leading-snug">Aashiqur 2 Hits Songs Collection</h3>
+          <p class="text-[11px] text-zinc-400">Music Channel</p>
+          <p class="text-[10px] text-zinc-500">850K views • 1 year ago</p>
+        </div>
       </div>
     </div>
   </div>
@@ -563,7 +597,6 @@
         ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
         selectedThumbnail = canvas.toDataURL('image/jpeg');
 
-        // POPULATE FILMSTRIP TIMELINE
         const strip = document.getElementById('filmstripFrames');
         strip.innerHTML = '';
         for(let i = 0; i < 6; i++) {
@@ -633,11 +666,11 @@
       document.getElementById('editorModal').classList.remove('hidden');
     }
 
-    function publishShortToFeed() {
+    function publishVideoToFeed() {
       const title = document.getElementById('finalTitleInput').value.trim() || 'Muuqaal Cusub';
       const category = document.getElementById('finalCategorySelect').value;
 
-      const newShort = {
+      const newVideo = {
         id: 'user_' + Date.now(),
         title: title,
         views: '1 view • Right now',
@@ -646,7 +679,7 @@
         thumbnail: selectedThumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80'
       };
 
-      videoList.unshift(newShort);
+      videoList.unshift(newVideo);
       renderGrid();
 
       document.getElementById('finalUploadModal').classList.add('hidden');

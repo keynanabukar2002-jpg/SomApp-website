@@ -6,246 +6,41 @@
 <title>SomChat</title>
 
 <style>
-* {
-  box-sizing: border-box;
-}
-
-body {
-  margin: 0;
-  font-family: Arial, sans-serif;
-  background: #eef2f5;
-  color: #17212b;
-}
-
-button, input {
-  font: inherit;
-}
-
-button {
-  cursor: pointer;
-  border: none;
-}
-
-header {
-  background: #087e70;
-  color: white;
-  padding: 17px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-}
-
-header h1 {
-  margin: 0;
-  font-size: 24px;
-}
-
-header small {
-  display: block;
-  margin-top: 4px;
-}
-
-.container {
-  max-width: 700px;
-  margin: auto;
-  padding: 15px;
-}
-
-.card {
-  background: white;
-  border-radius: 14px;
-  padding: 18px;
-  margin-bottom: 14px;
-  box-shadow: 0 2px 8px #0000000d;
-}
-
-.hidden {
-  display: none !important;
-}
-
-.primary {
-  background: #087e70;
-  color: white;
-  padding: 12px 16px;
-  border-radius: 9px;
-}
-
-.secondary {
-  background: #e6f4f1;
-  color: #087e70;
-  padding: 10px 14px;
-  border-radius: 9px;
-}
-
-input {
-  width: 100%;
-  padding: 13px;
-  border: 1px solid #d6dde2;
-  border-radius: 9px;
-  outline: none;
-  margin: 8px 0;
-}
-
-input:focus {
-  border-color: #087e70;
-}
-
-#loginScreen {
-  max-width: 430px;
-  margin: 50px auto;
-  padding: 20px;
-}
-
-.logo {
-  text-align: center;
-  font-size: 42px;
-  font-weight: bold;
-  color: #087e70;
-}
-
-.subtitle {
-  text-align: center;
-  color: #687782;
-  margin-bottom: 25px;
-}
-
-.user {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 4px;
-  border-bottom: 1px solid #edf0f2;
-}
-
-.avatar {
-  width: 45px;
-  height: 45px;
-  border-radius: 50%;
-  object-fit: cover;
-  background: #d9eee9;
-  flex-shrink: 0;
-}
-
-.user-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.user-info strong,
-.user-info small {
-  display: block;
-  overflow-wrap: anywhere;
-}
-
-.user-info small {
-  color: #73808a;
-  margin-top: 5px;
-}
-
-#chatScreen {
-  position: fixed;
-  inset: 0;
-  background: #eef2f5;
-  z-index: 5;
-  display: flex;
-  flex-direction: column;
-  max-width: 700px;
-  margin: auto;
-  width: 100%;
-}
-
-.chat-header {
-  background: #087e70;
-  color: white;
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  padding: 12px;
-}
-
-.chat-header .avatar {
-  width: 40px;
-  height: 40px;
-}
-
-.chat-header .user-info small {
-  color: #e0f2ee;
-}
-
-#messages {
-  flex: 1;
-  overflow-y: auto;
-  padding: 15px;
-  display: flex;
-  flex-direction: column;
-  gap: 9px;
-}
-
-.message {
-  padding: 10px 13px;
-  border-radius: 13px;
-  max-width: 82%;
-  overflow-wrap: anywhere;
-  white-space: pre-wrap;
-}
-
-.mine {
-  align-self: flex-end;
-  background: #c8f5d5;
-  border-bottom-right-radius: 3px;
-}
-
-.theirs {
-  align-self: flex-start;
-  background: white;
-  border-bottom-left-radius: 3px;
-}
-
-.message-time {
-  font-size: 10px;
-  color: #61716b;
-  text-align: right;
-  margin-top: 5px;
-}
-
-#messageForm {
-  background: white;
-  padding: 10px;
-  display: flex;
-  gap: 8px;
-  align-items: center;
-}
-
-#messageInput {
-  flex: 1;
-  margin: 0;
-}
-
-#messageForm button {
-  padding: 12px 15px;
-}
-
-.notice {
-  background: #fff8df;
-  color: #6d5b20;
-  padding: 12px;
-  border-radius: 9px;
-  font-size: 13px;
-  line-height: 1.5;
-}
-
-.status {
-  color: #65747d;
-  font-size: 13px;
-  margin-top: 10px;
-}
-
-footer {
-  text-align: center;
-  color: #7a858d;
-  font-size: 12px;
-  padding: 20px;
-}
+*{box-sizing:border-box}
+body{margin:0;font-family:Arial,sans-serif;background:#eef2f5;color:#17212b}
+button,input{font:inherit}
+button{cursor:pointer;border:0}
+header{background:#087e70;color:white;padding:15px;display:flex;justify-content:space-between;align-items:center}
+header h1{margin:0;font-size:24px}
+header small{display:block;margin-top:4px}
+.container{max-width:700px;margin:auto;padding:15px}
+.card{background:white;border-radius:14px;padding:18px;margin-bottom:14px;box-shadow:0 2px 8px #0001}
+.hidden{display:none!important}
+.primary{background:#087e70;color:white;padding:12px 16px;border-radius:9px}
+.secondary{background:#e6f4f1;color:#087e70;padding:10px 14px;border-radius:9px}
+input{width:100%;padding:13px;border:1px solid #d6dde2;border-radius:9px;margin:8px 0}
+#loginScreen{max-width:430px;margin:35px auto;padding:15px}
+.logo{text-align:center;font-size:42px;font-weight:bold;color:#087e70}
+.subtitle{text-align:center;color:#687782;margin-bottom:25px}
+.user{display:flex;align-items:center;gap:12px;padding:12px 4px;border-bottom:1px solid #edf0f2}
+.avatar{width:45px;height:45px;border-radius:50%;object-fit:cover;background:#d9eee9;flex-shrink:0}
+.user-info{flex:1;min-width:0}
+.user-info strong,.user-info small{display:block;overflow-wrap:anywhere}
+.user-info small{color:#73808a;margin-top:5px}
+.status{font-size:13px;color:#65747d;overflow-wrap:anywhere}
+.notice{background:#fff8df;color:#6d5b20;padding:12px;border-radius:9px;font-size:13px;line-height:1.5}
+#chatScreen{position:fixed;inset:0;background:#eef2f5;z-index:5;display:flex;flex-direction:column;max-width:700px;margin:auto;width:100%}
+.chat-header{background:#087e70;color:white;display:flex;gap:12px;align-items:center;padding:12px}
+.chat-header .avatar{width:40px;height:40px}
+.chat-header .user-info small{color:#e0f2ee}
+#messages{flex:1;overflow-y:auto;padding:15px;display:flex;flex-direction:column;gap:9px}
+.message{padding:10px 13px;border-radius:13px;max-width:82%;overflow-wrap:anywhere;white-space:pre-wrap}
+.mine{align-self:flex-end;background:#c8f5d5}
+.theirs{align-self:flex-start;background:white}
+.message-time{font-size:10px;color:#61716b;text-align:right;margin-top:5px}
+#messageForm{background:white;padding:10px;display:flex;gap:8px;align-items:center}
+#messageInput{flex:1;min-width:0}
+footer{text-align:center;color:#7a858d;font-size:12px;padding:20px}
 </style>
 </head>
 
@@ -256,47 +51,30 @@ footer {
     <h1>SomChat 💬</h1>
     <small>La xiriir dadka</small>
   </div>
-  <button id="logoutBtn" class="secondary hidden">
-    Ka bax
-  </button>
+  <button id="logoutBtn" class="secondary hidden">Ka bax</button>
 </header>
 
-<!-- LOGIN -->
 <section id="loginScreen">
   <div class="card">
     <div class="logo">SomChat</div>
     <p class="subtitle">Farriimahaaga hal meel ku wadaag.</p>
-
     <h3>Ku soo gal Google</h3>
-
-    <p>
-      Isticmaal Gmail-kaaga si aad u gasho SomChat.
-    </p>
-
+    <p>Isticmaal Gmail-kaaga si aad u gasho SomChat.</p>
     <button id="googleBtn" class="primary" style="width:100%">
       🔐 Ku gal Google
     </button>
-
-    <p id="loginStatus" class="status">
-      Sugaya isku xirka...
-    </p>
+    <p id="loginStatus" class="status">Diyaar u ah gelitaanka.</p>
   </div>
-
   <div class="notice">
-    SomChat wuxuu u baahan yahay Firebase Authentication
-    iyo Firestore Database si fariimaha loo kaydiyo.
+    SomChat wuxuu u baahan yahay Firebase Authentication iyo Firestore.
   </div>
 </section>
 
-<!-- MAIN APP -->
 <main id="appScreen" class="container hidden">
-
   <section class="card">
     <h2>Ku soo dhowow 👋</h2>
-
     <div class="user">
       <img id="myPhoto" class="avatar" alt="Sawirkaaga">
-
       <div class="user-info">
         <strong id="myName">Magacaaga</strong>
         <small id="myEmail"></small>
@@ -306,33 +84,22 @@ footer {
 
   <section class="card">
     <h3>🔎 Raadi dadka</h3>
-
-    <input
-      id="searchInput"
-      type="search"
-      placeholder="Raadi magac ama Gmail..."
-      autocomplete="off"
-    >
-
+    <input id="searchInput" type="search"
+      placeholder="Raadi magac ama Gmail..." autocomplete="off">
     <div id="usersList">
-      <p class="status">Waxaa halkan ka muuqan doona dadka.</p>
+      <p class="status">Dadka ayaa halkan ka muuqan doona.</p>
     </div>
   </section>
 
   <div class="notice">
-    V1: Google Login, raadinta dadka iyo fariimaha qoraalka ah.
-    Wicitaannada codka iyo muuqaalka weli kuma jiraan.
+    SomChat V1: Google Login, raadinta dadka iyo farriimaha qoraalka ah.
   </div>
 </main>
 
-<!-- CHAT WINDOW -->
 <section id="chatScreen" class="hidden">
-
   <div class="chat-header">
     <button id="backBtn" class="secondary">←</button>
-
     <img id="chatPhoto" class="avatar" alt="Sawirka qofka">
-
     <div class="user-info">
       <strong id="chatName">Qofka</strong>
       <small id="chatEmail"></small>
@@ -340,320 +107,320 @@ footer {
   </div>
 
   <div id="messages">
-    <p class="status">Fariimaha ayaa halkan ka muuqan doona.</p>
+    <p class="status">Farriimaha ayaa halkan ka muuqan doona.</p>
   </div>
 
   <form id="messageForm">
-    <input
-      id="messageInput"
-      type="text"
-      placeholder="Qor fariinta..."
-      maxlength="4000"
-      autocomplete="off"
-      required
-    >
+    <input id="messageInput" type="text" placeholder="Qor farriinta..."
+      maxlength="4000" autocomplete="off" required>
     <button class="primary" type="submit">Dir ➤</button>
   </form>
-
 </section>
 
 <footer>SomChat V1</footer>
-
 <script type="module">
-import { initializeApp }
-  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+import {initializeApp}
+from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
 
 import {
-  getAuth,
-  GoogleAuthProvider,
-  signInWithPopup,
-  signInWithRedirect,
-  getRedirectResult,
-  onAuthStateChanged,
-  signOut
+ getAuth,GoogleAuthProvider,signInWithPopup,signInWithRedirect,
+ getRedirectResult,onAuthStateChanged,signOut
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
 
 import {
-  getFirestore,
-  collection,
-  doc,
-  setDoc,
-  getDoc,
-  addDoc,
-  query,
-  orderBy,
-  onSnapshot,
-  serverTimestamp
+ getFirestore,collection,doc,setDoc,addDoc,query,orderBy,
+ onSnapshot,serverTimestamp
 } from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
-
-/* FIREBASE CONFIG */
-const firebaseConfig = {
-  apiKey: "AIzaSyBCe8ZiIPsTxT1fGA0IT3nIUaQjFK67al0",
-  authDomain: "somchat-1910a.firebaseapp.com",
-  projectId: "somchat-1910a",
-  storageBucket: "somchat-1910a.firebasestorage.app",
-  messagingSenderId: "981092599681",
-  appId: "1:981092599681:web:cc01745c6831ab8ea44a80",
-  measurementId: "G-8B6P8RSDQG"
+const firebaseConfig={
+ apiKey:"AIzaSyBCe8ZiIPsTxT1fGA0IT3nIUaQjFK67al0",
+ authDomain:"somchat-1910a.firebaseapp.com",
+ projectId:"somchat-1910a",
+ storageBucket:"somchat-1910a.firebasestorage.app",
+ messagingSenderId:"981092599681",
+ appId:"1:981092599681:web:cc01745c6831ab8ea44a80",
+ measurementId:"G-8B6P8RSDQG"
 };
 
+const app=initializeApp(firebaseConfig);
+const auth=getAuth(app);
+const db=getFirestore(app);
+const provider=new GoogleAuthProvider();
+provider.setCustomParameters({prompt:"select_account"});
 
-/* INITIALIZE */
-const app = initializeApp(firebaseConfig);
-const auth = getAuth(app);
-const db = getFirestore(app);
+const $=id=>document.getElementById(id);
 
-const provider = new GoogleAuthProvider();
-provider.setCustomParameters({
-  prompt: "select_account"
-});
+const loginScreen=$("loginScreen");
+const appScreen=$("appScreen");
+const googleBtn=$("googleBtn");
+const logoutBtn=$("logoutBtn");
+const loginStatus=$("loginStatus");
+const usersList=$("usersList");
+const searchInput=$("searchInput");
+const myPhoto=$("myPhoto");
+const myName=$("myName");
+const myEmail=$("myEmail");
+const chatScreen=$("chatScreen");
+const chatPhoto=$("chatPhoto");
+const chatName=$("chatName");
+const chatEmail=$("chatEmail");
+const messagesBox=$("messages");
+const messageForm=$("messageForm");
+const messageInput=$("messageInput");
+const backBtn=$("backBtn");
 
+let currentUser=null;
+let allUsers=[];
+let stopUsersListener=null;
+let stopMessagesListener=null;
+let currentChatId=null;
 
-/* HTML ELEMENTS */
-const loginScreen = document.getElementById("loginScreen");
-const appScreen = document.getElementById("appScreen");
-const googleBtn = document.getElementById("googleBtn");
-const logoutBtn = document.getElementById("logoutBtn");
-const loginStatus = document.getElementById("loginStatus");
+const avatar="data:image/svg+xml,"+encodeURIComponent(
+ '<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100" height="100" rx="50" fill="#d9eee9"/><circle cx="50" cy="35" r="18" fill="#087e70"/><path d="M18 90 Q20 55 50 55 Q80 55 82 90" fill="#087e70"/></svg>'
+);
 
-const usersList = document.getElementById("usersList");
-const searchInput = document.getElementById("searchInput");
-
-const myPhoto = document.getElementById("myPhoto");
-const myName = document.getElementById("myName");
-const myEmail = document.getElementById("myEmail");
-
-const chatScreen = document.getElementById("chatScreen");
-const chatPhoto = document.getElementById("chatPhoto");
-const chatName = document.getElementById("chatName");
-const chatEmail = document.getElementById("chatEmail");
-
-const messagesBox = document.getElementById("messages");
-const messageForm = document.getElementById("messageForm");
-const messageInput = document.getElementById("messageInput");
-const backBtn = document.getElementById("backBtn");
-
-
-/* APP STATE */
-let currentUser = null;
-let allUsers = [];
-let selectedUser = null;
-let stopUsersListener = null;
-let stopMessagesListener = null;
-let currentChatId = null;
-
-
-/* SAFE IMAGE FALLBACK */
-function avatarUrl(photoURL) {
-  return photoURL || "";
+function setAvatar(img,url){
+ img.src=url||avatar;
+ img.onerror=()=>{img.onerror=null;img.src=avatar;};
 }
 
-
-/* GOOGLE LOGIN */
-googleBtn.addEventListener("click", async () => {
-  loginStatus.textContent = "Waxaa la furayaa Google...";
-
-  try {
-    await signInWithPopup(auth, provider);
-  } catch (error) {
-    if (
-      error.code === "auth/popup-blocked" ||
-      error.code === "auth/popup-closed-by-user" ||
-      error.code === "auth/cancelled-popup-request"
-    ) {
-      try {
-        await signInWithRedirect(auth, provider);
-        return;
-      } catch (redirectError) {
-        loginStatus.textContent =
-          "Login-ku wuu fashilmay: " + redirectError.message;
-      }
-    } else {
-      loginStatus.textContent =
-        "Login-ku wuu fashilmay: " + error.message;
-    }
-  }
-});
-
-
-/* CHECK GOOGLE REDIRECT RESULT */
-try {
-  await getRedirectResult(auth);
-} catch (error) {
-  loginStatus.textContent =
-    "Google Login: " + error.message;
-}
-
-
-/* LOGOUT */
-logoutBtn.addEventListener("click", async () => {
-  try {
-    closeChat();
-    await signOut(auth);
-  } catch (error) {
-    alert("Ka bixiddu way fashilantay: " + error.message);
-  }
-});
-
-
-/* AUTH STATE */
-onAuthStateChanged(auth, async (user) => {
-  currentUser = user;
-
-  if (!user) {
-    loginScreen.classList.remove("hidden");
-    appScreen.classList.add("hidden");
-    logoutBtn.classList.add("hidden");
-    chatScreen.classList.add("hidden");
-
-    if (stopUsersListener) stopUsersListener();
-    stopUsersListener = null;
-    allUsers = [];
-
-    loginStatus.textContent = "Ku gal Gmail-kaaga.";
+googleBtn.addEventListener("click",async()=>{
+ googleBtn.disabled=true;
+ loginStatus.textContent="Google ayaa la furayaa...";
+ try{
+  await signInWithPopup(auth,provider);
+ }catch(error){
+  console.error(error);
+  if([
+   "auth/popup-blocked",
+   "auth/popup-closed-by-user",
+   "auth/cancelled-popup-request",
+   "auth/operation-not-supported-in-this-environment"
+  ].includes(error.code)){
+   try{
+    await signInWithRedirect(auth,provider);
     return;
+   }catch(e){
+    loginStatus.textContent="Login wuu fashilmay: "+e.code+" "+e.message;
+   }
+  }else{
+   loginStatus.textContent="Login wuu fashilmay: "+error.code+" "+error.message;
   }
-
-  loginScreen.classList.add("hidden");
-  appScreen.classList.remove("hidden");
-  logoutBtn.classList.remove("hidden");
-
-  myName.textContent = user.displayName || "SomChat User";
-  myEmail.textContent = user.email || "";
-  myPhoto.src = avatarUrl(user.photoURL);
-
-  try {
-    await saveMyProfile();
-    startUsersListener();
-  } catch (error) {
-    alert(
-      "Xogta profile-ka lama kaydin karin. Hubi Firestore Rules: "
-      + error.message
-    );
-  }
+  googleBtn.disabled=false;
+ }
 });
 
-
-/* SAVE PROFILE */
-async function saveMyProfile() {
-  const profileRef = doc(db, "users", currentUser.uid);
-
-  await setDoc(profileRef, {
-    uid: currentUser.uid,
-    name: currentUser.displayName || "SomChat User",
-    email: currentUser.email || "",
-    photoURL: currentUser.photoURL || "",
-    updatedAt: serverTimestamp()
-  }, { merge: true });
+try{
+ await getRedirectResult(auth);
+}catch(error){
+ loginStatus.textContent="Google Login: "+error.code+" "+error.message;
 }
 
+logoutBtn.addEventListener("click",async()=>{
+ closeChat();
+ await signOut(auth);
+});
 
-/* LIST USERS */
-function startUsersListener() {
-  if (stopUsersListener) stopUsersListener();
+onAuthStateChanged(auth,async user=>{
+ currentUser=user;
 
-  stopUsersListener = onSnapshot(
-    collection(db, "users"),
-    (snapshot) => {
-      allUsers = snapshot.docs
-        .map(item => item.data())
-        .filter(user => user.uid && user.uid !== currentUser.uid);
+ if(!user){
+  loginScreen.classList.remove("hidden");
+  appScreen.classList.add("hidden");
+  logoutBtn.classList.add("hidden");
+  chatScreen.classList.add("hidden");
+  if(stopUsersListener)stopUsersListener();
+  stopUsersListener=null;
+  allUsers=[];
+  loginStatus.textContent="Ku gal Gmail-kaaga.";
+  return;
+ }
 
-      renderUsers();
-    },
-    (error) => {
-      usersList.textContent =
-        "Dadka lama soo qaadi karin: " + error.message;
-    }
+ loginScreen.classList.add("hidden");
+ appScreen.classList.remove("hidden");
+ logoutBtn.classList.remove("hidden");
+ myName.textContent=user.displayName||"SomChat User";
+ myEmail.textContent=user.email||"";
+ setAvatar(myPhoto,user.photoURL);
+
+ try{
+  await setDoc(doc(db,"users",user.uid),{
+   uid:user.uid,
+   name:user.displayName||"SomChat User",
+   email:user.email||"",
+   photoURL:user.photoURL||"",
+   updatedAt:serverTimestamp()
+  },{merge:true});
+  startUsersListener();
+ }catch(error){
+  alert("Profile lama kaydin. Hubi Firestore Rules: "+error.message);
+ }
+});
+
+function startUsersListener(){
+ if(stopUsersListener)stopUsersListener();
+
+ stopUsersListener=onSnapshot(collection(db,"users"),snapshot=>{
+  allUsers=snapshot.docs.map(d=>d.data())
+   .filter(u=>u.uid&&u.uid!==currentUser.uid);
+  renderUsers();
+ },error=>{
+  usersList.textContent="Dadka lama soo qaadi karin: "+error.message;
+ });
+}
+
+searchInput.addEventListener("input",renderUsers);
+
+function renderUsers(){
+ usersList.replaceChildren();
+ const term=searchInput.value.trim().toLowerCase();
+ const list=allUsers.filter(u=>
+  (u.name||"").toLowerCase().includes(term)||
+  (u.email||"").toLowerCase().includes(term)
+ );
+
+ if(!list.length){
+  const p=document.createElement("p");
+  p.className="status";
+  p.textContent=term?"Qofkaas lama helin.":"Weli qof kale ma diiwaangashana.";
+  usersList.appendChild(p);
+  return;
+ }
+
+ list.forEach(user=>{
+  const row=document.createElement("div");
+  row.className="user";
+
+  const img=document.createElement("img");
+  img.className="avatar";
+  setAvatar(img,user.photoURL);
+
+  const info=document.createElement("div");
+  info.className="user-info";
+
+  const name=document.createElement("strong");
+  name.textContent=user.name||"SomChat User";
+
+  const email=document.createElement("small");
+  email.textContent=user.email||"";
+
+  const btn=document.createElement("button");
+  btn.className="primary";
+  btn.textContent="Fariin";
+  btn.onclick=()=>openChat(user);
+
+  info.append(name,email);
+  row.append(img,info,btn);
+  usersList.appendChild(row);
+ });
+}
+
+function makeChatId(a,b){
+ return [a,b].sort().join("__");
+}
+
+async function openChat(user){
+ if(!currentUser||!user.uid||user.uid===currentUser.uid)return;
+
+ closeChat();
+ currentChatId=makeChatId(currentUser.uid,user.uid);
+
+ chatName.textContent=user.name||"SomChat User";
+ chatEmail.textContent=user.email||"";
+ setAvatar(chatPhoto,user.photoURL);
+ chatScreen.classList.remove("hidden");
+ messagesBox.textContent="Farriimaha ayaa la soo rarayaa...";
+
+ try{
+  await setDoc(doc(db,"chats",currentChatId),{
+   participants:[currentUser.uid,user.uid].sort(),
+   updatedAt:serverTimestamp()
+  },{merge:true});
+
+  const q=query(
+   collection(db,"chats",currentChatId,"messages"),
+   orderBy("createdAt","asc")
   );
+
+  stopMessagesListener=onSnapshot(q,snapshot=>{
+   messagesBox.replaceChildren();
+
+   if(snapshot.empty){
+    const p=document.createElement("p");
+    p.className="status";
+    p.textContent="Weli farriin ma jirto. Salaan u dir!";
+    messagesBox.appendChild(p);
+    return;
+   }
+
+   snapshot.forEach(item=>{
+    const data=item.data();
+    const bubble=document.createElement("div");
+    bubble.className="message "+(
+     data.senderId===currentUser.uid?"mine":"theirs"
+    );
+
+    const body=document.createElement("div");
+    body.textContent=data.text||"";
+
+    const time=document.createElement("div");
+    time.className="message-time";
+    if(data.createdAt?.toDate){
+     time.textContent=data.createdAt.toDate().toLocaleTimeString(
+      "so-SO",{hour:"2-digit",minute:"2-digit"}
+     );
+    }
+
+    bubble.append(body,time);
+    messagesBox.appendChild(bubble);
+   });
+
+   messagesBox.scrollTop=messagesBox.scrollHeight;
+  },error=>{
+   messagesBox.textContent="Farriimaha lama akhrin karo: "+error.message;
+  });
+ }catch(error){
+  messagesBox.textContent="Chat lama furi karin: "+error.message;
+ }
 }
 
+function closeChat(){
+ if(stopMessagesListener)stopMessagesListener();
+ stopMessagesListener=null;
+ chatScreen.classList.add("hidden");
+ currentChatId=null;
+}
 
-/* SEARCH AND RENDER */
-searchInput.addEventListener("input", renderUsers);
+backBtn.addEventListener("click",closeChat);
 
-function renderUsers() {
-  usersList.replaceChildren();
+messageForm.addEventListener("submit",async event=>{
+ event.preventDefault();
 
-  const search = searchInput.value.trim().toLowerCase();
+ const text=messageInput.value.trim();
+ if(!text||!currentUser||!currentChatId)return;
 
-  const filtered = allUsers.filter(user => {
-    const name = (user.name || "").toLowerCase();
-    const email = (user.email || "").toLowerCase();
+ const chatId=currentChatId;
+ messageInput.value="";
+ messageInput.disabled=true;
 
-    return name.includes(search) || email.includes(search);
+ try{
+  await addDoc(collection(db,"chats",chatId,"messages"),{
+   senderId:currentUser.uid,
+   text:text,
+   createdAt:serverTimestamp()
   });
 
-  if (filtered.length === 0) {
-    const p = document.createElement("p");
-    p.className = "status";
-    p.textContent = search
-      ? "Qofkaas lama helin."
-      : "Weli ma jiro qof kale oo SomChat iska diiwaangeliyey.";
-
-    usersList.appendChild(p);
-    return;
-  }
-
-  filtered.forEach(user => {
-    const row = document.createElement("div");
-    row.className = "user";
-
-    const img = document.createElement("img");
-    img.className = "avatar";
-    img.alt = "Sawirka qofka";
-    img.src = avatarUrl(user.photoURL);
-
-    const info = document.createElement("div");
-    info.className = "user-info";
-
-    const name = document.createElement("strong");
-    name.textContent = user.name || "SomChat User";
-
-    const email = document.createElement("small");
-    email.textContent = user.email || "";
-
-    const button = document.createElement("button");
-    button.className = "primary";
-    button.textContent = "Fariin";
-
-    button.addEventListener("click", () => openChat(user));
-
-    info.append(name, email);
-    row.append(img, info, button);
-    usersList.appendChild(row);
-  });
-}
-
-
-/* CHAT ID: SAME FOR BOTH USERS */
-function makeChatId(uid1, uid2) {
-  return [uid1, uid2].sort().join("__");
-}
-
-
-/* OPEN CHAT */
-async function openChat(user) {
-  if (!currentUser || !user.uid) return;
-
-  if (user.uid === currentUser.uid) {
-    alert("Adiga fariin isuma diri kartid.");
-    return;
-  }
-
-  closeChat();
-
-  selectedUser = user;
-  currentChatId = makeChatId(currentUser.uid, user.uid);
-
-  chatName.textContent = user.name || "SomChat User";
-  chatEmail.textContent = user.email || "";
-  chatPhoto.src = avatarUrl(user.photoURL);
-
-  chatScreen.classList.remove("hidden");
-  messagesBox.replaceChildren();
-
-  const loading = document.createElement("p");
-  loading.className = "status";
-  loading.textContent =
+  await setDoc(doc(db,"chats",chatId),{
+   updatedAt:serverTimestamp()
+  },{merge:true});
+ }catch(error){
+  messageInput.value=text;
+  alert("Farriinta lama dirin. Hubi Firestore Rules: "+error.message);
+ }finally{
+  messageInput.disabled=false;
+  messageInput.focus();
+ }
+});
+</script>
+</body>
+</html>

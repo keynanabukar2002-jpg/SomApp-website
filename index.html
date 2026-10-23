@@ -1,741 +1,276 @@
-<!DOCTYPE html>
-<html lang="so">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-  <title>SOMEDIA - Video Platform</title>
-  <script src="https://cdn.tailwindcss.com"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <style>
-    * {
-      -webkit-tap-highlight-color: transparent;
-      user-select: none;
-      box-sizing: border-box;
+import 'package:flutter/material.dart';
+import 'package:camera/camera.dart';
+import 'dart:io';
+
+List<CameraDescription> cameras = [];
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  try {
+    cameras = await availableCameras();
+  } catch (e) {
+    debugPrint("Cillad kamaradda ah: $e");
+  }
+  runApp(const MyApp());
+}
+
+class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return MaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'Pro Camera UI',
+      theme: ThemeData(brightness: Brightness.dark),
+      home: const ProCameraScreen(),
+    );
+  }
+}
+
+class ProCameraScreen extends StatefulWidget {
+  const ProCameraScreen({super.key});
+
+  @override
+  State<ProCameraScreen> createState() => _ProCameraScreenState();
+}
+
+class _ProCameraScreenState extends State<ProCameraScreen> {
+  CameraController? _controller;
+  bool _isCameraInitialized = false;
+  int _selectedCameraIndex = 0;
+  String _selectedMode = 'VIDEO'; // Default mode (PORTRAIT, PHOTO, VIDEO)
+  String? _lastImagePath;
+  bool _isRecording = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _initializeCamera(_selectedCameraIndex);
+  }
+
+  Future<void> _initializeCamera(int cameraIndex) async {
+    if (cameras.isEmpty) return;
+
+    final controller = CameraController(
+      cameras[cameraIndex],
+      ResolutionPreset.high,
+      enableAudio: true,
+    );
+
+    _controller = controller;
+
+    try {
+      await controller.initialize();
+      if (!mounted) return;
+      setState(() {
+        _isCameraInitialized = true;
+      });
+    } catch (e) {
+      debugPrint("Cillad intii la furayay kamaradda: $e");
     }
-    body {
-      background-color: #0f0f0f;
-      color: #ffffff;
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      overflow-x: hidden;
-    }
+  }
 
-    .no-scrollbar::-webkit-scrollbar { display: none; }
-    .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+  @override
+  void dispose() {
+    _controller?.dispose();
+    super.dispose();
+  }
 
-    .brand-logo-img {
-      height: 28px;
-      width: 28px;
-      object-fit: cover;
-      border-radius: 6px;
-      border: 1.5px solid #ffffff;
-      box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
-    }
+  // Beddelashada Kamaradda (Front / Back)
+  void _switchCamera() {
+    if (cameras.length < 2) return;
+    _selectedCameraIndex = (_selectedCameraIndex + 1) % cameras.length;
+    _initializeCamera(_selectedCameraIndex);
+  }
 
-    .upload-nav-img {
-      height: 26px;
-      width: 26px;
-      object-fit: cover;
-      border-radius: 6px;
-      border: 1.5px solid #ffffff;
-      box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
-      transition: transform 0.2s ease;
-    }
-    .upload-nav-img:active { transform: scale(0.9); }
-  </style>
-</head>
-<body class="pt-14 pb-16 min-h-screen flex flex-col justify-between">
+  // Qaadashada Sawirka ama Duubista
+  Future<void> _onCapturePressed() async {
+    if (_controller == null || !_controller!.value.isInitialized) return;
 
-  <!-- FIXED TOP HEADER -->
-  <header class="fixed top-0 left-0 right-0 h-14 bg-[#0f0f0f] border-b border-zinc-800 z-30 flex items-center justify-between px-4">
-    <div class="flex items-center gap-2.5">
-      <button onclick="showToast('Home View')" class="text-white text-base">
-        <i class="fa-solid fa-chevron-left"></i>
-      </button>
-      <span class="text-xl font-black uppercase tracking-tight text-white">SOMEDIA</span>
-      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
-    </div>
-    <div class="flex items-center gap-4">
-      <button onclick="showToast('Search active')" class="text-white text-lg">
-        <i class="fa-solid fa-magnifying-glass"></i>
-      </button>
-      <button onclick="showToast('Notification active')" class="relative text-white text-lg">
-        <i class="fa-regular fa-bell"></i>
-        <span class="absolute -top-1 -right-2 bg-red-600 text-white text-[9px] font-bold px-1 rounded-full">9+</span>
-      </button>
-    </div>
-  </header>
-
-  <!-- CATEGORIES BAR -->
-  <nav class="flex items-center gap-2 px-3 py-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
-    <button class="bg-zinc-800 text-white px-3 py-1.5 rounded-lg text-xs font-semibold shrink-0">
-      <i class="fa-regular fa-compass"></i>
-    </button>
-    <button class="bg-white text-black px-3.5 py-1.5 rounded-lg text-xs font-semibold shrink-0">Dhammaan</button>
-    <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shrink-0">Somali Tech</button>
-    <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shrink-0">Musig</button>
-    <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
-  </nav>
-
-  <!-- MAIN STANDARD FEED CONTAINER -->
-  <main class="max-w-md mx-auto w-full flex-1 pb-4">
-    <div class="flex items-center justify-between p-3">
-      <div class="flex items-center gap-2 text-base font-bold">
-        <i class="fa-solid fa-circle-play text-red-600"></i>
-        <span>Home Feed</span>
-      </div>
-      <div class="flex items-center gap-2">
-        <span id="videoCountBadge" class="text-xs bg-zinc-800 px-2.5 py-0.5 rounded-full text-zinc-400">0 videos</span>
-        <button onclick="openCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
-          <i class="fa-solid fa-plus"></i> Soo geli
-        </button>
-      </div>
-    </div>
-
-    <!-- STANDARD YOUTUBE SINGLE-COLUMN FEED -->
-    <div id="shortsGrid" class="flex flex-col gap-5"></div>
-  </main>
-
-  <!-- DIRECT DEVICE GALLERY FILE INPUT -->
-  <input type="file" id="deviceVideoInput" accept="video/*" onchange="handleDeviceFileSelected(event)" class="hidden">
-
-  <!-- BOTTOM NAVIGATION BAR -->
-  <nav class="fixed bottom-0 left-0 right-0 h-13 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center z-30 max-w-md mx-auto">
-    <button class="flex flex-col items-center gap-0.5 text-white w-1/5 py-1">
-      <i class="fa-solid fa-house text-base"></i>
-      <span class="text-[10px]">Home</span>
-    </button>
-    <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5 py-1">
-      <i class="fa-solid fa-bolt text-base"></i>
-      <span class="text-[10px]">Shorts</span>
-    </button>
-
-    <!-- CENTER UPLOAD BUTTON -->
-    <button onclick="openCameraModal()" class="flex flex-col items-center justify-center w-1/5 py-1">
-      <img src="https://i.ibb.co/dwDSVhQm/20261022-043354998.png" alt="Soo geli" class="upload-nav-img">
-      <span class="text-[10px] text-white font-medium mt-0.5">Soo geli</span>
-    </button>
-
-    <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5 py-1">
-      <i class="fa-solid fa-layer-group text-base"></i>
-      <span class="text-[10px]">Subscriptions</span>
-    </button>
-    <button class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5 py-1">
-      <div class="w-5 h-5 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[10px]">S</div>
-      <span class="text-[10px]">Adiga</span>
-    </button>
-  </nav>
-
-  <!-- 1. CAMERA / RECORDING MODAL -->
-  <div id="cameraModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-4">
-    <div class="flex items-center justify-between z-20">
-      <button onclick="closeCameraModal()" class="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center text-xl backdrop-blur-md">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-
-      <button onclick="showToast('Music selector active')" class="bg-zinc-900/80 border border-zinc-700/80 text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 backdrop-blur-md">
-        <i class="fa-solid fa-music text-xs"></i>
-        <span>Add sound</span>
-      </button>
-
-      <button class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center text-lg shadow-lg">
-        <i class="fa-solid fa-wand-magic-sparkles"></i>
-      </button>
-    </div>
-
-    <div class="absolute inset-0 z-0 flex items-center justify-center bg-zinc-950 overflow-hidden">
-      <video id="liveCameraStream" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
-
-      <div id="cameraPlaceholder" class="flex flex-col items-center justify-center text-zinc-500 gap-3 p-6 text-center">
-        <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-2xl text-zinc-400">
-          <i class="fa-solid fa-video"></i>
-        </div>
-        <p class="text-xs max-w-xs text-zinc-400">Taabo <strong class="text-white">Add</strong> hoose si aad fiidiyowga uga soo dooratid taleefankaaga.</p>
-      </div>
-    </div>
-
-    <div class="absolute right-4 top-20 z-20 flex flex-col items-center gap-5 text-white bg-black/30 p-2 rounded-2xl backdrop-blur-md border border-white/10">
-      <button onclick="switchCameraFacing()" class="flex flex-col items-center"><i class="fa-solid fa-rotate text-lg"></i></button>
-      <button class="flex flex-col items-center"><i class="fa-regular fa-clock text-lg"></i></button>
-      <span class="text-[11px] font-bold">3m</span>
-      <button class="flex flex-col items-center"><i class="fa-solid fa-wand-magic text-lg"></i></button>
-      <span class="text-[11px] font-bold">1x</span>
-      <button class="flex flex-col items-center"><i class="fa-solid fa-crop text-lg"></i></button>
-      <i class="fa-solid fa-chevron-down text-xs"></i>
-    </div>
-
-    <div class="z-20 flex flex-col gap-5 mb-2">
-      <div class="flex items-center justify-around">
-        <button onclick="triggerDeviceGallery()" class="flex flex-col items-center gap-1">
-          <div class="w-11 h-11 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
-            <i class="fa-solid fa-folder-open text-white"></i>
-          </div>
-          <span class="text-[11px] font-bold text-white">Add</span>
-        </button>
-
-        <button id="recordBtn" onclick="toggleRecording()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform">
-          <div id="recordInnerCircle" class="w-12 h-12 rounded-full bg-red-600 transition-all duration-200"></div>
-        </button>
-
-        <button onclick="showToast('Drafts waa eber')" class="flex flex-col items-center gap-1">
-          <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-lg">
-            <i class="fa-regular fa-file-lines"></i>
-          </div>
-          <span class="text-[11px] font-bold text-white">Drafts</span>
-        </button>
-      </div>
-
-      <div class="flex items-center justify-center gap-6 text-xs font-bold text-zinc-400">
-        <button class="hover:text-white">Video</button>
-        <button class="bg-zinc-800 text-white px-4 py-1 rounded-full border border-white/20">Short</button>
-        <button class="hover:text-white">Live</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 2. TRIM / ADJUST MODAL -->
-  <div id="trimModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
-    <div class="flex items-center justify-between z-10 pt-2 px-1">
-      <button onclick="backToCamera()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
-        <i class="fa-solid fa-xmark"></i>
-      </button>
-    </div>
-
-    <div class="flex-1 flex items-center justify-center py-2 relative">
-      <div onclick="toggleTrimVideoPlay()" class="aspect-[16/9] w-full max-w-md bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl flex items-center justify-center cursor-pointer">
-        <video id="trimVideoPlayer" class="w-full h-full object-contain" loop playsinline></video>
-        
-        <div id="trimPlayPauseOverlay" class="absolute w-14 h-14 rounded-full bg-black/60 text-white flex items-center justify-center text-xl backdrop-blur-sm opacity-0 transition-opacity duration-200">
-          <i id="trimPlayPauseIcon" class="fa-solid fa-pause"></i>
-        </div>
-      </div>
-    </div>
-
-    <div class="space-y-3 mb-3 px-1">
-      <div class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-2.5 relative flex items-center justify-center shadow-inner">
-        <div class="w-full h-12 bg-zinc-950 rounded-xl flex items-center gap-1 px-1 relative overflow-hidden border border-zinc-700">
-          <div id="filmstripFrames" class="flex w-full h-full items-center justify-between overflow-hidden"></div>
-
-          <div class="absolute left-[20%] right-[30%] top-0.5 bottom-0.5 border-2 border-white bg-white/10 rounded-lg flex items-center justify-between px-1 shadow-lg pointer-events-none">
-            <div class="w-1.5 h-7 bg-white rounded-full"></div>
-            <span class="bg-white text-black text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md">10.0s</span>
-            <div class="w-1.5 h-7 bg-white rounded-full"></div>
-          </div>
-        </div>
-      </div>
-
-      <div class="flex items-center justify-between px-2">
-        <span class="text-zinc-400 text-xs">Drag to adjust video</span>
-        <button onclick="goToEditorStep()" class="bg-white text-black font-bold px-7 py-2.5 rounded-full text-xs hover:bg-zinc-200 shadow-lg transition-transform active:scale-95">
-          Next
-        </button>
-      </div>
-    </div>
-  </div>
-
-  <!-- 3. VIDEO EDITOR MODAL -->
-  <div id="editorModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
-    <div class="flex items-center justify-between z-20">
-      <button onclick="backToTrim()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
-
-      <button onclick="showToast('Music picker active')" class="bg-zinc-800/90 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-zinc-700 backdrop-blur-md">
-        <i class="fa-solid fa-music"></i>
-        <span>Add sound</span>
-      </button>
-
-      <button class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-sm">
-        <i class="fa-solid fa-volume-high"></i>
-      </button>
-    </div>
-
-    <div class="absolute inset-0 z-0 flex items-center justify-center bg-black">
-      <video id="editorVideoPlayer" class="w-full aspect-video object-contain" loop playsinline></video>
-    </div>
-
-    <div class="z-20 flex items-center justify-between px-2 mb-2">
-      <button onclick="showToast('Editing timeline')" class="bg-zinc-800 text-white font-bold px-6 py-2 rounded-full text-xs border border-zinc-700 flex items-center gap-2">
-        <i class="fa-solid fa-sliders"></i>
-        <span>Edit</span>
-      </button>
-
-      <button onclick="goToFinalUploadDetails()" class="bg-white text-black font-bold px-7 py-2 rounded-full text-xs shadow-lg hover:bg-zinc-200">
-        Next
-      </button>
-    </div>
-  </div>
-
-  <!-- 4. FINAL DETAILS MODAL -->
-  <div id="finalUploadModal" class="fixed inset-0 bg-[#0f0f0f] z-50 hidden flex-col justify-between p-4">
-    <div class="flex items-center gap-4 border-b border-zinc-800 pb-3">
-      <button onclick="backToEditor()" class="text-white text-lg">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
-      <h2 class="text-base font-bold text-white">Add details</h2>
-    </div>
-
-    <div class="flex-1 py-4 space-y-4 overflow-y-auto no-scrollbar">
-      <div class="flex gap-3">
-        <div class="w-32 aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0">
-          <video id="finalPreviewThumbnail" class="w-full h-full object-contain"></video>
-        </div>
-        <div class="flex-1">
-          <textarea id="finalTitleInput" rows="3" placeholder="Write video title... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
-        </div>
-      </div>
-
-      <div class="space-y-3 pt-3 border-t border-zinc-800/80 text-xs text-zinc-300">
-        <div class="flex items-center justify-between py-1">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-globe text-base text-zinc-400"></i>
-            <span>Visibility</span>
-          </div>
-          <span class="font-bold text-white flex items-center gap-1">Public <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
-        </div>
-        <div class="flex items-center justify-between py-1">
-          <div class="flex items-center gap-3">
-            <i class="fa-solid fa-layer-group text-base text-zinc-400"></i>
-            <span>Category</span>
-          </div>
-          <select id="finalCategorySelect" class="bg-zinc-900 border border-zinc-700 rounded-lg p-1 text-xs text-white">
-            <option value="Soo gelintaada">Soo gelintaada</option>
-            <option value="Somali Tech">Somali Tech</option>
-            <option value="Musig">Musig</option>
-            <option value="Ciyaaro">Ciyaaro</option>
-          </select>
-        </div>
-      </div>
-    </div>
-
-    <button onclick="publishVideoToFeed()" class="w-full bg-red-600 text-white font-bold py-3 rounded-full text-xs uppercase tracking-wider shadow-lg">
-      Upload Video
-    </button>
-  </div>
-
-  <!-- YOUTUBE STANDARD PLAYER -->
-  <div id="playerModal" class="fixed inset-0 z-50 bg-[#0f0f0f] hidden flex-col overflow-y-auto no-scrollbar">
-    <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3 py-2 flex items-center justify-between border-b border-zinc-800">
-      <button onclick="closePlayer()" class="text-white text-lg">
-        <i class="fa-solid fa-arrow-left"></i>
-      </button>
-      <div class="flex items-center gap-4 text-white">
-        <button onclick="showToast('Cast')" class="text-base"><i class="fa-solid fa-cast"></i></button>
-        <button onclick="showToast('More')" class="text-base"><i class="fa-solid fa-ellipsis-vertical"></i></button>
-      </div>
-    </div>
-
-    <!-- CLEAN PURE BLACK VIDEO CONTAINER -->
-    <div class="w-full bg-black aspect-video relative shrink-0 flex items-center justify-center">
-      <video id="mainVideoPlayer" class="w-full h-full object-contain" loop controls playsinline></video>
-    </div>
-
-    <div class="p-3 space-y-3">
-      <h1 id="playerVideoTitle" class="text-base font-bold text-white leading-snug">Muuqaal Cusub</h1>
-      
-      <div class="flex items-center gap-2 text-xs text-zinc-400">
-        <span class="font-semibold text-zinc-300">@SOMEDIA_Channel</span>
-        <span>•</span>
-        <span>0 likes</span>
-        <span>•</span>
-        <span>1 view</span>
-        <span>•</span>
-        <span>Right now</span>
-      </div>
-
-      <div class="flex items-center justify-between py-1 border-t border-b border-zinc-800/80">
-        <div class="flex items-center gap-2.5">
-          <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-sm">S</div>
-          <div>
-            <h3 class="text-xs font-bold text-white">SOMEDIA Channel</h3>
-            <p class="text-[10px] text-zinc-400">1 subscriber</p>
-          </div>
-        </div>
-        <button onclick="showToast('Subscribed!')" class="bg-white text-black text-xs font-bold px-4 py-1.5 rounded-full shadow hover:bg-zinc-200">
-          Subscribe
-        </button>
-      </div>
-
-      <!-- ACTION BUTTONS -->
-      <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-        <div class="flex items-center bg-zinc-800/80 rounded-full text-xs font-medium shrink-0">
-          <button onclick="showToast('Liked!')" class="px-3 py-1.5 flex items-center gap-1.5 border-r border-zinc-700 hover:bg-zinc-700 rounded-l-full">
-            <i class="fa-regular fa-thumbs-up"></i>
-            <span>0</span>
-          </button>
-          <button onclick="showToast('Disliked')" class="px-3 py-1.5 hover:bg-zinc-700 rounded-r-full">
-            <i class="fa-regular fa-thumbs-down"></i>
-          </button>
-        </div>
-
-        <button onclick="showToast('Shared!')" class="bg-zinc-800/80 text-xs font-medium px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shrink-0 hover:bg-zinc-700">
-          <i class="fa-solid fa-share"></i>
-          <span>Share</span>
-        </button>
-
-        <button onclick="showToast('Remix')" class="bg-zinc-800/80 text-xs font-medium px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shrink-0 hover:bg-zinc-700">
-          <i class="fa-solid fa-arrows-rotate"></i>
-          <span>Remix</span>
-        </button>
-      </div>
-
-      <!-- COMMENTS SECTION -->
-      <div onclick="showToast('Comments active')" class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 space-y-2 cursor-pointer">
-        <div class="flex items-center justify-between text-xs">
-          <span class="font-bold text-white">Comments <span class="text-zinc-400 font-normal">0</span></span>
-          <i class="fa-solid fa-chevron-down text-zinc-500 text-[10px]"></i>
-        </div>
-        <p class="text-xs text-zinc-400">Qor faallo cusub...</p>
-      </div>
-    </div>
-
-    <!-- DYNAMIC RECOMMENDED VIDEOS -->
-    <div class="p-3 border-t border-zinc-800 space-y-3 mb-8">
-      <h2 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Fiidiyowga Xiga (Up Next)</h2>
-      <div id="playerUpNextList" class="flex flex-col gap-3"></div>
-    </div>
-  </div>
-
-  <!-- TOAST NOTIFICATION -->
-  <div id="toastNotification" class="fixed top-16 left-1/2 -translate-x-1/2 bg-zinc-800 text-white px-4 py-1.5 rounded-full text-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300 shadow-xl">
-    <span id="toastMessage">Done</span>
-  </div>
-
-  <script>
-    let videoList = [];
-
-    let mediaStream = null;
-    let mediaRecorder = null;
-    let recordedChunks = [];
-    let isRecording = false;
-    let selectedVideoUrl = '';
-    let selectedThumbnail = '';
-    let cameraFacing = 'user';
-
-    function suppressMediaSession() {
-      if ('mediaSession' in navigator) {
+    if (_selectedMode == 'VIDEO') {
+      if (_isRecording) {
         try {
-          navigator.mediaSession.metadata = null;
-          navigator.mediaSession.playbackState = 'none';
-          ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack', 'stop'].forEach(action => {
-            try { navigator.mediaSession.setActionHandler(action, null); } catch(e){}
+          XFile file = await _controller!.stopVideoRecording();
+          setState(() {
+            _isRecording = false;
+            _lastImagePath = file.path;
           });
-        } catch (e) {}
-      }
-    }
-
-    function closeAllModals() {
-      ['cameraModal', 'trimModal', 'editorModal', 'finalUploadModal'].forEach(id => {
-        const el = document.getElementById(id);
-        if(el) {
-          el.classList.add('hidden');
-          el.classList.remove('flex');
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Fiidiyowga waa la keydiyay!')),
+          );
+        } catch (e) {
+          debugPrint("Cillad joojinta fiidiyowga: $e");
         }
-      });
-      ['trimVideoPlayer', 'editorVideoPlayer', 'finalPreviewThumbnail'].forEach(id => {
-        const vp = document.getElementById(id);
-        if(vp) vp.pause();
-      });
-    }
-
-    window.addEventListener('DOMContentLoaded', () => {
-      suppressMediaSession();
-      renderGrid();
-    });
-
-    function renderGrid() {
-      const grid = document.getElementById('shortsGrid');
-      grid.innerHTML = '';
-      if(videoList.length === 0) {
-        grid.innerHTML = `
-          <div class="flex flex-col items-center justify-center p-12 text-center text-zinc-500 gap-3">
-            <i class="fa-solid fa-play-circle text-4xl text-zinc-700"></i>
-            <p class="text-xs">Wali wax video ah ma soo gelinin. Taabo <strong class="text-white">+ Soo geli</strong> si aad fiidiyow cusub u soo gelisid.</p>
-          </div>
-        `;
       } else {
-        videoList.forEach((vid, idx) => {
-          const card = document.createElement('div');
-          card.className = "w-full cursor-pointer group";
-          card.onclick = () => openPlayer(idx);
-          card.innerHTML = `
-            <div class="w-full aspect-video bg-black relative overflow-hidden">
-              <img src="${vid.thumbnail}" class="w-full h-full object-cover">
-              <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">0:10</span>
-            </div>
-
-            <div class="p-3 flex gap-3">
-              <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
-                S
-              </div>
-              <div class="flex-1 pr-2">
-                <h3 class="text-xs font-bold text-white leading-snug line-clamp-2 mb-1">${vid.title}</h3>
-                <div class="text-[11px] text-zinc-400 flex items-center gap-1.5 flex-wrap">
-                  <span>SOMEDIA Channel</span>
-                  <span>•</span>
-                  <span>${vid.views}</span>
-                </div>
-              </div>
-              <button onclick="event.stopPropagation(); showToast('More options');" class="text-zinc-400 text-sm h-6 w-6 flex items-center justify-center">
-                <i class="fa-solid fa-ellipsis-vertical"></i>
-              </button>
-            </div>
-          `;
-          grid.appendChild(card);
-        });
+        try {
+          await _controller!.startVideoRecording();
+          setState(() {
+            _isRecording = true;
+          });
+        } catch (e) {
+          debugPrint("Cillad bilaabidda fiidiyowga: $e");
+        }
       }
-      document.getElementById('videoCountBadge').innerText = `${videoList.length} videos`;
-    }
-
-    async function openCameraModal() {
-      closeAllModals();
-      const modal = document.getElementById('cameraModal');
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      await startCameraStream();
-    }
-
-    async function startCameraStream() {
+    } else {
+      // PHOTO ama PORTRAIT
       try {
-        if(mediaStream) {
-          mediaStream.getTracks().forEach(t => t.stop());
-        }
-        mediaStream = await navigator.mediaDevices.getUserMedia({ 
-          video: { facingMode: cameraFacing }, 
-          audio: { echoCancellation: true, noiseSuppression: true } 
+        XFile picture = await _controller!.takePicture();
+        setState(() {
+          _lastImagePath = picture.path;
         });
-        const videoElem = document.getElementById('liveCameraStream');
-        videoElem.srcObject = mediaStream;
-        videoElem.classList.remove('hidden');
-        document.getElementById('cameraPlaceholder').classList.add('hidden');
-      } catch (err) {
-        console.log("Live Camera access handled:", err);
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Sawirka waa la qaaday!')),
+        );
+      } catch (e) {
+        debugPrint("Cillad qaadashada sawirka: $e");
       }
     }
+  }
 
-    function switchCameraFacing() {
-      cameraFacing = cameraFacing === 'user' ? 'environment' : 'user';
-      startCameraStream();
+  @override
+  Widget build(BuildContext context) {
+    if (!_isCameraInitialized || _controller == null) {
+      return const Scaffold(
+        backgroundColor: Colors.black,
+        body: Center(child: CircularProgressIndicator(color: Colors.white)),
+      );
     }
 
-    function closeCameraModal() {
-      if (mediaStream) {
-        mediaStream.getTracks().forEach(track => track.stop());
-      }
-      document.getElementById('cameraModal').classList.add('hidden');
-      document.getElementById('cameraModal').classList.remove('flex');
-    }
+    return Scaffold(
+      backgroundColor: Colors.black,
+      body: SafeArea(
+        child: Stack(
+          children: [
+            // 1. Live Camera Preview oo shaashadda buuxinaysa
+            Positioned.fill(
+              child: CameraPreview(_controller!),
+            ),
 
-    function toggleRecording() {
-      const circle = document.getElementById('recordInnerCircle');
-      if (!isRecording) {
-        startRecordingProcess();
-        circle.className = "w-6 h-6 rounded-sm bg-red-600 animate-pulse";
-        showToast('Duubistu waa bilaabatay...');
-      } else {
-        stopRecordingProcess();
-        circle.className = "w-12 h-12 rounded-full bg-red-600";
-        showToast('Duubistu waa dhammaatay!');
-      }
-    }
+            // 2. Qaybta Sare (Settings & Resolution)
+            Positioned(
+              top: 16,
+              right: 20,
+              left: 20,
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Icon(Icons.flash_off, color: Colors.white, size: 24),
+                  Container(
+                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                    decoration: BoxDecoration(
+                      color: Colors.black45,
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: const Text(
+                      "FHD 30",
+                      style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
+                    ),
+                  ),
+                ],
+              ),
+            ),
 
-    function startRecordingProcess() {
-      if(!mediaStream) return;
-      recordedChunks = [];
-      mediaRecorder = new MediaRecorder(mediaStream);
-      mediaRecorder.ondataavailable = e => {
-        if(e.data.size > 0) recordedChunks.push(e.data);
-      };
-      mediaRecorder.onstop = () => {
-        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-        selectedVideoUrl = URL.createObjectURL(blob);
-        generateThumbnailFromVideo(selectedVideoUrl);
-      };
-      mediaRecorder.start();
-      isRecording = true;
-    }
+            // 3. Qaybta Hoose (Badhamada, Modes-ka, iyo Gallery-ga)
+            Positioned(
+              bottom: 20,
+              left: 0,
+              right: 0,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  // A. Mode-yada (PORTRAIT | PHOTO | VIDEO | MORE)
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: ['PORTRAIT', 'PHOTO', 'VIDEO', 'MORE'].map((mode) {
+                      bool isSelected = _selectedMode == mode;
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 14),
+                        child: GestureDetector(
+                          onTap: () {
+                            setState(() {
+                              _selectedMode = mode;
+                            });
+                          },
+                          child: Text(
+                            mode,
+                            style: TextStyle(
+                              color: isSelected ? Colors.amber : Colors.white70,
+                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
+                              fontSize: 14,
+                            ),
+                          ),
+                        ),
+                      );
+                    }).toList(),
+                  ),
+                  const SizedBox(height: 20),
 
-    function stopRecordingProcess() {
-      if(mediaRecorder && isRecording) {
-        mediaRecorder.stop();
-        isRecording = false;
-      }
-    }
+                  // B. Badhamada waaweyn (Gallery, Capture/Record, Switch Camera)
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 30),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        // Gallery Thumbnail
+                        Container(
+                          width: 50,
+                          height: 50,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            border: Border.all(color: Colors.white70, width: 2),
+                          ),
+                          child: ClipOval(
+                            child: _lastImagePath != null
+                                ? Image.file(File(_lastImagePath!), fit: BoxFit.cover)
+                                : Container(color: Colors.grey[900]),
+                          ),
+                        ),
 
-    function triggerDeviceGallery() {
-      document.getElementById('deviceVideoInput').click();
-    }
+                        // Badhanka Weyn ee Duubista / Sawir Qaadista
+                        GestureDetector(
+                          onTap: _onCapturePressed,
+                          child: Container(
+                            height: 80,
+                            width: 80,
+                            decoration: BoxDecoration(
+                              shape: BoxShape.circle,
+                              border: Border.all(color: Colors.white, width: 4),
+                            ),
+                            child: Container(
+                              margin: const EdgeInsets.all(6),
+                              decoration: BoxDecoration(
+                                shape: BoxShape.circle,
+                                color: _isRecording ? Colors.red : Colors.white,
+                              ),
+                              child: _isRecording
+                                  ? const Center(
+                                      child: Icon(Icons.stop, color: Colors.white, size: 36),
+                                    )
+                                  : null,
+                            ),
+                          ),
+                        ),
 
-    function handleDeviceFileSelected(e) {
-      const file = e.target.files[0];
-      if (!file) return;
-
-      selectedVideoUrl = URL.createObjectURL(file);
-      generateThumbnailFromVideo(selectedVideoUrl);
-    }
-
-    function generateThumbnailFromVideo(videoUrl) {
-      closeCameraModal();
-
-      const tempVideo = document.createElement('video');
-      tempVideo.src = videoUrl;
-      tempVideo.crossOrigin = 'anonymous';
-      tempVideo.currentTime = 1;
-
-      tempVideo.onloadeddata = () => {
-        const canvas = document.createElement('canvas');
-        canvas.width = tempVideo.videoWidth || 640;
-        canvas.height = tempVideo.videoHeight || 360;
-        const ctx = canvas.getContext('2d');
-        ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
-        selectedThumbnail = canvas.toDataURL('image/jpeg');
-
-        const strip = document.getElementById('filmstripFrames');
-        strip.innerHTML = '';
-        for(let i = 0; i < 6; i++) {
-          const img = document.createElement('img');
-          img.src = selectedThumbnail;
-          img.className = "h-full w-1/6 object-cover opacity-60 rounded";
-          strip.appendChild(img);
-        }
-
-        const trimPlayer = document.getElementById('trimVideoPlayer');
-        trimPlayer.src = videoUrl;
-        document.getElementById('trimModal').classList.remove('hidden');
-        document.getElementById('trimModal').classList.add('flex');
-        trimPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
-      };
-    }
-
-    function toggleTrimVideoPlay() {
-      const player = document.getElementById('trimVideoPlayer');
-      const overlay = document.getElementById('trimPlayPauseOverlay');
-      const icon = document.getElementById('trimPlayPauseIcon');
-
-      if (player.paused) {
-        player.play().then(() => suppressMediaSession());
-        icon.className = "fa-solid fa-pause";
-      } else {
-        player.pause();
-        icon.className = "fa-solid fa-play";
-      }
-
-      overlay.classList.remove('opacity-0');
-      setTimeout(() => {
-        overlay.classList.add('opacity-0');
-      }, 800);
-    }
-
-    function backToCamera() {
-      closeAllModals();
-      openCameraModal();
-    }
-
-    function goToEditorStep() {
-      closeAllModals();
-      const editorPlayer = document.getElementById('editorVideoPlayer');
-      editorPlayer.src = selectedVideoUrl;
-      document.getElementById('editorModal').classList.remove('hidden');
-      document.getElementById('editorModal').classList.add('flex');
-      editorPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
-    }
-
-    function backToTrim() {
-      closeAllModals();
-      document.getElementById('trimModal').classList.remove('hidden');
-      document.getElementById('trimModal').classList.add('flex');
-    }
-
-    function goToFinalUploadDetails() {
-      closeAllModals();
-      const finalPlayer = document.getElementById('finalPreviewThumbnail');
-      finalPlayer.src = selectedVideoUrl;
-      document.getElementById('finalUploadModal').classList.remove('hidden');
-      document.getElementById('finalUploadModal').classList.add('flex');
-      finalPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
-    }
-
-    function backToEditor() {
-      closeAllModals();
-      document.getElementById('editorModal').classList.remove('hidden');
-      document.getElementById('editorModal').classList.add('flex');
-    }
-
-    function publishVideoToFeed() {
-      const title = document.getElementById('finalTitleInput').value.trim() || 'Muuqaal Cusub';
-      const category = document.getElementById('finalCategorySelect').value;
-
-      const newVideo = {
-        id: 'user_' + Date.now(),
-        title: title,
-        views: '1 view • Right now',
-        category: category,
-        url: selectedVideoUrl,
-        thumbnail: selectedThumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80'
-      };
-
-      videoList.unshift(newVideo);
-      renderGrid();
-
-      closeAllModals();
-      showToast('Video-gaaga si guul leh ayaa loo soo geliyay! 🚀');
-      
-      openPlayer(0);
-    }
-
-    function openPlayer(idx) {
-      closeAllModals();
-      const modal = document.getElementById('playerModal');
-      const player = document.getElementById('mainVideoPlayer');
-      const vid = videoList[idx];
-
-      player.src = vid.url;
-      document.getElementById('playerVideoTitle').innerText = vid.title;
-
-      const nextContainer = document.getElementById('playerUpNextList');
-      nextContainer.innerHTML = '';
-
-      const otherVideos = videoList.filter((_, i) => i !== idx);
-      if(otherVideos.length === 0) {
-        nextContainer.innerHTML = `<p class="text-xs text-zinc-500">Wax fiidiyowyo kale oo aad soo gelisay ma jiraan.</p>`;
-      } else {
-        otherVideos.forEach((oVid) => {
-          const item = document.createElement('div');
-          item.className = "flex gap-3 cursor-pointer";
-          item.onclick = () => openPlayer(videoList.indexOf(oVid));
-          item.innerHTML = `
-            <div class="w-36 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
-              <img src="${oVid.thumbnail}" class="w-full h-full object-cover">
-              <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">0:10</span>
-            </div>
-            <div class="flex-1 space-y-1">
-              <h3 class="text-xs font-bold text-white line-clamp-2 leading-snug">${oVid.title}</h3>
-              <p class="text-[11px] text-zinc-400">SOMEDIA Channel</p>
-              <p class="text-[10px] text-zinc-500">${oVid.views}</p>
-            </div>
-          `;
-          nextContainer.appendChild(item);
-        });
-      }
-
-      modal.classList.remove('hidden');
-      modal.classList.add('flex');
-      player.play().then(() => suppressMediaSession()).catch(e => console.log(e));
-    }
-
-    function closePlayer() {
-      const modal = document.getElementById('playerModal');
-      const player = document.getElementById('mainVideoPlayer');
-      player.pause();
-      modal.classList.add('hidden');
-      modal.classList.remove('flex');
-    }
-
-    function showToast(msg) {
-      const toast = document.getElementById('toastNotification');
-      document.getElementById('toastMessage').innerText = msg;
-      toast.classList.remove('opacity-0', 'pointer-events-none');
-      setTimeout(() => { toast.classList.add('opacity-0', 'pointer-events-none'); }, 2200);
-    }
-  </script>
-</body>
-</html>
+                        // Badhanka Camera Flip (Beddelashada hore iyo dambe)
+                        IconButton(
+                          onPressed: _switchCamera,
+                          icon: const Icon(
+                            Icons.flip_camera_ios,
+                            color: Colors.white,
+                            size: 30,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}

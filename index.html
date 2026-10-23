@@ -1,652 +1,445 @@
 <!DOCTYPE html>
-<html lang="so"><!DOCTYPE html>
-<html lang="so" class="dark">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kaamirada Casriga ah - Web Camera App</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        darkbg: '#0f172a',
-                        cardbg: '#1e293b'
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- FontAwesome for Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <style>
-        @keyframes flashAnim {
-            0% { opacity: 1; }
-            100% { opacity: 0; }
-        }
-        .flash-effect {
-            animation: flashAnim 0.4s ease-out forwards;
-        }
-    </style>
-</head>
-<body class="bg-darkbg text-slate-100 font-sans min-h-screen flex flex-col items-center justify-between overflow-x-hidden selection:bg-indigo-500 selection:text-white">
-
-    <!-- Message Box / Custom Alert Modal -->
-    <div id="customModal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden">
-        <div class="bg-cardbg border border-slate-700 rounded-2xl p-6 max-w-sm w-full mx-4 shadow-2xl text-center transform transition-all">
-            <div id="modalIcon" class="text-4xl mb-3 text-indigo-400">
-                <i class="fa-solid fa-circle-info"></i>
-            </div>
-            <h3 id="modalTitle" class="text-lg font-bold mb-2">Fariin</h3>
-            <p id="modalMessage" class="text-sm text-slate-300 mb-5">Halkan fariinta ayaa ka muuqan doonta.</p>
-            <button onclick="closeModal()" class="w-full bg-indigo-600 hover:bg-indigo-500 text-white font-medium py-2.5 rounded-xl transition shadow-lg shadow-indigo-600/30">Waan Fahmay</button>
-        </div>
-    </div>
-
-    <!-- Header Section -->
-    <header class="w-full max-w-md p-4 flex justify-between items-center bg-darkbg/80 backdrop-blur-md sticky top-0 z-20 border-b border-slate-800">
-        <div class="flex items-center space-x-2">
-            <div class="bg-indigo-600 p-2 rounded-xl text-white shadow-lg shadow-indigo-600/30">
-                <i class="fa-solid fa-camera-retro"></i>
-            </div>
-            <h1 class="font-bold text-lg tracking-wide">SmartCam</h1>
-        </div>
-        <!-- Mode Switcher Tabs -->
-        <div class="bg-cardbg p-1 rounded-xl flex border border-slate-700/50">
-            <button id="modePhotoBtn" onclick="switchMode('photo')" class="px-4 py-1.5 rounded-lg text-xs font-semibold transition bg-indigo-600 text-white shadow">Sawir</button>
-            <button id="modeVideoBtn" onclick="switchMode('video')" class="px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition">Video</button>
-        </div>
-    </header>
-
-    <!-- Main Camera Viewport Area -->
-    <main class="w-full max-w-md flex-1 flex flex-col items-center justify-center relative p-4 my-auto">
-        <div class="w-full aspect-[3/4] bg-black rounded-3xl overflow-hidden relative shadow-2xl border border-slate-800 flex items-center justify-center">
-            
-            <!-- Live Camera Stream Video Element -->
-            <video id="cameraStream" autoplay playsinline muted class="w-full h-full object-cover transform scale-x-100 transition-transform duration-300"></video>
-            
-            <!-- White Flash Screen Overlay -->
-            <div id="flashOverlay" class="absolute inset-0 bg-white opacity-0 pointer-events-none z-10"></div>
-
-            <!-- Video Recording Live Timer Badge -->
-            <div id="recordingTimerBadge" class="absolute top-4 left-4 bg-rose-600/90 backdrop-blur-md text-white text-xs px-3 py-1.5 rounded-full font-mono font-bold items-center space-x-2 hidden shadow-lg shadow-rose-600/30 z-20">
-                <span class="w-2.5 h-2.5 rounded-full bg-white animate-pulse"></span>
-                <span id="timerText">00:00</span>
-            </div>
-
-            <!-- Switch Camera Button -->
-            <button onclick="toggleFacingMode()" class="absolute top-4 right-4 bg-slate-900/60 hover:bg-slate-900/80 backdrop-blur-md text-white p-3 rounded-full transition border border-white/10 shadow-lg z-20 flex items-center justify-center w-11 h-11">
-                <i class="fa-solid fa-rotate text-sm"></i>
-            </button>
-        </div>
-    </main>
-
-    <!-- Controls & Gallery Footer Section -->
-    <footer class="w-full max-w-md p-6 bg-darkbg/90 backdrop-blur-md border-t border-slate-800 flex flex-col items-center space-y-6">
-        
-        <!-- Action Controls Row -->
-        <div class="w-full flex items-center justify-around">
-            
-            <!-- Gallery Preview Thumbnail -->
-            <div class="relative group">
-                <button onclick="openGalleryModal()" id="galleryThumbnailBtn" class="w-14 h-14 rounded-2xl bg-cardbg border-2 border-slate-700 overflow-hidden flex items-center justify-center shadow-lg transition transform hover:scale-105 active:scale-95 focus:outline-none">
-                    <img id="thumbImg" src="https://placehold.co/100x100/1e293b/64748b?text=..." alt="Gallery" class="w-full h-full object-cover">
-                </button>
-                <span id="mediaCountBadge" class="absolute -top-2 -right-2 bg-indigo-600 text-white text-[10px] w-5 h-5 rounded-full flex items-center justify-center font-bold border-2 border-darkbg hidden">0</span>
-            </div>
-
-            <!-- Primary Capture / Record Button -->
-            <button id="primaryActionBtn" onclick="handlePrimaryAction()" class="w-20 h-20 rounded-full bg-white border-4 border-slate-300 flex items-center justify-center shadow-2xl transition transform hover:scale-105 active:scale-95 focus:outline-none group">
-                <div id="actionInnerBtn" class="w-16 h-16 rounded-full bg-white border-2 border-slate-900 transition-all duration-300 group-hover:bg-indigo-50"></div>
-            </button>
-
-            <!-- Spacer element -->
-            <div class="w-14 h-14 flex items-center justify-center text-slate-500">
-                <i class="fa-solid fa-sliders text-lg"></i>
-            </div>
-        </div>
-    </footer>
-
-    <!-- Gallery / Media Preview Modal Popup -->
-    <div id="mediaModal" class="fixed inset-0 z-50 flex flex-col justify-end bg-black/80 backdrop-blur-md hidden transition-opacity">
-        <div class="bg-cardbg w-full max-h-[85vh] rounded-t-3xl border-t border-slate-700 p-5 flex flex-col shadow-2xl transform transition-transform animate-in slide-in-from-bottom duration-300">
-            <div class="flex justify-between items-center mb-4 border-b border-slate-700 pb-3">
-                <h3 class="font-bold text-base flex items-center space-x-2">
-                    <i class="fa-solid fa-photo-film text-indigo-400"></i>
-                    <span>Keydka (Gallery)</span>
-                </h3>
-                <button onclick="closeGalleryModal()" class="text-slate-400 hover:text-white p-2 rounded-lg bg-slate-800">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-            
-            <!-- Media List Container -->
-            <div id="mediaListContainer" class="overflow-y-auto max-h-[60vh] space-y-4 pr-1">
-                <div id="emptyGalleryState" class="text-center py-12 text-slate-500">
-                    <i class="fa-regular fa-folder-open text-4xl mb-2"></i>
-                    <p class="text-sm">Weli wax sawir ama video ah laguma keydin.</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- JavaScript Application Logic -->
-    <script>
-        let currentMode = 'photo';
-        let currentFacingMode = 'user';
-        let mediaStream = null;
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let isRecording = false;
-        let recordingTimerInterval = null;
-        let recordingSeconds = 0;
-        let savedMediaItems = [];
-
-        const videoElement = document.getElementById('cameraStream');
-        const flashOverlay = document.getElementById('flashOverlay');
-        const primaryActionBtn = document.getElementById('primaryActionBtn');
-        const actionInnerBtn = document.getElementById('actionInnerBtn');
-        const modePhotoBtn = document.getElementById('modePhotoBtn');
-        const modeVideoBtn = document.getElementById('modeVideoBtn');
-        const recordingTimerBadge = document.getElementById('recordingTimerBadge');
-        const timerText = document.getElementById('timerText');
-        const thumbImg = document.getElementById('thumbImg');
-        const mediaCountBadge = document.getElementById('mediaCountBadge');
-
-        window.addEventListener('load', () => {
-            initCamera();
-        });
-
-        async function initCamera() {
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-            }
-
-            const constraints = {
-                video: {
-                    facingMode: currentFacingMode,
-                    width: { ideal: 1280 },
-                    height: { ideal: 720 }
-                },
-                audio: true // Always request audio so it's ready when switching to video mode
-            };
-
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-                videoElement.srcObject = mediaStream;
-                await videoElement.play();
-            } catch (error) {
-                console.error("Cillad kaamirada ah:", error);
-                showCustomModal("Cillad Kaamira", "Fadlan oggolow in App-ku isticmaalo Kaamirada iyo Makarafoonka taleefankaaga.");
-            }
-        }
-
-        function switchMode(mode) {
-            if (isRecording) {
-                showCustomModal("Fariin", "Fadlan jooji duubista video-ga inta aadan beddelin qaabka.");
-                return;
-            }
-
-            currentMode = mode;
-
-            if (mode === 'photo') {
-                modePhotoBtn.className = "px-4 py-1.5 rounded-lg text-xs font-semibold transition bg-indigo-600 text-white shadow";
-                modeVideoBtn.className = "px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
-                actionInnerBtn.className = "w-16 h-16 rounded-full bg-white border-2 border-slate-900 transition-all duration-300 group-hover:bg-indigo-50";
-            } else {
-                modeVideoBtn.className = "px-4 py-1.5 rounded-lg text-xs font-semibold transition bg-rose-600 text-white shadow";
-                modePhotoBtn.className = "px-4 py-1.5 rounded-lg text-xs font-semibold text-slate-400 hover:text-white transition";
-                actionInnerBtn.className = "w-8 h-8 rounded-lg bg-rose-600 transition-all duration-300 group-hover:bg-rose-500";
-            }
-        }
-
-        async function toggleFacingMode() {
-            if (isRecording) return;
-            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-            
-            if (currentFacingMode === 'user') {
-                videoElement.classList.add('scale-x-100');
-            } else {
-                videoElement.classList.remove('scale-x-100');
-            }
-
-            await initCamera();
-        }
-
-        function handlePrimaryAction() {
-            if (currentMode === 'photo') {
-                takeSnapshot();
-            } else {
-                toggleVideoRecording();
-            }
-        }
-
-        function takeSnapshot() {
-            flashOverlay.classList.remove('flash-effect');
-            void flashOverlay.offsetWidth;
-            flashOverlay.classList.add('flash-effect');
-
-            const canvas = document.createElement('canvas');
-            canvas.width = videoElement.videoWidth || 1280;
-            canvas.height = videoElement.videoHeight || 720;
-            const ctx = canvas.getContext('2d');
-            
-            if (currentFacingMode === 'user') {
-                ctx.translate(canvas.width, 0);
-                ctx.scale(-1, 1);
-            }
-            
-            ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-            const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
-
-            const mediaItem = {
-                type: 'photo',
-                url: dataUrl,
-                timestamp: new Date().toLocaleTimeString()
-            };
-            savedMediaItems.unshift(mediaItem);
-            updateGalleryUI();
-
-            showCustomModal("Guul!", "Sawirka si guul leh ayaa loo qaaday oo loogu keydiyay gallery-ga.");
-        }
-
-        function toggleVideoRecording() {
-            if (!isRecording) {
-                recordedChunks = [];
-                try {
-                    // Dooro nooca codec-ga uu browser-ku taageerayo si uusan u dhicin
-                    let mimeType = 'video/webm';
-                    if (MediaRecorder.isTypeSupported('video/webm;codecs=vp9,opus')) {
-                        mimeType = 'video/webm;codecs=vp9,opus';
-                    } else if (MediaRecorder.isTypeSupported('video/webm;codecs=h264')) {
-                        mimeType = 'video/webm;codecs=h264';
-                    } else if (MediaRecorder.isTypeSupported('video/mp4')) {
-                        mimeType = 'video/mp4'; // iPhone/Safari support
-                    }
-
-                    const options = mimeType ? { mimeType } : {};
-                    mediaRecorder = new MediaRecorder(mediaStream, options);
-
-                    mediaRecorder.ondataavailable = (event) => {
-                        if (event.data && event.data.size > 0) {
-                            recordedChunks.push(event.data);
-                        }
-                    };
-
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(recordedChunks, { type: mimeType.split(';')[0] || 'video/webm' });
-                        const videoUrl = URL.createObjectURL(blob);
-                        
-                        const mediaItem = {
-                            type: 'video',
-                            url: videoUrl,
-                            timestamp: new Date().toLocaleTimeString()
-                        };
-                        savedMediaItems.unshift(mediaItem);
-                        updateGalleryUI();
-                        showCustomModal("Guul!", "Muuqaalka (Video) si guul leh ayaa loo duubay!");
-                    };
-
-                    mediaRecorder.start(250); // Ururi xogta xilliyeed
-                    isRecording = true;
-                    
-                    actionInnerBtn.className = "w-8 h-8 rounded-md bg-white transition-all duration-300 animate-pulse";
-                    primaryActionBtn.classList.add('border-rose-600');
-                    recordingTimerBadge.classList.remove('hidden');
-                    recordingTimerBadge.classList.add('flex');
-                    
-                    recordingSeconds = 0;
-                    updateTimerDisplay();
-                    recordingTimerInterval = setInterval(() => {
-                        recordingSeconds++;
-                        updateTimerDisplay();
-                    }, 1000);
-
-                } catch (err) {
-                    console.error("Cillad duubista video-ga:", err);
-                    showCustomModal("Cillad", "Suurtagal ma aha in la bilaabo duubista video-ga qalabkan.");
-                }
-            } else {
-                mediaRecorder.stop();
-                isRecording = false;
-
-                actionInnerBtn.className = "w-8 h-8 rounded-lg bg-rose-600 transition-all duration-300 group-hover:bg-rose-500";
-                primaryActionBtn.classList.remove('border-rose-600');
-                recordingTimerBadge.classList.add('hidden');
-                recordingTimerBadge.classList.remove('flex');
-                clearInterval(recordingTimerInterval);
-            }
-        }
-
-        function updateTimerDisplay() {
-            const mins = Math.floor(recordingSeconds / 60).toString().padStart(2, '0');
-            const secs = (recordingSeconds % 60).toString().padStart(2, '0');
-            timerText.innerText = `${mins}:${secs}`;
-        }
-
-        function updateGalleryUI() {
-            if (savedMediaItems.length > 0) {
-                const latest = savedMediaItems[0];
-                if (latest.type === 'photo') {
-                    thumbImg.src = latest.url;
-                } else {
-                    thumbImg.src = "https://placehold.co/100x100/1e293b/f43f5e?text=VIDEO";
-                }
-                mediaCountBadge.innerText = savedMediaItems.length;
-                mediaCountBadge.classList.remove('hidden');
-            }
-
-            renderGalleryList();
-        }
-
-        function renderGalleryList() {
-            const container = document.getElementById('mediaListContainer');
-            if (savedMediaItems.length === 0) {
-                container.innerHTML = `
-                    <div id="emptyGalleryState" class="text-center py-12 text-slate-500">
-                        <i class="fa-regular fa-folder-open text-4xl mb-2"></i>
-                        <p class="text-sm">Weli wax sawir ama video ah laguma keydin.</p>
-                    </div>`;
-                return;
-            }
-
-            let htmlContent = '';
-            savedMediaItems.forEach((item, index) => {
-                if (item.type === 'photo') {
-                    htmlContent += `
-                        <div class="bg-slate-900/60 border border-slate-700/60 rounded-2xl p-3 flex items-center justify-between space-x-3">
-                            <div class="flex items-center space-x-3">
-                                <img src="${item.url}" class="w-16 h-16 object-cover rounded-xl border border-slate-700" alt="Sawir">
-                                <div>
-                                    <span class="text-xs font-bold text-indigo-400 uppercase tracking-wider">Sawir (Photo)</span>
-                                    <p class="text-xs text-slate-400">${item.timestamp}</p>
-                                </div>
-                            </div>
-                            <div class="flex items-center space-x-2">
-                                <a href="${item.url}" download="sawir_${index}.jpg" class="bg-indigo-600 hover:bg-indigo-500 text-white p-2.5 rounded-xl text-xs transition shadow-md shadow-indigo-600/30 flex items-center justify-center">
-                                    <i class="fa-solid fa-download"></i>
-                                </a>
-                                <button onclick="deleteMedia(${index})" class="bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white p-2.5 rounded-xl text-xs transition">
-                                    <i class="fa-solid fa-trash"></i>
-                                </button>
-                            </div>
-                        </div>`;
-                } else {
-                    htmlContent += `
-                        <div class="bg-slate-900/60 border border-slate-700/60 rounded-2xl p-3 flex flex-col space-y-3">
-                            <div class="flex items-center justify-between">
-                                <div class="flex items-center space-x-3">
-                                    <div class="w-16 h-16 bg-rose-950/60 border border-rose-700/50 rounded-xl flex items-center justify-center text-rose-400 text-xl">
-                                        <i class="fa-solid fa-video"></i>
-                                    </div>
-                                    <div>
-                                        <span class="text-xs font-bold text-rose-400 uppercase tracking-wider">Muuqaal (Video)</span>
-                                        <p class="text-xs text-slate-400">${item.timestamp}</p>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2">
-                                    <a href="${item.url}" download="muuqaal_${index}.webm" class="bg-rose-600 hover:bg-rose-500 text-white p-2.5 rounded-xl text-xs transition shadow-md shadow-rose-600/30 flex items-center justify-center">
-                                        <i class="fa-solid fa-download"></i>
-                                    </a>
-                                    <button onclick="deleteMedia(${index})" class="bg-slate-800 hover:bg-rose-600 text-slate-300 hover:text-white p-2.5 rounded-xl text-xs transition">
-                                        <i class="fa-solid fa-trash"></i>
-                                    </button>
-                                </div>
-                            </div>
-                            <video src="${item.url}" controls class="w-full rounded-xl max-h-48 object-cover bg-black"></video>
-                        </div>`;
-                }
-            });
-            container.innerHTML = htmlContent;
-        }
-
-        function deleteMedia(index) {
-            savedMediaItems.splice(index, 1);
-            updateGalleryUI();
-        }
-
-        function showCustomModal(title, message) {
-            document.getElementById('modalTitle').innerText = title;
-            document.getElementById('modalMessage').innerText = message;
-            document.getElementById('customModal').classList.remove('hidden');
-        }
-
-        function closeModal() {
-            document.getElementById('customModal').classList.add('hidden');
-        }
-
-        function openGalleryModal() {
-            renderGalleryList();
-            document.getElementById('mediaModal').classList.remove('hidden');
-        }
-
-        function closeGalleryModal() {
-            document.getElementById('mediaModal').classList.add('hidden');
-        }
-    </script>
-</body>
-</html>
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Full Screen Camera App</title>
+    <title>YouTube Shorts Camera UI</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    },
+                    colors: {
+                        ytRed: '#FF0000',
+                    },
+                    animation: {
+                        'pulse-glow': 'pulseGlow 1.5s infinite ease-in-out',
+                        'ambient-bg': 'ambientBg 8s ease infinite',
+                    },
+                    keyframes: {
+                        pulseGlow: {
+                            '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(255, 0, 0, 0.7)' },
+                            '50%': { transform: 'scale(1.05)', boxShadow: '0 0 0 14px rgba(255, 0, 0, 0)' },
+                        },
+                        ambientBg: {
+                            '0%, 100%': { filter: 'contrast(1.1) brightness(0.9) hue-rotate(0deg)' },
+                            '50%': { filter: 'contrast(1.3) brightness(1.1) hue-rotate(15deg)' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+
     <style>
-        /* Kaamiradu waa inay buuxisaa shaashadda oo dhan */
-        #cameraStream {
-            object-fit: cover;
-            width: 100vw;
-            height: 100vh;
-            position: absolute;
-            top: 0;
-            left: 0;
-            z-index: 10;
+        body {
+            background-color: #0f0f0f;
+            color: #ffffff;
+            user-select: none;
+            -webkit-user-select: none;
+        }
+
+        .glass-pill {
+            background: rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+
+        .glass-dark {
+            background: rgba(0, 0, 0, 0.45);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .glass-icon-btn {
+            background: rgba(0, 0, 0, 0.35);
+            backdrop-filter: blur(8px);
+            -webkit-backdrop-filter: blur(8px);
+        }
+
+        .cam-feed {
+            background-size: cover;
+            background-position: center;
+            transition: all 0.5s ease;
+        }
+
+        .cam-sepia { filter: sepia(0.6) contrast(1.1); }
+        .cam-bw { filter: grayscale(1) contrast(1.2); }
+        .cam-vintage { filter: sepia(0.3) hue-rotate(-30deg) saturate(1.4); }
+        .cam-cyber { filter: hue-rotate(140deg) saturate(2); }
+        .cam-flipped { transform: scaleX(-1); }
+
+        ::-webkit-scrollbar {
+            width: 4px;
+        }
+        ::-webkit-scrollbar-track {
+            background: rgba(0,0,0,0.1);
+        }
+        ::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.2);
+            border-radius: 4px;
         }
     </style>
 </head>
-<body class="bg-black m-0 p-0 overflow-hidden h-screen w-screen relative">
+<body class="h-screen w-screen flex items-center justify-center overflow-hidden font-sans bg-neutral-950">
 
-    <!-- 1. Kaamirada oo Full Screen ah -->
-    <video id="cameraStream" autoplay playsinline muted></video>
+    <!-- Mobile Device Container -->
+    <div class="relative w-full h-full sm:max-w-[410px] sm:h-[840px] sm:rounded-[44px] overflow-hidden bg-black shadow-2xl border-0 sm:border-[8px] border-neutral-800 flex flex-col justify-between select-none">
 
-    <!-- 2. Flash effect (Iftiinka sawirka) -->
-    <div id="flashEffect" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-150 z-20"></div>
-
-    <!-- 3. Timer-ka Video-ga (Sare ayuu ka muuqdaa marka la duubayo) -->
-    <div id="timerDisplay" class="absolute top-6 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-1.5 rounded-full text-sm font-mono tracking-wider hidden z-30">
-        🔴 <span id="timeCount">00:00</span>
-    </div>
-
-    <!-- 4. Qeybta Kontoroolka (Controls Overlay - Dusha ayey ka saaran tahay) -->
-    <div class="absolute inset-0 flex flex-col justify-between p-6 z-30 pointer-events-none">
-        
-        <!-- Safka Sare: Badhamada Flash-ka iyo Beddelashada Kamerada -->
-        <div class="flex justify-between items-center pointer-events-auto">
-            <button id="flashBtn" class="w-12 h-12 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-md text-lg">
-                <i class="fa-solid fa-bolt-slash"></i>
-            </button>
-            <button id="switchBtn" class="w-12 h-12 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-md text-lg">
-                <i class="fa-solid fa-camera-rotate"></i>
-            </button>
-        </div>
-
-        <!-- Safka Hoose: Badhamada Sawirka, Video-ga, iyo Gallery-ga -->
-        <div class="flex flex-col gap-4 pointer-events-auto">
+        <!-- SIMULATED CAMERA VIEWFINDER / BACKGROUND -->
+        <div id="cameraViewfinder" class="absolute inset-0 z-0 cam-feed bg-neutral-900 transition-all duration-300">
+            <div id="ambientOverlay" class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/30 via-purple-900/20 to-black animate-ambient-bg"></div>
             
-            <!-- Hababka (Modes): Photo / Video -->
-            <div class="flex justify-center gap-6 text-white font-semibold text-sm">
-                <button id="photoModeBtn" class="border-b-2 border-yellow-400 pb-1">SAWIR</button>
-                <button id="videoModeBtn" class="text-gray-400 pb-1">MUUQAAL</button>
+            <div id="cameraGrid" class="hidden absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none z-10 opacity-30">
+                <div class="border-r border-b border-white/60"></div>
+                <div class="border-r border-b border-white/60"></div>
+                <div class="border-b border-white/60"></div>
+                <div class="border-r border-b border-white/60"></div>
+                <div class="border-r border-b border-white/60"></div>
+                <div class="border-b border-white/60"></div>
+                <div class="border-r border-white/60"></div>
+                <div class="border-r border-white/60"></div>
+                <div></div>
             </div>
 
-            <!-- Badhamada waaweyn ee hoose -->
-            <div class="flex justify-around items-center">
-                <!-- Gallery Thumbnail -->
-                <div id="galleryThumb" class="w-12 h-12 rounded-xl bg-gray-800 border-2 border-white/40 overflow-hidden flex items-center justify-center cursor-pointer shadow-lg">
-                    <span class="text-xs text-gray-400">Bar</span>
-                </div>
+            <!-- Real Live Video Element -->
+            <video id="webcamVideo" class="absolute inset-0 w-full h-full object-cover" autoplay playsinline muted></video>
+            <div id="fallbackBg" class="absolute inset-0 w-full h-full bg-cover bg-center hidden" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop');"></div>
+        </div>
 
-                <!-- Main Shutter Button (Batoonka Weyn) -->
-                <button id="shutterBtn" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 focus:outline-none">
-                    <div id="shutterInner" class="w-full h-full bg-white rounded-full transition-all duration-200"></div>
+        <!-- TOP PROGRESS BAR & RECORDING TIMER HEADER -->
+        <div class="relative z-20 w-full pt-3 px-3 flex flex-col gap-2">
+            <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden backdrop-blur-sm">
+                <div id="recordingProgress" class="bg-ytRed h-full w-0% transition-all duration-100 ease-linear rounded-full"></div>
+            </div>
+
+            <div class="flex items-center justify-between px-2 pt-1">
+                <button id="closeBtn" class="w-10 h-10 rounded-full flex items-center justify-center glass-icon-btn text-white hover:bg-white/20 active:scale-95 transition-all" title="Close">
+                    <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
 
-                <!-- Meel bannaan oo dheelitirka ah -->
-                <div class="w-12 h-12"></div>
+                <button id="addSoundBtn" class="flex items-center gap-2 px-4 py-2 rounded-full glass-pill text-white text-xs font-semibold hover:bg-white/30 active:scale-95 transition-all shadow-lg">
+                    <i class="fa-solid fa-music text-sm text-pink-400"></i>
+                    <span id="selectedSoundText" class="truncate max-w-[130px]">Add sound</span>
+                </button>
+
+                <button id="quickMagicBtn" class="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 p-[1.5px] active:scale-95 transition-all shadow-md">
+                    <div class="w-full h-full bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-sm"></i>
+                    </div>
+                </button>
+            </div>
+
+            <div id="recordingTimerBadge" class="self-center hidden items-center gap-2 bg-red-600/80 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-mono font-bold animate-pulse">
+                <span class="w-2 h-2 rounded-full bg-white"></span>
+                <span id="timerText">00:00 / 00:15</span>
             </div>
         </div>
+
+        <!-- RIGHT SIDE ACTION MENU BAR -->
+        <div class="absolute right-3 top-20 z-20 flex flex-col gap-4 items-center glass-dark py-3 px-2 rounded-full shadow-2xl transition-all duration-300">
+            <button id="flipCamBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Flip Camera">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
+                    <i class="fa-solid fa-rotate text-lg group-hover:rotate-180 transition-transform duration-500"></i>
+                </div>
+                <span class="text-[10px] font-medium tracking-tight text-white/90">Flip</span>
+            </button>
+
+            <button id="timerBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Countdown Timer">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
+                    <i class="fa-regular fa-clock text-lg"></i>
+                </div>
+                <span id="timerLabel" class="text-[10px] font-medium tracking-tight text-white/90">Off</span>
+            </button>
+
+            <button id="durationToggleBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Video Length">
+                <div class="w-9 h-9 rounded-full border border-white/40 flex items-center justify-center hover:bg-white/20 transition-colors bg-white/10">
+                    <span id="durationBadge" class="text-[11px] font-bold">15s</span>
+                </div>
+                <span class="text-[10px] font-medium tracking-tight text-white/90">Speed</span>
+            </button>
+
+            <button id="effectsBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Effects">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-pink-400">
+                    <i class="fa-solid fa-sparkles text-lg"></i>
+                </div>
+                <span class="text-[10px] font-medium tracking-tight text-white/90">Filters</span>
+            </button>
+
+            <button id="speedRateBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Playback Speed">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
+                    <span id="speedRateLabel" class="text-xs font-semibold">1x</span>
+                </div>
+                <span class="text-[10px] font-medium tracking-tight text-white/90">Speed</span>
+            </button>
+
+            <button id="gridToggleBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Toggle Grid">
+                <div id="gridIconContainer" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-white/80">
+                    <i class="fa-solid fa-border-all text-base"></i>
+                </div>
+                <span class="text-[10px] font-medium tracking-tight text-white/90">Align</span>
+            </button>
+        </div>
+
+        <!-- BOTTOM CONTROL SECTION -->
+        <div class="relative z-20 w-full pb-4 px-4 flex flex-col gap-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-12">
+            <div class="flex items-center justify-between px-6">
+                <button id="galleryBtn" class="flex flex-col items-center gap-1 group active:scale-95 transition-all">
+                    <div class="w-12 h-12 rounded-xl overflow-hidden border-2 border-white/80 p-0.5 glass-icon-btn group-hover:border-white transition-colors shadow-lg">
+                        <img id="galleryThumb" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover rounded-lg" alt="Gallery preview">
+                    </div>
+                    <span class="text-xs font-semibold tracking-wide text-white drop-shadow-md">Add</span>
+                </button>
+
+                <div class="relative flex items-center justify-center">
+                    <div id="recordRing" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center transition-all duration-300">
+                        <button id="recordBtn" class="w-16 h-16 rounded-full bg-ytRed hover:bg-red-600 active:scale-90 transition-all duration-200 shadow-xl flex items-center justify-center cursor-pointer">
+                            <div id="recordInnerIcon" class="w-full h-full rounded-full bg-ytRed transition-all duration-300"></div>
+                        </button>
+                    </div>
+                </div>
+
+                <button id="flashBtn" class="flex flex-col items-center gap-1 group active:scale-95 transition-all">
+                    <div class="w-12 h-12 rounded-xl flex items-center justify-center glass-icon-btn border border-white/20 text-white group-hover:border-white/50 transition-colors shadow-lg">
+                        <i id="flashIcon" class="fa-solid fa-bolt-slash text-lg"></i>
+                    </div>
+                    <span id="flashLabel" class="text-xs font-medium text-white drop-shadow-md">Flash</span>
+                </button>
+            </div>
+
+            <!-- MODE SWITCHER TABS -->
+            <div class="flex items-center justify-center gap-2 mt-1">
+                <div class="flex items-center bg-black/60 backdrop-blur-lg p-1 rounded-full border border-white/10 shadow-inner">
+                    <button id="modeVideo" class="mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all">Video</button>
+                    <button id="modeShort" class="mode-tab px-5 py-1.5 rounded-full text-xs font-bold text-white bg-neutral-800 shadow-md transition-all">Short</button>
+                    <button id="modeLive" class="mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all">Live</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- SOUND SELECTOR MODAL -->
+        <div id="soundModal" class="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl translate-y-full transition-transform duration-300 ease-out flex flex-col justify-end">
+            <div class="h-[85%] w-full bg-neutral-900 rounded-t-[32px] border-t border-white/10 flex flex-col overflow-hidden">
+                <div class="p-4 border-b border-white/10 flex items-center justify-between">
+                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-music text-pink-500"></i> Add Sound</h3>
+                    <button id="closeSoundModal" class="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                </div>
+                <div class="p-3 px-4">
+                    <div class="relative">
+                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-neutral-400 text-sm"></i>
+                        <input type="text" placeholder="Search sounds, artists..." class="w-full bg-neutral-800 text-white text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-red-500 border border-neutral-700/50">
+                    </div>
+                </div>
+                <div class="flex-1 overflow-y-auto px-4 py-2 flex flex-col gap-3">
+                    <div class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">Trending Sounds</div>
+                    <div class="sound-item flex items-center justify-between p-2 rounded-xl bg-neutral-800/40 hover:bg-neutral-800 cursor-pointer transition-colors" data-title="Lofi Chill Beat">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md"><i class="fa-solid fa-play text-xs"></i></div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-white">Lofi Chill Beat</h4>
+                                <p class="text-xs text-neutral-400">Aesthetic Audio • 0:15</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 rounded-full bg-white/10 text-xs text-white">Select</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- FILTERS MODAL -->
+        <div id="filtersModal" class="absolute bottom-0 inset-x-0 z-40 bg-black/85 backdrop-blur-xl translate-y-full transition-transform duration-300 p-4 rounded-t-[28px] border-t border-white/10">
+            <div class="flex items-center justify-between mb-3">
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Camera Filters</span>
+                <button id="closeFiltersBtn" class="text-neutral-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
+            </div>
+            <div class="flex items-center gap-3 overflow-x-auto pb-2">
+                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="none">
+                    <div class="w-12 h-12 rounded-full border-2 border-red-500 bg-neutral-800 flex items-center justify-center text-xs font-bold text-white">Normal</div>
+                    <span class="text-[10px] text-white">Normal</span>
+                </button>
+                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="cam-vintage">
+                    <div class="w-12 h-12 rounded-full border border-white/20 bg-amber-800/50 flex items-center justify-center text-xs font-bold text-amber-200">Vintage</div>
+                    <span class="text-[10px] text-neutral-300">Vintage</span>
+                </button>
+                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="cam-bw">
+                    <div class="w-12 h-12 rounded-full border border-white/20 bg-neutral-600 flex items-center justify-center text-xs font-bold text-white">B&W</div>
+                    <span class="text-[10px] text-neutral-300">B&W</span>
+                </button>
+                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="cam-cyber">
+                    <div class="w-12 h-12 rounded-full border border-white/20 bg-indigo-600 flex items-center justify-center text-xs font-bold text-cyan-200">Cyber</div>
+                    <span class="text-[10px] text-neutral-300">Cyber</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- TOAST NOTIFICATION -->
+        <div id="toast" class="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-800/90 text-white text-xs px-4 py-2 rounded-full border border-white/10 shadow-xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2">
+            <i id="toastIcon" class="fa-solid fa-circle-info text-pink-400"></i>
+            <span id="toastMsg">Notification message</span>
+        </div>
+
     </div>
 
-    <!-- Canvas-ka sirta ah ee sawirka qaadaya -->
-    <canvas id="snapshot" class="hidden"></canvas>
-
-    <!-- JavaScript-kii shaqada waday -->
+    <!-- JAVASCRIPT LOGIC -->
     <script>
-        const video = document.getElementById('cameraStream');
-        const shutterBtn = document.getElementById('shutterBtn');
-        const shutterInner = document.getElementById('shutterInner');
-        const flashEffect = document.getElementById('flashEffect');
-        const photoModeBtn = document.getElementById('photoModeBtn');
-        const videoModeBtn = document.getElementById('videoModeBtn');
-        const timerDisplay = document.getElementById('timerDisplay');
-        const timeCount = document.getElementById('timeCount');
-        const galleryThumb = document.getElementById('galleryThumb');
+        document.addEventListener('DOMContentLoaded', () => {
+            let isRecording = false;
+            let recordingTimer = null;
+            let maxDuration = 15;
+            let recordedSeconds = 0;
+            let currentFacingMode = 'user'; // 'user' = Front, 'environment' = Back
+            let mediaStream = null;
+            let isFlashOn = false;
 
-        let currentMode = 'photo'; // 'photo' ama 'video'
-        let currentFacingMode = 'user'; // 'user' (hore) ama 'environment' (dambe)
-        let mediaStream = null;
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let isRecording = false;
-        let timerInterval = null;
-        let secondsElapsed = 0;
-
-        // 1. Shidida Kaamirada
-        async function startCamera() {
-            if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
-            }
-            try {
-                mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: currentFacingMode },
-                    audio: true
-                });
-                video.srcObject = mediaStream;
-            } catch (err) {
-                alert("Kaamirada lama shidi karo ama ogolaansho malahan.");
-            }
-        }
-        startCamera();
-
-        // 2. Beddelashada Mode-ka (Sawir vs Video)
-        photoModeBtn.addEventListener('click', () => {
-            if (isRecording) return;
-            currentMode = 'photo';
-            photoModeBtn.className = "border-b-2 border-yellow-400 pb-1 text-white";
-            videoModeBtn.className = "text-gray-400 pb-1";
-            shutterInner.className = "w-full h-full bg-white rounded-full transition-all duration-200";
-        });
-
-        videoModeBtn.addEventListener('click', () => {
-            currentMode = 'video';
-            videoModeBtn.className = "border-b-2 border-yellow-400 pb-1 text-white";
-            photoModeBtn.className = "text-gray-400 pb-1";
-            shutterInner.className = "w-full h-full bg-red-600 rounded-full transition-all duration-200";
-        });
-
-        // 3. Riixidda Shutter-ka (Sawir ama Duubis)
-        shutterBtn.addEventListener('click', () => {
-            if (currentMode === 'photo') {
-                takePhoto();
-            } else {
-                toggleVideoRecording();
-            }
-        });
-
-        // 4. Hawsha Sawir Qaadista
-        function takePhoto() {
-            // Flash Effect
-            flashEffect.classList.remove('opacity-0');
-            flashEffect.classList.add('opacity-80');
-            setTimeout(() => {
-                flashEffect.classList.remove('opacity-80');
-                flashEffect.classList.add('opacity-0');
-            }, 150);
-
-            const canvas = document.getElementById('snapshot');
-            canvas.width = video.videoWidth;
-            canvas.height = video.videoHeight;
-            const ctx = canvas.getContext('2d');
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imageUrl = canvas.toDataURL('image/png');
+            const webcamVideo = document.getElementById('webcamVideo');
+            const cameraViewfinder = document.getElementById('cameraViewfinder');
+            const recordBtn = document.getElementById('recordBtn');
+            const recordRing = document.getElementById('recordRing');
+            const recordInnerIcon = document.getElementById('recordInnerIcon');
+            const recordingProgress = document.getElementById('recordingProgress');
+            const recordingTimerBadge = document.getElementById('recordingTimerBadge');
+            const timerText = document.getElementById('timerText');
             
-            // Ku dar Gallery Thumbnail-ka
-            galleryThumb.innerHTML = `<img src="${imageUrl}" class="w-full h-full object-cover">`;
+            const flipCamBtn = document.getElementById('flipCamBtn');
+            const flashBtn = document.getElementById('flashBtn');
+            const flashIcon = document.getElementById('flashIcon');
+            const flashLabel = document.getElementById('flashLabel');
 
-            // Download toos ah (optional)
-            let a = document.createElement('a');
-            a.href = imageUrl;
-            a.download = `sawir_${Date.now()}.png`;
-            a.click();
-        }
-
-        // 5. Hawsha Duubista Muuqaalka (Video)
-        function toggleVideoRecording() {
-            if (!isRecording) {
-                // Bilow Duubista
-                recordedChunks = [];
-                mediaRecorder = new MediaRecorder(mediaStream, { mimeType: 'video/webm' });
-
-                mediaRecorder.ondataavailable = (event) => {
-                    if (event.data.size > 0) recordedChunks.push(event.data);
-                };
-
-                mediaRecorder.onstop = () => {
-                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
-                    const videoUrl = URL.createObjectURL(blob);
-                    
-                    let a = document.createElement('a');
-                    a.href = videoUrl;
-                    a.download = `muuqaal_${Date.now()}.webm`;
-                    a.click();
-                };
-
-                mediaRecorder.start();
-                isRecording = true;
-                shutterInner.className = "w-6 h-6 bg-red-600 rounded-sm transition-all duration-200"; // Beddel astaanta badhanka
-                timerDisplay.classList.remove('hidden');
+            function showToast(message, iconClass = 'fa-solid fa-circle-info text-pink-400') {
+                const toast = document.getElementById('toast');
+                const toastMsg = document.getElementById('toastMsg');
+                const toastIcon = document.getElementById('toastIcon');
                 
-                // Saacadda
-                secondsElapsed = 0;
-                timeCount.textContent = "00:00";
-                timerInterval = setInterval(() => {
-                    secondsElapsed++;
-                    let mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
-                    let secs = (secondsElapsed % 60).toString().padStart(2, '0');
-                    timeCount.textContent = `${mins}:${secs}`;
-                }, 1000);
+                toastMsg.textContent = message;
+                toastIcon.className = iconClass;
+                
+                toast.classList.remove('opacity-0', 'pointer-events-none');
+                toast.classList.add('opacity-100');
 
-            } else {
-                // Jooji Duubista
-                mediaRecorder.stop();
-                isRecording = false;
-                shutterInner.className = "w-full h-full bg-red-600 rounded-full transition-all duration-200";
-                timerDisplay.classList.add('hidden');
-                clearInterval(timerInterval);
+                setTimeout(() => {
+                    toast.classList.add('opacity-0', 'pointer-events-none');
+                    toast.classList.remove('opacity-100');
+                }, 2200);
             }
-        }
 
-        // 6. Beddelashada Kamerada Hore / Dambe
-        document.getElementById('switchBtn').addEventListener('click', () => {
-            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-            startCamera();
+            // Real Camera Initializer Function supporting both Front and Back cameras
+            async function initCamera(facingMode) {
+                try {
+                    if (mediaStream) {
+                        mediaStream.getTracks().forEach(track => track.stop());
+                    }
+
+                    const constraints = {
+                        video: { 
+                            facingMode: facingMode 
+                        },
+                        audio: false
+                    };
+
+                    mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
+                    webcamVideo.srcObject = mediaStream;
+                    webcamVideo.play();
+                } catch (err) {
+                    console.log("Error accessing camera: ", err);
+                    showToast("Kamaradda lama furi karo ama diidmo ayaa jirta", "fa-solid fa-triangle-exclamation text-yellow-400");
+                }
+            }
+
+            // Start with front camera initially
+            initCamera(currentFacingMode);
+
+            // Flip Camera Button Action
+            flipCamBtn.addEventListener('click', () => {
+                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+                initCamera(currentFacingMode);
+                
+                if(currentFacingMode === 'environment') {
+                    showToast("Kamaradda Dambe (Back Camera)", "fa-solid fa-rotate");
+                } else {
+                    showToast("Kamaradda Hore (Front Camera)", "fa-solid fa-rotate");
+                }
+            });
+
+            // Recording Logic
+            function toggleRecording() {
+                isRecording = !isRecording;
+                if (isRecording) {
+                    recordRing.classList.add('animate-pulse-glow', 'border-red-500');
+                    recordInnerIcon.className = 'w-6 h-6 bg-ytRed rounded-sm transition-all duration-300';
+                    recordingTimerBadge.classList.remove('hidden');
+                    recordingTimerBadge.classList.add('flex');
+                    showToast("Recording started", "fa-solid fa-circle-dot text-red-500");
+
+                    recordedSeconds = 0;
+                    recordingTimer = setInterval(() => {
+                        recordedSeconds += 0.1;
+                        const percentage = Math.min((recordedSeconds / maxDuration) * 100, 100);
+                        recordingProgress.style.width = `${percentage}%`;
+                        timerText.textContent = `00:${recordedSeconds < 10 ? '0' : ''}${recordedSeconds.toFixed(1)} / 00:${maxDuration}`;
+
+                        if (recordedSeconds >= maxDuration) {
+                            toggleRecording();
+                        }
+                    }, 100);
+                } else {
+                    clearInterval(recordingTimer);
+                    recordRing.classList.remove('animate-pulse-glow', 'border-red-500');
+                    recordInnerIcon.className = 'w-full h-full rounded-full bg-ytRed transition-all duration-300';
+                    recordingTimerBadge.classList.add('hidden');
+                    recordingTimerBadge.classList.remove('flex');
+                    showToast("Recording stopped", "fa-solid fa-stop text-yellow-400");
+                }
+            }
+            recordBtn.addEventListener('click', toggleRecording);
+
+            // Flash Toggle
+            flashBtn.addEventListener('click', () => {
+                isFlashOn = !isFlashOn;
+                if (isFlashOn) {
+                    flashIcon.className = 'fa-solid fa-bolt text-amber-400 text-lg';
+                    flashLabel.textContent = 'On';
+                    showToast('Flash light turned ON');
+                } else {
+                    flashIcon.className = 'fa-solid fa-bolt-slash text-lg';
+                    flashLabel.textContent = 'Flash';
+                    showToast('Flash light turned OFF');
+                }
+            });
+
+            // Modals interaction bindings
+            document.getElementById('addSoundBtn').addEventListener('click', () => {
+                document.getElementById('soundModal').classList.remove('translate-y-full');
+            });
+            document.getElementById('closeSoundModal').addEventListener('click', () => {
+                document.getElementById('soundModal').classList.add('translate-y-full');
+            });
+
+            document.getElementById('effectsBtn').addEventListener('click', () => {
+                document.getElementById('filtersModal').classList.remove('translate-y-full');
+            });
+            document.getElementById('closeFiltersBtn').addEventListener('click', () => {
+                document.getElementById('filtersModal').classList.add('translate-y-full');
+            });
+
+            document.querySelectorAll('.filter-opt').forEach(opt => {
+                opt.addEventListener('click', () => {
+                    const filterClass = opt.getAttribute('data-filter');
+                    cameraViewfinder.className = `absolute inset-0 z-0 cam-feed bg-neutral-900 transition-all duration-300 ${filterClass}`;
+                    document.getElementById('filtersModal').classList.add('translate-y-full');
+                    showToast("Filter applied");
+                });
+            });
         });
     </script>
 </body>

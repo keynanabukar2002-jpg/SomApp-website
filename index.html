@@ -4,282 +4,84 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>YouTube Shorts Camera UI</title>
-    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts -->
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    fontFamily: {
-                        sans: ['Inter', 'sans-serif'],
-                    },
-                    colors: {
-                        ytRed: '#FF0000',
-                    },
-                    animation: {
-                        'pulse-glow': 'pulseGlow 1.5s infinite ease-in-out',
-                        'ambient-bg': 'ambientBg 8s ease infinite',
-                    },
+                    colors: { ytRed: '#FF0000' },
+                    animation: { 'pulse-glow': 'pulseGlow 1.5s infinite ease-in-out' },
                     keyframes: {
                         pulseGlow: {
                             '0%, 100%': { transform: 'scale(1)', boxShadow: '0 0 0 0 rgba(255, 0, 0, 0.7)' },
                             '50%': { transform: 'scale(1.05)', boxShadow: '0 0 0 14px rgba(255, 0, 0, 0)' },
-                        },
-                        ambientBg: {
-                            '0%, 100%': { filter: 'contrast(1.1) brightness(0.9) hue-rotate(0deg)' },
-                            '50%': { filter: 'contrast(1.3) brightness(1.1) hue-rotate(15deg)' },
                         }
                     }
                 }
             }
         }
     </script>
-
     <style>
-        body {
-            background-color: #0f0f0f;
-            color: #ffffff;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        .glass-pill {
-            background: rgba(255, 255, 255, 0.2);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.15);
-        }
-
-        .glass-dark {
-            background: rgba(0, 0, 0, 0.45);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-
-        .glass-icon-btn {
-            background: rgba(0, 0, 0, 0.35);
-            backdrop-filter: blur(8px);
-            -webkit-backdrop-filter: blur(8px);
-        }
-
-        .cam-feed {
-            background-size: cover;
-            background-position: center;
-            transition: all 0.5s ease;
-        }
-
-        .cam-sepia { filter: sepia(0.6) contrast(1.1); }
-        .cam-bw { filter: grayscale(1) contrast(1.2); }
-        .cam-vintage { filter: sepia(0.3) hue-rotate(-30deg) saturate(1.4); }
-        .cam-cyber { filter: hue-rotate(140deg) saturate(2); }
-        .cam-flipped { transform: scaleX(-1); }
-
-        ::-webkit-scrollbar {
-            width: 4px;
-        }
-        ::-webkit-scrollbar-track {
-            background: rgba(0,0,0,0.1);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: rgba(255,255,255,0.2);
-            border-radius: 4px;
-        }
+        body { background-color: #0f0f0f; color: #ffffff; user-select: none; -webkit-user-select: none; }
+        .glass-pill { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); }
+        .glass-dark { background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-icon-btn { background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(8px); }
     </style>
 </head>
 <body class="h-screen w-screen flex items-center justify-center overflow-hidden font-sans bg-neutral-950">
 
-    <!-- Mobile Device Container -->
     <div class="relative w-full h-full sm:max-w-[410px] sm:h-[840px] sm:rounded-[44px] overflow-hidden bg-black shadow-2xl border-0 sm:border-[8px] border-neutral-800 flex flex-col justify-between select-none">
 
-        <!-- SIMULATED CAMERA VIEWFINDER / BACKGROUND -->
-        <div id="cameraViewfinder" class="absolute inset-0 z-0 cam-feed bg-neutral-900 transition-all duration-300">
-            <div id="ambientOverlay" class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/30 via-purple-900/20 to-black animate-ambient-bg"></div>
-            
-            <div id="cameraGrid" class="hidden absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none z-10 opacity-30">
-                <div class="border-r border-b border-white/60"></div>
-                <div class="border-r border-b border-white/60"></div>
-                <div class="border-b border-white/60"></div>
-                <div class="border-r border-b border-white/60"></div>
-                <div class="border-r border-b border-white/60"></div>
-                <div class="border-b border-white/60"></div>
-                <div class="border-r border-white/60"></div>
-                <div class="border-r border-white/60"></div>
-                <div></div>
-            </div>
-
-            <!-- Real Live Video Element -->
+        <!-- CAMERA VIEWFINDER -->
+        <div id="cameraViewfinder" class="absolute inset-0 z-0 bg-neutral-900 transition-all duration-300">
             <video id="webcamVideo" class="absolute inset-0 w-full h-full object-cover" autoplay playsinline muted></video>
             <div id="fallbackBg" class="absolute inset-0 w-full h-full bg-cover bg-center hidden" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop');"></div>
         </div>
 
-        <!-- TOP PROGRESS BAR & RECORDING TIMER HEADER -->
+        <!-- HEADER CONTROLS -->
         <div class="relative z-20 w-full pt-3 px-3 flex flex-col gap-2">
-            <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden backdrop-blur-sm">
+            <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden">
                 <div id="recordingProgress" class="bg-ytRed h-full w-0% transition-all duration-100 ease-linear rounded-full"></div>
             </div>
-
             <div class="flex items-center justify-between px-2 pt-1">
-                <button id="closeBtn" class="w-10 h-10 rounded-full flex items-center justify-center glass-icon-btn text-white hover:bg-white/20 active:scale-95 transition-all" title="Close">
-                    <i class="fa-solid fa-xmark text-xl"></i>
-                </button>
-
-                <button id="addSoundBtn" class="flex items-center gap-2 px-4 py-2 rounded-full glass-pill text-white text-xs font-semibold hover:bg-white/30 active:scale-95 transition-all shadow-lg">
-                    <i class="fa-solid fa-music text-sm text-pink-400"></i>
-                    <span id="selectedSoundText" class="truncate max-w-[130px]">Add sound</span>
-                </button>
-
-                <button id="quickMagicBtn" class="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 p-[1.5px] active:scale-95 transition-all shadow-md">
-                    <div class="w-full h-full bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center">
-                        <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-sm"></i>
-                    </div>
-                </button>
+                <button id="closeBtn" class="w-10 h-10 rounded-full flex items-center justify-center glass-icon-btn text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button id="addSoundBtn" class="flex items-center gap-2 px-4 py-2 rounded-full glass-pill text-white text-xs font-semibold"><i class="fa-solid fa-music text-pink-400"></i> <span id="selectedSoundText">Add sound</span></button>
+                <button id="quickMagicBtn" class="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-tr from-purple-600 to-amber-400 p-[1.5px]"><div class="w-full h-full bg-black/40 rounded-full flex items-center justify-center"><i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-sm"></i></div></button>
             </div>
-
-            <div id="recordingTimerBadge" class="self-center hidden items-center gap-2 bg-red-600/80 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-mono font-bold animate-pulse">
+            <div id="recordingTimerBadge" class="self-center hidden items-center gap-2 bg-red-600/80 text-white text-xs px-3 py-1 rounded-full font-bold animate-pulse">
                 <span class="w-2 h-2 rounded-full bg-white"></span>
                 <span id="timerText">00:00 / 00:15</span>
             </div>
         </div>
 
-        <!-- RIGHT SIDE ACTION MENU BAR -->
-        <div class="absolute right-3 top-20 z-20 flex flex-col gap-4 items-center glass-dark py-3 px-2 rounded-full shadow-2xl transition-all duration-300">
-            <button id="flipCamBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Flip Camera">
-                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                    <i class="fa-solid fa-rotate text-lg group-hover:rotate-180 transition-transform duration-500"></i>
-                </div>
-                <span class="text-[10px] font-medium tracking-tight text-white/90">Flip</span>
+        <!-- SIDEBAR CONTROLS -->
+        <div class="absolute right-3 top-20 z-20 flex flex-col gap-4 items-center glass-dark py-3 px-2 rounded-full shadow-2xl">
+            <button id="flipCamBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20"><i class="fa-solid fa-rotate text-lg"></i></div>
+                <span class="text-[10px] text-white/90">Flip</span>
             </button>
-
-            <button id="timerBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Countdown Timer">
-                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                    <i class="fa-regular fa-clock text-lg"></i>
-                </div>
-                <span id="timerLabel" class="text-[10px] font-medium tracking-tight text-white/90">Off</span>
-            </button>
-
-            <button id="durationToggleBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Video Length">
-                <div class="w-9 h-9 rounded-full border border-white/40 flex items-center justify-center hover:bg-white/20 transition-colors bg-white/10">
-                    <span id="durationBadge" class="text-[11px] font-bold">15s</span>
-                </div>
-                <span class="text-[10px] font-medium tracking-tight text-white/90">Speed</span>
-            </button>
-
-            <button id="effectsBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Effects">
-                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-pink-400">
-                    <i class="fa-solid fa-sparkles text-lg"></i>
-                </div>
-                <span class="text-[10px] font-medium tracking-tight text-white/90">Filters</span>
-            </button>
-
-            <button id="speedRateBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Playback Speed">
-                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
-                    <span id="speedRateLabel" class="text-xs font-semibold">1x</span>
-                </div>
-                <span class="text-[10px] font-medium tracking-tight text-white/90">Speed</span>
-            </button>
-
-            <button id="gridToggleBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Toggle Grid">
-                <div id="gridIconContainer" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-white/80">
-                    <i class="fa-solid fa-border-all text-base"></i>
-                </div>
-                <span class="text-[10px] font-medium tracking-tight text-white/90">Align</span>
+            <button id="flashBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20"><i id="flashIcon" class="fa-solid fa-bolt-slash text-base"></i></div>
+                <span id="flashLabel" class="text-[10px] text-white/90">Flash</span>
             </button>
         </div>
 
-        <!-- BOTTOM CONTROL SECTION -->
+        <!-- BOTTOM CONTROLS -->
         <div class="relative z-20 w-full pb-4 px-4 flex flex-col gap-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-12">
             <div class="flex items-center justify-between px-6">
-                <button id="galleryBtn" class="flex flex-col items-center gap-1 group active:scale-95 transition-all">
-                    <div class="w-12 h-12 rounded-xl overflow-hidden border-2 border-white/80 p-0.5 glass-icon-btn group-hover:border-white transition-colors shadow-lg">
-                        <img id="galleryThumb" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover rounded-lg" alt="Gallery preview">
-                    </div>
-                    <span class="text-xs font-semibold tracking-wide text-white drop-shadow-md">Add</span>
-                </button>
-
+                <div class="w-12 h-12 rounded-xl overflow-hidden border-2 border-white/80 p-0.5 glass-icon-btn">
+                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover rounded-lg">
+                </div>
                 <div class="relative flex items-center justify-center">
-                    <div id="recordRing" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center transition-all duration-300">
-                        <button id="recordBtn" class="w-16 h-16 rounded-full bg-ytRed hover:bg-red-600 active:scale-90 transition-all duration-200 shadow-xl flex items-center justify-center cursor-pointer">
-                            <div id="recordInnerIcon" class="w-full h-full rounded-full bg-ytRed transition-all duration-300"></div>
+                    <div id="recordRing" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center">
+                        <button id="recordBtn" class="w-16 h-16 rounded-full bg-ytRed shadow-xl flex items-center justify-center cursor-pointer">
+                            <div id="recordInnerIcon" class="w-full h-full rounded-full bg-ytRed"></div>
                         </button>
                     </div>
                 </div>
-
-                <button id="flashBtn" class="flex flex-col items-center gap-1 group active:scale-95 transition-all">
-                    <div class="w-12 h-12 rounded-xl flex items-center justify-center glass-icon-btn border border-white/20 text-white group-hover:border-white/50 transition-colors shadow-lg">
-                        <i id="flashIcon" class="fa-solid fa-bolt-slash text-lg"></i>
-                    </div>
-                    <span id="flashLabel" class="text-xs font-medium text-white drop-shadow-md">Flash</span>
-                </button>
-            </div>
-
-            <!-- MODE SWITCHER TABS -->
-            <div class="flex items-center justify-center gap-2 mt-1">
-                <div class="flex items-center bg-black/60 backdrop-blur-lg p-1 rounded-full border border-white/10 shadow-inner">
-                    <button id="modeVideo" class="mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all">Video</button>
-                    <button id="modeShort" class="mode-tab px-5 py-1.5 rounded-full text-xs font-bold text-white bg-neutral-800 shadow-md transition-all">Short</button>
-                    <button id="modeLive" class="mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all">Live</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- SOUND SELECTOR MODAL -->
-        <div id="soundModal" class="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl translate-y-full transition-transform duration-300 ease-out flex flex-col justify-end">
-            <div class="h-[85%] w-full bg-neutral-900 rounded-t-[32px] border-t border-white/10 flex flex-col overflow-hidden">
-                <div class="p-4 border-b border-white/10 flex items-center justify-between">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-music text-pink-500"></i> Add Sound</h3>
-                    <button id="closeSoundModal" class="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-                <div class="p-3 px-4">
-                    <div class="relative">
-                        <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-neutral-400 text-sm"></i>
-                        <input type="text" placeholder="Search sounds, artists..." class="w-full bg-neutral-800 text-white text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-red-500 border border-neutral-700/50">
-                    </div>
-                </div>
-                <div class="flex-1 overflow-y-auto px-4 py-2 flex flex-col gap-3">
-                    <div class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">Trending Sounds</div>
-                    <div class="sound-item flex items-center justify-between p-2 rounded-xl bg-neutral-800/40 hover:bg-neutral-800 cursor-pointer transition-colors" data-title="Lofi Chill Beat">
-                        <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-lg bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md"><i class="fa-solid fa-play text-xs"></i></div>
-                            <div>
-                                <h4 class="text-sm font-semibold text-white">Lofi Chill Beat</h4>
-                                <p class="text-xs text-neutral-400">Aesthetic Audio • 0:15</p>
-                            </div>
-                        </div>
-                        <button class="px-3 py-1.5 rounded-full bg-white/10 text-xs text-white">Select</button>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- FILTERS MODAL -->
-        <div id="filtersModal" class="absolute bottom-0 inset-x-0 z-40 bg-black/85 backdrop-blur-xl translate-y-full transition-transform duration-300 p-4 rounded-t-[28px] border-t border-white/10">
-            <div class="flex items-center justify-between mb-3">
-                <span class="text-xs font-bold text-white uppercase tracking-wider">Camera Filters</span>
-                <button id="closeFiltersBtn" class="text-neutral-400 hover:text-white text-sm"><i class="fa-solid fa-xmark"></i></button>
-            </div>
-            <div class="flex items-center gap-3 overflow-x-auto pb-2">
-                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="none">
-                    <div class="w-12 h-12 rounded-full border-2 border-red-500 bg-neutral-800 flex items-center justify-center text-xs font-bold text-white">Normal</div>
-                    <span class="text-[10px] text-white">Normal</span>
-                </button>
-                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="cam-vintage">
-                    <div class="w-12 h-12 rounded-full border border-white/20 bg-amber-800/50 flex items-center justify-center text-xs font-bold text-amber-200">Vintage</div>
-                    <span class="text-[10px] text-neutral-300">Vintage</span>
-                </button>
-                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="cam-bw">
-                    <div class="w-12 h-12 rounded-full border border-white/20 bg-neutral-600 flex items-center justify-center text-xs font-bold text-white">B&W</div>
-                    <span class="text-[10px] text-neutral-300">B&W</span>
-                </button>
-                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="cam-cyber">
-                    <div class="w-12 h-12 rounded-full border border-white/20 bg-indigo-600 flex items-center justify-center text-xs font-bold text-cyan-200">Cyber</div>
-                    <span class="text-[10px] text-neutral-300">Cyber</span>
-                </button>
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center glass-icon-btn text-white text-xs font-bold">Tool</div>
             </div>
         </div>
 
@@ -291,154 +93,53 @@
 
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            let isRecording = false;
-            let recordingTimer = null;
-            let maxDuration = 15;
-            let recordedSeconds = 0;
-            let currentFacingMode = 'user'; // 'user' = Front, 'environment' = Back
+            let currentFacingMode = 'user'; // 'user' = Hore, 'environment' = Dambe
             let mediaStream = null;
-            let isFlashOn = false;
-
             const webcamVideo = document.getElementById('webcamVideo');
-            const cameraViewfinder = document.getElementById('cameraViewfinder');
-            const recordBtn = document.getElementById('recordBtn');
-            const recordRing = document.getElementById('recordRing');
-            const recordInnerIcon = document.getElementById('recordInnerIcon');
-            const recordingProgress = document.getElementById('recordingProgress');
-            const recordingTimerBadge = document.getElementById('recordingTimerBadge');
-            const timerText = document.getElementById('timerText');
-            
+            const fallbackBg = document.getElementById('fallbackBg');
             const flipCamBtn = document.getElementById('flipCamBtn');
-            const flashBtn = document.getElementById('flashBtn');
-            const flashIcon = document.getElementById('flashIcon');
-            const flashLabel = document.getElementById('flashLabel');
 
             function showToast(message, iconClass = 'fa-solid fa-circle-info text-pink-400') {
                 const toast = document.getElementById('toast');
-                const toastMsg = document.getElementById('toastMsg');
-                const toastIcon = document.getElementById('toastIcon');
-                
-                toastMsg.textContent = message;
-                toastIcon.className = iconClass;
-                
+                document.getElementById('toastMsg').textContent = message;
+                document.getElementById('toastIcon').className = iconClass;
                 toast.classList.remove('opacity-0', 'pointer-events-none');
                 toast.classList.add('opacity-100');
-
-                setTimeout(() => {
-                    toast.classList.add('opacity-0', 'pointer-events-none');
-                    toast.classList.remove('opacity-100');
-                }, 2200);
+                setTimeout(() => { toast.classList.add('opacity-0', 'pointer-events-none'); toast.classList.remove('opacity-100'); }, 2500);
             }
 
-            // Real Camera Initializer Function supporting both Front and Back cameras
             async function initCamera(facingMode) {
                 try {
+                    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+                        throw new Error("Browser-kaagu ma taageerayo kamaradda sababtoo ah faylka waxaa laga furay xusuusta tooska ah (file://). Fadlan ku fur Local Server ama Netlify.");
+                    }
+
                     if (mediaStream) {
                         mediaStream.getTracks().forEach(track => track.stop());
                     }
 
-                    const constraints = {
-                        video: { 
-                            facingMode: facingMode 
-                        },
-                        audio: false
-                    };
-
+                    const constraints = { video: { facingMode: facingMode }, audio: false };
                     mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
                     webcamVideo.srcObject = mediaStream;
+                    webcamVideo.classList.remove('hidden');
+                    fallbackBg.classList.add('hidden');
                     webcamVideo.play();
                 } catch (err) {
-                    console.log("Error accessing camera: ", err);
-                    showToast("Kamaradda lama furi karo ama diidmo ayaa jirta", "fa-solid fa-triangle-exclamation text-yellow-400");
+                    console.log("Camera Error: ", err);
+                    webcamVideo.classList.add('hidden');
+                    fallbackBg.classList.remove('hidden');
+                    showToast("Fadlan app-ka ku fur Server (tusaale Netlify ama localhost)", "fa-solid fa-triangle-exclamation text-yellow-400");
                 }
             }
 
-            // Start with front camera initially
             initCamera(currentFacingMode);
 
-            // Flip Camera Button Action
             flipCamBtn.addEventListener('click', () => {
                 currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
                 initCamera(currentFacingMode);
-                
-                if(currentFacingMode === 'environment') {
-                    showToast("Kamaradda Dambe (Back Camera)", "fa-solid fa-rotate");
-                } else {
-                    showToast("Kamaradda Hore (Front Camera)", "fa-solid fa-rotate");
-                }
-            });
-
-            // Recording Logic
-            function toggleRecording() {
-                isRecording = !isRecording;
-                if (isRecording) {
-                    recordRing.classList.add('animate-pulse-glow', 'border-red-500');
-                    recordInnerIcon.className = 'w-6 h-6 bg-ytRed rounded-sm transition-all duration-300';
-                    recordingTimerBadge.classList.remove('hidden');
-                    recordingTimerBadge.classList.add('flex');
-                    showToast("Recording started", "fa-solid fa-circle-dot text-red-500");
-
-                    recordedSeconds = 0;
-                    recordingTimer = setInterval(() => {
-                        recordedSeconds += 0.1;
-                        const percentage = Math.min((recordedSeconds / maxDuration) * 100, 100);
-                        recordingProgress.style.width = `${percentage}%`;
-                        timerText.textContent = `00:${recordedSeconds < 10 ? '0' : ''}${recordedSeconds.toFixed(1)} / 00:${maxDuration}`;
-
-                        if (recordedSeconds >= maxDuration) {
-                            toggleRecording();
-                        }
-                    }, 100);
-                } else {
-                    clearInterval(recordingTimer);
-                    recordRing.classList.remove('animate-pulse-glow', 'border-red-500');
-                    recordInnerIcon.className = 'w-full h-full rounded-full bg-ytRed transition-all duration-300';
-                    recordingTimerBadge.classList.add('hidden');
-                    recordingTimerBadge.classList.remove('flex');
-                    showToast("Recording stopped", "fa-solid fa-stop text-yellow-400");
-                }
-            }
-            recordBtn.addEventListener('click', toggleRecording);
-
-            // Flash Toggle
-            flashBtn.addEventListener('click', () => {
-                isFlashOn = !isFlashOn;
-                if (isFlashOn) {
-                    flashIcon.className = 'fa-solid fa-bolt text-amber-400 text-lg';
-                    flashLabel.textContent = 'On';
-                    showToast('Flash light turned ON');
-                } else {
-                    flashIcon.className = 'fa-solid fa-bolt-slash text-lg';
-                    flashLabel.textContent = 'Flash';
-                    showToast('Flash light turned OFF');
-                }
-            });
-
-            // Modals interaction bindings
-            document.getElementById('addSoundBtn').addEventListener('click', () => {
-                document.getElementById('soundModal').classList.remove('translate-y-full');
-            });
-            document.getElementById('closeSoundModal').addEventListener('click', () => {
-                document.getElementById('soundModal').classList.add('translate-y-full');
-            });
-
-            document.getElementById('effectsBtn').addEventListener('click', () => {
-                document.getElementById('filtersModal').classList.remove('translate-y-full');
-            });
-            document.getElementById('closeFiltersBtn').addEventListener('click', () => {
-                document.getElementById('filtersModal').classList.add('translate-y-full');
-            });
-
-            document.querySelectorAll('.filter-opt').forEach(opt => {
-                opt.addEventListener('click', () => {
-                    const filterClass = opt.getAttribute('data-filter');
-                    cameraViewfinder.className = `absolute inset-0 z-0 cam-feed bg-neutral-900 transition-all duration-300 ${filterClass}`;
-                    document.getElementById('filtersModal').classList.add('translate-y-full');
-                    showToast("Filter applied");
-                });
+                showToast(currentFacingMode === 'environment' ? "Kamaradda Dambe" : "Kamaradda Hore", "fa-solid fa-rotate");
             });
         });
     </script>

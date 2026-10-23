@@ -1,3 +1,4 @@
+```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,6 +42,7 @@
     </script>
 
     <style>
+        /* Custom styles for camera effects and overlays */
         body {
             background-color: #0f0f0f;
             color: #ffffff;
@@ -48,6 +50,7 @@
             -webkit-user-select: none;
         }
 
+        /* Glassmorphism effects */
         .glass-pill {
             background: rgba(255, 255, 255, 0.2);
             backdrop-filter: blur(12px);
@@ -68,6 +71,7 @@
             -webkit-backdrop-filter: blur(8px);
         }
 
+        /* Video feed simulation styles */
         .cam-feed {
             background-size: cover;
             background-position: center;
@@ -80,6 +84,7 @@
         .cam-cyber { filter: hue-rotate(140deg) saturate(2); }
         .cam-flipped { transform: scaleX(-1); }
 
+        /* Custom Scrollbar for Drawer */
         ::-webkit-scrollbar {
             width: 4px;
         }
@@ -99,8 +104,10 @@
 
         <!-- SIMULATED CAMERA VIEWFINDER / BACKGROUND -->
         <div id="cameraViewfinder" class="absolute inset-0 z-0 cam-feed bg-neutral-900 transition-all duration-300">
+            <!-- Simulated Video / Noise Effect Overlay -->
             <div id="ambientOverlay" class="absolute inset-0 opacity-40 bg-[radial-gradient(circle_at_center,_var(--tw-gradient-stops))] from-indigo-900/30 via-purple-900/20 to-black animate-ambient-bg"></div>
             
+            <!-- Grid Lines Overlay (Toggled via menu) -->
             <div id="cameraGrid" class="hidden absolute inset-0 grid grid-cols-3 grid-rows-3 pointer-events-none z-10 opacity-30">
                 <div class="border-r border-b border-white/60"></div>
                 <div class="border-r border-b border-white/60"></div>
@@ -113,27 +120,32 @@
                 <div></div>
             </div>
 
-            <!-- Real Live Video Element -->
+            <!-- Simulated live video stream or image fallback -->
             <video id="webcamVideo" class="absolute inset-0 w-full h-full object-cover hidden" autoplay playsinline muted></video>
             <div id="fallbackBg" class="absolute inset-0 w-full h-full bg-cover bg-center" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop');"></div>
         </div>
 
         <!-- TOP PROGRESS BAR & RECORDING TIMER HEADER -->
         <div class="relative z-20 w-full pt-3 px-3 flex flex-col gap-2">
+            <!-- Top Segmented Progress Bar -->
             <div class="w-full bg-white/20 h-1.5 rounded-full overflow-hidden backdrop-blur-sm">
                 <div id="recordingProgress" class="bg-ytRed h-full w-0% transition-all duration-100 ease-linear rounded-full"></div>
             </div>
 
+            <!-- Header Controls Bar -->
             <div class="flex items-center justify-between px-2 pt-1">
+                <!-- Close Button -->
                 <button id="closeBtn" class="w-10 h-10 rounded-full flex items-center justify-center glass-icon-btn text-white hover:bg-white/20 active:scale-95 transition-all" title="Close">
                     <i class="fa-solid fa-xmark text-xl"></i>
                 </button>
 
+                <!-- Add Sound Pill Button -->
                 <button id="addSoundBtn" class="flex items-center gap-2 px-4 py-2 rounded-full glass-pill text-white text-xs font-semibold hover:bg-white/30 active:scale-95 transition-all shadow-lg">
                     <i class="fa-solid fa-music text-sm text-pink-400"></i>
                     <span id="selectedSoundText" class="truncate max-w-[130px]">Add sound</span>
                 </button>
 
+                <!-- Magic Effect Sparkle Button -->
                 <button id="quickMagicBtn" class="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-tr from-purple-600 via-pink-500 to-amber-400 p-[1.5px] active:scale-95 transition-all shadow-md">
                     <div class="w-full h-full bg-black/40 backdrop-blur-md rounded-full flex items-center justify-center">
                         <i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-sm"></i>
@@ -141,14 +153,16 @@
                 </button>
             </div>
 
+            <!-- Active Recording Indicator (Hidden by default) -->
             <div id="recordingTimerBadge" class="self-center hidden items-center gap-2 bg-red-600/80 backdrop-blur-md text-white text-xs px-3 py-1 rounded-full font-mono font-bold animate-pulse">
                 <span class="w-2 h-2 rounded-full bg-white"></span>
                 <span id="timerText">00:00 / 00:15</span>
             </div>
         </div>
 
-        <!-- RIGHT SIDE ACTION MENU BAR -->
+        <!-- RIGHT SIDE ACTION MENU BAR (VERTICAL STACK) -->
         <div class="absolute right-3 top-20 z-20 flex flex-col gap-4 items-center glass-dark py-3 px-2 rounded-full shadow-2xl transition-all duration-300">
+            <!-- Flip Camera -->
             <button id="flipCamBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Flip Camera">
                 <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
                     <i class="fa-solid fa-rotate text-lg group-hover:rotate-180 transition-transform duration-500"></i>
@@ -156,6 +170,7 @@
                 <span class="text-[10px] font-medium tracking-tight text-white/90">Flip</span>
             </button>
 
+            <!-- Timer -->
             <button id="timerBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Countdown Timer">
                 <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
                     <i class="fa-regular fa-clock text-lg"></i>
@@ -163,6 +178,7 @@
                 <span id="timerLabel" class="text-[10px] font-medium tracking-tight text-white/90">Off</span>
             </button>
 
+            <!-- Duration Selector (15s / 60s) -->
             <button id="durationToggleBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Video Length">
                 <div class="w-9 h-9 rounded-full border border-white/40 flex items-center justify-center hover:bg-white/20 transition-colors bg-white/10">
                     <span id="durationBadge" class="text-[11px] font-bold">15s</span>
@@ -170,6 +186,7 @@
                 <span class="text-[10px] font-medium tracking-tight text-white/90">Speed</span>
             </button>
 
+            <!-- Filters / Effects -->
             <button id="effectsBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Effects">
                 <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-pink-400">
                     <i class="fa-solid fa-sparkles text-lg"></i>
@@ -177,6 +194,7 @@
                 <span class="text-[10px] font-medium tracking-tight text-white/90">Filters</span>
             </button>
 
+            <!-- Speed Rate (1x, 2x, etc) -->
             <button id="speedRateBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Playback Speed">
                 <div class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors">
                     <span id="speedRateLabel" class="text-xs font-semibold">1x</span>
@@ -184,17 +202,27 @@
                 <span class="text-[10px] font-medium tracking-tight text-white/90">Speed</span>
             </button>
 
+            <!-- Grid Toggle / Align -->
             <button id="gridToggleBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Toggle Grid">
                 <div id="gridIconContainer" class="w-9 h-9 rounded-full flex items-center justify-center hover:bg-white/20 transition-colors text-white/80">
                     <i class="fa-solid fa-border-all text-base"></i>
                 </div>
                 <span class="text-[10px] font-medium tracking-tight text-white/90">Align</span>
             </button>
+
+            <!-- Expand / Collapse Extra Controls -->
+            <button id="expandMenuBtn" class="flex flex-col items-center group active:scale-90 transition-transform pt-1" title="More Controls">
+                <i class="fa-solid fa-chevron-down text-xs text-white/70 group-hover:translate-y-0.5 transition-transform"></i>
+            </button>
         </div>
 
         <!-- BOTTOM CONTROL SECTION -->
         <div class="relative z-20 w-full pb-4 px-4 flex flex-col gap-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-12">
+            
+            <!-- Main Controls Bar (Gallery, Record Button, Flash/Extra) -->
             <div class="flex items-center justify-between px-6">
+                
+                <!-- Gallery Preview Thumbnail ('Add' Button) -->
                 <button id="galleryBtn" class="flex flex-col items-center gap-1 group active:scale-95 transition-all">
                     <div class="w-12 h-12 rounded-xl overflow-hidden border-2 border-white/80 p-0.5 glass-icon-btn group-hover:border-white transition-colors shadow-lg">
                         <img id="galleryThumb" src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover rounded-lg" alt="Gallery preview">
@@ -202,62 +230,115 @@
                     <span class="text-xs font-semibold tracking-wide text-white drop-shadow-md">Add</span>
                 </button>
 
+                <!-- Center Main Record Button -->
                 <div class="relative flex items-center justify-center">
+                    <!-- Outer animated glowing ring -->
                     <div id="recordRing" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center transition-all duration-300">
+                        <!-- Red Recording Pill / Square toggle -->
                         <button id="recordBtn" class="w-16 h-16 rounded-full bg-ytRed hover:bg-red-600 active:scale-90 transition-all duration-200 shadow-xl flex items-center justify-center cursor-pointer">
                             <div id="recordInnerIcon" class="w-full h-full rounded-full bg-ytRed transition-all duration-300"></div>
                         </button>
                     </div>
                 </div>
 
+                <!-- Flash / Settings Toggle -->
                 <button id="flashBtn" class="flex flex-col items-center gap-1 group active:scale-95 transition-all">
                     <div class="w-12 h-12 rounded-xl flex items-center justify-center glass-icon-btn border border-white/20 text-white group-hover:border-white/50 transition-colors shadow-lg">
                         <i id="flashIcon" class="fa-solid fa-bolt-slash text-lg"></i>
                     </div>
                     <span id="flashLabel" class="text-xs font-medium text-white drop-shadow-md">Flash</span>
                 </button>
+
             </div>
 
-            <!-- MODE SWITCHER TABS -->
+            <!-- MODE SWITCHER TABS (Video, Short, Live) -->
             <div class="flex items-center justify-center gap-2 mt-1">
                 <div class="flex items-center bg-black/60 backdrop-blur-lg p-1 rounded-full border border-white/10 shadow-inner">
-                    <button id="modeVideo" class="mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all">Video</button>
-                    <button id="modeShort" class="mode-tab px-5 py-1.5 rounded-full text-xs font-bold text-white bg-neutral-800 shadow-md transition-all">Short</button>
-                    <button id="modeLive" class="mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all">Live</button>
+                    <button id="modeVideo" class="mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all">
+                        Video
+                    </button>
+                    <button id="modeShort" class="mode-tab px-5 py-1.5 rounded-full text-xs font-bold text-white bg-neutral-800 shadow-md transition-all">
+                        Short
+                    </button>
+                    <button id="modeLive" class="mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all">
+                        Live
+                    </button>
                 </div>
             </div>
+
         </div>
 
-        <!-- SOUND SELECTOR MODAL -->
+        <!-- SOUND SELECTOR MODAL / DRAWER -->
         <div id="soundModal" class="absolute inset-0 z-50 bg-black/80 backdrop-blur-xl translate-y-full transition-transform duration-300 ease-out flex flex-col justify-end">
             <div class="h-[85%] w-full bg-neutral-900 rounded-t-[32px] border-t border-white/10 flex flex-col overflow-hidden">
+                <!-- Modal Header -->
                 <div class="p-4 border-b border-white/10 flex items-center justify-between">
-                    <h3 class="text-base font-bold text-white flex items-center gap-2"><i class="fa-solid fa-music text-pink-500"></i> Add Sound</h3>
-                    <button id="closeSoundModal" class="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white/80 hover:text-white"><i class="fa-solid fa-xmark"></i></button>
+                    <h3 class="text-base font-bold text-white flex items-center gap-2">
+                        <i class="fa-solid fa-music text-pink-500"></i> Add Sound
+                    </h3>
+                    <button id="closeSoundModal" class="w-8 h-8 rounded-full bg-neutral-800 flex items-center justify-center text-white/80 hover:text-white">
+                        <i class="fa-solid fa-xmark"></i>
+                    </button>
                 </div>
+
+                <!-- Search Input -->
                 <div class="p-3 px-4">
                     <div class="relative">
                         <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-neutral-400 text-sm"></i>
                         <input type="text" placeholder="Search sounds, artists..." class="w-full bg-neutral-800 text-white text-xs rounded-xl pl-9 pr-4 py-2.5 focus:outline-none focus:ring-1 focus:ring-red-500 border border-neutral-700/50">
                     </div>
                 </div>
+
+                <!-- Sound List -->
                 <div class="flex-1 overflow-y-auto px-4 py-2 flex flex-col gap-3">
                     <div class="text-xs font-bold text-neutral-400 uppercase tracking-wider mb-1">Trending Sounds</div>
-                    <div class="sound-item flex items-center justify-between p-2 rounded-xl bg-neutral-800/40 hover:bg-neutral-800 cursor-pointer transition-colors" data-title="Lofi Chill Beat">
+
+                    <!-- Sound Item 1 -->
+                    <div class="sound-item flex items-center justify-between p-2 rounded-xl bg-neutral-800/40 hover:bg-neutral-800 cursor-pointer transition-colors" data-title="Lofi Chill Beat" data-artist="Aesthetic Audio">
                         <div class="flex items-center gap-3">
-                            <div class="w-12 h-12 rounded-lg bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md"><i class="fa-solid fa-play text-xs"></i></div>
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-tr from-purple-500 to-indigo-600 flex items-center justify-center text-white shadow-md">
+                                <i class="fa-solid fa-play text-xs"></i>
+                            </div>
                             <div>
                                 <h4 class="text-sm font-semibold text-white">Lofi Chill Beat</h4>
                                 <p class="text-xs text-neutral-400">Aesthetic Audio • 0:15</p>
                             </div>
                         </div>
-                        <button class="px-3 py-1.5 rounded-full bg-white/10 text-xs text-white">Select</button>
+                        <button class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-ytRed hover:text-white text-xs font-medium text-white transition-colors">Select</button>
+                    </div>
+
+                    <!-- Sound Item 2 -->
+                    <div class="sound-item flex items-center justify-between p-2 rounded-xl bg-neutral-800/40 hover:bg-neutral-800 cursor-pointer transition-colors" data-title="Upbeat Pop Synth" data-artist="Creator Studio">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-tr from-amber-400 to-red-500 flex items-center justify-center text-white shadow-md">
+                                <i class="fa-solid fa-play text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-white">Upbeat Pop Synth</h4>
+                                <p class="text-xs text-neutral-400">Creator Studio • 0:60</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-ytRed hover:text-white text-xs font-medium text-white transition-colors">Select</button>
+                    </div>
+
+                    <!-- Sound Item 3 -->
+                    <div class="sound-item flex items-center justify-between p-2 rounded-xl bg-neutral-800/40 hover:bg-neutral-800 cursor-pointer transition-colors" data-title="Acoustic Morning Vibes" data-artist="Sunlight Beats">
+                        <div class="flex items-center gap-3">
+                            <div class="w-12 h-12 rounded-lg bg-gradient-to-tr from-emerald-400 to-teal-600 flex items-center justify-center text-white shadow-md">
+                                <i class="fa-solid fa-play text-xs"></i>
+                            </div>
+                            <div>
+                                <h4 class="text-sm font-semibold text-white">Acoustic Morning Vibes</h4>
+                                <p class="text-xs text-neutral-400">Sunlight Beats • 0:30</p>
+                            </div>
+                        </div>
+                        <button class="px-3 py-1.5 rounded-full bg-white/10 hover:bg-ytRed hover:text-white text-xs font-medium text-white transition-colors">Select</button>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- FILTERS MODAL -->
+        <!-- FILTERS / EFFECTS SELECTION MODAL -->
         <div id="filtersModal" class="absolute bottom-0 inset-x-0 z-40 bg-black/85 backdrop-blur-xl translate-y-full transition-transform duration-300 p-4 rounded-t-[28px] border-t border-white/10">
             <div class="flex items-center justify-between mb-3">
                 <span class="text-xs font-bold text-white uppercase tracking-wider">Camera Filters</span>
@@ -280,10 +361,14 @@
                     <div class="w-12 h-12 rounded-full border border-white/20 bg-indigo-600 flex items-center justify-center text-xs font-bold text-cyan-200">Cyber</div>
                     <span class="text-[10px] text-neutral-300">Cyber</span>
                 </button>
+                <button class="filter-opt flex flex-col items-center gap-1.5 min-w-[60px]" data-filter="cam-sepia">
+                    <div class="w-12 h-12 rounded-full border border-white/20 bg-yellow-900/60 flex items-center justify-center text-xs font-bold text-yellow-300">Sepia</div>
+                    <span class="text-[10px] text-neutral-300">Sepia</span>
+                </button>
             </div>
         </div>
 
-        <!-- GALLERY MODAL -->
+        <!-- GALLERY PICKER SIMULATION MODAL -->
         <div id="galleryModal" class="absolute inset-0 z-50 bg-black/90 backdrop-blur-md translate-y-full transition-transform duration-300 flex flex-col">
             <div class="p-4 border-b border-white/10 flex items-center justify-between">
                 <h3 class="text-sm font-bold text-white">Select from Gallery</h3>
@@ -293,10 +378,13 @@
                 <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=300&auto=format&fit=crop" class="gallery-select-item w-full h-28 object-cover rounded hover:opacity-80 cursor-pointer">
                 <img src="https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=300&auto=format&fit=crop" class="gallery-select-item w-full h-28 object-cover rounded hover:opacity-80 cursor-pointer">
                 <img src="https://images.unsplash.com/photo-1492691527719-9d1e07e534b4?q=80&w=300&auto=format&fit=crop" class="gallery-select-item w-full h-28 object-cover rounded hover:opacity-80 cursor-pointer">
+                <img src="https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=300&auto=format&fit=crop" class="gallery-select-item w-full h-28 object-cover rounded hover:opacity-80 cursor-pointer">
+                <img src="https://images.unsplash.com/photo-1519681393784-d120267933ba?q=80&w=300&auto=format&fit=crop" class="gallery-select-item w-full h-28 object-cover rounded hover:opacity-80 cursor-pointer">
+                <img src="https://images.unsplash.com/photo-1470071459604-3b5ec3a7fe05?q=80&w=300&auto=format&fit=crop" class="gallery-select-item w-full h-28 object-cover rounded hover:opacity-80 cursor-pointer">
             </div>
         </div>
 
-        <!-- TOAST NOTIFICATION -->
+        <!-- NOTIFICATION / TOAST BOX -->
         <div id="toast" class="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-800/90 text-white text-xs px-4 py-2 rounded-full border border-white/10 shadow-xl opacity-0 pointer-events-none transition-all duration-300 flex items-center gap-2">
             <i id="toastIcon" class="fa-solid fa-circle-info text-pink-400"></i>
             <span id="toastMsg">Notification message</span>
@@ -304,32 +392,64 @@
 
     </div>
 
-    <!-- JAVASCRIPT LOGIC -->
+    <!-- JAVASCRIPT CONTROLLER LOGIC -->
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // State Variables
             let isRecording = false;
             let recordingTimer = null;
+            let currentDuration = 15; // default 15s
             let maxDuration = 15;
             let recordedSeconds = 0;
-            let currentFacingMode = 'environment'; // 1=Back, 'user'=Front
-            let mediaStream = null;
+            let isFlipped = false;
             let isFlashOn = false;
+            let currentSpeed = '1x';
+            let currentFilter = 'none';
 
+            // Element References
+            const cameraViewfinder = document.getElementById('cameraViewfinder');
             const webcamVideo = document.getElementById('webcamVideo');
             const fallbackBg = document.getElementById('fallbackBg');
-            const cameraViewfinder = document.getElementById('cameraViewfinder');
             const recordBtn = document.getElementById('recordBtn');
             const recordRing = document.getElementById('recordRing');
             const recordInnerIcon = document.getElementById('recordInnerIcon');
             const recordingProgress = document.getElementById('recordingProgress');
             const recordingTimerBadge = document.getElementById('recordingTimerBadge');
             const timerText = document.getElementById('timerText');
-            
+
+            // Sidebar & Buttons
             const flipCamBtn = document.getElementById('flipCamBtn');
+            const durationToggleBtn = document.getElementById('durationToggleBtn');
+            const durationBadge = document.getElementById('durationBadge');
+            const speedRateBtn = document.getElementById('speedRateBtn');
+            const speedRateLabel = document.getElementById('speedRateLabel');
+            const gridToggleBtn = document.getElementById('gridToggleBtn');
+            const cameraGrid = document.getElementById('cameraGrid');
             const flashBtn = document.getElementById('flashBtn');
             const flashIcon = document.getElementById('flashIcon');
             const flashLabel = document.getElementById('flashLabel');
 
+            // Modals & Panels
+            const addSoundBtn = document.getElementById('addSoundBtn');
+            const soundModal = document.getElementById('soundModal');
+            const closeSoundModal = document.getElementById('closeSoundModal');
+            const selectedSoundText = document.getElementById('selectedSoundText');
+            
+            const effectsBtn = document.getElementById('effectsBtn');
+            const quickMagicBtn = document.getElementById('quickMagicBtn');
+            const filtersModal = document.getElementById('filtersModal');
+            const closeFiltersBtn = document.getElementById('closeFiltersBtn');
+
+            const galleryBtn = document.getElementById('galleryBtn');
+            const galleryModal = document.getElementById('galleryModal');
+            const closeGalleryModal = document.getElementById('closeGalleryModal');
+            const galleryThumb = document.getElementById('galleryThumb');
+
+            // Mode Tabs
+            const modeTabs = document.querySelectorAll('.mode-tab');
+            const modeShort = document.getElementById('modeShort');
+
+            // Toast Helper
             function showToast(message, iconClass = 'fa-solid fa-circle-info text-pink-400') {
                 const toast = document.getElementById('toast');
                 const toastMsg = document.getElementById('toastMsg');
@@ -347,64 +467,25 @@
                 }, 2200);
             }
 
-            // Advanced Camera Initializer with robust fallbacks
-            async function initCamera(facingMode) {
+            // Web Camera Access Attempt
+            async function initCamera() {
                 try {
-                    if (mediaStream) {
-                        mediaStream.getTracks().forEach(track => track.stop());
-                    }
-
-                    let constraints = {
-                        video: { facingMode: { exact: facingMode } },
-                        audio: false
-                    };
-
-                    try {
-                        mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-                    } catch (e) {
-                        // Fallback if exact match isn't available
-                        constraints = {
-                            video: { facingMode: facingMode },
-                            audio: false
-                        };
-                        try {
-                            mediaStream = await navigator.mediaDevices.getUserMedia(constraints);
-                        } catch (err2) {
-                            mediaStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                        }
-                    }
-
-                    webcamVideo.srcObject = mediaStream;
-                    await webcamVideo.play();
+                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                    webcamVideo.srcObject = stream;
                     webcamVideo.classList.remove('hidden');
                     fallbackBg.classList.add('hidden');
                 } catch (err) {
-                    console.log("Camera access error:", err);
-                    webcamVideo.classList.add('hidden');
-                    fallbackBg.classList.remove('hidden');
-                    showToast("Camera active in simulated mode (Permission restricted)", "fa-solid fa-camera text-yellow-400");
+                    console.log("Webcam access unavailable or denied, utilizing fallback preview background.");
                 }
             }
+            initCamera();
 
-            // Start Camera
-            initCamera(currentFacingMode);
-
-            // Flip Camera Button Action
-            flipCamBtn.addEventListener('click', () => {
-                currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
-                initCamera(currentFacingMode);
-                
-                if(currentFacingMode === 'environment') {
-                    showToast("Back Camera Selected", "fa-solid fa-rotate");
-                } else {
-                    showToast("Front Camera Selected", "fa-solid fa-rotate");
-                }
-            });
-
-            // Recording Logic
+            // Toggle Recording Logic
             function toggleRecording() {
                 isRecording = !isRecording;
+
                 if (isRecording) {
+                    // Start Recording UI
                     recordRing.classList.add('animate-pulse-glow', 'border-red-500');
                     recordInnerIcon.className = 'w-6 h-6 bg-ytRed rounded-sm transition-all duration-300';
                     recordingTimerBadge.classList.remove('hidden');
@@ -412,26 +493,76 @@
                     showToast("Recording started", "fa-solid fa-circle-dot text-red-500");
 
                     recordedSeconds = 0;
+                    updateRecordingProgress();
+
                     recordingTimer = setInterval(() => {
                         recordedSeconds += 0.1;
-                        const percentage = Math.min((recordedSeconds / maxDuration) * 100, 100);
-                        recordingProgress.style.width = `${percentage}%`;
-                        timerText.textContent = `00:${recordedSeconds < 10 ? '0' : ''}${recordedSeconds.toFixed(1)} / 00:${maxDuration}`;
+                        updateRecordingProgress();
 
                         if (recordedSeconds >= maxDuration) {
-                            toggleRecording();
+                            stopRecording();
+                            showToast("Maximum time limit reached", "fa-solid fa-check text-green-400");
                         }
                     }, 100);
+
                 } else {
-                    clearInterval(recordingTimer);
-                    recordRing.classList.remove('animate-pulse-glow', 'border-red-500');
-                    recordInnerIcon.className = 'w-full h-full rounded-full bg-ytRed transition-all duration-300';
-                    recordingTimerBadge.classList.add('hidden');
-                    recordingTimerBadge.classList.remove('flex');
+                    stopRecording();
                     showToast("Recording stopped", "fa-solid fa-stop text-yellow-400");
                 }
             }
+
+            function stopRecording() {
+                isRecording = false;
+                clearInterval(recordingTimer);
+                recordRing.classList.remove('animate-pulse-glow', 'border-red-500');
+                recordInnerIcon.className = 'w-full h-full rounded-full bg-ytRed transition-all duration-300';
+                recordingTimerBadge.classList.add('hidden');
+                recordingTimerBadge.classList.remove('flex');
+            }
+
+            function updateRecordingProgress() {
+                const percentage = Math.min((recordedSeconds / maxDuration) * 100, 100);
+                recordingProgress.style.width = `${percentage}%`;
+
+                const formattedCurrent = recordedSeconds.toFixed(1);
+                timerText.textContent = `00:${formattedCurrent < 10 ? '0' : ''}${formattedCurrent} / 00:${maxDuration}`;
+            }
+
             recordBtn.addEventListener('click', toggleRecording);
+
+            // Camera Flip Simulation
+            flipCamBtn.addEventListener('click', () => {
+                isFlipped = !isFlipped;
+                cameraViewfinder.classList.toggle('cam-flipped', isFlipped);
+                showToast(isFlipped ? "Front Camera" : "Rear Camera", "fa-solid fa-rotate");
+            });
+
+            // Duration Switcher (15s / 60s)
+            durationToggleBtn.addEventListener('click', () => {
+                if (maxDuration === 15) {
+                    maxDuration = 60;
+                    durationBadge.textContent = '60s';
+                } else {
+                    maxDuration = 15;
+                    durationBadge.textContent = '15s';
+                }
+                showToast(`Duration set to ${maxDuration} seconds`, "fa-solid fa-clock");
+            });
+
+            // Speed Selector Toggle (0.5x, 1x, 2x, 3x)
+            const speeds = ['0.5x', '1x', '2x', '3x'];
+            speedRateBtn.addEventListener('click', () => {
+                let currIdx = speeds.indexOf(currentSpeed);
+                currentSpeed = speeds[(currIdx + 1) % speeds.length];
+                speedRateLabel.textContent = currentSpeed;
+                showToast(`Speed rate: ${currentSpeed}`, "fa-solid fa-gauge-high");
+            });
+
+            // Grid Line Toggle
+            gridToggleBtn.addEventListener('click', () => {
+                cameraGrid.classList.toggle('hidden');
+                showToast("Grid toggle changed", "fa-solid fa-border-all");
+            });
 
             // Flash Toggle
             flashBtn.addEventListener('click', () => {
@@ -439,7 +570,7 @@
                 if (isFlashOn) {
                     flashIcon.className = 'fa-solid fa-bolt text-amber-400 text-lg';
                     flashLabel.textContent = 'On';
-                    showToast('Flash light turned ON');
+                    showToast('Flash light turned ON', 'fa-solid fa-bolt text-amber-400');
                 } else {
                     flashIcon.className = 'fa-solid fa-bolt-slash text-lg';
                     flashLabel.textContent = 'Flash';
@@ -447,37 +578,94 @@
                 }
             });
 
-            // Modals interaction
-            document.getElementById('addSoundBtn').addEventListener('click', () => {
-                document.getElementById('soundModal').classList.remove('translate-y-full');
+            // Add Sound Drawer Open/Close
+            addSoundBtn.addEventListener('click', () => {
+                soundModal.classList.remove('translate-y-full');
             });
-            document.getElementById('closeSoundModal').addEventListener('click', () => {
-                document.getElementById('soundModal').classList.add('translate-y-full');
-            });
-
-            document.getElementById('effectsBtn').addEventListener('click', () => {
-                document.getElementById('filtersModal').classList.remove('translate-y-full');
-            });
-            document.getElementById('closeFiltersBtn').addEventListener('click', () => {
-                document.getElementById('filtersModal').classList.add('translate-y-full');
+            closeSoundModal.addEventListener('click', () => {
+                soundModal.classList.add('translate-y-full');
             });
 
-            document.getElementById('galleryBtn').addEventListener('click', () => {
-                document.getElementById('galleryModal').classList.remove('translate-y-full');
-            });
-            document.getElementById('closeGalleryModal').addEventListener('click', () => {
-                document.getElementById('galleryModal').classList.add('translate-y-full');
+            // Select Sound Logic
+            document.querySelectorAll('.sound-item').forEach(item => {
+                item.addEventListener('click', () => {
+                    const title = item.getAttribute('data-title');
+                    selectedSoundText.textContent = title;
+                    soundModal.classList.add('translate-y-full');
+                    showToast(`Sound added: ${title}`, "fa-solid fa-music text-pink-400");
+                });
             });
 
+            // Filters Drawer Open/Close
+            effectsBtn.addEventListener('click', () => {
+                filtersModal.classList.remove('translate-y-full');
+            });
+            quickMagicBtn.addEventListener('click', () => {
+                filtersModal.classList.remove('translate-y-full');
+            });
+            closeFiltersBtn.addEventListener('click', () => {
+                filtersModal.classList.add('translate-y-full');
+            });
+
+            // Apply Filters Logic
             document.querySelectorAll('.filter-opt').forEach(opt => {
                 opt.addEventListener('click', () => {
                     const filterClass = opt.getAttribute('data-filter');
-                    cameraViewfinder.className = `absolute inset-0 z-0 cam-feed bg-neutral-900 transition-all duration-300 ${filterClass}`;
-                    document.getElementById('filtersModal').classList.add('translate-y-full');
-                    showToast("Filter applied");
+                    
+                    // Remove all filter classes
+                    cameraViewfinder.classList.remove('cam-vintage', 'cam-bw', 'cam-cyber', 'cam-sepia');
+                    
+                    if (filterClass !== 'none') {
+                        cameraViewfinder.classList.add(filterClass);
+                    }
+
+                    // Reset borders
+                    document.querySelectorAll('.filter-opt div').forEach(d => d.classList.remove('border-red-500'));
+                    opt.querySelector('div').classList.add('border-red-500');
+
+                    showToast(`Filter applied`, "fa-solid fa-wand-magic-sparkles");
+                    filtersModal.classList.add('translate-y-full');
                 });
             });
+
+            // Gallery Modal
+            galleryBtn.addEventListener('click', () => {
+                galleryModal.classList.remove('translate-y-full');
+            });
+            closeGalleryModal.addEventListener('click', () => {
+                galleryModal.classList.add('translate-y-full');
+            });
+
+            document.querySelectorAll('.gallery-select-item').forEach(img => {
+                img.addEventListener('click', (e) => {
+                    galleryThumb.src = e.target.src;
+                    fallbackBg.style.backgroundImage = `url('${e.target.src}')`;
+                    galleryModal.classList.add('translate-y-full');
+                    showToast("Background video/image updated", "fa-solid fa-image");
+                });
+            });
+
+            // Mode Selector Tabs (Video, Short, Live)
+            modeTabs.forEach(tab => {
+                tab.addEventListener('click', (e) => {
+                    modeTabs.forEach(t => {
+                        t.className = 'mode-tab px-5 py-1.5 rounded-full text-xs font-semibold text-white/70 hover:text-white transition-all';
+                    });
+
+                    e.target.className = 'mode-tab px-5 py-1.5 rounded-full text-xs font-bold text-white bg-neutral-800 shadow-md transition-all';
+
+                    const modeName = e.target.textContent.trim();
+                    showToast(`Switched to ${modeName} mode`, "fa-solid fa-video");
+                });
+            });
+
+            // Close Top Button Alert/Message
+            document.getElementById('closeBtn').addEventListener('click', () => {
+                showToast("Camera session closed", "fa-solid fa-xmark");
+            });
+
         });
     </script>
 </body>
 </html>
+```

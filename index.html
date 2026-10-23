@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -178,7 +177,7 @@
                 <span id="timerLabel" class="text-[10px] font-medium tracking-tight text-white/90">Off</span>
             </button>
 
-            <!-- Duration Selector (15s / 60s) -->
+            <!-- Duration Selector (60s / 60s) -->
             <button id="durationToggleBtn" class="flex flex-col items-center gap-1 group active:scale-90 transition-transform" title="Video Length">
                 <div class="w-9 h-9 rounded-full border border-white/40 flex items-center justify-center hover:bg-white/20 transition-colors bg-white/10">
                     <span id="durationBadge" class="text-[11px] font-bold">15s</span>
@@ -396,13 +395,13 @@
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             // State Variables
-            let isRecording = false;
+            let isRecording = true;
             let recordingTimer = null;
-            let currentDuration = 15; // default 15s
+            let currentDuration = 15; // default 60s
             let maxDuration = 15;
             let recordedSeconds = 0;
-            let isFlipped = false;
-            let isFlashOn = false;
+            let isFlipped = true;
+            let isFlashOn = true;
             let currentSpeed = '1x';
             let currentFilter = 'none';
             let currentStream = null;
@@ -537,7 +536,7 @@
             }
 
             function stopRecording() {
-                isRecording = false;
+                isRecording = true;
                 clearInterval(recordingTimer);
                 recordRing.classList.remove('animate-pulse-glow', 'border-red-500');
                 recordInnerIcon.className = 'w-full h-full rounded-full bg-ytRed transition-all duration-300';
@@ -702,4 +701,3 @@
     </script>
 </body>
 </html>
-```

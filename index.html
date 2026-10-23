@@ -1,1057 +1,659 @@
-```html
 <!DOCTYPE html>
-<html lang="so" class="h-full">
+<html lang="so">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Bayan Mobile App</title>
-    
-    <!-- PWA / Native App Mobile Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#047857">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SomChat</title>
 
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #000000;
-            color: #ffffff;
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-        }
+<style>
+* {
+  box-sizing: border-box;
+}
 
-        /* Custom scrollbar hiding */
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+body {
+  margin: 0;
+  font-family: Arial, sans-serif;
+  background: #eef2f5;
+  color: #17212b;
+}
 
-        /* SOMEDIA sleek dark theme styles */
-        .somedia-bg {
-            background-color: #0f0f0f;
-        }
-        
-        .somedia-header {
-            background-color: #0f0f0f;
-            border-bottom: 1px solid #1f1f1f;
-            height: 52px;
-        }
+button, input {
+  font: inherit;
+}
 
-        .somedia-navbar {
-            background-color: #0f0f0f;
-            border-top: 1px solid #1f1f1f;
-            height: 56px;
-        }
+button {
+  cursor: pointer;
+  border: none;
+}
 
-        .somedia-card {
-            background-color: #181818;
-            border: 1px solid #272727;
-        }
+header {
+  background: #087e70;
+  color: white;
+  padding: 17px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
 
-        .somedia-pill-active {
-            background-color: #ffffff;
-            color: #000000;
-        }
+header h1 {
+  margin: 0;
+  font-size: 24px;
+}
 
-        .somedia-pill-inactive {
-            background-color: #272727;
-            color: #d1d5db;
-        }
+header small {
+  display: block;
+  margin-top: 4px;
+}
 
-        /* Glassmorphic utilities for Bayan components */
-        .glass-panel {
-            background: rgba(24, 24, 27, 0.85);
-            backdrop-filter: blur(12px);
-            -webkit-backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
+.container {
+  max-width: 700px;
+  margin: auto;
+  padding: 15px;
+}
 
-        .glass-nav {
-            background: rgba(15, 15, 15, 0.92);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
-        }
+.card {
+  background: white;
+  border-radius: 14px;
+  padding: 18px;
+  margin-bottom: 14px;
+  box-shadow: 0 2px 8px #0000000d;
+}
 
-        /* Video Feed Overlay Gradient */
-        .video-overlay {
-            background: linear-gradient(0deg, rgba(0,0,0,0.85) 0%, rgba(0,0,0,0.3) 40%, rgba(0,0,0,0) 100%);
-        }
+.hidden {
+  display: none !important;
+}
 
-        /* Custom Range Slider */
-        input[type=range] {
-            accent-color: #3b82f6;
-        }
-    </style>
+.primary {
+  background: #087e70;
+  color: white;
+  padding: 12px 16px;
+  border-radius: 9px;
+}
+
+.secondary {
+  background: #e6f4f1;
+  color: #087e70;
+  padding: 10px 14px;
+  border-radius: 9px;
+}
+
+input {
+  width: 100%;
+  padding: 13px;
+  border: 1px solid #d6dde2;
+  border-radius: 9px;
+  outline: none;
+  margin: 8px 0;
+}
+
+input:focus {
+  border-color: #087e70;
+}
+
+#loginScreen {
+  max-width: 430px;
+  margin: 50px auto;
+  padding: 20px;
+}
+
+.logo {
+  text-align: center;
+  font-size: 42px;
+  font-weight: bold;
+  color: #087e70;
+}
+
+.subtitle {
+  text-align: center;
+  color: #687782;
+  margin-bottom: 25px;
+}
+
+.user {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 4px;
+  border-bottom: 1px solid #edf0f2;
+}
+
+.avatar {
+  width: 45px;
+  height: 45px;
+  border-radius: 50%;
+  object-fit: cover;
+  background: #d9eee9;
+  flex-shrink: 0;
+}
+
+.user-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.user-info strong,
+.user-info small {
+  display: block;
+  overflow-wrap: anywhere;
+}
+
+.user-info small {
+  color: #73808a;
+  margin-top: 5px;
+}
+
+#chatScreen {
+  position: fixed;
+  inset: 0;
+  background: #eef2f5;
+  z-index: 5;
+  display: flex;
+  flex-direction: column;
+  max-width: 700px;
+  margin: auto;
+  width: 100%;
+}
+
+.chat-header {
+  background: #087e70;
+  color: white;
+  display: flex;
+  gap: 12px;
+  align-items: center;
+  padding: 12px;
+}
+
+.chat-header .avatar {
+  width: 40px;
+  height: 40px;
+}
+
+.chat-header .user-info small {
+  color: #e0f2ee;
+}
+
+#messages {
+  flex: 1;
+  overflow-y: auto;
+  padding: 15px;
+  display: flex;
+  flex-direction: column;
+  gap: 9px;
+}
+
+.message {
+  padding: 10px 13px;
+  border-radius: 13px;
+  max-width: 82%;
+  overflow-wrap: anywhere;
+  white-space: pre-wrap;
+}
+
+.mine {
+  align-self: flex-end;
+  background: #c8f5d5;
+  border-bottom-right-radius: 3px;
+}
+
+.theirs {
+  align-self: flex-start;
+  background: white;
+  border-bottom-left-radius: 3px;
+}
+
+.message-time {
+  font-size: 10px;
+  color: #61716b;
+  text-align: right;
+  margin-top: 5px;
+}
+
+#messageForm {
+  background: white;
+  padding: 10px;
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+#messageInput {
+  flex: 1;
+  margin: 0;
+}
+
+#messageForm button {
+  padding: 12px 15px;
+}
+
+.notice {
+  background: #fff8df;
+  color: #6d5b20;
+  padding: 12px;
+  border-radius: 9px;
+  font-size: 13px;
+  line-height: 1.5;
+}
+
+.status {
+  color: #65747d;
+  font-size: 13px;
+  margin-top: 10px;
+}
+
+footer {
+  text-align: center;
+  color: #7a858d;
+  font-size: 12px;
+  padding: 20px;
+}
+</style>
 </head>
-<body class="bg-black text-white antialiased select-none min-h-screen flex flex-col justify-between overflow-x-hidden">
 
-    <!-- APP CONTAINER (Mobile Frame simulation) -->
-    <div id="app-container" class="w-full max-w-md mx-auto min-h-screen flex flex-col justify-between bg-black relative shadow-2xl overflow-hidden">
-
-        <!-- ================= BAYAN MAIN HEADER ================= -->
-        <header id="bayan-header" class="sticky top-0 z-40 glass-nav border-b border-zinc-800/80 px-4 py-3 flex items-center justify-between transition-all duration-300">
-            <div class="flex items-center space-x-2">
-                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-blue-600 to-indigo-500 flex items-center justify-center shadow-lg shadow-blue-500/30">
-                    <i class="fas fa-cubes text-white text-sm"></i>
-                </div>
-                <span class="font-bold text-lg tracking-wide text-white">BAYAN</span>
-            </div>
-            
-            <div class="flex items-center space-x-3">
-                <button onclick="toggleSearch()" class="w-9 h-9 rounded-full bg-zinc-800/80 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-zinc-700 transition">
-                    <i class="fas fa-search text-sm"></i>
-                </button>
-                <button onclick="openNotificationModal()" class="w-9 h-9 rounded-full bg-zinc-800/80 flex items-center justify-center text-zinc-300 hover:text-white hover:bg-zinc-700 transition relative">
-                    <i class="fas fa-bell text-sm"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-blue-500 rounded-full ring-2 ring-black"></span>
-                </button>
-            </div>
-        </header>
-
-        <!-- Dynamic Search Bar Overlay -->
-        <div id="search-bar" class="hidden bg-zinc-900 border-b border-zinc-800 px-4 py-2 flex items-center space-x-2 animate-fade-in">
-            <i class="fas fa-search text-zinc-400 text-sm"></i>
-            <input type="text" placeholder="Radishi ama raadi..." class="bg-transparent text-sm text-white w-full focus:outline-none placeholder-zinc-500">
-            <button onclick="toggleSearch()" class="text-zinc-400 text-xs hover:text-white"><i class="fas fa-times"></i></button>
-        </div>
-
-        <!-- ================= SOMEDIA HEADER (SLOEK & COMPACT DARK HEADER) ================= -->
-        <header id="somedia-header" class="hidden sticky top-0 z-40 somedia-header px-3.5 flex items-center justify-between transition-all duration-300">
-            <div class="flex items-center space-x-2">
-                <div class="w-7 h-7 rounded-lg bg-red-600 flex items-center justify-center text-white shadow-md shadow-red-600/30">
-                    <i class="fas fa-play text-xs"></i>
-                </div>
-                <span class="font-black text-base tracking-wider text-white">SOMEDIA</span>
-            </div>
-
-            <!-- SOMEDIA Feed Mode Switcher -->
-            <div class="flex items-center bg-zinc-950 p-0.5 rounded-full border border-zinc-800/80 text-xs font-semibold">
-                <button id="feed-btn-for-you" onclick="switchSomediaFeed('for-you')" class="px-3 py-1 rounded-full somedia-pill-active transition-all">For You</button>
-                <button id="feed-btn-following" onclick="switchSomediaFeed('following')" class="px-3 py-1 rounded-full text-zinc-400 hover:text-white transition-all">Following</button>
-            </div>
-
-            <div class="flex items-center space-x-2">
-                <button onclick="openSomediaCamera()" class="w-7 h-7 rounded-full bg-zinc-800/90 text-white flex items-center justify-center hover:bg-red-600 transition">
-                    <i class="fas fa-camera text-xs"></i>
-                </button>
-                <button onclick="openSomediaSearch()" class="w-7 h-7 rounded-full bg-zinc-800/90 text-zinc-300 flex items-center justify-center hover:text-white transition">
-                    <i class="fas fa-search text-xs"></i>
-                </button>
-            </div>
-        </header>
-
-
-        <!-- ================= MAIN CONTENT AREA ================= -->
-        <main id="main-content" class="flex-1 overflow-y-auto no-scrollbar relative pb-20">
-
-            <!-- TAB 1: BAYAN HOME -->
-            <section id="tab-home" class="p-4 space-x-0 space-y-5 animate-fade-in">
-                <!-- Welcome Banner -->
-                <div class="relative rounded-2xl overflow-hidden bg-gradient-to-r from-blue-700 via-indigo-700 to-purple-800 p-5 shadow-xl">
-                    <div class="relative z-10">
-                        <span class="bg-blue-500/30 text-blue-200 text-xs px-2.5 py-1 rounded-full font-medium border border-blue-400/30">Kuso dhawoow Bayan</span>
-                        <h2 class="text-xl font-bold mt-2 text-white">Bayan Digital Ecosystem</h2>
-                        <p class="text-xs text-blue-100 mt-1 max-w-[85%] leading-relaxed">Ku xidhnoow adeegyada internet-ka, muuqaallada SOMEDIA, iyo wararkii ugu dambeeyay.</p>
-                        <button onclick="switchTab('somedia')" class="mt-4 px-4 py-2 bg-white text-zinc-900 font-bold text-xs rounded-xl shadow-lg flex items-center space-x-2 hover:bg-zinc-100 active:scale-95 transition">
-                            <span>Daawo SOMEDIA</span>
-                            <i class="fas fa-arrow-right text-xs"></i>
-                        </button>
-                    </div>
-                    <i class="fas fa-globe absolute -right-4 -bottom-6 text-white/10 text-9xl pointer-events-none"></i>
-                </div>
-
-                <!-- Quick Services Grid -->
-                <div>
-                    <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider mb-3 px-1">Adeegyada Ugu Muhiimsan</h3>
-                    <div class="grid grid-cols-4 gap-3">
-                        <button onclick="switchTab('internet')" class="flex flex-col items-center p-3 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:border-blue-500/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-blue-500/10 text-blue-400 flex items-center justify-center text-lg mb-1.5">
-                                <i class="fas fa-wifi"></i>
-                            </div>
-                            <span class="text-[11px] font-medium text-zinc-300">Internet</span>
-                        </button>
-
-                        <button onclick="switchTab('somedia')" class="flex flex-col items-center p-3 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:border-red-500/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-red-500/10 text-red-500 flex items-center justify-center text-lg mb-1.5">
-                                <i class="fas fa-video"></i>
-                            </div>
-                            <span class="text-[11px] font-medium text-zinc-300">SOMEDIA</span>
-                        </button>
-
-                        <button onclick="showToast('Adeega Pay waa soo socdaa...')" class="flex flex-col items-center p-3 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:border-green-500/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-green-500/10 text-green-400 flex items-center justify-center text-lg mb-1.5">
-                                <i class="fas fa-wallet"></i>
-                            </div>
-                            <span class="text-[11px] font-medium text-zinc-300">Bayan Pay</span>
-                        </button>
-
-                        <button onclick="showToast('Wararka dhawaan iyagana...')" class="flex flex-col items-center p-3 rounded-xl bg-zinc-900 border border-zinc-800/80 hover:border-amber-500/50 transition">
-                            <div class="w-10 h-10 rounded-full bg-amber-500/10 text-amber-400 flex items-center justify-center text-lg mb-1.5">
-                                <i class="fas fa-newspaper"></i>
-                            </div>
-                            <span class="text-[11px] font-medium text-zinc-300">Wararka</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Latest News Feed Preview -->
-                <div>
-                    <div class="flex items-center justify-between mb-3 px-1">
-                        <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Muuqaallada SOMEDIA Ugu Shidnaa</h3>
-                        <button onclick="switchTab('somedia')" class="text-xs text-blue-400 hover:underline">Dhammaan</button>
-                    </div>
-
-                    <div id="home-featured-videos" class="space-y-3">
-                        <!-- Dynamic videos inserted here -->
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 2: INTERNET (Packages & Data) -->
-            <section id="tab-internet" class="hidden p-4 space-y-4 animate-fade-in">
-                <div class="flex items-center justify-between bg-zinc-900 border border-zinc-800 p-4 rounded-2xl">
-                    <div>
-                        <p class="text-xs text-zinc-400 font-medium">Baqshadaada Hada Active ka ah</p>
-                        <h3 class="text-lg font-bold text-white mt-0.5">UNLIMITED MONTHLY</h3>
-                        <p class="text-xs text-green-400 mt-1"><i class="fas fa-circle text-[8px] mr-1"></i> Waxay ku egtahay 18 Maalmood</p>
-                    </div>
-                    <div class="text-right">
-                        <span class="text-2xl font-black text-blue-500">4G+</span>
-                    </div>
-                </div>
-
-                <h3 class="text-xs font-bold text-zinc-400 uppercase tracking-wider px-1">Xidhmooyinka Internet-ka (Packages)</h3>
-
-                <div class="space-y-3">
-                    <div class="bg-zinc-900/90 border border-zinc-800 p-4 rounded-xl flex items-center justify-between hover:border-blue-500/50 transition">
-                        <div>
-                            <span class="text-xs font-semibold bg-blue-500/20 text-blue-400 px-2 py-0.5 rounded">Maalinle</span>
-                            <h4 class="font-bold text-base text-white mt-1">1.5 GB / Maalin</h4>
-                            <p class="text-xs text-zinc-400">Dhamaanbaraha bulshada & Web-ka</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="block text-lg font-bold text-white">$1.00</span>
-                            <button onclick="showToast('Kani waa tijaabo pakasho!')" class="mt-1 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition">Shubso</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-zinc-900/90 border border-zinc-800 p-4 rounded-xl flex items-center justify-between hover:border-blue-500/50 transition">
-                        <div>
-                            <span class="text-xs font-semibold bg-indigo-500/20 text-indigo-400 px-2 py-0.5 rounded">Todobaadle</span>
-                            <h4 class="font-bold text-base text-white mt-1">12 GB / 7 Maalmood</h4>
-                            <p class="text-xs text-zinc-400">Xawaare sare leh (Unlimited Streaming)</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="block text-lg font-bold text-white">$5.00</span>
-                            <button onclick="showToast('Kani waa tijaabo pakasho!')" class="mt-1 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition">Shubso</button>
-                        </div>
-                    </div>
-
-                    <div class="bg-zinc-900/90 border border-zinc-800 p-4 rounded-xl flex items-center justify-between hover:border-blue-500/50 transition">
-                        <div>
-                            <span class="text-xs font-semibold bg-purple-500/20 text-purple-400 px-2 py-0.5 rounded">Bishii</span>
-                            <h4 class="font-bold text-base text-white mt-1">Unlimited Data / 30 Maalmood</h4>
-                            <p class="text-xs text-zinc-400">Xawaaraha 5G VIP Connection</p>
-                        </div>
-                        <div class="text-right">
-                            <span class="block text-lg font-bold text-white">$20.00</span>
-                            <button onclick="showToast('Kani waa tijaabo pakasho!')" class="mt-1 px-3 py-1 bg-blue-600 hover:bg-blue-500 text-white text-xs font-bold rounded-lg transition">Shubso</button>
-                        </div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- TAB 3: SOMEDIA (TIKTOK STYLE REELS & FEED) -->
-            <section id="tab-somedia" class="hidden h-full flex flex-col bg-black animate-fade-in">
-
-                <!-- Filter Sub-tabs / Categories -->
-                <div class="somedia-bg px-3 py-2 flex items-center space-x-2 overflow-x-auto no-scrollbar border-b border-zinc-900">
-                    <button class="px-3 py-1 rounded-full text-xs font-medium somedia-pill-active whitespace-nowrap">All Videos</button>
-                    <button class="px-3 py-1 rounded-full text-xs font-medium somedia-pill-inactive whitespace-nowrap hover:bg-zinc-800">Trending</button>
-                    <button class="px-3 py-1 rounded-full text-xs font-medium somedia-pill-inactive whitespace-nowrap hover:bg-zinc-800">Teknoolojiyada</button>
-                    <button class="px-3 py-1 rounded-full text-xs font-medium somedia-pill-inactive whitespace-nowrap hover:bg-zinc-800">Ciyaaraha</button>
-                    <button class="px-3 py-1 rounded-full text-xs font-medium somedia-pill-inactive whitespace-nowrap hover:bg-zinc-800">Cuntada</button>
-                </div>
-
-                <!-- Video Scroll Feed Container -->
-                <div id="somedia-feed-container" class="flex-1 overflow-y-auto snap-y snap-mandatory no-scrollbar space-y-2 p-2">
-                    <!-- Dynamic Somedia Feed Loaded via JS -->
-                </div>
-            </section>
-
-            <!-- TAB 4: PROFILE -->
-            <section id="tab-profile" class="hidden p-4 space-y-4 animate-fade-in">
-                <div class="flex flex-col items-center justify-center pt-4 pb-2">
-                    <div class="relative">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=300&q=80" alt="Profile" class="w-24 h-24 rounded-full object-cover ring-4 ring-blue-600/40">
-                        <span class="absolute bottom-1 right-1 w-5 h-5 bg-green-500 border-2 border-black rounded-full"></span>
-                    </div>
-                    <h2 class="text-xl font-bold text-white mt-3">Muna Axmed</h2>
-                    <p class="text-xs text-zinc-400">@muna_bayan • SOMEDIA Creator</p>
-
-                    <div class="flex items-center space-x-6 mt-4 py-2 px-6 bg-zinc-900 rounded-2xl border border-zinc-800">
-                        <div class="text-center">
-                            <span class="block font-bold text-base text-white">12.4K</span>
-                            <span class="text-[10px] text-zinc-400 uppercase">Followers</span>
-                        </div>
-                        <div class="w-px h-6 bg-zinc-800"></div>
-                        <div class="text-center">
-                            <span class="block font-bold text-base text-white">340</span>
-                            <span class="text-[10px] text-zinc-400 uppercase">Following</span>
-                        </div>
-                        <div class="w-px h-6 bg-zinc-800"></div>
-                        <div class="text-center">
-                            <span class="block font-bold text-base text-white">98.2K</span>
-                            <span class="text-[10px] text-zinc-400 uppercase">Likes</span>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="space-y-2">
-                    <button class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center justify-between text-zinc-200 hover:bg-zinc-800 transition">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-video text-red-500 text-base"></i>
-                            <span class="text-xs font-semibold">Muuqaalladayda SOMEDIA</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-xs text-zinc-500"></i>
-                    </button>
-
-                    <button class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center justify-between text-zinc-200 hover:bg-zinc-800 transition">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-bookmark text-amber-500 text-base"></i>
-                            <span class="text-xs font-semibold">Muuqaallada Saved-ka ah</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-xs text-zinc-500"></i>
-                    </button>
-
-                    <button class="w-full bg-zinc-900 border border-zinc-800 rounded-xl p-3 flex items-center justify-between text-zinc-200 hover:bg-zinc-800 transition">
-                        <div class="flex items-center space-x-3">
-                            <i class="fas fa-cog text-blue-500 text-base"></i>
-                            <span class="text-xs font-semibold">Habaynta Account-ka</span>
-                        </div>
-                        <i class="fas fa-chevron-right text-xs text-zinc-500"></i>
-                    </button>
-                </div>
-            </section>
-
-        </main>
-
-
-        <!-- ================= BAYAN MAIN BOTTOM NAVIGATION BAR ================= -->
-        <nav id="bayan-navbar" class="fixed bottom-0 left-0 right-0 max-w-md mx-auto z-40 glass-nav border-t border-zinc-800/80 px-2 py-2 transition-all duration-300">
-            <div class="flex items-center justify-around">
-
-                <!-- Tab 1: Home -->
-                <button onclick="switchTab('home')" id="bayan-nav-home" class="flex flex-col items-center py-1 px-3 text-blue-500 transition-all">
-                    <i class="fas fa-home text-lg mb-0.5"></i>
-                    <span class="text-[10px] font-medium">Home</span>
-                </button>
-
-                <!-- Tab 2: Internet -->
-                <button onclick="switchTab('internet')" id="bayan-nav-internet" class="flex flex-col items-center py-1 px-3 text-zinc-400 hover:text-white transition-all">
-                    <i class="fas fa-wifi text-lg mb-0.5"></i>
-                    <span class="text-[10px] font-medium">Internet</span>
-                </button>
-
-                <!-- SOMEDIA DIRECT TRIGGER (Special Center Button) -->
-                <button onclick="switchTab('somedia')" class="flex flex-col items-center justify-center -mt-5">
-                    <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-red-600 to-rose-500 flex items-center justify-center text-white shadow-lg shadow-red-600/40 hover:scale-105 active:scale-95 transition-all ring-4 ring-black">
-                        <i class="fas fa-play text-base ml-0.5"></i>
-                    </div>
-                    <span class="text-[10px] font-bold text-red-500 mt-0.5">SOMEDIA</span>
-                </button>
-
-                <!-- Tab 3: Explore / Services -->
-                <button onclick="showToast('Adeegyada kale dhawaan...')" class="flex flex-col items-center py-1 px-3 text-zinc-400 hover:text-white transition-all">
-                    <i class="fas fa-th-large text-lg mb-0.5"></i>
-                    <span class="text-[10px] font-medium">Services</span>
-                </button>
-
-                <!-- Tab 4: Profile -->
-                <button onclick="switchTab('profile')" id="bayan-nav-profile" class="flex flex-col items-center py-1 px-3 text-zinc-400 hover:text-white transition-all">
-                    <i class="fas fa-user text-lg mb-0.5"></i>
-                    <span class="text-[10px] font-medium">Profile</span>
-                </button>
-
-            </div>
-        </nav>
-
-        <!-- ================= SOMEDIA BOTTOM NAVIGATION BAR (SLEEK & COMPACT DARK BAR) ================= -->
-        <nav id="somedia-navbar" class="hidden fixed bottom-0 left-0 right-0 max-w-md mx-auto z-40 somedia-navbar px-3 transition-all duration-300">
-            <div class="h-full flex items-center justify-between">
-
-                <!-- Back to Bayan Main App -->
-                <button onclick="switchTab('home')" class="flex flex-col items-center justify-center text-zinc-400 hover:text-white transition">
-                    <i class="fas fa-arrow-left text-sm mb-0.5"></i>
-                    <span class="text-[9px] font-bold uppercase tracking-wider">Bayan</span>
-                </button>
-
-                <!-- SOMEDIA Feed Home -->
-                <button onclick="switchSomediaFeed('for-you')" class="flex flex-col items-center justify-center text-white font-semibold">
-                    <i class="fas fa-play-circle text-base text-red-500 mb-0.5"></i>
-                    <span class="text-[9px]">Feed</span>
-                </button>
-
-                <!-- SOMEDIA CAMERA / RECORD BUTTON -->
-                <button onclick="openSomediaCamera()" class="flex items-center justify-center -mt-2">
-                    <div class="w-10 h-10 rounded-full bg-gradient-to-r from-red-600 to-red-500 text-white flex items-center justify-center shadow-md shadow-red-600/40 active:scale-95 transition">
-                        <i class="fas fa-plus text-sm"></i>
-                    </div>
-                </button>
-
-                <!-- SOMEDIA Discover -->
-                <button onclick="openSomediaSearch()" class="flex flex-col items-center justify-center text-zinc-400 hover:text-white transition">
-                    <i class="fas fa-compass text-base mb-0.5"></i>
-                    <span class="text-[9px]">Discover</span>
-                </button>
-
-                <!-- Profile within Somedia -->
-                <button onclick="switchTab('profile')" class="flex flex-col items-center justify-center text-zinc-400 hover:text-white transition">
-                    <i class="fas fa-user-circle text-base mb-0.5"></i>
-                    <span class="text-[9px]">Me</span>
-                </button>
-
-            </div>
-        </nav>
-
-
-        <!-- ================= MODALS & FULLSCREEN OVERLAYS ================= -->
-
-        <!-- 1. SOMEDIA FULL CAMERA / RECORDING MODAL -->
-        <div id="somedia-camera-modal" class="hidden fixed inset-0 z-50 bg-black flex flex-col justify-between max-w-md mx-auto">
-            <!-- Camera Top Bar -->
-            <div class="p-4 flex items-center justify-between z-10 bg-gradient-to-b from-black/80 to-transparent">
-                <button onclick="closeSomediaCamera()" class="w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center">
-                    <i class="fas fa-times text-base"></i>
-                </button>
-                <div class="bg-black/60 backdrop-blur px-3 py-1 rounded-full text-xs font-semibold text-white border border-white/20 flex items-center space-x-2">
-                    <i class="fas fa-music text-red-500 text-xs"></i>
-                    <span>Kudhar Cod / Muusiko</span>
-                </div>
-                <button onclick="toggleCameraFacing()" class="w-9 h-9 rounded-full bg-black/50 text-white flex items-center justify-center">
-                    <i class="fas fa-sync-alt text-sm"></i>
-                </button>
-            </div>
-
-            <!-- Live Camera Viewfinder (HTML5 Video Stream or Simulation fallback) -->
-            <div class="relative flex-1 bg-zinc-950 flex items-center justify-center overflow-hidden">
-                <video id="camera-preview" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
-                
-                <!-- Fallback camera view when webcam is denied or unavailable -->
-                <div id="camera-fallback" class="text-center p-6 space-y-3">
-                    <div class="w-20 h-20 mx-auto rounded-full bg-zinc-900 flex items-center justify-center text-zinc-600 border border-zinc-800">
-                        <i class="fas fa-camera text-3xl"></i>
-                    </div>
-                    <p class="text-xs text-zinc-400">Kamerada Tooska ah (Real Camera Viewfinder)</p>
-                    <button onclick="startRealCamera()" class="px-4 py-1.5 bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold rounded-lg">Suragali Kamerada</button>
-                </div>
-
-                <!-- Timer Overlay -->
-                <div id="record-timer" class="hidden absolute top-4 bg-red-600 text-white text-xs font-mono font-bold px-3 py-1 rounded-full">
-                    00:<span id="timer-sec">00</span>
-                </div>
-            </div>
-
-            <!-- Recording Bottom Controls -->
-            <div class="p-6 bg-gradient-to-t from-black via-black/90 to-transparent flex items-center justify-between z-10">
-                <button onclick="triggerFileUpload()" class="flex flex-col items-center text-zinc-300">
-                    <div class="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-1">
-                        <i class="fas fa-folder-open text-sm"></i>
-                    </div>
-                    <span class="text-[10px]">Upload</span>
-                </button>
-
-                <!-- Record Shutter Button -->
-                <button id="record-btn" onclick="toggleRecording()" class="w-18 h-18 rounded-full border-4 border-white p-1 flex items-center justify-center transition active:scale-95">
-                    <div id="record-inner" class="w-14 h-14 bg-red-600 rounded-full transition-all duration-300"></div>
-                </button>
-
-                <button onclick="openVideoEditor()" class="flex flex-col items-center text-zinc-300">
-                    <div class="w-10 h-10 rounded-xl bg-zinc-800 border border-zinc-700 flex items-center justify-center mb-1">
-                        <i class="fas fa-magic text-sm text-yellow-400"></i>
-                    </div>
-                    <span class="text-[10px]">Effects</span>
-                </button>
-            </div>
-
-            <input type="file" id="video-file-input" accept="video/*" class="hidden" onchange="handleFileSelected(event)">
-        </div>
-
-
-        <!-- 2. SOMEDIA VIDEO TRIMMER & EDITOR MODAL -->
-        <div id="somedia-editor-modal" class="hidden fixed inset-0 z-50 bg-zinc-950 flex flex-col justify-between max-w-md mx-auto">
-            <!-- Top Editor Bar -->
-            <div class="p-4 flex items-center justify-between border-b border-zinc-800">
-                <button onclick="closeVideoEditor()" class="text-zinc-400 hover:text-white">
-                    <i class="fas fa-arrow-left text-lg"></i>
-                </button>
-                <span class="text-xs font-bold uppercase tracking-wider text-white">Trim & Edit Video</span>
-                <button onclick="openVideoDetailsModal()" class="px-3 py-1 bg-red-600 text-white font-bold text-xs rounded-lg hover:bg-red-500">
-                    Shoro (Next)
-                </button>
-            </div>
-
-            <!-- Video Preview Box -->
-            <div class="flex-1 bg-black relative flex items-center justify-center p-2">
-                <video id="editor-video-preview" controls class="max-h-full max-w-full rounded-xl border border-zinc-800"></video>
-            </div>
-
-            <!-- Video Trimmer & Controls Panel -->
-            <div class="p-4 bg-zinc-900 border-t border-zinc-800 space-y-4">
-                <div>
-                    <div class="flex justify-between text-xs text-zinc-400 mb-1">
-                        <span>Muuqaalka Jar (Trim Video)</span>
-                        <span id="trim-time-indicator">00:00 - 00:15</span>
-                    </div>
-                    <input type="range" min="0" max="100" value="0" class="w-full bg-zinc-800 rounded-lg h-2 cursor-pointer">
-                </div>
-
-                <!-- Tool Buttons -->
-                <div class="grid grid-cols-4 gap-2 text-center">
-                    <button onclick="showToast('Filter lagu daray')" class="p-2 bg-zinc-800 rounded-lg text-xs text-zinc-300 hover:text-white">
-                        <i class="fas fa-sliders-h block text-base mb-1 text-blue-400"></i> Filters
-                    </button>
-                    <button onclick="showToast('Qoraal ku qor')" class="p-2 bg-zinc-800 rounded-lg text-xs text-zinc-300 hover:text-white">
-                        <i class="fas fa-font block text-base mb-1 text-green-400"></i> Text
-                    </button>
-                    <button onclick="showToast('Sticker lagu daray')" class="p-2 bg-zinc-800 rounded-lg text-xs text-zinc-300 hover:text-white">
-                        <i class="fas fa-smile block text-base mb-1 text-yellow-400"></i> Sticker
-                    </button>
-                    <button onclick="showToast('Codka la bedelay')" class="p-2 bg-zinc-800 rounded-lg text-xs text-zinc-300 hover:text-white">
-                        <i class="fas fa-volume-up block text-base mb-1 text-purple-400"></i> Audio
-                    </button>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- 3. SOMEDIA VIDEO DETAILS & POST MODAL -->
-        <div id="somedia-details-modal" class="hidden fixed inset-0 z-50 bg-zinc-950 flex flex-col justify-between max-w-md mx-auto">
-            <div class="p-4 flex items-center justify-between border-b border-zinc-800">
-                <button onclick="closeVideoDetailsModal()" class="text-zinc-400 hover:text-white">
-                    <i class="fas fa-arrow-left text-lg"></i>
-                </button>
-                <span class="text-xs font-bold uppercase tracking-wider text-white">Qor Fahfaahinta</span>
-                <span class="w-6"></span>
-            </div>
-
-            <div class="p-4 flex-1 space-y-4 overflow-y-auto">
-                <div class="flex space-x-3">
-                    <textarea id="video-caption-input" rows="4" placeholder="Qor qoraal yar ama #hashtags Halkan..." class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl p-3 text-xs text-white focus:outline-none focus:border-red-500 placeholder-zinc-500"></textarea>
-                    <div class="w-24 h-32 bg-zinc-900 border border-zinc-800 rounded-xl overflow-hidden relative flex items-center justify-center">
-                        <i class="fas fa-file-video text-2xl text-zinc-700"></i>
-                        <span class="absolute bottom-1 left-1 bg-black/60 px-1 rounded text-[9px] text-zinc-300">Cover</span>
-                    </div>
-                </div>
-
-                <div class="space-y-3">
-                    <div class="flex items-center justify-between p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                        <span class="text-xs font-medium text-zinc-300"><i class="fas fa-map-marker-alt text-red-500 mr-2"></i> Ku dar Goobta (Location)</span>
-                        <span class="text-xs text-zinc-500">Mogadishu, Somalia</span>
-                    </div>
-
-                    <div class="flex items-center justify-between p-3 bg-zinc-900 rounded-xl border border-zinc-800">
-                        <span class="text-xs font-medium text-zinc-300"><i class="fas fa-globe text-blue-500 mr-2"></i> Yaa daawan kara?</span>
-                        <span class="text-xs text-blue-400 font-semibold">Cid walba (Public)</span>
-                    </div>
-                </div>
-            </div>
-
-            <div class="p-4 border-t border-zinc-800 bg-zinc-900">
-                <button onclick="publishSomediaPost()" class="w-full py-3 bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold text-sm rounded-xl shadow-lg shadow-red-600/30 hover:opacity-95 transition active:scale-98">
-                    <i class="fas fa-paper-plane mr-2"></i> Baahi Muuqaalka (Post Video)
-                </button>
-            </div>
-        </div>
-
-
-        <!-- 4. SOMEDIA SINGLE VIDEO FULL PLAYER MODAL -->
-        <div id="somedia-player-modal" class="hidden fixed inset-0 z-50 bg-black flex flex-col justify-between max-w-md mx-auto">
-            <div class="absolute top-4 left-4 z-20">
-                <button onclick="closeSomediaPlayer()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center border border-white/20">
-                    <i class="fas fa-arrow-left text-sm"></i>
-                </button>
-            </div>
-
-            <!-- Video Player -->
-            <div class="relative flex-1 bg-black flex items-center justify-center overflow-hidden">
-                <video id="player-modal-video" controls autoplay loop class="w-full h-full object-cover"></video>
-
-                <div class="absolute bottom-4 left-4 right-16 z-10 text-white space-y-1">
-                    <h4 id="player-modal-username" class="font-bold text-sm text-white">@username</h4>
-                    <p id="player-modal-desc" class="text-xs text-zinc-200">Muuqaalka faahfaahintiisa...</p>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- 5. SEARCH MODAL FOR SOMEDIA -->
-        <div id="somedia-search-modal" class="hidden fixed inset-0 z-50 bg-zinc-950 p-4 max-w-md mx-auto flex flex-col space-y-4">
-            <div class="flex items-center space-x-2">
-                <div class="flex-1 bg-zinc-900 border border-zinc-800 rounded-xl px-3 py-2 flex items-center space-x-2">
-                    <i class="fas fa-search text-zinc-500 text-sm"></i>
-                    <input type="text" placeholder="Raadi isticmaalayaal ama #hashtags..." class="bg-transparent text-xs text-white focus:outline-none w-full">
-                </div>
-                <button onclick="closeSomediaSearch()" class="text-xs font-semibold text-zinc-400 hover:text-white px-2">Kalo</button>
-            </div>
-
-            <div class="flex-1 overflow-y-auto space-y-3">
-                <p class="text-xs font-bold text-zinc-500 uppercase">Trend-yada ugu waaweyn</p>
-                <div class="p-3 bg-zinc-900 rounded-xl border border-zinc-800 flex justify-between items-center">
-                    <span class="text-xs font-bold text-white">#BayanApp2026</span>
-                    <span class="text-[10px] text-zinc-500">120K views</span>
-                </div>
-                <div class="p-3 bg-zinc-900 rounded-xl border border-zinc-800 flex justify-between items-center">
-                    <span class="text-xs font-bold text-white">#SOMEDIATrend</span>
-                    <span class="text-[10px] text-zinc-500">85K views</span>
-                </div>
-            </div>
-        </div>
-
-
-        <!-- TOAST NOTIFICATION CONTAINER -->
-        <div id="toast-container" class="fixed top-5 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300 opacity-0 translate-y-2">
-            <div class="bg-zinc-800/95 text-white text-xs px-4 py-2 rounded-full shadow-2xl border border-zinc-700/80 flex items-center space-x-2">
-                <i class="fas fa-info-circle text-blue-400"></i>
-                <span id="toast-message">Notification message</span>
-            </div>
-        </div>
-
+<body>
+
+<header>
+  <div>
+    <h1>SomChat 💬</h1>
+    <small>La xiriir dadka</small>
+  </div>
+  <button id="logoutBtn" class="secondary hidden">
+    Ka bax
+  </button>
+</header>
+
+<!-- LOGIN -->
+<section id="loginScreen">
+  <div class="card">
+    <div class="logo">SomChat</div>
+    <p class="subtitle">Farriimahaaga hal meel ku wadaag.</p>
+
+    <h3>Ku soo gal Google</h3>
+
+    <p>
+      Isticmaal Gmail-kaaga si aad u gasho SomChat.
+    </p>
+
+    <button id="googleBtn" class="primary" style="width:100%">
+      🔐 Ku gal Google
+    </button>
+
+    <p id="loginStatus" class="status">
+      Sugaya isku xirka...
+    </p>
+  </div>
+
+  <div class="notice">
+    SomChat wuxuu u baahan yahay Firebase Authentication
+    iyo Firestore Database si fariimaha loo kaydiyo.
+  </div>
+</section>
+
+<!-- MAIN APP -->
+<main id="appScreen" class="container hidden">
+
+  <section class="card">
+    <h2>Ku soo dhowow 👋</h2>
+
+    <div class="user">
+      <img id="myPhoto" class="avatar" alt="Sawirkaaga">
+
+      <div class="user-info">
+        <strong id="myName">Magacaaga</strong>
+        <small id="myEmail"></small>
+      </div>
     </div>
+  </section>
+
+  <section class="card">
+    <h3>🔎 Raadi dadka</h3>
+
+    <input
+      id="searchInput"
+      type="search"
+      placeholder="Raadi magac ama Gmail..."
+      autocomplete="off"
+    >
+
+    <div id="usersList">
+      <p class="status">Waxaa halkan ka muuqan doona dadka.</p>
+    </div>
+  </section>
+
+  <div class="notice">
+    V1: Google Login, raadinta dadka iyo fariimaha qoraalka ah.
+    Wicitaannada codka iyo muuqaalka weli kuma jiraan.
+  </div>
+</main>
+
+<!-- CHAT WINDOW -->
+<section id="chatScreen" class="hidden">
+
+  <div class="chat-header">
+    <button id="backBtn" class="secondary">←</button>
+
+    <img id="chatPhoto" class="avatar" alt="Sawirka qofka">
+
+    <div class="user-info">
+      <strong id="chatName">Qofka</strong>
+      <small id="chatEmail"></small>
+    </div>
+  </div>
+
+  <div id="messages">
+    <p class="status">Fariimaha ayaa halkan ka muuqan doona.</p>
+  </div>
+
+  <form id="messageForm">
+    <input
+      id="messageInput"
+      type="text"
+      placeholder="Qor fariinta..."
+      maxlength="4000"
+      autocomplete="off"
+      required
+    >
+    <button class="primary" type="submit">Dir ➤</button>
+  </form>
+
+</section>
+
+<footer>SomChat V1</footer>
+
+<script type="module">
+import { initializeApp }
+  from "https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js";
+
+import {
+  getAuth,
+  GoogleAuthProvider,
+  signInWithPopup,
+  signInWithRedirect,
+  getRedirectResult,
+  onAuthStateChanged,
+  signOut
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js";
+
+import {
+  getFirestore,
+  collection,
+  doc,
+  setDoc,
+  getDoc,
+  addDoc,
+  query,
+  orderBy,
+  onSnapshot,
+  serverTimestamp
+} from "https://www.gstatic.com/firebasejs/10.14.1/firebase-firestore.js";
 
 
-    <!-- ================= JAVASCRIPT APPLICATION LOGIC ================= -->
-    <script>
-        // Mock SOMEDIA Video Feed Data
-        const somediaVideos = [
-            {
-                id: 1,
-                username: "@cabdi_tech",
-                userAvatar: "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80",
-                description: "Ku soo dhawaada barnaamijka cusub ee SOMEDIA ee Bayan! 🚀 #SomaliaTech #Bayan",
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-vertical-shot-of-a-woman-running-on-the-beach-41484-large.mp4",
-                likes: "14.2K",
-                comments: "342",
-                shares: "89"
-            },
-            {
-                id: 2,
-                username: "@xasan_vlogs",
-                userAvatar: "https://images.unsplash.com/photo-1570295999919-56ceb5ecca61?auto=format&fit=crop&w=120&q=80",
-                description: "Muqdisho waa magaalo bilicsan oo horumar ku socota ✨ #Mogadishu #Somalia",
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-trees-in-the-forest-wild-nature-41551-large.mp4",
-                likes: "8.9K",
-                comments: "120",
-                shares: "45"
-            },
-            {
-                id: 3,
-                username: "@hodan_style",
-                userAvatar: "https://images.unsplash.com/photo-1494790108377-be9c29b29330?auto=format&fit=crop&w=120&q=80",
-                description: "Naqshadaynta dhar cusub oo loogu talagalay sanadkan! 🎨 #Fashion",
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-young-woman-missing-a-shot-at-basketball-42790-large.mp4",
-                likes: "22.1K",
-                comments: "610",
-                shares: "230"
-            }
-        ];
+/* FIREBASE CONFIG */
+const firebaseConfig = {
+  apiKey: "AIzaSyBCe8ZiIPsTxT1fGA0IT3nIUaQjFK67al0",
+  authDomain: "somchat-1910a.firebaseapp.com",
+  projectId: "somchat-1910a",
+  storageBucket: "somchat-1910a.firebasestorage.app",
+  messagingSenderId: "981092599681",
+  appId: "1:981092599681:web:cc01745c6831ab8ea44a80",
+  measurementId: "G-8B6P8RSDQG"
+};
 
-        let activeTab = 'home';
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let isRecording = false;
-        let recordInterval = null;
-        let recordSeconds = 0;
-        let cameraStream = null;
 
-        // Initialize App on DOM Load
-        document.addEventListener('DOMContentLoaded', () => {
-            renderFeaturedHomeVideos();
-            renderSomediaFeed();
-        });
+/* INITIALIZE */
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
 
-        // Main Tab Switcher Function
-        function switchTab(tabName) {
-            activeTab = tabName;
+const provider = new GoogleAuthProvider();
+provider.setCustomParameters({
+  prompt: "select_account"
+});
 
-            // Hide all tab content sections
-            const tabs = ['home', 'internet', 'somedia', 'profile'];
-            tabs.forEach(tab => {
-                const el = document.getElementById(`tab-${tab}`);
-                if (el) el.classList.add('hidden');
-            });
 
-            // Show selected tab content
-            const targetTab = document.getElementById(`tab-${tabName}`);
-            if (targetTab) targetTab.classList.remove('hidden');
+/* HTML ELEMENTS */
+const loginScreen = document.getElementById("loginScreen");
+const appScreen = document.getElementById("appScreen");
+const googleBtn = document.getElementById("googleBtn");
+const logoutBtn = document.getElementById("logoutBtn");
+const loginStatus = document.getElementById("loginStatus");
 
-            // Elements for Header & Bottom Nav
-            const bayanHeader = document.getElementById('bayan-header');
-            const somediaHeader = document.getElementById('somedia-header');
-            const bayanNavbar = document.getElementById('bayan-navbar');
-            const somediaNavbar = document.getElementById('somedia-navbar');
+const usersList = document.getElementById("usersList");
+const searchInput = document.getElementById("searchInput");
 
-            // Handle Navigation & Header toggles specifically for SOMEDIA mode
-            if (tabName === 'somedia') {
-                // HIDE Bayan Main Header & Navigation completely
-                bayanHeader.classList.add('hidden');
-                bayanNavbar.classList.add('hidden');
+const myPhoto = document.getElementById("myPhoto");
+const myName = document.getElementById("myName");
+const myEmail = document.getElementById("myEmail");
 
-                // SHOW SOMEDIA Dark Compact Header & Navigation
-                somediaHeader.classList.remove('hidden');
-                somediaNavbar.classList.remove('hidden');
-            } else {
-                // SHOW Bayan Main Header & Navigation
-                bayanHeader.classList.remove('hidden');
-                bayanNavbar.classList.remove('hidden');
+const chatScreen = document.getElementById("chatScreen");
+const chatPhoto = document.getElementById("chatPhoto");
+const chatName = document.getElementById("chatName");
+const chatEmail = document.getElementById("chatEmail");
 
-                // HIDE SOMEDIA Header & Navigation
-                somediaHeader.classList.add('hidden');
-                somediaNavbar.classList.add('hidden');
+const messagesBox = document.getElementById("messages");
+const messageForm = document.getElementById("messageForm");
+const messageInput = document.getElementById("messageInput");
+const backBtn = document.getElementById("backBtn");
 
-                // Update Bayan active tab icons
-                updateBayanNavHighlight(tabName);
-            }
-        }
 
-        function updateBayanNavHighlight(tabName) {
-            const homeBtn = document.getElementById('bayan-nav-home');
-            const internetBtn = document.getElementById('bayan-nav-internet');
-            const profileBtn = document.getElementById('bayan-nav-profile');
+/* APP STATE */
+let currentUser = null;
+let allUsers = [];
+let selectedUser = null;
+let stopUsersListener = null;
+let stopMessagesListener = null;
+let currentChatId = null;
 
-            [homeBtn, internetBtn, profileBtn].forEach(btn => {
-                if(btn) {
-                    btn.classList.remove('text-blue-500');
-                    btn.classList.add('text-zinc-400');
-                }
-            });
 
-            if (tabName === 'home' && homeBtn) {
-                homeBtn.classList.add('text-blue-500');
-                homeBtn.classList.remove('text-zinc-400');
-            } else if (tabName === 'internet' && internetBtn) {
-                internetBtn.classList.add('text-blue-500');
-                internetBtn.classList.remove('text-zinc-400');
-            } else if (tabName === 'profile' && profileBtn) {
-                profileBtn.classList.add('text-blue-500');
-                profileBtn.classList.remove('text-zinc-400');
-            }
-        }
+/* SAFE IMAGE FALLBACK */
+function avatarUrl(photoURL) {
+  return photoURL || "";
+}
 
-        // Render Home Screen Featured Items
-        function renderFeaturedHomeVideos() {
-            const container = document.getElementById('home-featured-videos');
-            if (!container) return;
 
-            container.innerHTML = somediaVideos.slice(0, 2).map(vid => `
-                <div onclick="openSomediaPlayerWithVideo('${vid.videoUrl}', '${vid.username}', '${vid.description}')" class="p-3 bg-zinc-900 border border-zinc-800/80 rounded-2xl flex items-center space-x-3 cursor-pointer hover:border-zinc-700 transition">
-                    <div class="w-16 h-20 rounded-xl bg-zinc-800 overflow-hidden relative flex-shrink-0">
-                        <video src="${vid.videoUrl}" class="w-full h-full object-cover" muted></video>
-                        <div class="absolute inset-0 bg-black/30 flex items-center justify-center">
-                            <i class="fas fa-play text-xs text-white"></i>
-                        </div>
-                    </div>
-                    <div class="flex-1 min-w-0">
-                        <span class="text-xs font-bold text-red-500 block">${vid.username}</span>
-                        <p class="text-xs text-zinc-300 truncate mt-0.5">${vid.description}</p>
-                        <div class="flex items-center space-x-3 text-[10px] text-zinc-500 mt-2">
-                            <span><i class="fas fa-heart text-red-500 mr-1"></i> ${vid.likes}</span>
-                            <span><i class="fas fa-comment mr-1"></i> ${vid.comments}</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+/* GOOGLE LOGIN */
+googleBtn.addEventListener("click", async () => {
+  loginStatus.textContent = "Waxaa la furayaa Google...";
 
-        // Render SOMEDIA Reels/Feed List
-        function renderSomediaFeed() {
-            const feedContainer = document.getElementById('somedia-feed-container');
-            if (!feedContainer) return;
+  try {
+    await signInWithPopup(auth, provider);
+  } catch (error) {
+    if (
+      error.code === "auth/popup-blocked" ||
+      error.code === "auth/popup-closed-by-user" ||
+      error.code === "auth/cancelled-popup-request"
+    ) {
+      try {
+        await signInWithRedirect(auth, provider);
+        return;
+      } catch (redirectError) {
+        loginStatus.textContent =
+          "Login-ku wuu fashilmay: " + redirectError.message;
+      }
+    } else {
+      loginStatus.textContent =
+        "Login-ku wuu fashilmay: " + error.message;
+    }
+  }
+});
 
-            feedContainer.innerHTML = somediaVideos.map((vid) => `
-                <div class="snap-start w-full h-[75vh] relative rounded-2xl overflow-hidden bg-zinc-900 border border-zinc-800/90 flex flex-col justify-between shadow-2xl">
-                    <!-- Video Background -->
-                    <video src="${vid.videoUrl}" loop playsinline onclick="toggleVideoPlay(this)" class="absolute inset-0 w-full h-full object-cover z-0"></video>
-                    
-                    <!-- Overlay Gradient -->
-                    <div class="absolute inset-0 video-overlay z-10 pointer-events-none"></div>
 
-                    <!-- Top Creator Badge -->
-                    <div class="relative z-20 p-3 flex items-center justify-between">
-                        <div class="flex items-center space-x-2 bg-black/40 backdrop-blur px-2.5 py-1 rounded-full border border-white/10">
-                            <img src="${vid.userAvatar}" class="w-5 h-5 rounded-full object-cover">
-                            <span class="text-xs font-bold text-white">${vid.username}</span>
-                        </div>
-                        <button onclick="showToast('Followed!')" class="px-3 py-1 bg-red-600 hover:bg-red-500 text-white text-xs font-bold rounded-full shadow">Follow</button>
-                    </div>
+/* CHECK GOOGLE REDIRECT RESULT */
+try {
+  await getRedirectResult(auth);
+} catch (error) {
+  loginStatus.textContent =
+    "Google Login: " + error.message;
+}
 
-                    <!-- Side Action Buttons -->
-                    <div class="absolute right-3 bottom-16 z-20 flex flex-col items-center space-y-4 text-white">
-                        <button onclick="likeVideo(this)" class="flex flex-col items-center group">
-                            <div class="w-10 h-10 rounded-full bg-black/50 backdrop-blur flex items-center justify-center text-zinc-300 group-hover:text-red-500 transition">
-                                <i class="fas fa-heart text-lg"></i>
-                            </div>
-                            <span class="text-[10px] font-semibold mt-1">${vid.likes}</span>
-                        </button>
 
-                        <button onclick="showToast('Comments opening...')" class="flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full bg-black/50 backdrop-blur flex items-center justify-center text-zinc-300">
-                                <i class="fas fa-comment-dots text-lg"></i>
-                            </div>
-                            <span class="text-[10px] font-semibold mt-1">${vid.comments}</span>
-                        </button>
+/* LOGOUT */
+logoutBtn.addEventListener("click", async () => {
+  try {
+    closeChat();
+    await signOut(auth);
+  } catch (error) {
+    alert("Ka bixiddu way fashilantay: " + error.message);
+  }
+});
 
-                        <button onclick="showToast('Link-ga waa la koobiyay!')" class="flex flex-col items-center">
-                            <div class="w-10 h-10 rounded-full bg-black/50 backdrop-blur flex items-center justify-center text-zinc-300">
-                                <i class="fas fa-share text-lg"></i>
-                            </div>
-                            <span class="text-[10px] font-semibold mt-1">${vid.shares}</span>
-                        </button>
-                    </div>
 
-                    <!-- Bottom Details -->
-                    <div class="relative z-20 p-4 space-y-1">
-                        <p class="text-xs text-zinc-100 font-medium leading-snug max-w-[80%]">${vid.description}</p>
-                        <div class="flex items-center space-x-2 text-[10px] text-zinc-400">
-                            <i class="fas fa-music text-red-500"></i>
-                            <span>Original Sound - SOMEDIA Music</span>
-                        </div>
-                    </div>
-                </div>
-            `).join('');
-        }
+/* AUTH STATE */
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
 
-        // Toggle Video Play/Pause on click
-        function toggleVideoPlay(videoElem) {
-            if (videoElem.paused) {
-                videoElem.play();
-                showToast('Playing');
-            } else {
-                videoElem.pause();
-                showToast('Paused');
-            }
-        }
+  if (!user) {
+    loginScreen.classList.remove("hidden");
+    appScreen.classList.add("hidden");
+    logoutBtn.classList.add("hidden");
+    chatScreen.classList.add("hidden");
 
-        function likeVideo(btn) {
-            const icon = btn.querySelector('i');
-            if (icon.classList.contains('text-red-500')) {
-                icon.classList.remove('text-red-500');
-            } else {
-                icon.classList.add('text-red-500');
-                showToast('U helay Like ❤️');
-            }
-        }
+    if (stopUsersListener) stopUsersListener();
+    stopUsersListener = null;
+    allUsers = [];
 
-        function switchSomediaFeed(mode) {
-            const forYouBtn = document.getElementById('feed-btn-for-you');
-            const followingBtn = document.getElementById('feed-btn-following');
+    loginStatus.textContent = "Ku gal Gmail-kaaga.";
+    return;
+  }
 
-            if (mode === 'for-you') {
-                forYouBtn.className = "px-3 py-1 rounded-full somedia-pill-active transition-all";
-                followingBtn.className = "px-3 py-1 rounded-full text-zinc-400 hover:text-white transition-all";
-                showToast('Feed: For You');
-            } else {
-                followingBtn.className = "px-3 py-1 rounded-full somedia-pill-active transition-all";
-                forYouBtn.className = "px-3 py-1 rounded-full text-zinc-400 hover:text-white transition-all";
-                showToast('Feed: Following');
-            }
-        }
+  loginScreen.classList.add("hidden");
+  appScreen.classList.remove("hidden");
+  logoutBtn.classList.remove("hidden");
 
-        // --- CAMERA & RECORDING MODAL LOGIC ---
-        function openSomediaCamera() {
-            document.getElementById('somedia-camera-modal').classList.remove('hidden');
-            startRealCamera();
-        }
+  myName.textContent = user.displayName || "SomChat User";
+  myEmail.textContent = user.email || "";
+  myPhoto.src = avatarUrl(user.photoURL);
 
-        function closeSomediaCamera() {
-            document.getElementById('somedia-camera-modal').classList.add('hidden');
-            stopRealCamera();
-        }
+  try {
+    await saveMyProfile();
+    startUsersListener();
+  } catch (error) {
+    alert(
+      "Xogta profile-ka lama kaydin karin. Hubi Firestore Rules: "
+      + error.message
+    );
+  }
+});
 
-        async function startRealCamera() {
-            const videoElem = document.getElementById('camera-preview');
-            const fallbackElem = document.getElementById('camera-fallback');
 
-            try {
-                cameraStream = await navigator.mediaDevices.getUserMedia({ video: true, audio: true });
-                videoElem.srcObject = cameraStream;
-                videoElem.classList.remove('hidden');
-                fallbackElem.classList.add('hidden');
-            } catch (err) {
-                console.log('Webcam access error or denied:', err);
-                videoElem.classList.add('hidden');
-                fallbackElem.classList.remove('hidden');
-                showToast('Kamerada tooska ah lama helin (Simulated Camera Active)');
-            }
-        }
+/* SAVE PROFILE */
+async function saveMyProfile() {
+  const profileRef = doc(db, "users", currentUser.uid);
 
-        function stopRealCamera() {
-            if (cameraStream) {
-                cameraStream.getTracks().forEach(track => track.stop());
-                cameraStream = null;
-            }
-        }
+  await setDoc(profileRef, {
+    uid: currentUser.uid,
+    name: currentUser.displayName || "SomChat User",
+    email: currentUser.email || "",
+    photoURL: currentUser.photoURL || "",
+    updatedAt: serverTimestamp()
+  }, { merge: true });
+}
 
-        function toggleRecording() {
-            const recordInner = document.getElementById('record-inner');
-            const timerBadge = document.getElementById('record-timer');
-            const timerSec = document.getElementById('timer-sec');
 
-            if (!isRecording) {
-                // Start Recording
-                isRecording = true;
-                recordInner.classList.remove('rounded-full', 'bg-red-600');
-                recordInner.classList.add('rounded-lg', 'bg-red-700', 'w-8', 'h-8');
-                timerBadge.classList.remove('hidden');
+/* LIST USERS */
+function startUsersListener() {
+  if (stopUsersListener) stopUsersListener();
 
-                recordSeconds = 0;
-                recordInterval = setInterval(() => {
-                    recordSeconds++;
-                    timerSec.innerText = recordSeconds < 10 ? '0' + recordSeconds : recordSeconds;
-                    if (recordSeconds >= 15) {
-                        toggleRecording(); // auto stop at 15s
-                    }
-                }, 1000);
+  stopUsersListener = onSnapshot(
+    collection(db, "users"),
+    (snapshot) => {
+      allUsers = snapshot.docs
+        .map(item => item.data())
+        .filter(user => user.uid && user.uid !== currentUser.uid);
 
-                showToast('Duubista waa bilaabatay...');
-            } else {
-                // Stop Recording
-                isRecording = false;
-                clearInterval(recordInterval);
-                recordInner.classList.remove('rounded-lg', 'bg-red-700', 'w-8', 'h-8');
-                recordInner.classList.add('rounded-full', 'bg-red-600', 'w-14', 'h-14');
-                timerBadge.classList.add('hidden');
+      renderUsers();
+    },
+    (error) => {
+      usersList.textContent =
+        "Dadka lama soo qaadi karin: " + error.message;
+    }
+  );
+}
 
-                showToast('Duubistii waa dhammaatay!');
-                setTimeout(() => {
-                    closeSomediaCamera();
-                    openVideoEditor();
-                }, 500);
-            }
-        }
 
-        function triggerFileUpload() {
-            document.getElementById('video-file-input').click();
-        }
+/* SEARCH AND RENDER */
+searchInput.addEventListener("input", renderUsers);
 
-        function handleFileSelected(event) {
-            const file = event.target.files[0];
-            if (file) {
-                showToast(`Video ${file.name} waa la soo doortay!`);
-                closeSomediaCamera();
-                openVideoEditor(URL.createObjectURL(file));
-            }
-        }
+function renderUsers() {
+  usersList.replaceChildren();
 
-        function toggleCameraFacing() {
-            showToast('Kamerada waa la gaddiyay (Flip Camera)');
-        }
+  const search = searchInput.value.trim().toLowerCase();
 
-        // --- EDITOR MODAL LOGIC ---
-        function openVideoEditor(videoSrc = null) {
-            document.getElementById('somedia-editor-modal').classList.remove('hidden');
-            const previewVid = document.getElementById('editor-video-preview');
-            previewVid.src = videoSrc || "https://assets.mixkit.co/videos/preview/mixkit-vertical-shot-of-a-woman-running-on-the-beach-41484-large.mp4";
-        }
+  const filtered = allUsers.filter(user => {
+    const name = (user.name || "").toLowerCase();
+    const email = (user.email || "").toLowerCase();
 
-        function closeVideoEditor() {
-            document.getElementById('somedia-editor-modal').classList.add('hidden');
-        }
+    return name.includes(search) || email.includes(search);
+  });
 
-        // --- DETAILS & POST MODAL LOGIC ---
-        function openVideoDetailsModal() {
-            closeVideoEditor();
-            document.getElementById('somedia-details-modal').classList.remove('hidden');
-        }
+  if (filtered.length === 0) {
+    const p = document.createElement("p");
+    p.className = "status";
+    p.textContent = search
+      ? "Qofkaas lama helin."
+      : "Weli ma jiro qof kale oo SomChat iska diiwaangeliyey.";
 
-        function closeVideoDetailsModal() {
-            document.getElementById('somedia-details-modal').classList.add('hidden');
-        }
+    usersList.appendChild(p);
+    return;
+  }
 
-        function publishSomediaPost() {
-            const caption = document.getElementById('video-caption-input').value || "Muuqaal cusub oo SOMEDIA!";
-            
-            // Add new video post into local SOMEDIA list
-            somediaVideos.unshift({
-                id: Date.now(),
-                username: "@muna_axmed",
-                userAvatar: "https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80",
-                description: caption,
-                videoUrl: "https://assets.mixkit.co/videos/preview/mixkit-vertical-shot-of-a-woman-running-on-the-beach-41484-large.mp4",
-                likes: "1",
-                comments: "0",
-                shares: "0"
-            });
+  filtered.forEach(user => {
+    const row = document.createElement("div");
+    row.className = "user";
 
-            renderSomediaFeed();
-            renderFeaturedHomeVideos();
+    const img = document.createElement("img");
+    img.className = "avatar";
+    img.alt = "Sawirka qofka";
+    img.src = avatarUrl(user.photoURL);
 
-            closeVideoDetailsModal();
-            switchTab('somedia');
-            showToast('🎉 Muuqaalkaaga si guul leh ayaa loo baahiyay!');
-        }
+    const info = document.createElement("div");
+    info.className = "user-info";
 
-        // --- PLAYER MODAL LOGIC ---
-        function openSomediaPlayerWithVideo(url, username, desc) {
-            const modal = document.getElementById('somedia-player-modal');
-            const video = document.getElementById('player-modal-video');
-            document.getElementById('player-modal-username').innerText = username;
-            document.getElementById('player-modal-desc').innerText = desc;
-            
-            video.src = url;
-            modal.classList.remove('hidden');
-        }
+    const name = document.createElement("strong");
+    name.textContent = user.name || "SomChat User";
 
-        function closeSomediaPlayer() {
-            const modal = document.getElementById('somedia-player-modal');
-            const video = document.getElementById('player-modal-video');
-            video.pause();
-            modal.classList.add('hidden');
-        }
+    const email = document.createElement("small");
+    email.textContent = user.email || "";
 
-        // --- SEARCH MODAL LOGIC ---
-        function openSomediaSearch() {
-            document.getElementById('somedia-search-modal').classList.remove('hidden');
-        }
+    const button = document.createElement("button");
+    button.className = "primary";
+    button.textContent = "Fariin";
 
-        function closeSomediaSearch() {
-            document.getElementById('somedia-search-modal').classList.add('hidden');
-        }
+    button.addEventListener("click", () => openChat(user));
 
-        // Toast Helper
-        function showToast(msg) {
-            const container = document.getElementById('toast-container');
-            const msgElem = document.getElementById('toast-message');
-            msgElem.innerText = msg;
+    info.append(name, email);
+    row.append(img, info, button);
+    usersList.appendChild(row);
+  });
+}
 
-            container.classList.remove('opacity-0', 'translate-y-2');
-            container.classList.add('opacity-100', 'translate-y-0');
 
-            setTimeout(() => {
-                container.classList.remove('opacity-100', 'translate-y-0');
-                container.classList.add('opacity-0', 'translate-y-2');
-            }, 2500);
-        }
+/* CHAT ID: SAME FOR BOTH USERS */
+function makeChatId(uid1, uid2) {
+  return [uid1, uid2].sort().join("__");
+}
 
-        function toggleSearch() {
-            const searchBar = document.getElementById('search-bar');
-            searchBar.classList.toggle('hidden');
-        }
 
-        function openNotificationModal() {
-            showToast('Ma jiraan ogaysiisyo cusub hadda.');
-        }
-    </script>
-</body>
-</html>
-```
+/* OPEN CHAT */
+async function openChat(user) {
+  if (!currentUser || !user.uid) return;
+
+  if (user.uid === currentUser.uid) {
+    alert("Adiga fariin isuma diri kartid.");
+    return;
+  }
+
+  closeChat();
+
+  selectedUser = user;
+  currentChatId = makeChatId(currentUser.uid, user.uid);
+
+  chatName.textContent = user.name || "SomChat User";
+  chatEmail.textContent = user.email || "";
+  chatPhoto.src = avatarUrl(user.photoURL);
+
+  chatScreen.classList.remove("hidden");
+  messagesBox.replaceChildren();
+
+  const loading = document.createElement("p");
+  loading.className = "status";
+  loading.textContent =

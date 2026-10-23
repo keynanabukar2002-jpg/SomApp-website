@@ -39,7 +39,7 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
   CameraController? _controller;
   bool _isCameraInitialized = false;
   int _selectedCameraIndex = 0;
-  String _selectedMode = 'VIDEO'; // Default mode (PORTRAIT, PHOTO, VIDEO)
+  String _selectedMode = 'VIDEO';
   String? _lastImagePath;
   bool _isRecording = false;
 
@@ -77,14 +77,12 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
     super.dispose();
   }
 
-  // Beddelashada Kamaradda (Front / Back)
   void _switchCamera() {
     if (cameras.length < 2) return;
     _selectedCameraIndex = (_selectedCameraIndex + 1) % cameras.length;
     _initializeCamera(_selectedCameraIndex);
   }
 
-  // Qaadashada Sawirka ama Duubista
   Future<void> _onCapturePressed() async {
     if (_controller == null || !_controller!.value.isInitialized) return;
 
@@ -113,7 +111,6 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
         }
       }
     } else {
-      // PHOTO ama PORTRAIT
       try {
         XFile picture = await _controller!.takePicture();
         setState(() {
@@ -142,12 +139,9 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
       body: SafeArea(
         child: Stack(
           children: [
-            // 1. Live Camera Preview oo shaashadda buuxinaysa
             Positioned.fill(
               child: CameraPreview(_controller!),
             ),
-
-            // 2. Qaybta Sare (Settings & Resolution)
             Positioned(
               top: 16,
               right: 20,
@@ -170,8 +164,6 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
                 ],
               ),
             ),
-
-            // 3. Qaybta Hoose (Badhamada, Modes-ka, iyo Gallery-ga)
             Positioned(
               bottom: 20,
               left: 0,
@@ -179,7 +171,6 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  // A. Mode-yada (PORTRAIT | PHOTO | VIDEO | MORE)
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: ['PORTRAIT', 'PHOTO', 'VIDEO', 'MORE'].map((mode) {
@@ -205,15 +196,12 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
                     }).toList(),
                   ),
                   const SizedBox(height: 20),
-
-                  // B. Badhamada waaweyn (Gallery, Capture/Record, Switch Camera)
                   Padding(
                     padding: const EdgeInsets.symmetric(horizontal: 30),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
-                        // Gallery Thumbnail
                         Container(
                           width: 50,
                           height: 50,
@@ -227,8 +215,6 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
                                 : Container(color: Colors.grey[900]),
                           ),
                         ),
-
-                        // Badhanka Weyn ee Duubista / Sawir Qaadista
                         GestureDetector(
                           onTap: _onCapturePressed,
                           child: Container(
@@ -252,8 +238,6 @@ class _ProCameraScreenState extends State<ProCameraScreen> {
                             ),
                           ),
                         ),
-
-                        // Badhanka Camera Flip (Beddelashada hore iyo dambe)
                         IconButton(
                           onPressed: _switchCamera,
                           icon: const Icon(

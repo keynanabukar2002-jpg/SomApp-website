@@ -1,260 +1,223 @@
-import 'package:flutter/material.dart';
-import 'package:camera/camera.dart';
-import 'dart:io';
-
-List<CameraDescription> cameras = [];
-
-Future<void> main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  try {
-    cameras = await availableCameras();
-  } catch (e) {
-    debugPrint("Cillad kamaradda ah: $e");
-  }
-  runApp(const MyApp());
-}
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      title: 'Pro Camera UI',
-      theme: ThemeData(brightness: Brightness.dark),
-      home: const ProCameraScreen(),
-    );
-  }
-}
-
-class ProCameraScreen extends StatefulWidget {
-  const ProCameraScreen({super.key});
-
-  @override
-  State<ProCameraScreen> createState() => _ProCameraScreenState();
-}
-
-class _ProCameraScreenState extends State<ProCameraScreen> {
-  CameraController? _controller;
-  bool _isCameraInitialized = false;
-  int _selectedCameraIndex = 0;
-  String _selectedMode = 'VIDEO';
-  String? _lastImagePath;
-  bool _isRecording = false;
-
-  @override
-  void initState() {
-    super.initState();
-    _initializeCamera(_selectedCameraIndex);
-  }
-
-  Future<void> _initializeCamera(int cameraIndex) async {
-    if (cameras.isEmpty) return;
-
-    final controller = CameraController(
-      cameras[cameraIndex],
-      ResolutionPreset.high,
-      enableAudio: true,
-    );
-
-    _controller = controller;
-
-    try {
-      await controller.initialize();
-      if (!mounted) return;
-      setState(() {
-        _isCameraInitialized = true;
-      });
-    } catch (e) {
-      debugPrint("Cillad intii la furayay kamaradda: $e");
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller?.dispose();
-    super.dispose();
-  }
-
-  void _switchCamera() {
-    if (cameras.length < 2) return;
-    _selectedCameraIndex = (_selectedCameraIndex + 1) % cameras.length;
-    _initializeCamera(_selectedCameraIndex);
-  }
-
-  Future<void> _onCapturePressed() async {
-    if (_controller == null || !_controller!.value.isInitialized) return;
-
-    if (_selectedMode == 'VIDEO') {
-      if (_isRecording) {
-        try {
-          XFile file = await _controller!.stopVideoRecording();
-          setState(() {
-            _isRecording = false;
-            _lastImagePath = file.path;
-          });
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Fiidiyowga waa la keydiyay!')),
-          );
-        } catch (e) {
-          debugPrint("Cillad joojinta fiidiyowga: $e");
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Full Screen Camera App</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        /* Kaamiradu waa inay buuxisaa shaashadda oo dhan */
+        #cameraStream {
+            object-fit: cover;
+            width: 100vw;
+            height: 100vh;
+            position: absolute;
+            top: 0;
+            left: 0;
+            z-index: 10;
         }
-      } else {
-        try {
-          await _controller!.startVideoRecording();
-          setState(() {
-            _isRecording = true;
-          });
-        } catch (e) {
-          debugPrint("Cillad bilaabidda fiidiyowga: $e");
+    </style>
+</head>
+<body class="bg-black m-0 p-0 overflow-hidden h-screen w-screen relative">
+
+    <!-- 1. Kaamirada oo Full Screen ah -->
+    <video id="cameraStream" autoplay playsinline muted></video>
+
+    <!-- 2. Flash effect (Iftiinka sawirka) -->
+    <div id="flashEffect" class="absolute inset-0 bg-white opacity-0 pointer-events-none transition-opacity duration-150 z-20"></div>
+
+    <!-- 3. Timer-ka Video-ga (Sare ayuu ka muuqdaa marka la duubayo) -->
+    <div id="timerDisplay" class="absolute top-6 left-1/2 transform -translate-x-1/2 bg-black/60 text-white px-4 py-1.5 rounded-full text-sm font-mono tracking-wider hidden z-30">
+        🔴 <span id="timeCount">00:00</span>
+    </div>
+
+    <!-- 4. Qeybta Kontoroolka (Controls Overlay - Dusha ayey ka saaran tahay) -->
+    <div class="absolute inset-0 flex flex-col justify-between p-6 z-30 pointer-events-none">
+        
+        <!-- Safka Sare: Badhamada Flash-ka iyo Beddelashada Kamerada -->
+        <div class="flex justify-between items-center pointer-events-auto">
+            <button id="flashBtn" class="w-12 h-12 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-md text-lg">
+                <i class="fa-solid fa-bolt-slash"></i>
+            </button>
+            <button id="switchBtn" class="w-12 h-12 rounded-full bg-black/40 text-white flex items-center justify-center backdrop-blur-md text-lg">
+                <i class="fa-solid fa-camera-rotate"></i>
+            </button>
+        </div>
+
+        <!-- Safka Hoose: Badhamada Sawirka, Video-ga, iyo Gallery-ga -->
+        <div class="flex flex-col gap-4 pointer-events-auto">
+            
+            <!-- Hababka (Modes): Photo / Video -->
+            <div class="flex justify-center gap-6 text-white font-semibold text-sm">
+                <button id="photoModeBtn" class="border-b-2 border-yellow-400 pb-1">SAWIR</button>
+                <button id="videoModeBtn" class="text-gray-400 pb-1">MUUQAAL</button>
+            </div>
+
+            <!-- Badhamada waaweyn ee hoose -->
+            <div class="flex justify-around items-center">
+                <!-- Gallery Thumbnail -->
+                <div id="galleryThumb" class="w-12 h-12 rounded-xl bg-gray-800 border-2 border-white/40 overflow-hidden flex items-center justify-center cursor-pointer shadow-lg">
+                    <span class="text-xs text-gray-400">Bar</span>
+                </div>
+
+                <!-- Main Shutter Button (Batoonka Weyn) -->
+                <button id="shutterBtn" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 focus:outline-none">
+                    <div id="shutterInner" class="w-full h-full bg-white rounded-full transition-all duration-200"></div>
+                </button>
+
+                <!-- Meel bannaan oo dheelitirka ah -->
+                <div class="w-12 h-12"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Canvas-ka sirta ah ee sawirka qaadaya -->
+    <canvas id="snapshot" class="hidden"></canvas>
+
+    <!-- JavaScript-kii shaqada waday -->
+    <script>
+        const video = document.getElementById('cameraStream');
+        const shutterBtn = document.getElementById('shutterBtn');
+        const shutterInner = document.getElementById('shutterInner');
+        const flashEffect = document.getElementById('flashEffect');
+        const photoModeBtn = document.getElementById('photoModeBtn');
+        const videoModeBtn = document.getElementById('videoModeBtn');
+        const timerDisplay = document.getElementById('timerDisplay');
+        const timeCount = document.getElementById('timeCount');
+        const galleryThumb = document.getElementById('galleryThumb');
+
+        let currentMode = 'photo'; // 'photo' ama 'video'
+        let currentFacingMode = 'user'; // 'user' (hore) ama 'environment' (dambe)
+        let mediaStream = null;
+        let mediaRecorder = null;
+        let recordedChunks = [];
+        let isRecording = false;
+        let timerInterval = null;
+        let secondsElapsed = 0;
+
+        // 1. Shidida Kaamirada
+        async function startCamera() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: currentFacingMode },
+                    audio: true
+                });
+                video.srcObject = mediaStream;
+            } catch (err) {
+                alert("Kaamirada lama shidi karo ama ogolaansho malahan.");
+            }
         }
-      }
-    } else {
-      try {
-        XFile picture = await _controller!.takePicture();
-        setState(() {
-          _lastImagePath = picture.path;
+        startCamera();
+
+        // 2. Beddelashada Mode-ka (Sawir vs Video)
+        photoModeBtn.addEventListener('click', () => {
+            if (isRecording) return;
+            currentMode = 'photo';
+            photoModeBtn.className = "border-b-2 border-yellow-400 pb-1 text-white";
+            videoModeBtn.className = "text-gray-400 pb-1";
+            shutterInner.className = "w-full h-full bg-white rounded-full transition-all duration-200";
         });
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Sawirka waa la qaaday!')),
-        );
-      } catch (e) {
-        debugPrint("Cillad qaadashada sawirka: $e");
-      }
-    }
-  }
 
-  @override
-  Widget build(BuildContext context) {
-    if (!_isCameraInitialized || _controller == null) {
-      return const Scaffold(
-        backgroundColor: Colors.black,
-        body: Center(child: CircularProgressIndicator(color: Colors.white)),
-      );
-    }
+        videoModeBtn.addEventListener('click', () => {
+            currentMode = 'video';
+            videoModeBtn.className = "border-b-2 border-yellow-400 pb-1 text-white";
+            photoModeBtn.className = "text-gray-400 pb-1";
+            shutterInner.className = "w-full h-full bg-red-600 rounded-full transition-all duration-200";
+        });
 
-    return Scaffold(
-      backgroundColor: Colors.black,
-      body: SafeArea(
-        child: Stack(
-          children: [
-            Positioned.fill(
-              child: CameraPreview(_controller!),
-            ),
-            Positioned(
-              top: 16,
-              right: 20,
-              left: 20,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                children: [
-                  const Icon(Icons.flash_off, color: Colors.white, size: 24),
-                  Container(
-                    padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                    decoration: BoxDecoration(
-                      color: Colors.black45,
-                      borderRadius: BorderRadius.circular(4),
-                    ),
-                    child: const Text(
-                      "FHD 30",
-                      style: TextStyle(color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
-              ),
-            ),
-            Positioned(
-              bottom: 20,
-              left: 0,
-              right: 0,
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: ['PORTRAIT', 'PHOTO', 'VIDEO', 'MORE'].map((mode) {
-                      bool isSelected = _selectedMode == mode;
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 14),
-                        child: GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedMode = mode;
-                            });
-                          },
-                          child: Text(
-                            mode,
-                            style: TextStyle(
-                              color: isSelected ? Colors.amber : Colors.white70,
-                              fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                              fontSize: 14,
-                            ),
-                          ),
-                        ),
-                      );
-                    }).toList(),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 30),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            border: Border.all(color: Colors.white70, width: 2),
-                          ),
-                          child: ClipOval(
-                            child: _lastImagePath != null
-                                ? Image.file(File(_lastImagePath!), fit: BoxFit.cover)
-                                : Container(color: Colors.grey[900]),
-                          ),
-                        ),
-                        GestureDetector(
-                          onTap: _onCapturePressed,
-                          child: Container(
-                            height: 80,
-                            width: 80,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 4),
-                            ),
-                            child: Container(
-                              margin: const EdgeInsets.all(6),
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                color: _isRecording ? Colors.red : Colors.white,
-                              ),
-                              child: _isRecording
-                                  ? const Center(
-                                      child: Icon(Icons.stop, color: Colors.white, size: 36),
-                                    )
-                                  : null,
-                            ),
-                          ),
-                        ),
-                        IconButton(
-                          onPressed: _switchCamera,
-                          icon: const Icon(
-                            Icons.flip_camera_ios,
-                            color: Colors.white,
-                            size: 30,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
+        // 3. Riixidda Shutter-ka (Sawir ama Duubis)
+        shutterBtn.addEventListener('click', () => {
+            if (currentMode === 'photo') {
+                takePhoto();
+            } else {
+                toggleVideoRecording();
+            }
+        });
+
+        // 4. Hawsha Sawir Qaadista
+        function takePhoto() {
+            // Flash Effect
+            flashEffect.classList.remove('opacity-0');
+            flashEffect.classList.add('opacity-80');
+            setTimeout(() => {
+                flashEffect.classList.remove('opacity-80');
+                flashEffect.classList.add('opacity-0');
+            }, 150);
+
+            const canvas = document.getElementById('snapshot');
+            canvas.width = video.videoWidth;
+            canvas.height = video.videoHeight;
+            const ctx = canvas.getContext('2d');
+            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+
+            const imageUrl = canvas.toDataURL('image/png');
+            
+            // Ku dar Gallery Thumbnail-ka
+            galleryThumb.innerHTML = `<img src="${imageUrl}" class="w-full h-full object-cover">`;
+
+            // Download toos ah (optional)
+            let a = document.createElement('a');
+            a.href = imageUrl;
+            a.download = `sawir_${Date.now()}.png`;
+            a.click();
+        }
+
+        // 5. Hawsha Duubista Muuqaalka (Video)
+        function toggleVideoRecording() {
+            if (!isRecording) {
+                // Bilow Duubista
+                recordedChunks = [];
+                mediaRecorder = new MediaRecorder(mediaStream, { mimeType: 'video/webm' });
+
+                mediaRecorder.ondataavailable = (event) => {
+                    if (event.data.size > 0) recordedChunks.push(event.data);
+                };
+
+                mediaRecorder.onstop = () => {
+                    const blob = new Blob(recordedChunks, { type: 'video/webm' });
+                    const videoUrl = URL.createObjectURL(blob);
+                    
+                    let a = document.createElement('a');
+                    a.href = videoUrl;
+                    a.download = `muuqaal_${Date.now()}.webm`;
+                    a.click();
+                };
+
+                mediaRecorder.start();
+                isRecording = true;
+                shutterInner.className = "w-6 h-6 bg-red-600 rounded-sm transition-all duration-200"; // Beddel astaanta badhanka
+                timerDisplay.classList.remove('hidden');
+                
+                // Saacadda
+                secondsElapsed = 0;
+                timeCount.textContent = "00:00";
+                timerInterval = setInterval(() => {
+                    secondsElapsed++;
+                    let mins = Math.floor(secondsElapsed / 60).toString().padStart(2, '0');
+                    let secs = (secondsElapsed % 60).toString().padStart(2, '0');
+                    timeCount.textContent = `${mins}:${secs}`;
+                }, 1000);
+
+            } else {
+                // Jooji Duubista
+                mediaRecorder.stop();
+                isRecording = false;
+                shutterInner.className = "w-full h-full bg-red-600 rounded-full transition-all duration-200";
+                timerDisplay.classList.add('hidden');
+                clearInterval(timerInterval);
+            }
+        }
+
+        // 6. Beddelashada Kamerada Hore / Dambe
+        document.getElementById('switchBtn').addEventListener('click', () => {
+            currentFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+            startCamera();
+        });
+    </script>
+</body>
+</html>

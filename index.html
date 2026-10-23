@@ -405,6 +405,8 @@
             let isFlashOn = false;
             let currentSpeed = '1x';
             let currentFilter = 'none';
+            let currentStream = null;
+            let currentFacingMode = 'user'; // 'user' (front) or 'environment' (back)
 
             // Element References
             const cameraViewfinder = document.getElementById('cameraViewfinder');
@@ -467,18 +469,41 @@
                 }, 2200);
             }
 
-            // Web Camera Access Attempt
-            async function initCamera() {
+            // Web Camera Access - Supports real Front & Back (Environment) Cameras
+            async function initCamera(facingMode = 'user') {
+                // Stop any existing active track before switching camera stream
+                if (currentStream) {
+                    currentStream.getTracks().forEach(track => track.stop());
+                }
+
                 try {
-                    const stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
-                    webcamVideo.srcObject = stream;
+                    const constraints = {
+                        video: {
+                            facingMode: { exact: facingMode }
+                        },
+                        audio: false
+                    };
+                    
+                    // Fallback to simple facingMode if exact constraint fails on some mobile devices
+                    try {
+                        currentStream = await navigator.mediaDevices.getUserMedia(constraints);
+                    } catch (e) {
+                        currentStream = await navigator.mediaDevices.getUserMedia({
+                            video: { facingMode: facingMode },
+                            audio: false
+                        });
+                    }
+
+                    webcamVideo.srcObject = currentStream;
                     webcamVideo.classList.remove('hidden');
                     fallbackBg.classList.add('hidden');
                 } catch (err) {
-                    console.log("Webcam access unavailable or denied, utilizing fallback preview background.");
+                    console.log("Real camera stream unavailable, using fallback view.", err);
+                    webcamVideo.classList.add('hidden');
+                    fallbackBg.classList.remove('hidden');
                 }
             }
-            initCamera();
+            initCamera('user');
 
             // Toggle Recording Logic
             function toggleRecording() {
@@ -530,11 +555,20 @@
 
             recordBtn.addEventListener('click', toggleRecording);
 
-            // Camera Flip Simulation
-            flipCamBtn.addEventListener('click', () => {
+            // Real Camera Switch (Front 'user' vs Back 'environment')
+            flipCamBtn.addEventListener('click', async () => {
                 isFlipped = !isFlipped;
-                cameraViewfinder.classList.toggle('cam-flipped', isFlipped);
-                showToast(isFlipped ? "Front Camera" : "Rear Camera", "fa-solid fa-rotate");
+                currentFacingMode = isFlipped ? 'environment' : 'user';
+
+                // CSS Mirror effect when using front camera
+                if (currentFacingMode === 'user') {
+                    cameraViewfinder.classList.add('cam-flipped');
+                } else {
+                    cameraViewfinder.classList.remove('cam-flipped');
+                }
+
+                await initCamera(currentFacingMode);
+                showToast(isFlipped ? "Switched to Back Camera" : "Switched to Front Camera", "fa-solid fa-camera-rotate");
             });
 
             // Duration Switcher (15s / 60s)

@@ -8,7 +8,7 @@
     <!-- PWA / Native App Mobile Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#0f0f0f">
+    <meta id="themeColorMeta" name="theme-color" content="#FEFBEA">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -67,7 +67,7 @@
 <body class="bg-black md:bg-slate-900 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
 
     <!-- APP CONTAINER FRAME -->
-    <div id="appContainerFrame" class="w-full h-full md:max-w-[410px] md:h-[844px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900 transition-colors duration-300">
+    <div id="appContainerFrame" class="w-full h-full md:max-w-[410px] md:h-[844px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900 transition-colors duration-200">
 
         <!-- ==========================================
              SCREEN 1: LANDING / WELCOME SCREEN
@@ -105,10 +105,10 @@
         <!-- ==========================================
              SCREEN 2: MAIN DASHBOARD FRAME
         =========================================== -->
-        <div id="mainDashboard" class="hidden w-full h-full flex-col justify-between bg-[#FEFBEA]">
+        <div id="mainDashboard" class="hidden w-full h-full flex-col justify-between bg-transparent relative">
             
             <!-- Header Bar -->
-            <div id="mainDashboardHeader" class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0">
+            <div id="mainDashboardHeader" class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0 z-10">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shadow-md text-sm">
                         B
@@ -124,7 +124,7 @@
             </div>
 
             <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-5" id="mainContentContainer">
+            <div class="flex-1 overflow-y-auto p-4 space-y-5 relative" id="mainContentContainer">
                 
                 <!-- TAB 1: HOME -->
                 <div id="tabHome" class="tab-content space-y-5">
@@ -254,94 +254,94 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: SOMEDIA PAGE (PURE DARK BLACK BACKGROUND & FULL HEIGHT) -->
-                <div id="tabSomedia" class="tab-content hidden absolute inset-0 bg-[#0f0f0f] text-white flex flex-col justify-between z-10 overflow-y-auto no-scrollbar">
-                    
-                    <div>
-                        <!-- SOMEDIA HEADER -->
-                        <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-3.5">
-                            <div class="flex items-center gap-2">
-                                <button onclick="switchTab('tabHome')" class="text-white text-base">
-                                    <i class="fa-solid fa-chevron-left"></i>
-                                </button>
-                                <span class="text-lg font-black uppercase tracking-tight text-white">SOMEDIA</span>
-                                <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
+            </div>
+
+            <!-- TAB 3: SOMEDIA OVERLAY (FIXED ABSOLUTE INSET-0 OVER WHOLE APP CONTAINER) -->
+            <div id="tabSomedia" class="hidden absolute inset-0 bg-[#0f0f0f] text-white flex flex-col justify-between z-40 overflow-y-auto no-scrollbar">
+                
+                <div>
+                    <!-- SOMEDIA HEADER -->
+                    <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-3.5">
+                        <div class="flex items-center gap-2">
+                            <button onclick="switchTab('tabHome')" class="text-white text-base">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <span class="text-lg font-black uppercase tracking-tight text-white">SOMEDIA</span>
+                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="showToast('Search active')" class="text-white text-base">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                            <button onclick="showToast('Notification active')" class="relative text-white text-base">
+                                <i class="fa-regular fa-bell"></i>
+                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] font-bold px-1 rounded-full">9+</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORIES BAR -->
+                    <nav class="flex items-center gap-2 p-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">
+                            <i class="fa-regular fa-compass"></i>
+                        </button>
+                        <button class="bg-white text-black px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Dhammaan</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Somali Tech</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Musig</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
+                    </nav>
+
+                    <!-- MAIN FEED AREA -->
+                    <main class="w-full p-3 pb-24">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2 text-sm font-bold">
+                                <i class="fa-solid fa-circle-play text-red-600"></i>
+                                <span>Home Feed</span>
                             </div>
-                            <div class="flex items-center gap-3">
-                                <button onclick="showToast('Search active')" class="text-white text-base">
-                                    <i class="fa-solid fa-magnifying-glass"></i>
-                                </button>
-                                <button onclick="showToast('Notification active')" class="relative text-white text-base">
-                                    <i class="fa-regular fa-bell"></i>
-                                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] font-bold px-1 rounded-full">9+</span>
+                            <div class="flex items-center gap-2">
+                                <span id="videoCountBadge" class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">0 videos</span>
+                                <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Soo geli
                                 </button>
                             </div>
                         </div>
 
-                        <!-- CATEGORIES BAR -->
-                        <nav class="flex items-center gap-2 p-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
-                            <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">
-                                <i class="fa-regular fa-compass"></i>
-                            </button>
-                            <button class="bg-white text-black px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Dhammaan</button>
-                            <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Somali Tech</button>
-                            <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Musig</button>
-                            <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
-                        </nav>
-
-                        <!-- MAIN FEED AREA -->
-                        <main class="w-full p-3 pb-24">
-                            <div class="flex items-center justify-between mb-3">
-                                <div class="flex items-center gap-2 text-sm font-bold">
-                                    <i class="fa-solid fa-circle-play text-red-600"></i>
-                                    <span>Home Feed</span>
-                                </div>
-                                <div class="flex items-center gap-2">
-                                    <span id="videoCountBadge" class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">0 videos</span>
-                                    <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
-                                        <i class="fa-solid fa-plus"></i> Soo geli
-                                    </button>
-                                </div>
-                            </div>
-
-                            <!-- FEED GRID -->
-                            <div id="shortsGrid" class="flex flex-col gap-4"></div>
-                        </main>
-                    </div>
-
-                    <!-- SOMEDIA EXCLUSIVE BOTTOM NAVIGATION BAR -->
-                    <div class="fixed md:absolute bottom-0 left-0 right-0 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center py-2 px-1 z-30">
-                        <button onclick="switchTab('tabHome')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
-                            <i class="fa-solid fa-house text-sm"></i>
-                            <span class="text-[9px]">Home</span>
-                        </button>
-                        <button onclick="showToast('Shorts active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
-                            <i class="fa-solid fa-bolt text-sm"></i>
-                            <span class="text-[9px]">Shorts</span>
-                        </button>
-                        <button onclick="openSomediaCameraModal()" class="flex flex-col items-center justify-center w-1/5">
-                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Soo geli" class="upload-nav-img">
-                            <span class="text-[9px] text-white font-medium mt-0.5">Soo geli</span>
-                        </button>
-                        <button onclick="showToast('Subscriptions active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
-                            <i class="fa-solid fa-layer-group text-sm"></i>
-                            <span class="text-[9px]">Subscriptions</span>
-                        </button>
-                        <button onclick="showToast('Profile active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
-                            <div class="w-4 h-4 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[8px]">S</div>
-                            <span class="text-[9px]">Adiga</span>
-                        </button>
-                    </div>
-
-                    <!-- DEVICE FILE INPUT -->
-                    <input type="file" id="deviceVideoInput" accept="video/*" onchange="handleDeviceFileSelected(event)" class="hidden">
-
+                        <!-- FEED GRID -->
+                        <div id="shortsGrid" class="flex flex-col gap-4"></div>
+                    </main>
                 </div>
+
+                <!-- SOMEDIA EXCLUSIVE BOTTOM NAVIGATION BAR -->
+                <div class="sticky bottom-0 left-0 right-0 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center py-2 px-1 z-30">
+                    <button onclick="switchTab('tabHome')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-house text-sm"></i>
+                        <span class="text-[9px]">Home</span>
+                    </button>
+                    <button onclick="showToast('Shorts active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-bolt text-sm"></i>
+                        <span class="text-[9px]">Shorts</span>
+                    </button>
+                    <button onclick="openSomediaCameraModal()" class="flex flex-col items-center justify-center w-1/5">
+                        <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Soo geli" class="upload-nav-img">
+                        <span class="text-[9px] text-white font-medium mt-0.5">Soo geli</span>
+                    </button>
+                    <button onclick="showToast('Subscriptions active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-layer-group text-sm"></i>
+                        <span class="text-[9px]">Subscriptions</span>
+                    </button>
+                    <button onclick="showToast('Profile active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <div class="w-4 h-4 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[8px]">S</div>
+                        <span class="text-[9px]">Adiga</span>
+                    </button>
+                </div>
+
+                <!-- DEVICE FILE INPUT -->
+                <input type="file" id="deviceVideoInput" accept="video/*" onchange="handleDeviceFileSelected(event)" class="hidden">
 
             </div>
 
             <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER) -->
-            <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
+            <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0 z-10">
                 <!-- 1. Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
                     <i class="fa-solid fa-house text-base mb-0.5"></i>
@@ -743,9 +743,9 @@
         let currentStream = null;
         let facingMode = "environment";
         let zoomLevel = 1;
-        let flashof = true;
+        let flashOn = false;
         let currentMode = "photo";
-        let isRecording = true;
+        let isRecording = false;
         let mediaRecorder = null;
         let recordedChunks = [];
         let timerInterval = null;
@@ -756,7 +756,7 @@
         let mediaStream = null;
         let somediaMediaRecorder = null;
         let somediaRecordedChunks = [];
-        let isSomediaRecording = true;
+        let isSomediaRecording = false;
         let selectedVideoUrl = '';
         let selectedThumbnail = '';
         let somediaCameraFacing = 'user';
@@ -803,22 +803,37 @@
         }
 
         function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            const targetTab = document.getElementById(tabId);
-            targetTab.classList.remove('hidden');
-            
+            const somediaOverlay = document.getElementById('tabSomedia');
             const header = document.getElementById('mainDashboardHeader');
             const bayanFooter = document.getElementById('bayanMainFooter');
             const appContainer = document.getElementById('appContainerFrame');
+            const themeMeta = document.getElementById('themeColorMeta');
 
             if (tabId === 'tabSomedia') {
+                somediaOverlay.classList.remove('hidden');
+                somediaOverlay.classList.add('flex');
                 if(header) header.classList.add('hidden');
                 if(bayanFooter) bayanFooter.classList.add('hidden');
-                if(appContainer) appContainer.classList.add('bg-[#0f0f0f]');
+                if(appContainer) {
+                    appContainer.classList.remove('bg-[#FEFBEA]');
+                    appContainer.classList.add('bg-[#0f0f0f]');
+                }
+                if(themeMeta) themeMeta.setAttribute('content', '#0f0f0f');
             } else {
+                somediaOverlay.classList.add('hidden');
+                somediaOverlay.classList.remove('flex');
+                
+                document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
+                const targetTab = document.getElementById(tabId);
+                if(targetTab) targetTab.classList.remove('hidden');
+
                 if(header) header.classList.remove('hidden');
                 if(bayanFooter) bayanFooter.classList.remove('hidden');
-                if(appContainer) appContainer.classList.remove('bg-[#0f0f0f]');
+                if(appContainer) {
+                    appContainer.classList.remove('bg-[#0f0f0f]');
+                    appContainer.classList.add('bg-[#FEFBEA]');
+                }
+                if(themeMeta) themeMeta.setAttribute('content', '#FEFBEA');
             }
 
             document.querySelectorAll('.nav-btn').forEach(b => {

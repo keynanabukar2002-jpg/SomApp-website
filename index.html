@@ -18,11 +18,14 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
     
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
+        * {
             -webkit-tap-highlight-color: transparent;
             user-select: none;
-            -webkit-user-select: none;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
         }
 
         /* Camera Filters */
@@ -33,10 +36,32 @@
         .filter-warm { filter: sepia(0.3) saturate(1.4) hue-rotate(-10deg); }
 
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
+        .no-scrollbar::-webkit-scrollbar, ::-webkit-scrollbar {
             width: 0px;
+            display: none;
             background: transparent;
         }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+        .brand-logo-img {
+            height: 28px;
+            width: 28px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1.5px solid #ffffff;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
+        }
+
+        .upload-nav-img {
+            height: 24px;
+            width: 24px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1.5px solid #ffffff;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+            transition: transform 0.2s ease;
+        }
+        .upload-nav-img:active { transform: scale(0.9); }
     </style>
 </head>
 <body class="bg-slate-900 md:bg-slate-800 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
@@ -65,7 +90,7 @@
                     Kusoo Dhawoow Bayan-app
                 </h1>
                 <p class="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto font-medium">
-                    App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo shopping.
+                    App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo SOMEDIA.
                 </p>
             </div>
 
@@ -82,8 +107,8 @@
         =========================================== -->
         <div id="mainDashboard" class="hidden w-full h-full flex-col justify-between bg-[#FEFBEA]">
             
-            <!-- Header Bar -->
-            <div class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0">
+            <!-- Header Bar (QARIYAA MARKA SOMEDIA LA OPEN GREEYO) -->
+            <div id="mainDashboardHeader" class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shadow-md text-sm">
                         B
@@ -99,18 +124,18 @@
             </div>
 
             <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-5">
+            <div class="flex-1 overflow-y-auto p-4 space-y-5" id="mainContentContainer">
                 
                 <!-- TAB 1: HOME -->
                 <div id="tabHome" class="tab-content space-y-5">
                     
-                    <!-- GIF Display Section (Cabirka 110px & Aspect Ratio 3.05:1) -->
-                    <div class="rounded-2xl overflow-hidden shadow-md border-2 border-white aspect-[3.05/1] h-[110px] w-full bg-emerald-900/10 flex items-center justify-center relative mx-auto">
-                        <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover">
+                    <!-- GIF Display Section -->
+                    <div class="rounded-3xl overflow-hidden shadow-2xl border-2 border-white/80 aspect-[3.05/1] h-[110px] w-full bg-emerald-900/10 flex items-center justify-center relative mx-auto transform transition duration-300">
+                        <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover rounded-3xl">
                     </div>
 
                     <div>
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha</h3>
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha & Apps</h3>
                         <div class="grid grid-cols-3 gap-3">
                             <button onclick="selectService('Hormuud', 'Shabakada Hormuud Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="w-11 h-11 rounded-2xl border-2 border-emerald-600 flex items-center justify-center text-emerald-600 font-black text-xl mb-1 bg-emerald-50">H</div>
@@ -143,96 +168,489 @@
                                 <div class="w-9 h-9 rounded-xl bg-red-100 text-red-500 flex items-center justify-center text-base mb-1"><i class="fa-solid fa-ban"></i></div>
                                 <span class="text-xs font-bold text-slate-800">Rukumo</span>
                             </button>
+
+                            <!-- Camera -->
+                            <button onclick="openFullCamera()" class="bg-emerald-600 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-emerald-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-solid fa-camera"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">Camera</span>
+                            </button>
+
+                            <!-- TikTok -->
+                            <button onclick="openTikTokApp()" class="bg-black text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-brands fa-tiktok"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">TikTok</span>
+                            </button>
+
+                            <!-- Facebook -->
+                            <button onclick="openFacebookApp()" class="bg-[#1877F2] text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
+                                <div class="w-10 h-10 rounded-xl bg-blue-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
+                                    <i class="fa-brands fa-facebook-f"></i>
+                                </div>
+                                <span class="text-xs font-bold text-white">Facebook</span>
+                            </button>
                         </div>
                     </div>
                 </div>
 
-                <!-- TAB 2: MACAASH -->
-                <div id="tabMacaash" class="tab-content hidden space-y-4">
-                    <h3 class="text-sm font-bold text-slate-900">Dhibcahaaga & Abaal-marinta</h3>
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm text-center">
-                        <p class="text-xs text-slate-500">Dhibcaha Hada Kuu Dhiman</p>
-                        <h1 class="text-3xl font-black text-emerald-600 my-2">500 PTS</h1>
-                        <p class="text-[11px] text-slate-400">Ku beddello Data ama Dhaqan lacageed</p>
+                <!-- TAB 2: INTERNET SERVICES PAGE -->
+                <div id="tabInternet" class="tab-content hidden space-y-4">
+                    <div class="flex items-center justify-between">
+                        <h3 class="text-sm font-extrabold text-slate-900">Adeegyada Internet-ka & Shabakadaha</h3>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">Automated</span>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3">
+                        <button onclick="selectService('Hormuud', 'Internet-ka Hormuud Data Package')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-500 text-emerald-600 font-black flex items-center justify-center text-lg shrink-0">H</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Hormuud</h4>
+                                <p class="text-[10px] text-slate-400">Data Packages</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Somnet', 'Internet-ka Somnet Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 font-black flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-wifi"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Somnet</h4>
+                                <p class="text-[10px] text-slate-400">Internet Bundles</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Somtel', 'Internet-ka Somtel Data')" class="bg-[#FFDC00] p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-slate-900 text-yellow-400 font-black flex items-center justify-center text-xs shrink-0">ST</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Somtel</h4>
+                                <p class="text-[10px] text-slate-800">4G / 5G Bundles</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('SomLink', 'Internet-ka SomLink Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 font-black flex items-center justify-center text-xs shrink-0">SL</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">SomLink</h4>
+                                <p class="text-[10px] text-slate-400">Broadband Data</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Amtel', 'Internet-ka Amtel Data')" class="bg-red-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-white/20 text-white font-black flex items-center justify-center text-xs shrink-0">AM</div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-white">Amtel</h4>
+                                <p class="text-[10px] text-red-100">Quick Internet</p>
+                            </div>
+                        </button>
+
+                        <button onclick="selectService('Rukumo', 'Adeegga Rukumada Internet-ka')" class="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
+                            <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 font-black flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-ban"></i></div>
+                            <div class="text-left">
+                                <h4 class="text-xs font-bold text-slate-900">Rukumo</h4>
+                                <p class="text-[10px] text-slate-400">Services & Unsub</p>
+                            </div>
+                        </button>
                     </div>
                 </div>
 
-                <!-- TAB 3: ORDERS -->
-                <div id="tabOrders" class="tab-content hidden space-y-3">
-                    <h3 class="text-sm font-bold text-slate-900">Taariikhda Dalabyada</h3>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/60 flex justify-between items-center shadow-sm">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-check"></i></div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-800">Hormuud $1 Data</p>
-                                <p class="text-[10px] text-slate-400">2026 • Successful</p>
+                <!-- TAB 3: SOMEDIA PAGE (PAGGA SOMEDIA OO MADOW OO XOR AH) -->
+                <div id="tabSomedia" class="tab-content hidden -m-4 bg-[#0f0f0f] text-white min-h-full flex flex-col justify-between">
+                    
+                    <!-- SOMEDIA HEADER -->
+                    <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-3.5">
+                        <div class="flex items-center gap-2">
+                            <button onclick="switchTab('tabHome')" class="text-white text-base">
+                                <i class="fa-solid fa-chevron-left"></i>
+                            </button>
+                            <span class="text-lg font-black uppercase tracking-tight text-white">SOMEDIA</span>
+                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
+                        </div>
+                        <div class="flex items-center gap-3">
+                            <button onclick="showToast('Search active')" class="text-white text-base">
+                                <i class="fa-solid fa-magnifying-glass"></i>
+                            </button>
+                            <button onclick="showToast('Notification active')" class="relative text-white text-base">
+                                <i class="fa-regular fa-bell"></i>
+                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] font-bold px-1 rounded-full">9+</span>
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- CATEGORIES BAR -->
+                    <nav class="flex items-center gap-2 p-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">
+                            <i class="fa-regular fa-compass"></i>
+                        </button>
+                        <button class="bg-white text-black px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Dhammaan</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Somali Tech</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Musig</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
+                    </nav>
+
+                    <!-- MAIN FEED AREA -->
+                    <main class="w-full flex-1 p-3 pb-16">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2 text-sm font-bold">
+                                <i class="fa-solid fa-circle-play text-red-600"></i>
+                                <span>Home Feed</span>
+                            </div>
+                            <div class="flex items-center gap-2">
+                                <span id="videoCountBadge" class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">0 videos</span>
+                                <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Soo geli
+                                </button>
                             </div>
                         </div>
-                        <span class="text-xs font-extrabold text-slate-900">$1.00</span>
-                    </div>
-                </div>
 
-                <!-- TAB 4: PROFILE -->
-                <div id="tabProfile" class="tab-content hidden space-y-4">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/60 text-center shadow-sm">
-                        <div class="w-16 h-16 rounded-full bg-emerald-700 text-white text-2xl font-black flex items-center justify-center mx-auto mb-2">B</div>
-                        <h3 class="text-base font-extrabold text-slate-900">Bayan User</h3>
-                        <p class="text-xs text-slate-500">user@bayan.app</p>
+                        <!-- FEED GRID -->
+                        <div id="shortsGrid" class="flex flex-col gap-4"></div>
+                    </main>
+
+                    <!-- SOMEDIA EXCLUSIVE BOTTOM NAVIGATION BAR -->
+                    <div class="sticky bottom-0 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center py-2 px-1 z-20">
+                        <button onclick="showToast('SOMEDIA Home')" class="flex flex-col items-center gap-0.5 text-white w-1/5">
+                            <i class="fa-solid fa-house text-sm"></i>
+                            <span class="text-[9px]">Home</span>
+                        </button>
+                        <button onclick="showToast('Shorts active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                            <i class="fa-solid fa-bolt text-sm"></i>
+                            <span class="text-[9px]">Shorts</span>
+                        </button>
+                        <button onclick="openSomediaCameraModal()" class="flex flex-col items-center justify-center w-1/5">
+                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Soo geli" class="upload-nav-img">
+                            <span class="text-[9px] text-white font-medium mt-0.5">Soo geli</span>
+                        </button>
+                        <button onclick="showToast('Subscriptions active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                            <i class="fa-solid fa-layer-group text-sm"></i>
+                            <span class="text-[9px]">Subscriptions</span>
+                        </button>
+                        <button onclick="showToast('Profile active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                            <div class="w-4 h-4 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[8px]">S</div>
+                            <span class="text-[9px]">Adiga</span>
+                        </button>
                     </div>
+
+                    <!-- DEVICE FILE INPUT -->
+                    <input type="file" id="deviceVideoInput" accept="video/*" onchange="handleDeviceFileSelected(event)" class="hidden">
+
                 </div>
 
             </div>
 
-            <!-- Bottom Mobile Navigation Bar -->
-            <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
-                <!-- Home Button -->
+            <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER - WAA LA QARIYAA MARKA SOMEDIA LA OPEN GREEYO) -->
+            <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
+                <!-- 1. Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
                     <i class="fa-solid fa-house text-base mb-0.5"></i>
                     <span>Home</span>
                 </button>
 
-                <!-- Camera Button -->
-                <button onclick="openFullCamera()" class="nav-btn flex flex-col items-center text-emerald-700 hover:text-emerald-800 active:scale-95 transition">
-                    <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm mb-0.5 shadow-sm">
-                        <i class="fa-solid fa-camera"></i>
+                <!-- 2. Floating Internet Button -->
+                <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                        <img src="https://i.ibb.co/MxZmZR9j/wireless-network-symbol-1284-42447.jpg" alt="Internet Logo" class="w-full h-full object-cover rounded-full mix-blend-multiply">
                     </div>
-                    <span class="font-extrabold text-slate-700">Camera</span>
+                    <span class="font-black text-slate-900 mt-0.5">Internet</span>
                 </button>
 
-                <!-- Floating Center WAAFI Button (Oo lagu beddelay logo-gaaga cusub) -->
+                <!-- 3. Floating SOMEDIA Button -->
+                <button onclick="switchTab('tabSomedia', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                        <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Custom Logo" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <span class="font-black text-slate-900 mt-0.5">SOMEDIA</span>
+                </button>
+
+                <!-- 4. Floating Center WAAFI Button -->
                 <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/HfjgqSdg/file-00000000e88c81f4a88cb2648ccfc850.png" alt="WAAFI Custom Logo" class="w-full h-full object-cover rounded-full">
                     </div>
                     <span class="font-black text-slate-900 mt-0.5">WAAFI</span>
                 </button>
-
-                <!-- TikTok Launch Button -->
-                <button onclick="openTikTokApp()" class="nav-btn flex flex-col items-center text-slate-900 hover:text-black active:scale-95 transition">
-                    <div class="w-7 h-7 rounded-xl bg-black text-white flex items-center justify-center text-sm mb-0.5 shadow-sm">
-                        <i class="fa-brands fa-tiktok"></i>
-                    </div>
-                    <span class="font-extrabold text-slate-900">TikTok</span>
-                </button>
-
-                <!-- Facebook Launch Button -->
-                <button onclick="openFacebookApp()" class="nav-btn flex flex-col items-center text-blue-600 hover:text-blue-700 active:scale-95 transition">
-                    <div class="w-7 h-7 rounded-xl bg-[#1877F2] text-white flex items-center justify-center text-sm mb-0.5 shadow-sm">
-                        <i class="fa-brands fa-facebook-f"></i>
-                    </div>
-                    <span class="font-extrabold text-blue-600">Facebook</span>
-                </button>
             </div>
         </div>
 
         <!-- ==========================================
-             SCREEN 3: CAMERA SCREEN
+             SOMEDIA MODALS & FULL PLATFORM SCREENS
         =========================================== -->
+
+        <!-- 1. CAMERA / RECORDING MODAL -->
+        <div id="somediaCameraModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-4">
+            <div class="flex items-center justify-between z-20">
+                <button onclick="closeSomediaCameraModal()" class="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center text-xl backdrop-blur-md">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+
+                <button onclick="showToast('Music selector active')" class="bg-zinc-900/80 border border-zinc-700/80 text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 backdrop-blur-md">
+                    <i class="fa-solid fa-music text-xs"></i>
+                    <span>Add sound</span>
+                </button>
+
+                <button class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center text-lg shadow-lg">
+                    <i class="fa-solid fa-wand-magic-sparkles"></i>
+                </button>
+            </div>
+
+            <div class="absolute inset-0 z-0 flex items-center justify-center bg-zinc-950 overflow-hidden">
+                <video id="liveSomediaCameraStream" autoplay playsinline muted class="w-full h-full object-cover hidden"></video>
+
+                <div id="somediaCameraPlaceholder" class="flex flex-col items-center justify-center text-zinc-500 gap-3 p-6 text-center">
+                    <div class="w-16 h-16 rounded-full bg-zinc-900 border border-zinc-800 flex items-center justify-center text-2xl text-zinc-400">
+                        <i class="fa-solid fa-video"></i>
+                    </div>
+                    <p class="text-xs max-w-xs text-zinc-400">Taabo <strong class="text-white">Add</strong> hoose si aad fiidiyowga uga soo dooratid taleefankaaga.</p>
+                </div>
+            </div>
+
+            <div class="absolute right-4 top-20 z-20 flex flex-col items-center gap-5 text-white bg-black/30 p-2 rounded-2xl backdrop-blur-md border border-white/10">
+                <button onclick="switchSomediaCameraFacing()" class="flex flex-col items-center"><i class="fa-solid fa-rotate text-lg"></i></button>
+                <button class="flex flex-col items-center"><i class="fa-regular fa-clock text-lg"></i></button>
+                <span class="text-[11px] font-bold">3m</span>
+                <button class="flex flex-col items-center"><i class="fa-solid fa-wand-magic text-lg"></i></button>
+                <span class="text-[11px] font-bold">1x</span>
+                <button class="flex flex-col items-center"><i class="fa-solid fa-crop text-lg"></i></button>
+                <i class="fa-solid fa-chevron-down text-xs"></i>
+            </div>
+
+            <div class="z-20 flex flex-col gap-5 mb-2">
+                <div class="flex items-center justify-around">
+                    <button onclick="triggerDeviceGallery()" class="flex flex-col items-center gap-1">
+                        <div class="w-11 h-11 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
+                            <i class="fa-solid fa-folder-open text-white"></i>
+                        </div>
+                        <span class="text-[11px] font-bold text-white">Add</span>
+                    </button>
+
+                    <button id="somediaRecordBtn" onclick="toggleSomediaRecording()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform">
+                        <div id="somediaRecordInnerCircle" class="w-12 h-12 rounded-full bg-red-600 transition-all duration-200"></div>
+                    </button>
+
+                    <button onclick="showToast('Drafts waa eber')" class="flex flex-col items-center gap-1">
+                        <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-lg">
+                            <i class="fa-regular fa-file-lines"></i>
+                        </div>
+                        <span class="text-[11px] font-bold text-white">Drafts</span>
+                    </button>
+                </div>
+
+                <div class="flex items-center justify-center gap-6 text-xs font-bold text-zinc-400">
+                    <button class="hover:text-white">Video</button>
+                    <button class="bg-zinc-800 text-white px-4 py-1 rounded-full border border-white/20">Short</button>
+                    <button class="hover:text-white">Live</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 2. TRIM / ADJUST MODAL -->
+        <div id="trimModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
+            <div class="flex items-center justify-between z-10 pt-2 px-1">
+                <button onclick="backToSomediaCamera()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-xmark"></i>
+                </button>
+            </div>
+
+            <div class="flex-1 flex items-center justify-center py-2 relative">
+                <div onclick="toggleTrimVideoPlay()" class="aspect-[16/9] w-full max-w-md bg-zinc-950 rounded-2xl overflow-hidden border border-zinc-800 relative shadow-2xl flex items-center justify-center cursor-pointer">
+                    <video id="trimVideoPlayer" class="w-full h-full object-contain" loop playsinline></video>
+                    
+                    <div id="trimPlayPauseOverlay" class="absolute w-14 h-14 rounded-full bg-black/60 text-white flex items-center justify-center text-xl backdrop-blur-sm opacity-0 transition-opacity duration-200">
+                        <i id="trimPlayPauseIcon" class="fa-solid fa-pause"></i>
+                    </div>
+                </div>
+            </div>
+
+            <div class="space-y-3 mb-3 px-1">
+                <div class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-2.5 relative flex items-center justify-center shadow-inner">
+                    <div class="w-full h-12 bg-zinc-950 rounded-xl flex items-center gap-1 px-1 relative overflow-hidden border border-zinc-700">
+                        <div id="filmstripFrames" class="flex w-full h-full items-center justify-between overflow-hidden"></div>
+
+                        <div class="absolute left-[20%] right-[30%] top-0.5 bottom-0.5 border-2 border-white bg-white/10 rounded-lg flex items-center justify-between px-1 shadow-lg pointer-events-none">
+                            <div class="w-1.5 h-7 bg-white rounded-full"></div>
+                            <span class="bg-white text-black text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md">10.0s</span>
+                            <div class="w-1.5 h-7 bg-white rounded-full"></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex items-center justify-between px-2">
+                    <span class="text-zinc-400 text-xs">Drag to adjust video</span>
+                    <button onclick="goToEditorStep()" class="bg-white text-black font-bold px-7 py-2.5 rounded-full text-xs hover:bg-zinc-200 shadow-lg transition-transform active:scale-95">
+                        Next
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 3. VIDEO EDITOR MODAL -->
+        <div id="editorModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
+            <div class="flex items-center justify-between z-20">
+                <button onclick="backToTrim()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+
+                <button onclick="showToast('Music picker active')" class="bg-zinc-800/90 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-zinc-700 backdrop-blur-md">
+                    <i class="fa-solid fa-music"></i>
+                    <span>Add sound</span>
+                </button>
+
+                <button class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-sm">
+                    <i class="fa-solid fa-volume-high"></i>
+                </button>
+            </div>
+
+            <div class="absolute inset-0 z-0 flex items-center justify-center bg-black">
+                <video id="editorVideoPlayer" class="w-full aspect-video object-contain" loop playsinline></video>
+            </div>
+
+            <div class="z-20 flex items-center justify-between px-2 mb-2">
+                <button onclick="showToast('Editing timeline')" class="bg-zinc-800 text-white font-bold px-6 py-2 rounded-full text-xs border border-zinc-700 flex items-center gap-2">
+                    <i class="fa-solid fa-sliders"></i>
+                    <span>Edit</span>
+                </button>
+
+                <button onclick="goToFinalUploadDetails()" class="bg-white text-black font-bold px-7 py-2 rounded-full text-xs shadow-lg hover:bg-zinc-200">
+                    Next
+                </button>
+            </div>
+        </div>
+
+        <!-- 4. FINAL DETAILS MODAL -->
+        <div id="finalUploadModal" class="fixed inset-0 bg-[#0f0f0f] z-50 hidden flex-col justify-between p-4">
+            <div class="flex items-center gap-4 border-b border-zinc-800 pb-3">
+                <button onclick="backToEditor()" class="text-white text-lg">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <h2 class="text-base font-bold text-white">Add details</h2>
+            </div>
+
+            <div class="flex-1 py-4 space-y-4 overflow-y-auto no-scrollbar">
+                <div class="flex gap-3">
+                    <div class="w-32 aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0">
+                        <video id="finalPreviewThumbnail" class="w-full h-full object-contain"></video>
+                    </div>
+                    <div class="flex-1">
+                        <textarea id="finalTitleInput" rows="3" placeholder="Write video title... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
+                    </div>
+                </div>
+
+                <div class="space-y-3 pt-3 border-t border-zinc-800/80 text-xs text-zinc-300">
+                    <div class="flex items-center justify-between py-1">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-globe text-base text-zinc-400"></i>
+                            <span>Visibility</span>
+                        </div>
+                        <span class="font-bold text-white flex items-center gap-1">Public <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+                    </div>
+                    <div class="flex items-center justify-between py-1">
+                        <div class="flex items-center gap-3">
+                            <i class="fa-solid fa-layer-group text-base text-zinc-400"></i>
+                            <span>Category</span>
+                        </div>
+                        <select id="finalCategorySelect" class="bg-zinc-900 border border-zinc-700 rounded-lg p-1 text-xs text-white">
+                            <option value="Soo gelintaada">Soo gelintaada</option>
+                            <option value="Somali Tech">Somali Tech</option>
+                            <option value="Musig">Musig</option>
+                            <option value="Ciyaaro">Ciyaaro</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <button onclick="publishVideoToFeed()" class="w-full bg-red-600 text-white font-bold py-3 rounded-full text-xs uppercase tracking-wider shadow-lg">
+                Upload Video
+            </button>
+        </div>
+
+        <!-- 5. YOUTUBE STANDARD PLAYER MODAL -->
+        <div id="playerModal" class="fixed inset-0 z-50 bg-[#0f0f0f] text-white hidden flex-col overflow-y-auto no-scrollbar">
+            <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3 py-2 flex items-center justify-between border-b border-zinc-800">
+                <button onclick="closePlayer()" class="text-white text-lg">
+                    <i class="fa-solid fa-arrow-left"></i>
+                </button>
+                <div class="flex items-center gap-4 text-white">
+                    <button onclick="showToast('Cast')" class="text-base"><i class="fa-solid fa-cast"></i></button>
+                    <button onclick="showToast('More')" class="text-base"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+            </div>
+
+            <div class="w-full bg-black aspect-video relative shrink-0 flex items-center justify-center">
+                <video id="mainVideoPlayer" class="w-full h-full object-contain" loop controls playsinline></video>
+            </div>
+
+            <div class="p-3 space-y-3">
+                <h1 id="playerVideoTitle" class="text-base font-bold text-white leading-snug">Muuqaal Cusub</h1>
+                
+                <div class="flex items-center gap-2 text-xs text-zinc-400">
+                    <span class="font-semibold text-zinc-300">@SOMEDIA_Channel</span>
+                    <span>•</span>
+                    <span>0 likes</span>
+                    <span>•</span>
+                    <span>1 view</span>
+                    <span>•</span>
+                    <span>Right now</span>
+                </div>
+
+                <div class="flex items-center justify-between py-1 border-t border-b border-zinc-800/80">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-sm">S</div>
+                        <div>
+                            <h3 class="text-xs font-bold text-white">SOMEDIA Channel</h3>
+                            <p class="text-[10px] text-zinc-400">1 subscriber</p>
+                        </div>
+                    </div>
+                    <button onclick="showToast('Subscribed!')" class="bg-white text-black text-xs font-bold px-4 py-1.5 rounded-full shadow hover:bg-zinc-200">
+                        Subscribe
+                    </button>
+                </div>
+
+                <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
+                    <div class="flex items-center bg-zinc-800/80 rounded-full text-xs font-medium shrink-0">
+                        <button onclick="showToast('Liked!')" class="px-3 py-1.5 flex items-center gap-1.5 border-r border-zinc-700 hover:bg-zinc-700 rounded-l-full">
+                            <i class="fa-regular fa-thumbs-up"></i>
+                            <span>0</span>
+                        </button>
+                        <button onclick="showToast('Disliked')" class="px-3 py-1.5 hover:bg-zinc-700 rounded-r-full">
+                            <i class="fa-regular fa-thumbs-down"></i>
+                        </button>
+                    </div>
+
+                    <button onclick="showToast('Shared!')" class="bg-zinc-800/80 text-xs font-medium px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shrink-0 hover:bg-zinc-700">
+                        <i class="fa-solid fa-share"></i>
+                        <span>Share</span>
+                    </button>
+
+                    <button onclick="showToast('Remix')" class="bg-zinc-800/80 text-xs font-medium px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shrink-0 hover:bg-zinc-700">
+                        <i class="fa-solid fa-arrows-rotate"></i>
+                        <span>Remix</span>
+                    </button>
+                </div>
+
+                <div onclick="showToast('Comments active')" class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 space-y-2 cursor-pointer">
+                    <div class="flex items-center justify-between text-xs">
+                        <span class="font-bold text-white">Comments <span class="text-zinc-400 font-normal">0</span></span>
+                        <i class="fa-solid fa-chevron-down text-zinc-500 text-[10px]"></i>
+                    </div>
+                    <p class="text-xs text-zinc-400">Qor faallo cusub...</p>
+                </div>
+            </div>
+
+            <div class="p-3 border-t border-zinc-800 space-y-3 mb-8">
+                <h2 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Fiidiyowga Xiga (Up Next)</h2>
+                <div id="playerUpNextList" class="flex flex-col gap-3"></div>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             ORIGINAL BAYAN APP MODALS
+        =========================================== -->
+
+        <!-- CAMERA SCREEN -->
         <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
             
             <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-150 z-40"></div>
 
-            <!-- Camera Header -->
             <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
                 <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center active:scale-90">
                     <i class="fa-solid fa-xmark text-lg"></i>
@@ -253,7 +671,6 @@
                 </div>
             </div>
 
-            <!-- Camera Viewfinder -->
             <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-black">
                 <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal"></video>
                 <canvas id="cameraCanvas" class="hidden"></canvas>
@@ -265,7 +682,6 @@
                 </div>
             </div>
 
-            <!-- Camera Filters -->
             <div class="py-2 px-4 bg-black/80 backdrop-blur-md text-white flex justify-center space-x-2 text-[11px] z-30 overflow-x-auto">
                 <button onclick="applyFilter('filter-normal')" class="px-3 py-1 rounded-full bg-white/20 border border-white/40">Normal</button>
                 <button onclick="applyFilter('filter-bright')" class="px-3 py-1 rounded-full bg-white/20">Bright</button>
@@ -274,7 +690,6 @@
                 <button onclick="applyFilter('filter-warm')" class="px-3 py-1 rounded-full bg-white/20">Warm</button>
             </div>
 
-            <!-- Shutter Controls -->
             <div class="p-6 bg-black flex flex-col items-center z-30 space-y-4">
                 <div class="flex space-x-6 text-xs font-bold text-white/50">
                     <button id="photoModeBtn" onclick="setMode('photo')" class="text-emerald-400 border-b-2 border-emerald-400 pb-1">PHOTO</button>
@@ -296,33 +711,39 @@
             </div>
         </div>
 
-    </div>
-
-    <!-- Modal: Gallery -->
-    <div id="galleryModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col justify-between p-4">
-        <div class="flex justify-between items-center text-white pb-3 border-b border-white/20">
-            <h3 class="font-bold text-sm">Gallery</h3>
-            <button onclick="closeGalleryModal()" class="text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div id="galleryContainer" class="grid grid-cols-3 gap-2 overflow-y-auto flex-1 my-4"></div>
-    </div>
-
-    <!-- Modal: Services -->
-    <div id="serviceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
-            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
-                <i class="fa-solid fa-circle-check"></i>
+        <!-- GALLERY MODAL -->
+        <div id="galleryModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col justify-between p-4">
+            <div class="flex justify-between items-center text-white pb-3 border-b border-white/20">
+                <h3 class="font-bold text-sm">Gallery</h3>
+                <button onclick="closeGalleryModal()" class="text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <h3 class="text-base font-bold text-slate-900" id="modalTitle">Adeegga</h3>
-            <p class="text-xs text-slate-500 mt-2" id="modalMessage">Doorashada shabakada dhawaan waa la bilaabayaa.</p>
-            <button onclick="closeModal()" class="mt-5 w-full bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs active:scale-95 transition">
-                Waan gartay
-            </button>
+            <div id="galleryContainer" class="grid grid-cols-3 gap-2 overflow-y-auto flex-1 my-4"></div>
         </div>
+
+        <!-- SERVICE MODAL -->
+        <div id="serviceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
+            <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
+                    <i class="fa-solid fa-circle-check"></i>
+                </div>
+                <h3 class="text-base font-bold text-slate-900" id="modalTitle">Adeegga</h3>
+                <p class="text-xs text-slate-500 mt-2" id="modalMessage">Doorashada shabakada dhawaan waa la bilaabayaa.</p>
+                <button onclick="closeModal()" class="mt-5 w-full bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs active:scale-95 transition">
+                    Waan gartay
+                </button>
+            </div>
+        </div>
+
+        <!-- TOAST NOTIFICATION -->
+        <div id="toastNotification" class="fixed top-16 left-1/2 -translate-x-1/2 bg-zinc-800 text-white px-4 py-1.5 rounded-full text-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300 shadow-xl">
+            <span id="toastMessage">Done</span>
+        </div>
+
     </div>
 
     <!-- JavaScript Mobile Logic -->
     <script>
+        // BAYAN CAMERA VARIABLES
         let currentStream = null;
         let facingMode = "environment";
         let zoomLevel = 1;
@@ -335,17 +756,42 @@
         let seconds = 0;
         let galleryItems = [];
 
-        // Direct Launch for WAAFI App
+        // SOMEDIA PLATFORM VARIABLES
+        let videoList = [];
+        let mediaStream = null;
+        let somediaMediaRecorder = null;
+        let somediaRecordedChunks = [];
+        let isSomediaRecording = false;
+        let selectedVideoUrl = '';
+        let selectedThumbnail = '';
+        let somediaCameraFacing = 'user';
+
+        function suppressMediaSession() {
+            if ('mediaSession' in navigator) {
+                try {
+                    navigator.mediaSession.metadata = null;
+                    navigator.mediaSession.playbackState = 'none';
+                    ['play', 'pause', 'seekbackward', 'seekforward', 'previoustrack', 'nexttrack', 'stop'].forEach(action => {
+                        try { navigator.mediaSession.setActionHandler(action, null); } catch(e){}
+                    });
+                } catch (e) {}
+            }
+        }
+
+        window.addEventListener('DOMContentLoaded', () => {
+            suppressMediaSession();
+            renderSomediaGrid();
+        });
+
+        // Direct App Intent Launchers
         function openWaafiApp() {
             window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
         }
 
-        // Direct Android Intent for TikTok
         function openTikTokApp() {
             window.location.href = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
         }
 
-        // Direct App Scheme for Facebook
         function openFacebookApp() {
             window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
         }
@@ -366,13 +812,334 @@
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
             document.getElementById(tabId).classList.remove('hidden');
             
+            const header = document.getElementById('mainDashboardHeader');
+            const bayanFooter = document.getElementById('bayanMainFooter');
+
+            if (tabId === 'tabSomedia') {
+                if(header) header.classList.add('hidden');
+                if(bayanFooter) bayanFooter.classList.add('hidden');
+            } else {
+                if(header) header.classList.remove('hidden');
+                if(bayanFooter) bayanFooter.classList.remove('hidden');
+            }
+
             document.querySelectorAll('.nav-btn').forEach(b => {
                 b.classList.remove('text-indigo-950', 'font-bold');
                 b.classList.add('text-slate-400');
             });
-            btn.classList.remove('text-slate-400');
-            btn.classList.add('text-indigo-950', 'font-bold');
+            if(btn && btn.classList.contains('nav-btn')) {
+                btn.classList.remove('text-slate-400');
+                btn.classList.add('text-indigo-950', 'font-bold');
+            }
         }
+
+        // ================= SOMEDIA LOGIC =================
+
+        function renderSomediaGrid() {
+            const grid = document.getElementById('shortsGrid');
+            if(!grid) return;
+            grid.innerHTML = '';
+            if(videoList.length === 0) {
+                grid.innerHTML = `
+                    <div class="flex flex-col items-center justify-center p-10 text-center text-zinc-500 gap-3">
+                        <i class="fa-solid fa-play-circle text-4xl text-zinc-700"></i>
+                        <p class="text-xs">Wali wax video ah ma soo gelinin. Taabo <strong class="text-white">+ Soo geli</strong> si aad fiidiyow cusub u soo gelisid.</p>
+                    </div>
+                `;
+            } else {
+                videoList.forEach((vid, idx) => {
+                    const card = document.createElement('div');
+                    card.className = "w-full cursor-pointer group";
+                    card.onclick = () => openPlayer(idx);
+                    card.innerHTML = `
+                        <div class="w-full aspect-video bg-black relative overflow-hidden rounded-xl">
+                            <img src="${vid.thumbnail}" class="w-full h-full object-cover">
+                            <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">0:10</span>
+                        </div>
+
+                        <div class="pt-2.5 flex gap-2.5">
+                            <div class="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                                S
+                            </div>
+                            <div class="flex-1 pr-2">
+                                <h3 class="text-xs font-bold text-white leading-snug line-clamp-2 mb-0.5">${vid.title}</h3>
+                                <div class="text-[10px] text-zinc-400 flex items-center gap-1.5 flex-wrap">
+                                    <span>SOMEDIA Channel</span>
+                                    <span>•</span>
+                                    <span>${vid.views}</span>
+                                </div>
+                            </div>
+                            <button onclick="event.stopPropagation(); showToast('More options');" class="text-zinc-400 text-sm h-6 w-6 flex items-center justify-center">
+                                <i class="fa-solid fa-ellipsis-vertical"></i>
+                            </button>
+                        </div>
+                    `;
+                    grid.appendChild(card);
+                });
+            }
+            const countElem = document.getElementById('videoCountBadge');
+            if(countElem) countElem.innerText = `${videoList.length} videos`;
+        }
+
+        function closeAllSomediaModals() {
+            ['somediaCameraModal', 'trimModal', 'editorModal', 'finalUploadModal'].forEach(id => {
+                const el = document.getElementById(id);
+                if(el) {
+                    el.classList.add('hidden');
+                    el.classList.remove('flex');
+                }
+            });
+            ['trimVideoPlayer', 'editorVideoPlayer', 'finalPreviewThumbnail'].forEach(id => {
+                const vp = document.getElementById(id);
+                if(vp) vp.pause();
+            });
+        }
+
+        async function openSomediaCameraModal() {
+            closeAllSomediaModals();
+            const modal = document.getElementById('somediaCameraModal');
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            await startSomediaCameraStream();
+        }
+
+        async function startSomediaCameraStream() {
+            try {
+                if(mediaStream) {
+                    mediaStream.getTracks().forEach(t => t.stop());
+                }
+                mediaStream = await navigator.mediaDevices.getUserMedia({ 
+                    video: { facingMode: somediaCameraFacing }, 
+                    audio: { echoCancellation: true, noiseSuppression: true } 
+                });
+                const videoElem = document.getElementById('liveSomediaCameraStream');
+                videoElem.srcObject = mediaStream;
+                videoElem.classList.remove('hidden');
+                document.getElementById('somediaCameraPlaceholder').classList.add('hidden');
+            } catch (err) {
+                console.log("Somedia Live Camera access handled:", err);
+            }
+        }
+
+        function switchSomediaCameraFacing() {
+            somediaCameraFacing = somediaCameraFacing === 'user' ? 'environment' : 'user';
+            startSomediaCameraStream();
+        }
+
+        function closeSomediaCameraModal() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+            }
+            document.getElementById('somediaCameraModal').classList.add('hidden');
+            document.getElementById('somediaCameraModal').classList.remove('flex');
+        }
+
+        function toggleSomediaRecording() {
+            const circle = document.getElementById('somediaRecordInnerCircle');
+            if (!isSomediaRecording) {
+                startSomediaRecordingProcess();
+                circle.className = "w-6 h-6 rounded-sm bg-red-600 animate-pulse";
+                showToast('Duubistu waa bilaabatay...');
+            } else {
+                stopSomediaRecordingProcess();
+                circle.className = "w-12 h-12 rounded-full bg-red-600";
+                showToast('Duubistu waa dhammaatay!');
+            }
+        }
+
+        function startSomediaRecordingProcess() {
+            if(!mediaStream) return;
+            somediaRecordedChunks = [];
+            somediaMediaRecorder = new MediaRecorder(mediaStream);
+            somediaMediaRecorder.ondataavailable = e => {
+                if(e.data.size > 0) somediaRecordedChunks.push(e.data);
+            };
+            somediaMediaRecorder.onstop = () => {
+                const blob = new Blob(somediaRecordedChunks, { type: 'video/mp4' });
+                selectedVideoUrl = URL.createObjectURL(blob);
+                generateThumbnailFromVideo(selectedVideoUrl);
+            };
+            somediaMediaRecorder.start();
+            isSomediaRecording = true;
+        }
+
+        function stopSomediaRecordingProcess() {
+            if(somediaMediaRecorder && isSomediaRecording) {
+                somediaMediaRecorder.stop();
+                isSomediaRecording = false;
+            }
+        }
+
+        function triggerDeviceGallery() {
+            document.getElementById('deviceVideoInput').click();
+        }
+
+        function handleDeviceFileSelected(e) {
+            const file = e.target.files[0];
+            if (!file) return;
+
+            selectedVideoUrl = URL.createObjectURL(file);
+            generateThumbnailFromVideo(selectedVideoUrl);
+        }
+
+        function generateThumbnailFromVideo(videoUrl) {
+            closeSomediaCameraModal();
+
+            const tempVideo = document.createElement('video');
+            tempVideo.src = videoUrl;
+            tempVideo.crossOrigin = 'anonymous';
+            tempVideo.currentTime = 1;
+
+            tempVideo.onloadeddata = () => {
+                const canvas = document.createElement('canvas');
+                canvas.width = tempVideo.videoWidth || 640;
+                canvas.height = tempVideo.videoHeight || 360;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                selectedThumbnail = canvas.toDataURL('image/jpeg');
+
+                const strip = document.getElementById('filmstripFrames');
+                strip.innerHTML = '';
+                for(let i = 0; i < 6; i++) {
+                    const img = document.createElement('img');
+                    img.src = selectedThumbnail;
+                    img.className = "h-full w-1/6 object-cover opacity-60 rounded";
+                    strip.appendChild(img);
+                }
+
+                const trimPlayer = document.getElementById('trimVideoPlayer');
+                trimPlayer.src = videoUrl;
+                document.getElementById('trimModal').classList.remove('hidden');
+                document.getElementById('trimModal').classList.add('flex');
+                trimPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
+            };
+        }
+
+        function toggleTrimVideoPlay() {
+            const player = document.getElementById('trimVideoPlayer');
+            const overlay = document.getElementById('trimPlayPauseOverlay');
+            const icon = document.getElementById('trimPlayPauseIcon');
+
+            if (player.paused) {
+                player.play().then(() => suppressMediaSession());
+                icon.className = "fa-solid fa-pause";
+            } else {
+                player.pause();
+                icon.className = "fa-solid fa-play";
+            }
+
+            overlay.classList.remove('opacity-0');
+            setTimeout(() => {
+                overlay.classList.add('opacity-0');
+            }, 800);
+        }
+
+        function backToSomediaCamera() {
+            closeAllSomediaModals();
+            openSomediaCameraModal();
+        }
+
+        function goToEditorStep() {
+            closeAllSomediaModals();
+            const editorPlayer = document.getElementById('editorVideoPlayer');
+            editorPlayer.src = selectedVideoUrl;
+            document.getElementById('editorModal').classList.remove('hidden');
+            document.getElementById('editorModal').classList.add('flex');
+            editorPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
+        }
+
+        function backToTrim() {
+            closeAllSomediaModals();
+            document.getElementById('trimModal').classList.remove('hidden');
+            document.getElementById('trimModal').classList.add('flex');
+        }
+
+        function goToFinalUploadDetails() {
+            closeAllSomediaModals();
+            const finalPlayer = document.getElementById('finalPreviewThumbnail');
+            finalPlayer.src = selectedVideoUrl;
+            document.getElementById('finalUploadModal').classList.remove('hidden');
+            document.getElementById('finalUploadModal').classList.add('flex');
+            finalPlayer.play().then(() => suppressMediaSession()).catch(e => console.log(e));
+        }
+
+        function backToEditor() {
+            closeAllSomediaModals();
+            document.getElementById('editorModal').classList.remove('hidden');
+            document.getElementById('editorModal').classList.add('flex');
+        }
+
+        function publishVideoToFeed() {
+            const title = document.getElementById('finalTitleInput').value.trim() || 'Muuqaal Cusub';
+            const category = document.getElementById('finalCategorySelect').value;
+
+            const newVideo = {
+                id: 'user_' + Date.now(),
+                title: title,
+                views: '1 view • Right now',
+                category: category,
+                url: selectedVideoUrl,
+                thumbnail: selectedThumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80'
+            };
+
+            videoList.unshift(newVideo);
+            renderSomediaGrid();
+
+            closeAllSomediaModals();
+            showToast('Video-gaaga si guul leh ayaa loo soo geliyay! 🚀');
+            
+            openPlayer(0);
+        }
+
+        function openPlayer(idx) {
+            closeAllSomediaModals();
+            const modal = document.getElementById('playerModal');
+            const player = document.getElementById('mainVideoPlayer');
+            const vid = videoList[idx];
+
+            player.src = vid.url;
+            document.getElementById('playerVideoTitle').innerText = vid.title;
+
+            const nextContainer = document.getElementById('playerUpNextList');
+            nextContainer.innerHTML = '';
+
+            const otherVideos = videoList.filter((_, i) => i !== idx);
+            if(otherVideos.length === 0) {
+                nextContainer.innerHTML = `<p class="text-xs text-zinc-500">Wax fiidiyowyo kale oo aad soo gelisay ma jiraan.</p>`;
+            } else {
+                otherVideos.forEach((oVid) => {
+                    const item = document.createElement('div');
+                    item.className = "flex gap-3 cursor-pointer";
+                    item.onclick = () => openPlayer(videoList.indexOf(oVid));
+                    item.innerHTML = `
+                        <div class="w-32 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
+                            <img src="${oVid.thumbnail}" class="w-full h-full object-cover">
+                            <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">0:10</span>
+                        </div>
+                        <div class="flex-1 space-y-1">
+                            <h3 class="text-xs font-bold text-white line-clamp-2 leading-snug">${oVid.title}</h3>
+                            <p class="text-[11px] text-zinc-400">SOMEDIA Channel</p>
+                            <p class="text-[10px] text-zinc-500">${oVid.views}</p>
+                        </div>
+                    `;
+                    nextContainer.appendChild(item);
+                });
+            }
+
+            modal.classList.remove('hidden');
+            modal.classList.add('flex');
+            player.play().then(() => suppressMediaSession()).catch(e => console.log(e));
+        }
+
+        function closePlayer() {
+            const modal = document.getElementById('playerModal');
+            const player = document.getElementById('mainVideoPlayer');
+            player.pause();
+            modal.classList.add('hidden');
+            modal.classList.remove('flex');
+        }
+
+        // ================= BAYAN APP CAMERA LOGIC =================
 
         async function openFullCamera() {
             document.getElementById('cameraScreen').classList.remove('hidden');
@@ -545,6 +1312,13 @@
 
         function toggleTheme() {
             document.body.classList.toggle('bg-slate-900');
+        }
+
+        function showToast(msg) {
+            const toast = document.getElementById('toastNotification');
+            document.getElementById('toastMessage').innerText = msg;
+            toast.classList.remove('opacity-0', 'pointer-events-none');
+            setTimeout(() => { toast.classList.add('opacity-0', 'pointer-events-none'); }, 2200);
         }
     </script>
 </body>

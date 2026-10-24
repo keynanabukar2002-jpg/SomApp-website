@@ -44,17 +44,17 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         .brand-logo-img {
-            height: 32px;
-            width: 32px;
+            height: 28px;
+            width: 28px;
             object-fit: cover;
-            border-radius: 8px;
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.4);
+            border-radius: 6px;
+            border: 1.5px solid #ffffff;
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
         }
 
         .upload-nav-img {
-            height: 26px;
-            width: 26px;
+            height: 24px;
+            width: 24px;
             object-fit: cover;
             border-radius: 6px;
             border: 1.5px solid #ffffff;
@@ -63,7 +63,6 @@
         }
         .upload-nav-img:active { transform: scale(0.9); }
 
-        /* Qurxinta iyo Waynaynta Profile-ka Sare */
         .header-profile-img-container {
             display: flex;
             flex-direction: column;
@@ -72,16 +71,12 @@
         }
 
         .header-profile-img {
-            height: 36px;
-            width: 36px;
+            height: 38px;
+            width: 38px;
             object-fit: cover;
             border-radius: 50%;
-            border: 2px solid #ef4444;
-            box-shadow: 0 0 12px rgba(239, 68, 68, 0.5);
-            transition: transform 0.2s ease;
-        }
-        .header-profile-img:active {
-            transform: scale(0.92);
+            border: 2px solid #ef4444; /* Somedia Red Accent */
+            box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
     </style>
 </head>
@@ -104,21 +99,21 @@
             </div>
 
             <div class="my-auto text-center px-2">               
-                <span class="bg-emerald-100 text-emerald-800 text-xs font-extrabold px-3.5 py-1.5 rounded-full border border-emerald-200 uppercase tracking-widest">
+                <span class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-widest">
                     Welcome to Bayan App
                 </span>
-                <h1 class="text-4xl font-black text-slate-900 mt-5 mb-4 leading-snug">
+                <h1 class="text-3xl font-black text-slate-900 mt-4 mb-3 leading-snug">
                     Kusoo Dhawoow Bayan-app
                 </h1>
-                <p class="text-sm text-slate-600 leading-relaxed max-w-xs mx-auto font-medium">
+                <p class="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto font-medium">
                     App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo SOMEDIA.
                 </p>
             </div>
 
             <div class="pb-4 space-y-3">
-                <button onclick="switchScreen('mainDashboard')" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-extrabold py-4 rounded-2xl shadow-xl transition flex items-center justify-center gap-2 text-base">
+                <button onclick="switchScreen('mainDashboard')" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold py-4 rounded-2xl shadow-xl transition flex items-center justify-center gap-2 text-sm">
                     <span>Get Started</span>
-                    <i class="fa-solid fa-arrow-right text-sm"></i>
+                    <i class="fa-solid fa-arrow-right text-xs"></i>
                 </button>
             </div>
         </div>
@@ -135,12 +130,12 @@
                         B
                     </div>
                     <div>
-                        <p class="text-[11px] font-bold text-slate-400 uppercase tracking-wider">Good Morning</p>
-                        <h2 class="text-base font-extrabold text-slate-900 leading-tight">Bayan User</h2>
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Good Morning</p>
+                        <h2 class="text-sm font-extrabold text-slate-900 leading-tight">Bayan User</h2>
                     </div>
                 </div>
-                <button onclick="switchScreen('landingScreen')" title="Ka bax" class="w-10 h-10 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center transition active:scale-95">
-                    <i class="fa-solid fa-right-from-bracket text-sm"></i>
+                <button onclick="switchScreen('landingScreen')" title="Ka bax" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center transition active:scale-95">
+                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
                 </button>
             </div>
 
@@ -156,38 +151,38 @@
                     </div>
 
                     <div>
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Adeeg shabakadaha & Apps</h3>
+                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha & Apps</h3>
                         <div class="grid grid-cols-3 gap-3">
                             <button onclick="selectService('Hormuud', 'Shabakada Hormuud Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="w-11 h-11 rounded-2xl border-2 border-emerald-600 flex items-center justify-center text-emerald-600 font-black text-xl mb-1 bg-emerald-50">H</div>
-                                <span class="text-sm font-bold text-slate-800">Hormuud</span>
+                                <span class="text-xs font-bold text-slate-800">Hormuud</span>
                             </button>
 
                             <button onclick="selectService('Somnet', 'Shabakada Somnet Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="text-sky-600 mb-1"><i class="fa-solid fa-wifi text-xl"></i></div>
-                                <span class="text-[10px] font-bold text-sky-800 uppercase leading-none mt-1">SOMNET</span>
-                                <span class="text-sm font-bold text-slate-800">Somnet</span>
+                                <span class="text-[9px] font-bold text-sky-800 uppercase leading-none mt-1">SOMNET</span>
+                                <span class="text-xs font-bold text-slate-800">Somnet</span>
                             </button>
 
                             <button onclick="selectService('Somtel', 'Shabakada Somtel')" class="bg-[#FFDC00] p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="text-slate-900 font-black text-sm mb-1 tracking-wider">somtel</div>
-                                <span class="text-sm font-bold text-slate-900">Somtel</span>
+                                <span class="text-xs font-bold text-slate-900">Somtel</span>
                             </button>
 
                             <button onclick="selectService('SomLink', 'Shabakada SomLink Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="text-purple-700 font-black text-sm">SomLink</div>
-                                <span class="text-[10px] text-slate-400 font-semibold mb-1">telecom</span>
-                                <span class="text-sm font-bold text-slate-800">SomLink</span>
+                                <span class="text-[9px] text-slate-400 font-semibold mb-1">telecom</span>
+                                <span class="text-xs font-bold text-slate-800">SomLink</span>
                             </button>
 
                             <button onclick="selectService('Amtel', 'Shabakada Amtel')" class="bg-red-700 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="font-black text-sm italic">Amtel</div>
-                                <span class="text-sm font-bold text-white mt-1">Amtel</span>
+                                <span class="text-xs font-bold text-white mt-1">Amtel</span>
                             </button>
 
                             <button onclick="selectService('Rukumo', 'Adeegga Rukumada')" class="bg-red-50 p-3 rounded-2xl shadow-sm border border-red-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
                                 <div class="w-9 h-9 rounded-xl bg-red-100 text-red-500 flex items-center justify-center text-base mb-1"><i class="fa-solid fa-ban"></i></div>
-                                <span class="text-sm font-bold text-slate-800">Rukumo</span>
+                                <span class="text-xs font-bold text-slate-800">Rukumo</span>
                             </button>
 
                             <!-- Camera -->
@@ -195,7 +190,7 @@
                                 <div class="w-10 h-10 rounded-xl bg-emerald-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
                                     <i class="fa-solid fa-camera"></i>
                                 </div>
-                                <span class="text-sm font-bold text-white">Camera</span>
+                                <span class="text-xs font-bold text-white">Camera</span>
                             </button>
 
                             <!-- TikTok -->
@@ -203,7 +198,7 @@
                                 <div class="w-10 h-10 rounded-xl bg-slate-800 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
                                     <i class="fa-brands fa-tiktok"></i>
                                 </div>
-                                <span class="text-sm font-bold text-white">TikTok</span>
+                                <span class="text-xs font-bold text-white">TikTok</span>
                             </button>
 
                             <!-- Facebook -->
@@ -211,7 +206,7 @@
                                 <div class="w-10 h-10 rounded-xl bg-blue-500/80 flex items-center justify-center text-white text-lg mb-1 shadow-inner">
                                     <i class="fa-brands fa-facebook-f"></i>
                                 </div>
-                                <span class="text-sm font-bold text-white">Facebook</span>
+                                <span class="text-xs font-bold text-white">Facebook</span>
                             </button>
                         </div>
                     </div>
@@ -221,55 +216,55 @@
                 <div id="tabInternet" class="tab-content hidden space-y-4">
                     <div class="flex items-center justify-between">
                         <h3 class="text-sm font-extrabold text-slate-900">Adeegyada Internet-ka & Shabakadaha</h3>
-                        <span class="text-[11px] bg-emerald-100 text-emerald-800 font-bold px-3 py-0.5 rounded-full">Automated</span>
+                        <span class="text-[10px] bg-emerald-100 text-emerald-800 font-bold px-2.5 py-0.5 rounded-full">Automated</span>
                     </div>
 
                     <div class="grid grid-cols-2 gap-3">
                         <button onclick="selectService('Hormuud', 'Internet-ka Hormuud Data Package')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
                             <div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-500 text-emerald-600 font-black flex items-center justify-center text-lg shrink-0">H</div>
                             <div class="text-left">
-                                <h4 class="text-sm font-bold text-slate-900">Hormuud</h4>
-                                <p class="text-xs text-slate-400">Data Packages</p>
+                                <h4 class="text-xs font-bold text-slate-900">Hormuud</h4>
+                                <p class="text-[10px] text-slate-400">Data Packages</p>
                             </div>
                         </button>
 
                         <button onclick="selectService('Somnet', 'Internet-ka Somnet Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
                             <div class="w-10 h-10 rounded-xl bg-sky-50 text-sky-600 font-black flex items-center justify-center text-lg shrink-0"><i class="fa-solid fa-wifi"></i></div>
                             <div class="text-left">
-                                <h4 class="text-sm font-bold text-slate-900">Somnet</h4>
-                                <p class="text-xs text-slate-400">Internet Bundles</p>
+                                <h4 class="text-xs font-bold text-slate-900">Somnet</h4>
+                                <p class="text-[10px] text-slate-400">Internet Bundles</p>
                             </div>
                         </button>
 
                         <button onclick="selectService('Somtel', 'Internet-ka Somtel Data')" class="bg-[#FFDC00] p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
                             <div class="w-10 h-10 rounded-xl bg-slate-900 text-yellow-400 font-black flex items-center justify-center text-xs shrink-0">ST</div>
                             <div class="text-left">
-                                <h4 class="text-sm font-bold text-slate-900">Somtel</h4>
-                                <p class="text-xs text-slate-800">4G / 5G Bundles</p>
+                                <h4 class="text-xs font-bold text-slate-900">Somtel</h4>
+                                <p class="text-[10px] text-slate-800">4G / 5G Bundles</p>
                             </div>
                         </button>
 
                         <button onclick="selectService('SomLink', 'Internet-ka SomLink Telecom')" class="bg-white p-4 rounded-2xl border border-slate-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
                             <div class="w-10 h-10 rounded-xl bg-purple-50 text-purple-700 font-black flex items-center justify-center text-xs shrink-0">SL</div>
                             <div class="text-left">
-                                <h4 class="text-sm font-bold text-slate-900">SomLink</h4>
-                                <p class="text-xs text-slate-400">Broadband Data</p>
+                                <h4 class="text-xs font-bold text-slate-900">SomLink</h4>
+                                <p class="text-[10px] text-slate-400">Broadband Data</p>
                             </div>
                         </button>
 
                         <button onclick="selectService('Amtel', 'Internet-ka Amtel Data')" class="bg-red-700 text-white p-4 rounded-2xl shadow-sm flex items-center space-x-3 active:scale-95 transition">
                             <div class="w-10 h-10 rounded-xl bg-white/20 text-white font-black flex items-center justify-center text-xs shrink-0">AM</div>
                             <div class="text-left">
-                                <h4 class="text-sm font-bold text-white">Amtel</h4>
-                                <p class="text-xs text-red-100">Quick Internet</p>
+                                <h4 class="text-xs font-bold text-white">Amtel</h4>
+                                <p class="text-[10px] text-red-100">Quick Internet</p>
                             </div>
                         </button>
 
                         <button onclick="selectService('Rukumo', 'Adeegga Rukumada Internet-ka')" class="bg-red-50 p-4 rounded-2xl border border-red-100 shadow-sm flex items-center space-x-3 active:scale-95 transition">
                             <div class="w-10 h-10 rounded-xl bg-red-100 text-red-600 font-black flex items-center justify-center text-sm shrink-0"><i class="fa-solid fa-ban"></i></div>
                             <div class="text-left">
-                                <h4 class="text-sm font-bold text-slate-900">Rukumo</h4>
-                                <p class="text-xs text-slate-400">Services & Unsub</p>
+                                <h4 class="text-xs font-bold text-slate-900">Rukumo</h4>
+                                <p class="text-[10px] text-slate-400">Services & Unsub</p>
                             </div>
                         </button>
                     </div>
@@ -281,46 +276,46 @@
             <div id="tabSomedia" class="hidden absolute inset-0 bg-[#0f0f0f] text-white flex flex-col justify-between z-40 overflow-y-auto no-scrollbar">
                 
                 <div>
-                    <!-- SOMEDIA HEADER (QURXIN & WAYNAYN PROFILE-KA SARE) -->
-                    <div class="sticky top-0 bg-[#0f0f0f]/90 backdrop-blur-md border-b border-zinc-800 z-20 flex items-center justify-between px-4 py-3">
-                        <!-- Left: Profile Logo (Cusub oo la qurxiyay) -->
+                    <!-- SOMEDIA HEADER (ENLARGED PROFILE IMAGE WITH SOMEDIA THEME COLOR) -->
+                    <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-3.5">
+                        <!-- Left: Profile Logo (Enlarged & Styled) -->
                         <div class="header-profile-img-container" onclick="showToast('Profile active')">
                             <img src="https://i.ibb.co/wZ7mx0wY/1792863661584.jpg" alt="Profile" class="header-profile-img">
-                            <span class="text-[10px] text-zinc-300 font-bold mt-0.5 tracking-wide">profile</span>
+                            <span class="text-[9px] text-red-500 font-bold mt-0.5 tracking-wide">profile</span>
                         </div>
 
                         <!-- Right: SOMEDIA, Logo, and Leebka (>) -->
-                        <div class="flex items-center gap-2.5">
-                            <span class="text-xl font-black uppercase tracking-wider text-white">SOMEDIA</span>
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg font-black uppercase tracking-tight text-white">SOMEDIA</span>
                             <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
-                            <button onclick="switchTab('tabHome')" class="text-white text-lg ml-1 active:scale-90 transition">
+                            <button onclick="switchTab('tabHome')" class="text-white text-base ml-1">
                                 <i class="fa-solid fa-chevron-right"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- CATEGORIES BAR -->
-                    <nav class="flex items-center gap-2.5 p-3 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
-                        <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0">
+                    <nav class="flex items-center gap-2 p-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">
                             <i class="fa-regular fa-compass"></i>
                         </button>
-                        <button class="bg-white text-black px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0">Dhammaan</button>
-                        <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0">Somali Tech</button>
-                        <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0">Musig</button>
-                        <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-bold shrink-0">Ciyaaro</button>
+                        <button class="bg-white text-black px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Dhammaan</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Somali Tech</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Musig</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
                     </nav>
 
                     <!-- MAIN FEED AREA -->
-                    <main class="w-full p-4 pb-24">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2 text-sm font-black">
-                                <i class="fa-solid fa-circle-play text-red-600 text-base"></i>
-                                <span class="text-sm">Home Feed</span>
+                    <main class="w-full p-3 pb-24">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2 text-sm font-bold">
+                                <i class="fa-solid fa-circle-play text-red-600"></i>
+                                <span>Home Feed</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span id="videoCountBadge" class="text-[11px] bg-zinc-800 px-2.5 py-1 rounded-full text-zinc-300 font-semibold">0 videos</span>
-                                <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3.5 py-1.5 rounded-xl font-bold flex items-center gap-1.5 shadow-md">
-                                    <i class="fa-solid fa-plus text-xs"></i> Soo geli
+                                <span id="videoCountBadge" class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">0 videos</span>
+                                <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
+                                    <i class="fa-solid fa-plus"></i> Soo geli
                                 </button>
                             </div>
                         </div>
@@ -331,26 +326,26 @@
                 </div>
 
                 <!-- SOMEDIA EXCLUSIVE BOTTOM NAVIGATION BAR -->
-                <div class="sticky bottom-0 left-0 right-0 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center py-2.5 px-1 z-30">
-                    <button onclick="switchTab('tabHome')" class="flex flex-col items-center gap-1 text-zinc-400 w-1/5">
-                        <i class="fa-solid fa-house text-base"></i>
-                        <span class="text-[10px] font-medium">Home</span>
+                <div class="sticky bottom-0 left-0 right-0 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center py-2 px-1 z-30">
+                    <button onclick="switchTab('tabHome')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-house text-sm"></i>
+                        <span class="text-[9px]">Home</span>
                     </button>
-                    <button onclick="showToast('Shorts active')" class="flex flex-col items-center gap-1 text-zinc-400 w-1/5">
-                        <i class="fa-solid fa-bolt text-base"></i>
-                        <span class="text-[10px] font-medium">Shorts</span>
+                    <button onclick="showToast('Shorts active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-bolt text-sm"></i>
+                        <span class="text-[9px]">Shorts</span>
                     </button>
                     <button onclick="openSomediaCameraModal()" class="flex flex-col items-center justify-center w-1/5">
                         <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Soo geli" class="upload-nav-img">
-                        <span class="text-[10px] text-white font-semibold mt-0.5">Soo geli</span>
+                        <span class="text-[9px] text-white font-medium mt-0.5">Soo geli</span>
                     </button>
-                    <button onclick="showToast('Subscriptions active')" class="flex flex-col items-center gap-1 text-zinc-400 w-1/5">
-                        <i class="fa-solid fa-layer-group text-base"></i>
-                        <span class="text-[10px] font-medium">Subscriptions</span>
+                    <button onclick="showToast('Subscriptions active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-layer-group text-sm"></i>
+                        <span class="text-[9px]">Subscriptions</span>
                     </button>
-                    <button onclick="showToast('Profile active')" class="flex flex-col items-center gap-1 text-zinc-400 w-1/5">
-                        <div class="w-5 h-5 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[9px]">S</div>
-                        <span class="text-[10px] font-medium">Adiga</span>
+                    <button onclick="showToast('Profile active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <div class="w-4 h-4 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[8px]">S</div>
+                        <span class="text-[9px]">Adiga</span>
                     </button>
                 </div>
 
@@ -360,51 +355,51 @@
             </div>
 
             <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER) -->
-            <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-2.5 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0 z-10">
+            <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0 z-10">
                 <!-- 1. Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
-                    <i class="fa-solid fa-house text-lg mb-0.5"></i>
-                    <span class="text-[11px]">Home</span>
+                    <i class="fa-solid fa-house text-base mb-0.5"></i>
+                    <span>Home</span>
                 </button>
 
                 <!-- 2. Floating Internet Button -->
-                <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-6 active:scale-90 transition">
-                    <div class="w-13 h-13 w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/MxZmZR9j/wireless-network-symbol-1284-42447.jpg" alt="Internet Logo" class="w-full h-full object-cover rounded-full mix-blend-multiply">
                     </div>
-                    <span class="font-black text-slate-900 mt-1 text-[11px]">Internet</span>
+                    <span class="font-black text-slate-900 mt-0.5">Internet</span>
                 </button>
 
                 <!-- 3. Floating SOMEDIA Button -->
-                <button onclick="switchTab('tabSomedia', this)" class="nav-btn flex flex-col items-center -mt-6 active:scale-90 transition">
+                <button onclick="switchTab('tabSomedia', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Custom Logo" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <span class="font-black text-slate-900 mt-1 text-[11px]">SOMEDIA</span>
+                    <span class="font-black text-slate-900 mt-0.5">SOMEDIA</span>
                 </button>
 
                 <!-- 4. Floating WAAFI Button -->
-                <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-6 active:scale-90 transition">
+                <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/HfjgqSdg/file-00000000e88c81f4a88cb2648ccfc850.png" alt="WAAFI Custom Logo" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <span class="font-black text-slate-900 mt-1 text-[11px]">WAAFI</span>
+                    <span class="font-black text-slate-900 mt-0.5">WAAFI</span>
                 </button>
 
                 <!-- 5. Floating CHAT Button -->
-                <button onclick="openChatModal()" class="flex flex-col items-center -mt-6 active:scale-90 transition">
-                    <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] text-xl">
+                <button onclick="openChatModal()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] text-lg">
                         <i class="fa-solid fa-comments"></i>
                     </div>
-                    <span class="font-black text-emerald-800 mt-1 text-[11px]">Chat</span>
+                    <span class="font-black text-emerald-800 mt-0.5">Chat</span>
                 </button>
 
                 <!-- 6. Custom Profile Button with Uploaded Image -->
-                <button onclick="showToast('Profile active')" class="flex flex-col items-center -mt-6 active:scale-90 transition">
+                <button onclick="showToast('Profile active')" class="flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/wZ7mx0wY/1792863661584.jpg" alt="Profile Logo" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <span class="font-black text-slate-900 mt-1 text-[11px]">profile</span>
+                    <span class="font-black text-slate-900 mt-0.5">profile</span>
                 </button>
             </div>
         </div>
@@ -414,44 +409,44 @@
         =========================================== -->
         <div id="chatModal" class="fixed inset-0 bg-[#f0f2f5] z-50 hidden flex-col justify-between">
             <!-- CHAT HEADER -->
-            <div class="bg-emerald-800 text-white p-4 pt-5 flex items-center justify-between shadow-md">
+            <div class="bg-emerald-800 text-white p-3.5 pt-4 flex items-center justify-between shadow-md">
                 <div class="flex items-center gap-3">
-                    <button onclick="closeChatModal()" class="text-white text-xl active:scale-90">
+                    <button onclick="closeChatModal()" class="text-white text-lg active:scale-90">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold text-base">
-                        <i class="fa-solid fa-user-gear text-sm"></i>
+                    <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-user-gear text-xs"></i>
                     </div>
                     <div>
-                        <h3 class="text-sm font-extrabold leading-tight">Bayan Support Chat</h3>
-                        <p class="text-[10px] text-emerald-200">Online • Live Assistant</p>
+                        <h3 class="text-xs font-bold leading-tight">Bayan Support Chat</h3>
+                        <p class="text-[9px] text-emerald-200">Online • Live Assistant</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-4 text-base">
+                <div class="flex items-center gap-3 text-sm">
                     <button onclick="showToast('Call function coming soon')"><i class="fa-solid fa-phone"></i></button>
                     <button onclick="showToast('Options')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                 </div>
             </div>
 
             <!-- CHAT MESSAGES BODY -->
-            <div id="chatMessagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3.5 no-scrollbar">
+            <div id="chatMessagesContainer" class="flex-1 p-3 overflow-y-auto space-y-3 no-scrollbar">
                 <!-- Incoming System Welcome -->
-                <div class="flex items-start gap-2.5 max-w-[85%]">
-                    <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-xs shrink-0 mt-1">B</div>
-                    <div class="bg-white text-slate-800 p-3.5 rounded-2xl rounded-tl-none shadow-sm text-sm leading-relaxed border border-slate-100">
+                <div class="flex items-start gap-2 max-w-[85%]">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-[10px] shrink-0 mt-1">B</div>
+                    <div class="bg-white text-slate-800 p-3 rounded-2xl rounded-tl-none shadow-sm text-xs leading-relaxed border border-slate-100">
                         Kusoo dhawoow **Bayan Live Chat**! 👋🏼 Sidaad kaaga caawin karnaa adeegyada app-ka?
-                        <span class="block text-[9px] text-slate-400 text-right mt-1.5">12:00 PM</span>
+                        <span class="block text-[8px] text-slate-400 text-right mt-1">12:00 PM</span>
                     </div>
                 </div>
             </div>
 
             <!-- CHAT INPUT FOOTER -->
-            <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2.5">
-                <button onclick="showToast('Attachment selector')" class="text-slate-400 text-xl p-1">
+            <div class="p-2.5 bg-white border-t border-slate-200 flex items-center gap-2">
+                <button onclick="showToast('Attachment selector')" class="text-slate-400 text-lg p-1">
                     <i class="fa-solid fa-paperclip"></i>
                 </button>
-                <input type="text" id="chatInputMessage" placeholder="Qor fariintaada halkan..." class="flex-1 bg-slate-100 text-sm text-slate-800 px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-600" onkeypress="if(event.key==='Enter') sendChatMessage()">
-                <button onclick="sendChatMessage()" class="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center text-base shadow-md active:scale-95">
+                <input type="text" id="chatInputMessage" placeholder="Qor fariintaada halkan..." class="flex-1 bg-slate-100 text-xs text-slate-800 px-3.5 py-2.5 rounded-full focus:outline-none focus:ring-1 focus:ring-emerald-600" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" class="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center text-sm shadow-md active:scale-95">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
@@ -463,17 +458,17 @@
 
         <!-- 1. CAMERA / RECORDING MODAL -->
         <div id="somediaCameraModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-4">
-            <div class="flex items-center justify-between z-25">
-                <button onclick="closeSomediaCameraModal()" class="w-11 h-11 rounded-full bg-black/40 text-white flex items-center justify-center text-xl backdrop-blur-md">
+            <div class="flex items-center justify-between z-20">
+                <button onclick="closeSomediaCameraModal()" class="w-10 h-10 rounded-full bg-black/40 text-white flex items-center justify-center text-xl backdrop-blur-md">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
 
-                <button onclick="showToast('Music selector active')" class="bg-zinc-900/80 border border-zinc-700/80 text-white px-4.5 py-2 rounded-full text-xs font-bold flex items-center gap-2 backdrop-blur-md">
+                <button onclick="showToast('Music selector active')" class="bg-zinc-900/80 border border-zinc-700/80 text-white px-4 py-1.5 rounded-full text-xs font-semibold flex items-center gap-2 backdrop-blur-md">
                     <i class="fa-solid fa-music text-xs"></i>
                     <span>Add sound</span>
                 </button>
 
-                <button class="w-11 h-11 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center text-lg shadow-lg">
+                <button class="w-10 h-10 rounded-full bg-gradient-to-tr from-purple-600 to-pink-500 text-white flex items-center justify-center text-lg shadow-lg">
                     <i class="fa-solid fa-wand-magic-sparkles"></i>
                 </button>
             </div>
@@ -490,43 +485,43 @@
             </div>
 
             <!-- SOMEDIA CAMERA TOOLBAR -->
-            <div class="absolute right-4 top-20 z-20 flex flex-col items-center gap-5 text-white bg-black/30 p-2.5 rounded-2xl backdrop-blur-md border border-white/10">
+            <div class="absolute right-4 top-20 z-20 flex flex-col items-center gap-5 text-white bg-black/30 p-2 rounded-2xl backdrop-blur-md border border-white/10">
                 <button id="somediaFlashBtn" onclick="toggleSomediaTorch()" class="flex flex-col items-center transition active:scale-90">
-                    <i id="somediaFlashIcon" class="fa-solid fa-bolt text-xl text-white"></i>
+                    <i id="somediaFlashIcon" class="fa-solid fa-bolt text-lg text-white"></i>
                 </button>
-                <button onclick="switchSomediaCameraFacing()" class="flex flex-col items-center"><i class="fa-solid fa-rotate text-xl"></i></button>
-                <button class="flex flex-col items-center"><i class="fa-regular fa-clock text-xl"></i></button>
-                <span class="text-xs font-bold">3m</span>
-                <button class="flex flex-col items-center"><i class="fa-solid fa-wand-magic text-xl"></i></button>
-                <span class="text-xs font-bold">1x</span>
-                <button class="flex flex-col items-center"><i class="fa-solid fa-crop text-xl"></i></button>
+                <button onclick="switchSomediaCameraFacing()" class="flex flex-col items-center"><i class="fa-solid fa-rotate text-lg"></i></button>
+                <button class="flex flex-col items-center"><i class="fa-regular fa-clock text-lg"></i></button>
+                <span class="text-[11px] font-bold">3m</span>
+                <button class="flex flex-col items-center"><i class="fa-solid fa-wand-magic text-lg"></i></button>
+                <span class="text-[11px] font-bold">1x</span>
+                <button class="flex flex-col items-center"><i class="fa-solid fa-crop text-lg"></i></button>
                 <i class="fa-solid fa-chevron-down text-xs"></i>
             </div>
 
             <div class="z-20 flex flex-col gap-5 mb-2">
                 <div class="flex items-center justify-around">
-                    <button onclick="triggerDeviceGallery()" class="flex flex-col items-center gap-1.5">
-                        <div class="w-12 h-12 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
-                            <i class="fa-solid fa-folder-open text-white text-base"></i>
+                    <button onclick="triggerDeviceGallery()" class="flex flex-col items-center gap-1">
+                        <div class="w-11 h-11 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
+                            <i class="fa-solid fa-folder-open text-white"></i>
                         </div>
-                        <span class="text-xs font-bold text-white">Add</span>
+                        <span class="text-[11px] font-bold text-white">Add</span>
                     </button>
 
-                    <button id="somediaRecordBtn" onclick="toggleSomediaRecording()" class="w-18 h-18 w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform">
+                    <button id="somediaRecordBtn" onclick="toggleSomediaRecording()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform">
                         <div id="somediaRecordInnerCircle" class="w-12 h-12 rounded-full bg-red-600 transition-all duration-200"></div>
                     </button>
 
-                    <button onclick="showToast('Drafts waa eber')" class="flex flex-col items-center gap-1.5">
-                        <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-lg">
+                    <button onclick="showToast('Drafts waa eber')" class="flex flex-col items-center gap-1">
+                        <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-lg">
                             <i class="fa-regular fa-file-lines"></i>
                         </div>
-                        <span class="text-xs font-bold text-white">Drafts</span>
+                        <span class="text-[11px] font-bold text-white">Drafts</span>
                     </button>
                 </div>
 
-                <div class="flex items-center justify-center gap-6 text-sm font-bold text-zinc-400">
+                <div class="flex items-center justify-center gap-6 text-xs font-bold text-zinc-400">
                     <button class="hover:text-white">Video</button>
-                    <button class="bg-zinc-800 text-white px-4.5 py-1.5 rounded-full border border-white/20">Short</button>
+                    <button class="bg-zinc-800 text-white px-4 py-1 rounded-full border border-white/20">Short</button>
                     <button class="hover:text-white">Live</button>
                 </div>
             </div>
@@ -535,7 +530,7 @@
         <!-- 2. TRIM / ADJUST MODAL -->
         <div id="trimModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
             <div class="flex items-center justify-between z-10 pt-2 px-1">
-                <button onclick="backToSomediaCamera()" class="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center text-xl">
+                <button onclick="backToSomediaCamera()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
                     <i class="fa-solid fa-xmark"></i>
                 </button>
             </div>
@@ -550,22 +545,22 @@
                 </div>
             </div>
 
-            <div class="space-y-3.5 mb-3 px-1">
-                <div class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-3 relative flex items-center justify-center shadow-inner">
+            <div class="space-y-3 mb-3 px-1">
+                <div class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-2.5 relative flex items-center justify-center shadow-inner">
                     <div class="w-full h-12 bg-zinc-950 rounded-xl flex items-center gap-1 px-1 relative overflow-hidden border border-zinc-700">
                         <div id="filmstripFrames" class="flex w-full h-full items-center justify-between overflow-hidden"></div>
 
                         <div class="absolute left-[20%] right-[30%] top-0.5 bottom-0.5 border-2 border-white bg-white/10 rounded-lg flex items-center justify-between px-1 shadow-lg pointer-events-none">
                             <div class="w-1.5 h-7 bg-white rounded-full"></div>
-                            <span class="bg-white text-black text-xs font-black px-3 py-0.5 rounded-full shadow-md">10.0s</span>
+                            <span class="bg-white text-black text-[11px] font-black px-2.5 py-0.5 rounded-full shadow-md">10.0s</span>
                             <div class="w-1.5 h-7 bg-white rounded-full"></div>
                         </div>
                     </div>
                 </div>
 
                 <div class="flex items-center justify-between px-2">
-                    <span class="text-zinc-400 text-xs font-medium">Drag to adjust video</span>
-                    <button onclick="goToEditorStep()" class="bg-white text-black font-extrabold px-8 py-3 rounded-full text-xs hover:bg-zinc-200 shadow-lg transition-transform active:scale-95">
+                    <span class="text-zinc-400 text-xs">Drag to adjust video</span>
+                    <button onclick="goToEditorStep()" class="bg-white text-black font-bold px-7 py-2.5 rounded-full text-xs hover:bg-zinc-200 shadow-lg transition-transform active:scale-95">
                         Next
                     </button>
                 </div>
@@ -575,16 +570,16 @@
         <!-- 3. VIDEO EDITOR MODAL -->
         <div id="editorModal" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between p-3">
             <div class="flex items-center justify-between z-20">
-                <button onclick="backToTrim()" class="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center text-xl">
+                <button onclick="backToTrim()" class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-lg">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
 
-                <button onclick="showToast('Music picker active')" class="bg-zinc-800/90 text-white px-4.5 py-2 rounded-full text-xs font-extrabold flex items-center gap-2 border border-zinc-700 backdrop-blur-md">
+                <button onclick="showToast('Music picker active')" class="bg-zinc-800/90 text-white px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border border-zinc-700 backdrop-blur-md">
                     <i class="fa-solid fa-music"></i>
                     <span>Add sound</span>
                 </button>
 
-                <button class="w-10 h-10 rounded-full bg-black/60 text-white flex items-center justify-center text-base">
+                <button class="w-9 h-9 rounded-full bg-black/60 text-white flex items-center justify-center text-sm">
                     <i class="fa-solid fa-volume-high"></i>
                 </button>
             </div>
@@ -594,12 +589,12 @@
             </div>
 
             <div class="z-20 flex items-center justify-between px-2 mb-2">
-                <button onclick="showToast('Editing timeline')" class="bg-zinc-800 text-white font-extrabold px-6 py-2.5 rounded-full text-xs border border-zinc-700 flex items-center gap-2">
+                <button onclick="showToast('Editing timeline')" class="bg-zinc-800 text-white font-bold px-6 py-2 rounded-full text-xs border border-zinc-700 flex items-center gap-2">
                     <i class="fa-solid fa-sliders"></i>
                     <span>Edit</span>
                 </button>
 
-                <button onclick="goToFinalUploadDetails()" class="bg-white text-black font-extrabold px-8 py-2.5 rounded-full text-xs shadow-lg hover:bg-zinc-200">
+                <button onclick="goToFinalUploadDetails()" class="bg-white text-black font-bold px-7 py-2 rounded-full text-xs shadow-lg hover:bg-zinc-200">
                     Next
                 </button>
             </div>
@@ -607,37 +602,37 @@
 
         <!-- 4. FINAL DETAILS MODAL -->
         <div id="finalUploadModal" class="fixed inset-0 bg-[#0f0f0f] z-50 hidden flex-col justify-between p-4">
-            <div class="flex items-center gap-4 border-b border-zinc-800 pb-3.5">
-                <button onclick="backToEditor()" class="text-white text-xl">
+            <div class="flex items-center gap-4 border-b border-zinc-800 pb-3">
+                <button onclick="backToEditor()" class="text-white text-lg">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
-                <h2 class="text-base font-extrabold text-white">Add details</h2>
+                <h2 class="text-base font-bold text-white">Add details</h2>
             </div>
 
             <div class="flex-1 py-4 space-y-4 overflow-y-auto no-scrollbar">
-                <div class="flex gap-3.5">
+                <div class="flex gap-3">
                     <div class="w-32 aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0 flex items-center justify-center">
                         <video id="finalPreviewThumbnail" class="w-full h-full object-cover" muted playsinline></video>
                     </div>
                     <div class="flex-1">
-                        <textarea id="finalTitleInput" rows="3" placeholder="Write video title... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none font-medium"></textarea>
+                        <textarea id="finalTitleInput" rows="3" placeholder="Write video title... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
                     </div>
                 </div>
 
-                <div class="space-y-3.5 pt-3.5 border-t border-zinc-800/80 text-xs text-zinc-300">
+                <div class="space-y-3 pt-3 border-t border-zinc-800/80 text-xs text-zinc-300">
                     <div class="flex items-center justify-between py-1">
                         <div class="flex items-center gap-3">
                             <i class="fa-solid fa-globe text-base text-zinc-400"></i>
-                            <span class="text-sm font-semibold">Visibility</span>
+                            <span>Visibility</span>
                         </div>
-                        <span class="font-bold text-white flex items-center gap-1 text-sm">Public <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
+                        <span class="font-bold text-white flex items-center gap-1">Public <i class="fa-solid fa-chevron-right text-[10px]"></i></span>
                     </div>
                     <div class="flex items-center justify-between py-1">
                         <div class="flex items-center gap-3">
                             <i class="fa-solid fa-layer-group text-base text-zinc-400"></i>
-                            <span class="text-sm font-semibold">Category</span>
+                            <span>Category</span>
                         </div>
-                        <select id="finalCategorySelect" class="bg-zinc-900 border border-zinc-700 rounded-xl p-2 text-xs text-white font-medium">
+                        <select id="finalCategorySelect" class="bg-zinc-900 border border-zinc-700 rounded-lg p-1 text-xs text-white">
                             <option value="Soo gelintaada">Soo gelintaada</option>
                             <option value="Somali Tech">Somali Tech</option>
                             <option value="Musig">Musig</option>
@@ -647,20 +642,20 @@
                 </div>
             </div>
 
-            <button onclick="publishVideoToFeed()" class="w-full bg-red-600 text-white font-extrabold py-3.5 rounded-full text-xs uppercase tracking-wider shadow-lg">
+            <button onclick="publishVideoToFeed()" class="w-full bg-red-600 text-white font-bold py-3 rounded-full text-xs uppercase tracking-wider shadow-lg">
                 Upload Video
             </button>
         </div>
 
         <!-- 5. YOUTUBE STANDARD PLAYER MODAL -->
         <div id="playerModal" class="fixed inset-0 z-50 bg-[#0f0f0f] text-white hidden flex-col overflow-y-auto no-scrollbar">
-            <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3.5 py-3 flex items-center justify-between border-b border-zinc-800">
-                <button onclick="closePlayer()" class="text-white text-xl">
+            <div class="sticky top-0 z-30 bg-[#0f0f0f] px-3 py-2 flex items-center justify-between border-b border-zinc-800">
+                <button onclick="closePlayer()" class="text-white text-lg">
                     <i class="fa-solid fa-arrow-left"></i>
                 </button>
                 <div class="flex items-center gap-4 text-white">
-                    <button onclick="showToast('Cast')" class="text-lg"><i class="fa-solid fa-cast"></i></button>
-                    <button onclick="showToast('More')" class="text-lg"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                    <button onclick="showToast('Cast')" class="text-base"><i class="fa-solid fa-cast"></i></button>
+                    <button onclick="showToast('More')" class="text-base"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                 </div>
             </div>
 
@@ -668,11 +663,11 @@
                 <video id="mainVideoPlayer" class="w-full h-full object-contain" loop controls playsinline></video>
             </div>
 
-            <div class="p-4 space-y-3.5">
-                <h1 id="playerVideoTitle" class="text-base font-black text-white leading-snug">Muuqaal Cusub</h1>
+            <div class="p-3 space-y-3">
+                <h1 id="playerVideoTitle" class="text-base font-bold text-white leading-snug">Muuqaal Cusub</h1>
                 
-                <div class="flex items-center gap-2 text-xs text-zinc-400 font-medium">
-                    <span class="font-bold text-zinc-200">@SOMEDIA_Channel</span>
+                <div class="flex items-center gap-2 text-xs text-zinc-400">
+                    <span class="font-semibold text-zinc-300">@SOMEDIA_Channel</span>
                     <span>•</span>
                     <span>0 likes</span>
                     <span>•</span>
@@ -681,52 +676,52 @@
                     <span>Right now</span>
                 </div>
 
-                <div class="flex items-center justify-between py-2 border-t border-b border-zinc-800/80">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-base">S</div>
+                <div class="flex items-center justify-between py-1 border-t border-b border-zinc-800/80">
+                    <div class="flex items-center gap-2.5">
+                        <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-sm">S</div>
                         <div>
-                            <h3 class="text-sm font-bold text-white">SOMEDIA Channel</h3>
-                            <p class="text-[11px] text-zinc-400">1 subscriber</p>
+                            <h3 class="text-xs font-bold text-white">SOMEDIA Channel</h3>
+                            <p class="text-[10px] text-zinc-400">1 subscriber</p>
                         </div>
                     </div>
-                    <button onclick="showToast('Subscribed!')" class="bg-white text-black text-xs font-extrabold px-5 py-2 rounded-full shadow hover:bg-zinc-200">
+                    <button onclick="showToast('Subscribed!')" class="bg-white text-black text-xs font-bold px-4 py-1.5 rounded-full shadow hover:bg-zinc-200">
                         Subscribe
                     </button>
                 </div>
 
                 <div class="flex items-center gap-2 overflow-x-auto no-scrollbar py-1">
-                    <div class="flex items-center bg-zinc-800/80 rounded-full text-xs font-bold shrink-0">
-                        <button onclick="showToast('Liked!')" class="px-3.5 py-2 flex items-center gap-1.5 border-r border-zinc-700 hover:bg-zinc-700 rounded-l-full">
+                    <div class="flex items-center bg-zinc-800/80 rounded-full text-xs font-medium shrink-0">
+                        <button onclick="showToast('Liked!')" class="px-3 py-1.5 flex items-center gap-1.5 border-r border-zinc-700 hover:bg-zinc-700 rounded-l-full">
                             <i class="fa-regular fa-thumbs-up"></i>
                             <span>0</span>
                         </button>
-                        <button onclick="showToast('Disliked')" class="px-3.5 py-2 hover:bg-zinc-700 rounded-r-full">
+                        <button onclick="showToast('Disliked')" class="px-3 py-1.5 hover:bg-zinc-700 rounded-r-full">
                             <i class="fa-regular fa-thumbs-down"></i>
                         </button>
                     </div>
 
-                    <button onclick="showToast('Shared!')" class="bg-zinc-800/80 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 shrink-0 hover:bg-zinc-700">
+                    <button onclick="showToast('Shared!')" class="bg-zinc-800/80 text-xs font-medium px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shrink-0 hover:bg-zinc-700">
                         <i class="fa-solid fa-share"></i>
                         <span>Share</span>
                     </button>
 
-                    <button onclick="showToast('Remix')" class="bg-zinc-800/80 text-xs font-bold px-4 py-2 rounded-full flex items-center gap-2 shrink-0 hover:bg-zinc-700">
+                    <button onclick="showToast('Remix')" class="bg-zinc-800/80 text-xs font-medium px-3.5 py-1.5 rounded-full flex items-center gap-1.5 shrink-0 hover:bg-zinc-700">
                         <i class="fa-solid fa-arrows-rotate"></i>
                         <span>Remix</span>
                     </button>
                 </div>
 
-                <div onclick="showToast('Comments active')" class="bg-zinc-900/90 border border-zinc-800 rounded-2xl p-3.5 space-y-2 cursor-pointer">
+                <div onclick="showToast('Comments active')" class="bg-zinc-900/90 border border-zinc-800 rounded-xl p-3 space-y-2 cursor-pointer">
                     <div class="flex items-center justify-between text-xs">
-                        <span class="font-bold text-white text-sm">Comments <span class="text-zinc-400 font-normal">0</span></span>
-                        <i class="fa-solid fa-chevron-down text-zinc-500 text-xs"></i>
+                        <span class="font-bold text-white">Comments <span class="text-zinc-400 font-normal">0</span></span>
+                        <i class="fa-solid fa-chevron-down text-zinc-500 text-[10px]"></i>
                     </div>
-                    <p class="text-xs text-zinc-400 font-medium">Qor faallo cusub...</p>
+                    <p class="text-xs text-zinc-400">Qor faallo cusub...</p>
                 </div>
             </div>
 
-            <div class="p-4 border-t border-zinc-800 space-y-3 mb-8">
-                <h2 class="text-xs font-black text-zinc-400 uppercase tracking-wider">Fiidiyowga Xiga (Up Next)</h2>
+            <div class="p-3 border-t border-zinc-800 space-y-3 mb-8">
+                <h2 class="text-xs font-bold text-zinc-400 uppercase tracking-wider">Fiidiyowga Xiga (Up Next)</h2>
                 <div id="playerUpNextList" class="flex flex-col gap-3"></div>
             </div>
         </div>
@@ -736,21 +731,21 @@
             <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-150 z-40"></div>
 
             <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
-                <button onclick="closeFullCamera()" class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center active:scale-90">
-                    <i class="fa-solid fa-xmark text-xl"></i>
+                <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center active:scale-90">
+                    <i class="fa-solid fa-xmark text-lg"></i>
                 </button>
 
-                <div id="videoTimer" class="hidden text-xs font-mono bg-red-600 text-white px-3.5 py-1.5 rounded-full animate-pulse flex items-center gap-1.5">
+                <div id="videoTimer" class="hidden text-xs font-mono bg-red-600 text-white px-3 py-1 rounded-full animate-pulse flex items-center gap-1">
                     <div class="w-2 h-2 rounded-full bg-white"></div>
                     <span id="timerText">00:00</span>
                 </div>
 
-                <div class="flex items-center space-x-2.5">
-                    <button onclick="toggleFlash()" id="flashBtn" class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
-                        <i class="fa-solid fa-bolt text-lg"></i>
+                <div class="flex items-center space-x-2">
+                    <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-bolt text-base"></i>
                     </button>
-                    <button onclick="switchCameraFacing()" class="w-11 h-11 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
-                        <i class="fa-solid fa-rotate text-lg"></i>
+                    <button onclick="switchCameraFacing()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
+                        <i class="fa-solid fa-rotate text-base"></i>
                     </button>
                 </div>
             </div>
@@ -759,67 +754,67 @@
                 <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal"></video>
                 <canvas id="cameraCanvas" class="hidden"></canvas>
 
-                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2.5 rounded-full space-y-2.5 text-white z-30">
-                    <i class="fa-solid fa-plus text-xs"></i>
+                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2 rounded-full space-y-2 text-white z-30">
+                    <i class="fa-solid fa-plus text-[10px]"></i>
                     <input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)" class="h-20 w-1 bg-white/40 rounded-lg appearance-none cursor-pointer [writing-mode:vertical-lr] [direction:rtl]">
-                    <i class="fa-solid fa-minus text-xs"></i>
+                    <i class="fa-solid fa-minus text-[10px]"></i>
                 </div>
             </div>
 
-            <div class="py-2.5 px-4 bg-black/80 backdrop-blur-md text-white flex justify-center space-x-3 text-xs font-bold z-30 overflow-x-auto">
-                <button onclick="applyFilter('filter-normal')" class="px-3.5 py-1 rounded-full bg-white/20 border border-white/40">Normal</button>
-                <button onclick="applyFilter('filter-bright')" class="px-3.5 py-1 rounded-full bg-white/20">Bright</button>
-                <button onclick="applyFilter('filter-vintage')" class="px-3.5 py-1 rounded-full bg-white/20">Vintage</button>
-                <button onclick="applyFilter('filter-bw')" class="px-3.5 py-1 rounded-full bg-white/20">B&W</button>
-                <button onclick="applyFilter('filter-warm')" class="px-3.5 py-1 rounded-full bg-white/20">Warm</button>
+            <div class="py-2 px-4 bg-black/80 backdrop-blur-md text-white flex justify-center space-x-2 text-[11px] z-30 overflow-x-auto">
+                <button onclick="applyFilter('filter-normal')" class="px-3 py-1 rounded-full bg-white/20 border border-white/40">Normal</button>
+                <button onclick="applyFilter('filter-bright')" class="px-3 py-1 rounded-full bg-white/20">Bright</button>
+                <button onclick="applyFilter('filter-vintage')" class="px-3 py-1 rounded-full bg-white/20">Vintage</button>
+                <button onclick="applyFilter('filter-bw')" class="px-3 py-1 rounded-full bg-white/20">B&W</button>
+                <button onclick="applyFilter('filter-warm')" class="px-3 py-1 rounded-full bg-white/20">Warm</button>
             </div>
 
             <div class="p-6 bg-black flex flex-col items-center z-30 space-y-4">
-                <div class="flex space-x-6 text-sm font-bold text-white/50">
-                    <button id="photoModeBtn" onclick="setMode('photo')" class="text-emerald-400 font-extrabold border-b-2 border-emerald-400 pb-1">PHOTO</button>
-                    <button id="videoModeBtn" onclick="setMode('video')" class="hover:text-white pb-1 text-white/50">VIDEO</button>
+                <div class="flex space-x-6 text-xs font-bold text-white/50">
+                    <button id="photoModeBtn" onclick="setMode('photo')" class="text-emerald-400 border-b-2 border-emerald-400 pb-1">PHOTO</button>
+                    <button id="videoModeBtn" onclick="setMode('video')" class="hover:text-white pb-1">VIDEO</button>
                 </div>
 
                 <div class="w-full flex justify-between items-center px-4">
-                    <button onclick="openGalleryModal()" class="w-13 h-13 rounded-2xl bg-white/10 overflow-hidden border border-white/30 flex items-center justify-center">
+                    <button onclick="openGalleryModal()" class="w-12 h-12 rounded-xl bg-white/10 overflow-hidden border border-white/30 flex items-center justify-center">
                         <img id="galleryPreview" class="w-full h-full object-cover hidden">
-                        <i id="galleryPlaceholder" class="fa-solid fa-images text-white/70 text-lg"></i>
+                        <i id="galleryPlaceholder" class="fa-solid fa-images text-white/70"></i>
                     </button>
 
                     <button id="shutterBtn" onclick="handleShutterClick()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 active:scale-90 transition">
                         <div id="shutterInner" class="w-full h-full bg-white rounded-full"></div>
                     </button>
 
-                    <div class="w-13"></div>
+                    <div class="w-12"></div>
                 </div>
             </div>
         </div>
 
         <!-- GALLERY MODAL -->
         <div id="galleryModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col justify-between p-4">
-            <div class="flex justify-between items-center text-white pb-3.5 border-b border-white/20">
-                <h3 class="font-extrabold text-base">Gallery</h3>
-                <button onclick="closeGalleryModal()" class="text-2xl p-1"><i class="fa-solid fa-xmark"></i></button>
+            <div class="flex justify-between items-center text-white pb-3 border-b border-white/20">
+                <h3 class="font-bold text-sm">Gallery</h3>
+                <button onclick="closeGalleryModal()" class="text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
             </div>
-            <div id="galleryContainer" class="grid grid-cols-3 gap-2.5 overflow-y-auto flex-1 my-4"></div>
+            <div id="galleryContainer" class="grid grid-cols-3 gap-2 overflow-y-auto flex-1 my-4"></div>
         </div>
 
         <!-- SERVICE MODAL -->
         <div id="serviceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
             <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
-                <div class="w-14 h-14 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-2xl mx-auto mb-3.5">
+                <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
                     <i class="fa-solid fa-circle-check"></i>
                 </div>
-                <h3 class="text-lg font-black text-slate-900" id="modalTitle">Adeegga</h3>
-                <p class="text-xs text-slate-500 mt-2 font-medium" id="modalMessage">Doorashada shabakada dhawaan waa la bilaabayaa.</p>
-                <button onclick="closeModal()" class="mt-6 w-full bg-emerald-700 text-white font-extrabold py-3.5 rounded-xl text-xs active:scale-95 transition">
+                <h3 class="text-base font-bold text-slate-900" id="modalTitle">Adeegga</h3>
+                <p class="text-xs text-slate-500 mt-2" id="modalMessage">Doorashada shabakada dhawaan waa la bilaabayaa.</p>
+                <button onclick="closeModal()" class="mt-5 w-full bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs active:scale-95 transition">
                     Waan gartay
                 </button>
             </div>
         </div>
 
         <!-- TOAST NOTIFICATION -->
-        <div id="toastNotification" class="fixed top-16 left-1/2 -translate-x-1/2 bg-zinc-800 text-white px-5 py-2 rounded-full text-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300 shadow-xl font-bold">
+        <div id="toastNotification" class="fixed top-16 left-1/2 -translate-x-1/2 bg-zinc-800 text-white px-4 py-1.5 rounded-full text-xs z-50 opacity-0 pointer-events-none transition-opacity duration-300 shadow-xl">
             <span id="toastMessage">Done</span>
         </div>
 
@@ -888,11 +883,11 @@
             
             // User Message
             const userBubble = document.createElement('div');
-            userBubble.className = "flex items-end justify-end gap-2.5 ml-auto max-w-[85%]";
+            userBubble.className = "flex items-end justify-end gap-2 ml-auto max-w-[85%]";
             userBubble.innerHTML = `
-                <div class="bg-emerald-700 text-white p-3.5 rounded-2xl rounded-tr-none shadow-sm text-sm leading-relaxed font-medium">
+                <div class="bg-emerald-700 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs leading-relaxed">
                     ${msg}
-                    <span class="block text-[9px] text-emerald-200 text-right mt-1">Haddal</span>
+                    <span class="block text-[8px] text-emerald-200 text-right mt-1">Haddal</span>
                 </div>
             `;
             container.appendChild(userBubble);
@@ -902,12 +897,12 @@
             // Auto Bot Response Simulation
             setTimeout(() => {
                 const botBubble = document.createElement('div');
-                botBubble.className = "flex items-start gap-2.5 max-w-[85%]";
+                botBubble.className = "flex items-start gap-2 max-w-[85%]";
                 botBubble.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-xs shrink-0 mt-1">B</div>
-                    <div class="bg-white text-slate-800 p-3.5 rounded-2xl rounded-tl-none shadow-sm text-sm leading-relaxed border border-slate-100 font-medium">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-[10px] shrink-0 mt-1">B</div>
+                    <div class="bg-white text-slate-800 p-3 rounded-2xl rounded-tl-none shadow-sm text-xs leading-relaxed border border-slate-100">
                         Mahadsanid! Fariintaada waa nala soo gaaray. Kooxda Bayan waxay kugu soo jawaabi doonaan marka ugu soo dhow.
-                        <span class="block text-[9px] text-slate-400 text-right mt-1">Right now</span>
+                        <span class="block text-[8px] text-slate-400 text-right mt-1">Right now</span>
                     </div>
                 `;
                 container.appendChild(botBubble);
@@ -989,9 +984,9 @@
             grid.innerHTML = '';
             if(videoList.length === 0) {
                 grid.innerHTML = `
-                    <div class="flex flex-col items-center justify-center p-12 text-center text-zinc-500 gap-3">
+                    <div class="flex flex-col items-center justify-center p-10 text-center text-zinc-500 gap-3">
                         <i class="fa-solid fa-play-circle text-4xl text-zinc-700"></i>
-                        <p class="text-xs font-medium">Wali wax video ah ma soo gelinin. Taabo <strong class="text-white">+ Soo geli</strong> si aad fiidiyow cusub u soo gelisid.</p>
+                        <p class="text-xs">Wali wax video ah ma soo gelinin. Taabo <strong class="text-white">+ Soo geli</strong> si aad fiidiyow cusub u soo gelisid.</p>
                     </div>
                 `;
             } else {
@@ -1005,27 +1000,27 @@
                         : `<video src="${vid.url}#t=0.5" class="w-full h-full object-cover" preload="metadata" muted playsinline></video>`;
 
                     card.innerHTML = `
-                        <div class="w-full aspect-video bg-black relative overflow-hidden rounded-2xl shadow-md">
+                        <div class="w-full aspect-video bg-black relative overflow-hidden rounded-xl">
                             ${mediaElementHtml}
                             <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition flex items-center justify-center">
-                                <i class="fa-solid fa-play text-white/90 text-3xl group-hover:scale-110 transition"></i>
+                                <i class="fa-solid fa-play text-white/80 text-2xl group-hover:scale-110 transition"></i>
                             </div>
-                            <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-2 py-0.5 rounded-md backdrop-blur-sm">0:10</span>
+                            <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">0:10</span>
                         </div>
 
-                        <div class="pt-3 flex gap-3">
-                            <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                        <div class="pt-2.5 flex gap-2.5">
+                            <div class="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
                                 S
                             </div>
                             <div class="flex-1 pr-2">
-                                <h3 class="text-xs font-bold text-white leading-snug line-clamp-2 mb-1">${vid.title}</h3>
-                                <div class="text-[11px] text-zinc-400 flex items-center gap-1.5 flex-wrap font-medium">
+                                <h3 class="text-xs font-bold text-white leading-snug line-clamp-2 mb-0.5">${vid.title}</h3>
+                                <div class="text-[10px] text-zinc-400 flex items-center gap-1.5 flex-wrap">
                                     <span>SOMEDIA Channel</span>
                                     <span>•</span>
                                     <span>${vid.views}</span>
                                 </div>
                             </div>
-                            <button onclick="event.stopPropagation(); showToast('More options');" class="text-zinc-400 text-base h-8 w-8 flex items-center justify-center">
+                            <button onclick="event.stopPropagation(); showToast('More options');" class="text-zinc-400 text-sm h-6 w-6 flex items-center justify-center">
                                 <i class="fa-solid fa-ellipsis-vertical"></i>
                             </button>
                         </div>
@@ -1104,9 +1099,9 @@
         function updateTorchUI() {
             const icon = document.getElementById('somediaFlashIcon');
             if (somediaTorchOn) {
-                icon.className = "fa-solid fa-bolt text-xl text-yellow-400 animate-pulse";
+                icon.className = "fa-solid fa-bolt text-lg text-yellow-400 animate-pulse";
             } else {
-                icon.className = "fa-solid fa-bolt text-xl text-white";
+                icon.className = "fa-solid fa-bolt text-lg text-white";
             }
         }
 
@@ -1303,11 +1298,11 @@
 
             const otherVideos = videoList.filter((_, i) => i !== idx);
             if(otherVideos.length === 0) {
-                nextContainer.innerHTML = `<p class="text-xs text-zinc-500 font-medium">Wax fiidiyowyo kale oo aad soo gelisay ma jiraan.</p>`;
+                nextContainer.innerHTML = `<p class="text-xs text-zinc-500">Wax fiidiyowyo kale oo aad soo gelisay ma jiraan.</p>`;
             } else {
                 otherVideos.forEach((oVid) => {
                     const item = document.createElement('div');
-                    item.className = "flex gap-3.5 cursor-pointer";
+                    item.className = "flex gap-3 cursor-pointer";
                     item.onclick = () => openPlayer(videoList.indexOf(oVid));
 
                     const thumbMedia = oVid.thumbnail 
@@ -1315,14 +1310,14 @@
                         : `<video src="${oVid.url}#t=0.5" class="w-full h-full object-cover" preload="metadata" muted></video>`;
 
                     item.innerHTML = `
-                        <div class="w-32 aspect-video bg-zinc-900 rounded-xl overflow-hidden shrink-0 relative shadow">
+                        <div class="w-32 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
                             ${thumbMedia}
-                            <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1.5 rounded font-bold text-white">0:10</span>
+                            <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">0:10</span>
                         </div>
                         <div class="flex-1 space-y-1">
                             <h3 class="text-xs font-bold text-white line-clamp-2 leading-snug">${oVid.title}</h3>
-                            <p class="text-[11px] text-zinc-400 font-medium">SOMEDIA Channel</p>
-                            <p class="text-[10px] text-zinc-500 font-medium">${oVid.views}</p>
+                            <p class="text-[11px] text-zinc-400">SOMEDIA Channel</p>
+                            <p class="text-[10px] text-zinc-500">${oVid.views}</p>
                         </div>
                     `;
                     nextContainer.appendChild(item);
@@ -1399,11 +1394,11 @@
             const shutterInner = document.getElementById('shutterInner');
 
             if (mode === 'photo') {
-                photoBtn.className = "text-emerald-400 font-extrabold border-b-2 border-emerald-400 pb-1";
+                photoBtn.className = "text-emerald-400 font-bold border-b-2 border-emerald-400 pb-1";
                 videoBtn.className = "hover:text-white pb-1 text-white/50";
                 shutterInner.className = "w-full h-full bg-white rounded-full";
             } else {
-                videoBtn.className = "text-red-500 font-extrabold border-b-2 border-red-500 pb-1";
+                videoBtn.className = "text-red-500 font-bold border-b-2 border-red-500 pb-1";
                 photoBtn.className = "hover:text-white pb-1 text-white/50";
                 shutterInner.className = "w-full h-full bg-red-600 rounded-full";
             }
@@ -1483,9 +1478,9 @@
             container.innerHTML = '';
             galleryItems.forEach(item => {
                 if (item.type === 'image') {
-                    container.innerHTML += `<img src="${item.url}" class="w-full h-28 object-cover rounded-xl border border-white/20 shadow">`;
+                    container.innerHTML += `<img src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20">`;
                 } else {
-                    container.innerHTML += `<video src="${item.url}" class="w-full h-28 object-cover rounded-xl border border-white/20 shadow" controls></video>`;
+                    container.innerHTML += `<video src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20" controls></video>`;
                 }
             });
             document.getElementById('galleryModal').classList.remove('hidden');

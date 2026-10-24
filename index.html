@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="so" class="h-full">
 <head>
@@ -45,30 +44,39 @@
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
 
         .brand-logo-img {
-            height: 32px;
-            width: 32px;
+            height: 28px;
+            width: 28px;
             object-fit: cover;
-            border-radius: 8px;
+            border-radius: 6px;
             border: 1.5px solid #ffffff;
             box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
         }
 
         .upload-nav-img {
-            height: 34px;
-            width: 34px;
+            height: 24px;
+            width: 24px;
             object-fit: cover;
-            border-radius: 10px;
-            border: 2px solid #ffffff;
-            box-shadow: 0 0 10px rgba(255, 255, 255, 0.35);
+            border-radius: 6px;
+            border: 1.5px solid #ffffff;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
             transition: transform 0.2s ease;
         }
         .upload-nav-img:active { transform: scale(0.9); }
+
+        .custom-profile-nav-img {
+            height: 24px;
+            width: 24px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1.5px solid #ffffff;
+            box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+        }
     </style>
 </head>
 <body class="bg-black md:bg-slate-900 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
 
     <!-- APP CONTAINER FRAME -->
-    <div id="appContainerFrame" class="w-full h-full md:max-w-[420px] md:h-[860px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900 transition-colors duration-200">
+    <div id="appContainerFrame" class="w-full h-full md:max-w-[410px] md:h-[844px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900 transition-colors duration-200">
 
         <!-- ==========================================
              SCREEN 1: LANDING / WELCOME SCREEN
@@ -261,47 +269,50 @@
             <div id="tabSomedia" class="hidden absolute inset-0 bg-[#0f0f0f] text-white flex flex-col justify-between z-40 overflow-y-auto no-scrollbar">
                 
                 <div>
-                    <!-- SOMEDIA HEADER -->
-                    <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-4">
+                    <!-- SOMEDIA HEADER (SWAPPED LAYOUT) -->
+                    <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-3.5">
+                        <!-- Left: Search & Notification -->
                         <div class="flex items-center gap-3">
-                            <button onclick="switchTab('tabHome')" class="text-white text-lg p-1 active:scale-90">
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </button>
-                            <span class="text-xl font-black uppercase tracking-tight text-white">SOMEDIA</span>
-                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
-                        </div>
-                        <div class="flex items-center gap-4">
-                            <button onclick="showToast('Search active')" class="text-white text-lg p-1">
+                            <button onclick="showToast('Search active')" class="text-white text-base">
                                 <i class="fa-solid fa-magnifying-glass"></i>
                             </button>
-                            <button onclick="showToast('Notification active')" class="relative text-white text-lg p-1">
+                            <button onclick="showToast('Notification active')" class="relative text-white text-base">
                                 <i class="fa-regular fa-bell"></i>
-                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">9+</span>
+                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] font-bold px-1 rounded-full">9+</span>
+                            </button>
+                        </div>
+
+                        <!-- Right: SOMEDIA, Logo, and Leebka (>) -->
+                        <div class="flex items-center gap-2">
+                            <span class="text-lg font-black uppercase tracking-tight text-white">SOMEDIA</span>
+                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
+                            <button onclick="switchTab('tabHome')" class="text-white text-base ml-1">
+                                <i class="fa-solid fa-chevron-right"></i>
                             </button>
                         </div>
                     </div>
 
                     <!-- CATEGORIES BAR -->
-                    <nav class="flex items-center gap-2 p-3 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
-                        <button class="bg-zinc-800 text-white px-3.5 py-1.5 rounded-xl text-xs font-semibold shrink-0">
+                    <nav class="flex items-center gap-2 p-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">
                             <i class="fa-regular fa-compass"></i>
                         </button>
-                        <button class="bg-white text-black px-4 py-1.5 rounded-xl text-xs font-bold shrink-0">Dhammaan</button>
-                        <button class="bg-zinc-800 text-white px-4 py-1.5 rounded-xl text-xs font-semibold shrink-0">Somali Tech</button>
-                        <button class="bg-zinc-800 text-white px-4 py-1.5 rounded-xl text-xs font-semibold shrink-0">Musig</button>
-                        <button class="bg-zinc-800 text-white px-4 py-1.5 rounded-xl text-xs font-semibold shrink-0">Ciyaaro</button>
+                        <button class="bg-white text-black px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Dhammaan</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Somali Tech</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Musig</button>
+                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
                     </nav>
 
                     <!-- MAIN FEED AREA -->
-                    <main class="w-full p-4 pb-28">
-                        <div class="flex items-center justify-between mb-4">
-                            <div class="flex items-center gap-2 text-base font-bold">
+                    <main class="w-full p-3 pb-24">
+                        <div class="flex items-center justify-between mb-3">
+                            <div class="flex items-center gap-2 text-sm font-bold">
                                 <i class="fa-solid fa-circle-play text-red-600"></i>
                                 <span>Home Feed</span>
                             </div>
                             <div class="flex items-center gap-2">
-                                <span id="videoCountBadge" class="text-xs bg-zinc-800 px-3 py-1 rounded-full text-zinc-300 font-medium">0 videos</span>
-                                <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-3 py-1.5 rounded-xl font-bold flex items-center gap-1.5 shadow-md">
+                                <span id="videoCountBadge" class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">0 videos</span>
+                                <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
                                     <i class="fa-solid fa-plus"></i> Soo geli
                                 </button>
                             </div>
@@ -312,34 +323,27 @@
                     </main>
                 </div>
 
-                <!-- SOMEDIA ENHANCED LARGER BOTTOM NAVIGATION BAR -->
-                <div class="sticky bottom-0 left-0 right-0 bg-[#0f0f0f]/95 backdrop-blur-md border-t border-zinc-800 flex justify-around items-center py-3.5 px-2 z-30 shadow-2xl">
-                    <button onclick="switchTab('tabHome')" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white w-1/5 active:scale-95 transition">
-                        <i class="fa-solid fa-house text-xl"></i>
-                        <span class="text-xs font-bold tracking-tight">Home</span>
+                <!-- SOMEDIA EXCLUSIVE BOTTOM NAVIGATION BAR -->
+                <div class="sticky bottom-0 left-0 right-0 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center py-2 px-1 z-30">
+                    <button onclick="switchTab('tabHome')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-house text-sm"></i>
+                        <span class="text-[9px]">Home</span>
                     </button>
-
-                    <button onclick="showToast('Shorts active')" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white w-1/5 active:scale-95 transition">
-                        <i class="fa-solid fa-bolt text-xl"></i>
-                        <span class="text-xs font-bold tracking-tight">Shorts</span>
+                    <button onclick="showToast('Shorts active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-bolt text-sm"></i>
+                        <span class="text-[9px]">Shorts</span>
                     </button>
-
-                    <!-- CENTERED BIGGER UPLOAD BUTTON -->
-                    <button onclick="openSomediaCameraModal()" class="flex flex-col items-center justify-center w-1/5 -mt-6 active:scale-90 transition">
-                        <div class="w-14 h-14 bg-gradient-to-tr from-red-600 to-amber-500 rounded-2xl flex items-center justify-center shadow-lg border-2 border-white/20 p-1">
-                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Soo geli" class="w-full h-full object-cover rounded-xl">
-                        </div>
-                        <span class="text-xs font-black text-white tracking-wide mt-1">Soo geli</span>
+                    <button onclick="openSomediaCameraModal()" class="flex flex-col items-center justify-center w-1/5">
+                        <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Soo geli" class="upload-nav-img">
+                        <span class="text-[9px] text-white font-medium mt-0.5">Soo geli</span>
                     </button>
-
-                    <button onclick="showToast('Subscriptions active')" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white w-1/5 active:scale-95 transition">
-                        <i class="fa-solid fa-layer-group text-xl"></i>
-                        <span class="text-xs font-bold tracking-tight">Subs</span>
+                    <button onclick="showToast('Subscriptions active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <i class="fa-solid fa-layer-group text-sm"></i>
+                        <span class="text-[9px]">Subscriptions</span>
                     </button>
-
-                    <button onclick="showToast('Profile active')" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white w-1/5 active:scale-95 transition">
-                        <div class="w-6 h-6 rounded-full bg-orange-600 text-white flex items-center justify-center font-black text-xs ring-2 ring-white/30">S</div>
-                        <span class="text-xs font-bold tracking-tight">Adiga</span>
+                    <button onclick="showToast('Profile active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
+                        <div class="w-4 h-4 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[8px]">S</div>
+                        <span class="text-[9px]">Adiga</span>
                     </button>
                 </div>
 
@@ -348,91 +352,99 @@
 
             </div>
 
-            <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER WITH WAAFI & CHAT - ENHANCED SIZE) -->
-            <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-3 flex justify-around items-center shrink-0 z-10 shadow-lg">
+            <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER WITH CUSTOM PROFILE LOGO) -->
+            <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0 z-10">
                 <!-- 1. Home Button -->
-                <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold active:scale-90 transition">
-                    <i class="fa-solid fa-house text-xl mb-0.5"></i>
-                    <span class="text-xs font-extrabold">Home</span>
+                <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
+                    <i class="fa-solid fa-house text-base mb-0.5"></i>
+                    <span>Home</span>
                 </button>
 
                 <!-- 2. Floating Internet Button -->
-                <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-6 active:scale-90 transition">
-                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/MxZmZR9j/wireless-network-symbol-1284-42447.jpg" alt="Internet Logo" class="w-full h-full object-cover rounded-full mix-blend-multiply">
                     </div>
-                    <span class="text-xs font-black text-slate-900 mt-0.5">Internet</span>
+                    <span class="font-black text-slate-900 mt-0.5">Internet</span>
                 </button>
 
                 <!-- 3. Floating SOMEDIA Button -->
-                <button onclick="switchTab('tabSomedia', this)" class="nav-btn flex flex-col items-center -mt-6 active:scale-90 transition">
-                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                <button onclick="switchTab('tabSomedia', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Custom Logo" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <span class="text-xs font-black text-slate-900 mt-0.5">SOMEDIA</span>
+                    <span class="font-black text-slate-900 mt-0.5">SOMEDIA</span>
                 </button>
 
                 <!-- 4. Floating WAAFI Button -->
-                <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-6 active:scale-90 transition">
-                    <div class="w-14 h-14 bg-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/HfjgqSdg/file-00000000e88c81f4a88cb2648ccfc850.png" alt="WAAFI Custom Logo" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <span class="text-xs font-black text-slate-900 mt-0.5">WAAFI</span>
+                    <span class="font-black text-slate-900 mt-0.5">WAAFI</span>
                 </button>
 
-                <!-- 5. Floating CHAT Button (KU XIGA WAAFI) -->
-                <button onclick="openChatModal()" class="flex flex-col items-center -mt-6 active:scale-90 transition">
-                    <div class="w-14 h-14 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-xl border-4 border-[#FEFBEA] text-xl">
+                <!-- 5. Floating CHAT Button -->
+                <button onclick="openChatModal()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] text-lg">
                         <i class="fa-solid fa-comments"></i>
                     </div>
-                    <span class="text-xs font-black text-emerald-800 mt-0.5">Chat</span>
+                    <span class="font-black text-emerald-800 mt-0.5">Chat</span>
+                </button>
+
+                <!-- 6. Custom Profile Button with Uploaded Image -->
+                <button onclick="showToast('Profile active')" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
+                        <img src="https://i.ibb.co/wZ7mx0wY/1792863661584.jpg" alt="Profile Logo" class="w-full h-full object-cover rounded-full">
+                    </div>
+                    <span class="font-black text-slate-900 mt-0.5">Profile</span>
                 </button>
             </div>
         </div>
 
         <!-- ==========================================
-             CHAT MODAL / MESSAGING UI
+             NEW CHAT MODAL / MESSAGING UI
         =========================================== -->
         <div id="chatModal" class="fixed inset-0 bg-[#f0f2f5] z-50 hidden flex-col justify-between">
             <!-- CHAT HEADER -->
-            <div class="bg-emerald-800 text-white p-4 pt-5 flex items-center justify-between shadow-md">
+            <div class="bg-emerald-800 text-white p-3.5 pt-4 flex items-center justify-between shadow-md">
                 <div class="flex items-center gap-3">
-                    <button onclick="closeChatModal()" class="text-white text-xl active:scale-90 p-1">
+                    <button onclick="closeChatModal()" class="text-white text-lg active:scale-90">
                         <i class="fa-solid fa-arrow-left"></i>
                     </button>
-                    <div class="w-10 h-10 rounded-full bg-white/20 flex items-center justify-center font-bold text-base">
-                        <i class="fa-solid fa-user-gear"></i>
+                    <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-user-gear text-xs"></i>
                     </div>
                     <div>
-                        <h3 class="text-sm font-bold leading-tight">Bayan Support Chat</h3>
-                        <p class="text-[10px] text-emerald-200">Online • Live Assistant</p>
+                        <h3 class="text-xs font-bold leading-tight">Bayan Support Chat</h3>
+                        <p class="text-[9px] text-emerald-200">Online • Live Assistant</p>
                     </div>
                 </div>
-                <div class="flex items-center gap-4 text-base">
+                <div class="flex items-center gap-3 text-sm">
                     <button onclick="showToast('Call function coming soon')"><i class="fa-solid fa-phone"></i></button>
                     <button onclick="showToast('Options')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
                 </div>
             </div>
 
             <!-- CHAT MESSAGES BODY -->
-            <div id="chatMessagesContainer" class="flex-1 p-4 overflow-y-auto space-y-4 no-scrollbar">
+            <div id="chatMessagesContainer" class="flex-1 p-3 overflow-y-auto space-y-3 no-scrollbar">
                 <!-- Incoming System Welcome -->
                 <div class="flex items-start gap-2 max-w-[85%]">
-                    <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-xs shrink-0 mt-1">B</div>
-                    <div class="bg-white text-slate-800 p-3.5 rounded-2xl rounded-tl-none shadow-sm text-xs leading-relaxed border border-slate-100">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-[10px] shrink-0 mt-1">B</div>
+                    <div class="bg-white text-slate-800 p-3 rounded-2xl rounded-tl-none shadow-sm text-xs leading-relaxed border border-slate-100">
                         Kusoo dhawoow **Bayan Live Chat**! 👋🏼 Sidaad kaaga caawin karnaa adeegyada app-ka?
-                        <span class="block text-[9px] text-slate-400 text-right mt-1">12:00 PM</span>
+                        <span class="block text-[8px] text-slate-400 text-right mt-1">12:00 PM</span>
                     </div>
                 </div>
             </div>
 
             <!-- CHAT INPUT FOOTER -->
-            <div class="p-3 bg-white border-t border-slate-200 flex items-center gap-2">
-                <button onclick="showToast('Attachment selector')" class="text-slate-400 text-xl p-1">
+            <div class="p-2.5 bg-white border-t border-slate-200 flex items-center gap-2">
+                <button onclick="showToast('Attachment selector')" class="text-slate-400 text-lg p-1">
                     <i class="fa-solid fa-paperclip"></i>
                 </button>
-                <input type="text" id="chatInputMessage" placeholder="Qor fariintaada halkan..." class="flex-1 bg-slate-100 text-xs text-slate-800 px-4 py-3 rounded-full focus:outline-none focus:ring-2 focus:ring-emerald-600" onkeypress="if(event.key==='Enter') sendChatMessage()">
-                <button onclick="sendChatMessage()" class="w-10 h-10 rounded-full bg-emerald-700 text-white flex items-center justify-center text-base shadow-md active:scale-95">
+                <input type="text" id="chatInputMessage" placeholder="Qor fariintaada halkan..." class="flex-1 bg-slate-100 text-xs text-slate-800 px-3.5 py-2.5 rounded-full focus:outline-none focus:ring-1 focus:ring-emerald-600" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" class="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center text-sm shadow-md active:scale-95">
                     <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
@@ -487,10 +499,10 @@
             <div class="z-20 flex flex-col gap-5 mb-2">
                 <div class="flex items-center justify-around">
                     <button onclick="triggerDeviceGallery()" class="flex flex-col items-center gap-1">
-                        <div class="w-12 h-12 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
+                        <div class="w-11 h-11 rounded-xl bg-zinc-800 border-2 border-white/80 overflow-hidden relative flex items-center justify-center shadow-md">
                             <i class="fa-solid fa-folder-open text-white"></i>
                         </div>
-                        <span class="text-xs font-bold text-white">Add</span>
+                        <span class="text-[11px] font-bold text-white">Add</span>
                     </button>
 
                     <button id="somediaRecordBtn" onclick="toggleSomediaRecording()" class="w-16 h-16 rounded-full border-4 border-white flex items-center justify-center bg-transparent active:scale-95 transition-transform">
@@ -498,10 +510,10 @@
                     </button>
 
                     <button onclick="showToast('Drafts waa eber')" class="flex flex-col items-center gap-1">
-                        <div class="w-12 h-12 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-lg">
+                        <div class="w-11 h-11 rounded-xl bg-zinc-900 border border-zinc-700 flex items-center justify-center text-white text-lg">
                             <i class="fa-regular fa-file-lines"></i>
                         </div>
-                        <span class="text-xs font-bold text-white">Drafts</span>
+                        <span class="text-[11px] font-bold text-white">Drafts</span>
                     </button>
                 </div>
 
@@ -871,9 +883,9 @@
             const userBubble = document.createElement('div');
             userBubble.className = "flex items-end justify-end gap-2 ml-auto max-w-[85%]";
             userBubble.innerHTML = `
-                <div class="bg-emerald-700 text-white p-3.5 rounded-2xl rounded-tr-none shadow-sm text-xs leading-relaxed">
+                <div class="bg-emerald-700 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs leading-relaxed">
                     ${msg}
-                    <span class="block text-[9px] text-emerald-200 text-right mt-1">Haddal</span>
+                    <span class="block text-[8px] text-emerald-200 text-right mt-1">Haddal</span>
                 </div>
             `;
             container.appendChild(userBubble);
@@ -885,10 +897,10 @@
                 const botBubble = document.createElement('div');
                 botBubble.className = "flex items-start gap-2 max-w-[85%]";
                 botBubble.innerHTML = `
-                    <div class="w-8 h-8 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-xs shrink-0 mt-1">B</div>
-                    <div class="bg-white text-slate-800 p-3.5 rounded-2xl rounded-tl-none shadow-sm text-xs leading-relaxed border border-slate-100">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-[10px] shrink-0 mt-1">B</div>
+                    <div class="bg-white text-slate-800 p-3 rounded-2xl rounded-tl-none shadow-sm text-xs leading-relaxed border border-slate-100">
                         Mahadsanid! Fariintaada waa nala soo gaaray. Kooxda Bayan waxay kugu soo jawaabi doonaan marka ugu soo dhow.
-                        <span class="block text-[9px] text-slate-400 text-right mt-1">Right now</span>
+                        <span class="block text-[8px] text-slate-400 text-right mt-1">Right now</span>
                     </div>
                 `;
                 container.appendChild(botBubble);
@@ -1505,4 +1517,3 @@
     </script>
 </body>
 </html>
-```

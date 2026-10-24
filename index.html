@@ -8,7 +8,7 @@
     <!-- PWA / Native App Mobile Meta Tags -->
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#047857">
+    <meta name="theme-color" content="#0f0f0f">
 
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
@@ -64,10 +64,10 @@
         .upload-nav-img:active { transform: scale(0.9); }
     </style>
 </head>
-<body class="bg-slate-900 md:bg-slate-800 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
+<body class="bg-black md:bg-slate-900 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
 
     <!-- APP CONTAINER FRAME -->
-    <div class="w-full h-full md:max-w-[410px] md:h-[844px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900">
+    <div id="appContainerFrame" class="w-full h-full md:max-w-[410px] md:h-[844px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900 transition-colors duration-300">
 
         <!-- ==========================================
              SCREEN 1: LANDING / WELCOME SCREEN
@@ -107,7 +107,7 @@
         =========================================== -->
         <div id="mainDashboard" class="hidden w-full h-full flex-col justify-between bg-[#FEFBEA]">
             
-            <!-- Header Bar (QARIYAA MARKA SOMEDIA LA OPEN GREEYO) -->
+            <!-- Header Bar -->
             <div id="mainDashboardHeader" class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0">
                 <div class="flex items-center space-x-3">
                     <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shadow-md text-sm">
@@ -254,62 +254,64 @@
                     </div>
                 </div>
 
-                <!-- TAB 3: SOMEDIA PAGE (PAGGA SOMEDIA OO MADOW OO XOR AH) -->
-                <div id="tabSomedia" class="tab-content hidden -m-4 bg-[#0f0f0f] text-white min-h-full flex flex-col justify-between">
+                <!-- TAB 3: SOMEDIA PAGE (PURE DARK BLACK BACKGROUND & FULL HEIGHT) -->
+                <div id="tabSomedia" class="tab-content hidden absolute inset-0 bg-[#0f0f0f] text-white flex flex-col justify-between z-10 overflow-y-auto no-scrollbar">
                     
-                    <!-- SOMEDIA HEADER -->
-                    <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-3.5">
-                        <div class="flex items-center gap-2">
-                            <button onclick="switchTab('tabHome')" class="text-white text-base">
-                                <i class="fa-solid fa-chevron-left"></i>
-                            </button>
-                            <span class="text-lg font-black uppercase tracking-tight text-white">SOMEDIA</span>
-                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
-                        </div>
-                        <div class="flex items-center gap-3">
-                            <button onclick="showToast('Search active')" class="text-white text-base">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </button>
-                            <button onclick="showToast('Notification active')" class="relative text-white text-base">
-                                <i class="fa-regular fa-bell"></i>
-                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] font-bold px-1 rounded-full">9+</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- CATEGORIES BAR -->
-                    <nav class="flex items-center gap-2 p-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
-                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">
-                            <i class="fa-regular fa-compass"></i>
-                        </button>
-                        <button class="bg-white text-black px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Dhammaan</button>
-                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Somali Tech</button>
-                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Musig</button>
-                        <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
-                    </nav>
-
-                    <!-- MAIN FEED AREA -->
-                    <main class="w-full flex-1 p-3 pb-16">
-                        <div class="flex items-center justify-between mb-3">
-                            <div class="flex items-center gap-2 text-sm font-bold">
-                                <i class="fa-solid fa-circle-play text-red-600"></i>
-                                <span>Home Feed</span>
-                            </div>
+                    <div>
+                        <!-- SOMEDIA HEADER -->
+                        <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-3.5">
                             <div class="flex items-center gap-2">
-                                <span id="videoCountBadge" class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">0 videos</span>
-                                <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
-                                    <i class="fa-solid fa-plus"></i> Soo geli
+                                <button onclick="switchTab('tabHome')" class="text-white text-base">
+                                    <i class="fa-solid fa-chevron-left"></i>
+                                </button>
+                                <span class="text-lg font-black uppercase tracking-tight text-white">SOMEDIA</span>
+                                <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Logo" class="brand-logo-img">
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <button onclick="showToast('Search active')" class="text-white text-base">
+                                    <i class="fa-solid fa-magnifying-glass"></i>
+                                </button>
+                                <button onclick="showToast('Notification active')" class="relative text-white text-base">
+                                    <i class="fa-regular fa-bell"></i>
+                                    <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] font-bold px-1 rounded-full">9+</span>
                                 </button>
                             </div>
                         </div>
 
-                        <!-- FEED GRID -->
-                        <div id="shortsGrid" class="flex flex-col gap-4"></div>
-                    </main>
+                        <!-- CATEGORIES BAR -->
+                        <nav class="flex items-center gap-2 p-2.5 overflow-x-auto no-scrollbar border-b border-zinc-800/60 bg-[#0f0f0f]">
+                            <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">
+                                <i class="fa-regular fa-compass"></i>
+                            </button>
+                            <button class="bg-white text-black px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Dhammaan</button>
+                            <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Somali Tech</button>
+                            <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Musig</button>
+                            <button class="bg-zinc-800 text-white px-3 py-1 rounded-lg text-xs font-semibold shrink-0">Ciyaaro</button>
+                        </nav>
+
+                        <!-- MAIN FEED AREA -->
+                        <main class="w-full p-3 pb-24">
+                            <div class="flex items-center justify-between mb-3">
+                                <div class="flex items-center gap-2 text-sm font-bold">
+                                    <i class="fa-solid fa-circle-play text-red-600"></i>
+                                    <span>Home Feed</span>
+                                </div>
+                                <div class="flex items-center gap-2">
+                                    <span id="videoCountBadge" class="text-[10px] bg-zinc-800 px-2 py-0.5 rounded-full text-zinc-400">0 videos</span>
+                                    <button onclick="openSomediaCameraModal()" class="text-xs bg-red-600 hover:bg-red-700 text-white px-2.5 py-1 rounded-lg font-semibold flex items-center gap-1">
+                                        <i class="fa-solid fa-plus"></i> Soo geli
+                                    </button>
+                                </div>
+                            </div>
+
+                            <!-- FEED GRID -->
+                            <div id="shortsGrid" class="flex flex-col gap-4"></div>
+                        </main>
+                    </div>
 
                     <!-- SOMEDIA EXCLUSIVE BOTTOM NAVIGATION BAR -->
-                    <div class="sticky bottom-0 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center py-2 px-1 z-20">
-                        <button onclick="showToast('SOMEDIA Home')" class="flex flex-col items-center gap-0.5 text-white w-1/5">
+                    <div class="fixed md:absolute bottom-0 left-0 right-0 bg-[#0f0f0f] border-t border-zinc-800 flex justify-around items-center py-2 px-1 z-30">
+                        <button onclick="switchTab('tabHome')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
                             <i class="fa-solid fa-house text-sm"></i>
                             <span class="text-[9px]">Home</span>
                         </button>
@@ -338,7 +340,7 @@
 
             </div>
 
-            <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER - WAA LA QARIYAA MARKA SOMEDIA LA OPEN GREEYO) -->
+            <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER) -->
             <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
                 <!-- 1. Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
@@ -642,13 +644,8 @@
             </div>
         </div>
 
-        <!-- ==========================================
-             ORIGINAL BAYAN APP MODALS
-        =========================================== -->
-
         <!-- CAMERA SCREEN -->
         <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
-            
             <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-150 z-40"></div>
 
             <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
@@ -743,25 +740,23 @@
 
     <!-- JavaScript Mobile Logic -->
     <script>
-        // BAYAN CAMERA VARIABLES
         let currentStream = null;
         let facingMode = "environment";
         let zoomLevel = 1;
-        let flashOn = false;
+        let flashof = true;
         let currentMode = "photo";
-        let isRecording = false;
+        let isRecording = true;
         let mediaRecorder = null;
         let recordedChunks = [];
         let timerInterval = null;
         let seconds = 0;
         let galleryItems = [];
 
-        // SOMEDIA PLATFORM VARIABLES
         let videoList = [];
         let mediaStream = null;
         let somediaMediaRecorder = null;
         let somediaRecordedChunks = [];
-        let isSomediaRecording = false;
+        let isSomediaRecording = true;
         let selectedVideoUrl = '';
         let selectedThumbnail = '';
         let somediaCameraFacing = 'user';
@@ -783,7 +778,6 @@
             renderSomediaGrid();
         });
 
-        // Direct App Intent Launchers
         function openWaafiApp() {
             window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
         }
@@ -810,17 +804,21 @@
 
         function switchTab(tabId, btn) {
             document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
+            const targetTab = document.getElementById(tabId);
+            targetTab.classList.remove('hidden');
             
             const header = document.getElementById('mainDashboardHeader');
             const bayanFooter = document.getElementById('bayanMainFooter');
+            const appContainer = document.getElementById('appContainerFrame');
 
             if (tabId === 'tabSomedia') {
                 if(header) header.classList.add('hidden');
                 if(bayanFooter) bayanFooter.classList.add('hidden');
+                if(appContainer) appContainer.classList.add('bg-[#0f0f0f]');
             } else {
                 if(header) header.classList.remove('hidden');
                 if(bayanFooter) bayanFooter.classList.remove('hidden');
+                if(appContainer) appContainer.classList.remove('bg-[#0f0f0f]');
             }
 
             document.querySelectorAll('.nav-btn').forEach(b => {
@@ -832,8 +830,6 @@
                 btn.classList.add('text-indigo-950', 'font-bold');
             }
         }
-
-        // ================= SOMEDIA LOGIC =================
 
         function renderSomediaGrid() {
             const grid = document.getElementById('shortsGrid');
@@ -1138,8 +1134,6 @@
             modal.classList.add('hidden');
             modal.classList.remove('flex');
         }
-
-        // ================= BAYAN APP CAMERA LOGIC =================
 
         async function openFullCamera() {
             document.getElementById('cameraScreen').classList.remove('hidden');

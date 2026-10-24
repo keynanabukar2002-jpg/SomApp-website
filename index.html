@@ -1,551 +1,130 @@
 <!DOCTYPE html>
-<html lang="so" class="h-full">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Bayan Mobile App</title>
-    
-    <!-- PWA / Native App Mobile Meta Tags -->
-    <meta name="apple-mobile-web-app-capable" content="yes">
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="theme-color" content="#047857">
-
-    <!-- Tailwind CSS CDN -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YouTube Shorts Camera UI</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Google Fonts Inter -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-    
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            -webkit-tap-highlight-color: transparent;
-            user-select: none;
-            -webkit-user-select: none;
-        }
-
-        /* Camera Filters */
-        .filter-normal { filter: none; }
-        .filter-bright { filter: brightness(1.25) contrast(1.1) saturate(1.2); }
-        .filter-vintage { filter: sepia(0.5) contrast(1.2) brightness(0.9); }
-        .filter-bw { filter: grayscale(1); }
-        .filter-warm { filter: sepia(0.3) saturate(1.4) hue-rotate(-10deg); }
-
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 0px;
-            background: transparent;
-        }
+        body { background-color: #0f0f0f; color: #ffffff; user-select: none; }
+        .glass-pill { background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.15); }
+        .glass-dark { background: rgba(0, 0, 0, 0.45); backdrop-filter: blur(16px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .glass-icon-btn { background: rgba(0, 0, 0, 0.35); backdrop-filter: blur(8px); }
     </style>
 </head>
-<body class="bg-slate-900 md:bg-slate-800 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
+<body class="h-screen w-screen flex items-center justify-center overflow-hidden font-sans bg-neutral-950">
 
-    <!-- APP CONTAINER FRAME -->
-    <div class="w-full h-full md:max-w-[410px] md:h-[844px] bg-[#FEFBEA] md:rounded-[44px] md:shadow-2xl overflow-hidden flex flex-col relative border-0 md:border-[8px] md:border-slate-900">
+    <div class="relative w-full h-full sm:max-w-[410px] sm:h-[840px] sm:rounded-[44px] overflow-hidden bg-black shadow-2xl flex flex-col justify-between">
 
-        <!-- ==========================================
-             SCREEN 1: LANDING / WELCOME SCREEN
-        =========================================== -->
-        <div id="landingScreen" class="w-full h-full flex flex-col justify-between p-6 bg-gradient-to-b from-[#FEFBEA] via-[#FFF9E6] to-[#F7F2D5]">
-            <div class="flex justify-between items-center pt-2">
-                <div class="text-3xl font-black tracking-wider text-slate-900">
-                    BAY<span class="text-amber-600">AN</span>
-                </div>
-                <button onclick="toggleTheme()" class="w-10 h-10 bg-amber-100/80 rounded-2xl flex items-center justify-center text-amber-800 shadow-sm active:scale-95 transition">
-                    <i class="fa-solid fa-moon text-lg"></i>
+        <!-- CAMERA VIEW -->
+        <div id="cameraViewfinder" class="absolute inset-0 z-0 bg-neutral-900">
+            <video id="webcamVideo" class="absolute inset-0 w-full h-full object-cover" autoplay playsinline muted></video>
+            <div id="fallbackBg" class="absolute inset-0 w-full h-full bg-cover bg-center hidden" style="background-image: url('https://images.unsplash.com/photo-1534447677768-be436bb09401?q=80&w=1000&auto=format&fit=crop');"></div>
+        </div>
+
+        <!-- TOP BAR -->
+        <div class="relative z-20 w-full pt-4 px-3 flex flex-col gap-2">
+            <div class="flex items-center justify-between px-2">
+                <button class="w-10 h-10 rounded-full flex items-center justify-center glass-icon-btn text-white"><i class="fa-solid fa-xmark text-xl"></i></button>
+                <button class="flex items-center gap-2 px-4 py-2 rounded-full glass-pill text-white text-xs font-semibold">
+                    <i class="fa-solid fa-music text-pink-400"></i> Add sound
                 </button>
-            </div>
-
-            <div class="my-auto text-center px-2">               
-                <span class="bg-emerald-100 text-emerald-800 text-[11px] font-extrabold px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-widest">
-                    Welcome to Bayan App
-                </span>
-                <h1 class="text-3xl font-black text-slate-900 mt-4 mb-3 leading-snug">
-                    Kusoo Dhawoow Bayan-app
-                </h1>
-                <p class="text-xs text-slate-600 leading-relaxed max-w-xs mx-auto font-medium">
-                    App-ku wuxuu hal meel ku mideynayaa Qur'aanka, mobile data, camera, calculator, PDF iyo shopping.
-                </p>
-            </div>
-
-            <div class="pb-4 space-y-3">
-                <button onclick="switchScreen('mainDashboard')" class="w-full bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-bold py-4 rounded-2xl shadow-xl transition flex items-center justify-center gap-2 text-sm">
-                    <span>Get Started</span>
-                    <i class="fa-solid fa-arrow-right text-xs"></i>
+                <button class="w-10 h-10 rounded-full flex items-center justify-center bg-gradient-to-tr from-purple-600 to-amber-400 p-[1.5px]">
+                    <div class="w-full h-full bg-black/40 rounded-full flex items-center justify-center"><i class="fa-solid fa-wand-magic-sparkles text-amber-300 text-sm"></i></div>
                 </button>
             </div>
         </div>
 
-        <!-- ==========================================
-             SCREEN 2: MAIN DASHBOARD FRAME
-        =========================================== -->
-        <div id="mainDashboard" class="hidden w-full h-full flex-col justify-between bg-[#FEFBEA]">
-            
-            <!-- Header Bar -->
-            <div class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0">
-                <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shadow-md text-sm">
-                        B
-                    </div>
-                    <div>
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Good Morning</p>
-                        <h2 class="text-sm font-extrabold text-slate-900 leading-tight">Bayan User</h2>
-                    </div>
-                </div>
-                <button onclick="switchScreen('landingScreen')" title="Ka bax" class="w-9 h-9 rounded-xl bg-slate-100 hover:bg-red-50 hover:text-red-600 text-slate-500 flex items-center justify-center transition active:scale-95">
-                    <i class="fa-solid fa-right-from-bracket text-xs"></i>
-                </button>
-            </div>
-
-            <!-- Scrollable Content Area -->
-            <div class="flex-1 overflow-y-auto p-4 space-y-5">
-                
-                <!-- TAB 1: HOME -->
-                <div id="tabHome" class="tab-content space-y-5">
-                    
-                    <!-- GIF Display Section (Cabirka 110px & Aspect Ratio 3.05:1) -->
-                    <div class="rounded-2xl overflow-hidden shadow-md border-2 border-white aspect-[3.05/1] h-[110px] w-full bg-emerald-900/10 flex items-center justify-center relative mx-auto">
-                        <img id="mainBayanGif" src="https://i.ibb.co/xSRbk5PT/GIF-20261019-220935-911.gif" alt="Bayan Featured Clip" class="w-full h-full object-cover">
-                    </div>
-
-                    <div>
-                        <h3 class="text-xs font-black text-slate-400 uppercase tracking-wider mb-3 px-1">Uadeeg shabakadaha</h3>
-                        <div class="grid grid-cols-3 gap-3">
-                            <button onclick="selectService('Hormuud', 'Shabakada Hormuud Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
-                                <div class="w-11 h-11 rounded-2xl border-2 border-emerald-600 flex items-center justify-center text-emerald-600 font-black text-xl mb-1 bg-emerald-50">H</div>
-                                <span class="text-xs font-bold text-slate-800">Hormuud</span>
-                            </button>
-
-                            <button onclick="selectService('Somnet', 'Shabakada Somnet Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
-                                <div class="text-sky-600 mb-1"><i class="fa-solid fa-wifi text-xl"></i></div>
-                                <span class="text-[9px] font-bold text-sky-800 uppercase leading-none mt-1">SOMNET</span>
-                                <span class="text-xs font-bold text-slate-800">Somnet</span>
-                            </button>
-
-                            <button onclick="selectService('Somtel', 'Shabakada Somtel')" class="bg-[#FFDC00] p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
-                                <div class="text-slate-900 font-black text-sm mb-1 tracking-wider">somtel</div>
-                                <span class="text-xs font-bold text-slate-900">Somtel</span>
-                            </button>
-
-                            <button onclick="selectService('SomLink', 'Shabakada SomLink Telecom')" class="bg-white p-3 rounded-2xl shadow-sm border border-slate-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
-                                <div class="text-purple-700 font-black text-sm">SomLink</div>
-                                <span class="text-[9px] text-slate-400 font-semibold mb-1">telecom</span>
-                                <span class="text-xs font-bold text-slate-800">SomLink</span>
-                            </button>
-
-                            <button onclick="selectService('Amtel', 'Shabakada Amtel')" class="bg-red-700 text-white p-3 rounded-2xl shadow-sm flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
-                                <div class="font-black text-sm italic">Amtel</div>
-                                <span class="text-xs font-bold text-white mt-1">Amtel</span>
-                            </button>
-
-                            <button onclick="selectService('Rukumo', 'Adeegga Rukumada')" class="bg-red-50 p-3 rounded-2xl shadow-sm border border-red-100 flex flex-col items-center justify-center text-center h-28 hover:shadow-md active:scale-95 transition">
-                                <div class="w-9 h-9 rounded-xl bg-red-100 text-red-500 flex items-center justify-center text-base mb-1"><i class="fa-solid fa-ban"></i></div>
-                                <span class="text-xs font-bold text-slate-800">Rukumo</span>
-                            </button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- TAB 2: MACAASH -->
-                <div id="tabMacaash" class="tab-content hidden space-y-4">
-                    <h3 class="text-sm font-bold text-slate-900">Dhibcahaaga & Abaal-marinta</h3>
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/60 shadow-sm text-center">
-                        <p class="text-xs text-slate-500">Dhibcaha Hada Kuu Dhiman</p>
-                        <h1 class="text-3xl font-black text-emerald-600 my-2">500 PTS</h1>
-                        <p class="text-[11px] text-slate-400">Ku beddello Data ama Dhaqan lacageed</p>
-                    </div>
-                </div>
-
-                <!-- TAB 3: ORDERS -->
-                <div id="tabOrders" class="tab-content hidden space-y-3">
-                    <h3 class="text-sm font-bold text-slate-900">Taariikhda Dalabyada</h3>
-                    <div class="bg-white p-4 rounded-2xl border border-slate-200/60 flex justify-between items-center shadow-sm">
-                        <div class="flex items-center space-x-3">
-                            <div class="w-8 h-8 rounded-full bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs font-bold"><i class="fa-solid fa-check"></i></div>
-                            <div>
-                                <p class="text-xs font-bold text-slate-800">Hormuud $1 Data</p>
-                                <p class="text-[10px] text-slate-400">2026 • Successful</p>
-                            </div>
-                        </div>
-                        <span class="text-xs font-extrabold text-slate-900">$1.00</span>
-                    </div>
-                </div>
-
-                <!-- TAB 4: PROFILE -->
-                <div id="tabProfile" class="tab-content hidden space-y-4">
-                    <div class="bg-white p-5 rounded-2xl border border-slate-200/60 text-center shadow-sm">
-                        <div class="w-16 h-16 rounded-full bg-emerald-700 text-white text-2xl font-black flex items-center justify-center mx-auto mb-2">B</div>
-                        <h3 class="text-base font-extrabold text-slate-900">Bayan User</h3>
-                        <p class="text-xs text-slate-500">user@bayan.app</p>
-                    </div>
-                </div>
-
-            </div>
-
-            <!-- Bottom Mobile Navigation Bar -->
-            <div class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0">
-                <!-- Home Button -->
-                <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
-                    <i class="fa-solid fa-house text-base mb-0.5"></i>
-                    <span>Home</span>
-                </button>
-
-                <!-- Camera Button -->
-                <button onclick="openFullCamera()" class="nav-btn flex flex-col items-center text-emerald-700 hover:text-emerald-800 active:scale-95 transition">
-                    <div class="w-7 h-7 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm mb-0.5 shadow-sm">
-                        <i class="fa-solid fa-camera"></i>
-                    </div>
-                    <span class="font-extrabold text-slate-700">Camera</span>
-                </button>
-
-                <!-- Floating Center WAAFI Button (Oo lagu beddelay logo-gaaga cusub) -->
-                <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
-                    <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
-                        <img src="https://i.ibb.co/HfjgqSdg/file-00000000e88c81f4a88cb2648ccfc850.png" alt="WAAFI Custom Logo" class="w-full h-full object-cover rounded-full">
-                    </div>
-                    <span class="font-black text-slate-900 mt-0.5">WAAFI</span>
-                </button>
-
-                <!-- TikTok Launch Button -->
-                <button onclick="openTikTokApp()" class="nav-btn flex flex-col items-center text-slate-900 hover:text-black active:scale-95 transition">
-                    <div class="w-7 h-7 rounded-xl bg-black text-white flex items-center justify-center text-sm mb-0.5 shadow-sm">
-                        <i class="fa-brands fa-tiktok"></i>
-                    </div>
-                    <span class="font-extrabold text-slate-900">TikTok</span>
-                </button>
-
-                <!-- Facebook Launch Button -->
-                <button onclick="openFacebookApp()" class="nav-btn flex flex-col items-center text-blue-600 hover:text-blue-700 active:scale-95 transition">
-                    <div class="w-7 h-7 rounded-xl bg-[#1877F2] text-white flex items-center justify-center text-sm mb-0.5 shadow-sm">
-                        <i class="fa-brands fa-facebook-f"></i>
-                    </div>
-                    <span class="font-extrabold text-blue-600">Facebook</span>
-                </button>
-            </div>
-        </div>
-
-        <!-- ==========================================
-             SCREEN 3: CAMERA SCREEN
-        =========================================== -->
-        <div id="cameraScreen" class="fixed inset-0 bg-black z-50 hidden flex-col justify-between overflow-hidden">
-            
-            <div id="flashOverlay" class="absolute inset-0 bg-white pointer-events-none opacity-0 transition-opacity duration-150 z-40"></div>
-
-            <!-- Camera Header -->
-            <div class="p-4 flex justify-between items-center text-white z-30 bg-gradient-to-b from-black/80 to-transparent">
-                <button onclick="closeFullCamera()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center active:scale-90">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-
-                <div id="videoTimer" class="hidden text-xs font-mono bg-red-600 text-white px-3 py-1 rounded-full animate-pulse flex items-center gap-1">
-                    <div class="w-2 h-2 rounded-full bg-white"></div>
-                    <span id="timerText">00:00</span>
-                </div>
-
-                <div class="flex items-center space-x-2">
-                    <button onclick="toggleFlash()" id="flashBtn" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
-                        <i class="fa-solid fa-bolt text-base"></i>
-                    </button>
-                    <button onclick="switchCameraFacing()" class="w-10 h-10 bg-white/20 backdrop-blur-md rounded-full flex items-center justify-center">
-                        <i class="fa-solid fa-rotate text-base"></i>
-                    </button>
-                </div>
-            </div>
-
-            <!-- Camera Viewfinder -->
-            <div class="relative flex-1 flex items-center justify-center overflow-hidden bg-black">
-                <video id="cameraVideo" autoplay playsinline class="w-full h-full object-cover filter-normal"></video>
-                <canvas id="cameraCanvas" class="hidden"></canvas>
-
-                <div class="absolute right-3 top-1/2 -translate-y-1/2 flex flex-col items-center bg-black/40 backdrop-blur-md p-2 rounded-full space-y-2 text-white z-30">
-                    <i class="fa-solid fa-plus text-[10px]"></i>
-                    <input type="range" id="zoomRange" min="1" max="3" step="0.1" value="1" oninput="applyZoom(this.value)" class="h-20 w-1 bg-white/40 rounded-lg appearance-none cursor-pointer [writing-mode:vertical-lr] [direction:rtl]">
-                    <i class="fa-solid fa-minus text-[10px]"></i>
-                </div>
-            </div>
-
-            <!-- Camera Filters -->
-            <div class="py-2 px-4 bg-black/80 backdrop-blur-md text-white flex justify-center space-x-2 text-[11px] z-30 overflow-x-auto">
-                <button onclick="applyFilter('filter-normal')" class="px-3 py-1 rounded-full bg-white/20 border border-white/40">Normal</button>
-                <button onclick="applyFilter('filter-bright')" class="px-3 py-1 rounded-full bg-white/20">Bright</button>
-                <button onclick="applyFilter('filter-vintage')" class="px-3 py-1 rounded-full bg-white/20">Vintage</button>
-                <button onclick="applyFilter('filter-bw')" class="px-3 py-1 rounded-full bg-white/20">B&W</button>
-                <button onclick="applyFilter('filter-warm')" class="px-3 py-1 rounded-full bg-white/20">Warm</button>
-            </div>
-
-            <!-- Shutter Controls -->
-            <div class="p-6 bg-black flex flex-col items-center z-30 space-y-4">
-                <div class="flex space-x-6 text-xs font-bold text-white/50">
-                    <button id="photoModeBtn" onclick="setMode('photo')" class="text-emerald-400 border-b-2 border-emerald-400 pb-1">PHOTO</button>
-                    <button id="videoModeBtn" onclick="setMode('video')" class="hover:text-white pb-1">VIDEO</button>
-                </div>
-
-                <div class="w-full flex justify-between items-center px-4">
-                    <button onclick="openGalleryModal()" class="w-12 h-12 rounded-xl bg-white/10 overflow-hidden border border-white/30 flex items-center justify-center">
-                        <img id="galleryPreview" class="w-full h-full object-cover hidden">
-                        <i id="galleryPlaceholder" class="fa-solid fa-images text-white/70"></i>
-                    </button>
-
-                    <button id="shutterBtn" onclick="handleShutterClick()" class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center p-1 active:scale-90 transition">
-                        <div id="shutterInner" class="w-full h-full bg-white rounded-full"></div>
-                    </button>
-
-                    <div class="w-12"></div>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- Modal: Gallery -->
-    <div id="galleryModal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 hidden flex-col justify-between p-4">
-        <div class="flex justify-between items-center text-white pb-3 border-b border-white/20">
-            <h3 class="font-bold text-sm">Gallery</h3>
-            <button onclick="closeGalleryModal()" class="text-xl p-1"><i class="fa-solid fa-xmark"></i></button>
-        </div>
-        <div id="galleryContainer" class="grid grid-cols-3 gap-2 overflow-y-auto flex-1 my-4"></div>
-    </div>
-
-    <!-- Modal: Services -->
-    <div id="serviceModal" class="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden opacity-0 transition-opacity">
-        <div class="bg-white rounded-3xl p-6 w-full max-w-xs text-center shadow-2xl">
-            <div class="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center text-xl mx-auto mb-3">
-                <i class="fa-solid fa-circle-check"></i>
-            </div>
-            <h3 class="text-base font-bold text-slate-900" id="modalTitle">Adeegga</h3>
-            <p class="text-xs text-slate-500 mt-2" id="modalMessage">Doorashada shabakada dhawaan waa la bilaabayaa.</p>
-            <button onclick="closeModal()" class="mt-5 w-full bg-emerald-700 text-white font-bold py-3 rounded-xl text-xs active:scale-95 transition">
-                Waan gartay
+        <!-- RIGHT MENU -->
+        <div class="absolute right-3 top-20 z-20 flex flex-col gap-4 items-center glass-dark py-3 px-2 rounded-full shadow-2xl">
+            <button id="flipCamBtn" class="flex flex-col items-center gap-1 active:scale-90 transition-transform">
+                <div class="w-9 h-9 rounded-full flex items-center justify-center"><i class="fa-solid fa-rotate text-lg"></i></div>
+                <span class="text-[10px] font-medium text-white">Flip</span>
             </button>
         </div>
+
+        <!-- BOTTOM CONTROLS -->
+        <div class="relative z-20 w-full pb-6 px-4 flex flex-col gap-4 bg-gradient-to-t from-black/90 via-black/40 to-transparent pt-12">
+            <div class="flex items-center justify-between px-6">
+                <div class="w-12 h-12 rounded-xl overflow-hidden border-2 border-white/80 p-0.5 glass-icon-btn">
+                    <img src="https://images.unsplash.com/photo-1518791841217-8f162f1e1131?q=80&w=200&auto=format&fit=crop" class="w-full h-full object-cover rounded-lg">
+                </div>
+
+                <div class="w-20 h-20 rounded-full border-4 border-white flex items-center justify-center">
+                    <button class="w-16 h-16 rounded-full bg-red-600 active:scale-90 transition-all"></button>
+                </div>
+
+                <div class="w-12 h-12 rounded-xl flex items-center justify-center glass-icon-btn border border-white/20 text-white">
+                    <i class="fa-solid fa-bolt-slash text-lg"></i>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOAST -->
+        <div id="toast" class="absolute top-16 left-1/2 -translate-x-1/2 z-50 bg-neutral-800/90 text-white text-xs px-4 py-2 rounded-full opacity-0 pointer-events-none transition-all duration-300">
+            <span id="toastMsg">Message</span>
+        </div>
+
     </div>
 
-    <!-- JavaScript Mobile Logic -->
     <script>
-        let currentStream = null;
-        let facingMode = "environment";
-        let zoomLevel = 1;
-        let flashOn = false;
-        let currentMode = "photo";
-        let isRecording = false;
-        let mediaRecorder = null;
-        let recordedChunks = [];
-        let timerInterval = null;
-        let seconds = 0;
-        let galleryItems = [];
+        document.addEventListener('DOMContentLoaded', () => {
+            let currentMode = 'user'; // 'user' ama 'environment'
+            let stream = null;
 
-        // Direct Launch for WAAFI App
-        function openWaafiApp() {
-            window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
-        }
+            const video = document.getElementById('webcamVideo');
+            const fallback = document.getElementById('fallbackBg');
+            const flipBtn = document.getElementById('flipCamBtn');
 
-        // Direct Android Intent for TikTok
-        function openTikTokApp() {
-            window.location.href = "intent://www.tiktok.com/#Intent;scheme=https;package=com.zhiliaoapp.musically;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.zhiliaoapp.musically;end";
-        }
-
-        // Direct App Scheme for Facebook
-        function openFacebookApp() {
-            window.location.href = "intent://#Intent;scheme=fb;package=com.facebook.katana;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.facebook.katana;end";
-        }
-
-        function switchScreen(screenId) {
-            if(screenId === 'mainDashboard') {
-                document.getElementById('landingScreen').classList.add('hidden');
-                document.getElementById('mainDashboard').classList.remove('hidden');
-                document.getElementById('mainDashboard').classList.add('flex');
-            } else {
-                document.getElementById('mainDashboard').classList.add('hidden');
-                document.getElementById('mainDashboard').classList.remove('flex');
-                document.getElementById('landingScreen').classList.remove('hidden');
-            }
-        }
-
-        function switchTab(tabId, btn) {
-            document.querySelectorAll('.tab-content').forEach(t => t.classList.add('hidden'));
-            document.getElementById(tabId).classList.remove('hidden');
-            
-            document.querySelectorAll('.nav-btn').forEach(b => {
-                b.classList.remove('text-indigo-950', 'font-bold');
-                b.classList.add('text-slate-400');
-            });
-            btn.classList.remove('text-slate-400');
-            btn.classList.add('text-indigo-950', 'font-bold');
-        }
-
-        async function openFullCamera() {
-            document.getElementById('cameraScreen').classList.remove('hidden');
-            document.getElementById('cameraScreen').classList.add('flex');
-            await startRealCamera();
-        }
-
-        function closeFullCamera() {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-            }
-            document.getElementById('cameraScreen').classList.add('hidden');
-            document.getElementById('cameraScreen').classList.remove('flex');
-        }
-
-        async function startRealCamera() {
-            if (currentStream) {
-                currentStream.getTracks().forEach(track => track.stop());
-            }
-            try {
-                const constraints = {
-                    video: { facingMode: facingMode },
-                    audio: currentMode === 'video'
-                };
-                currentStream = await navigator.mediaDevices.getUserMedia(constraints);
-                document.getElementById('cameraVideo').srcObject = currentStream;
-            } catch (err) {
-                alert("Fadlan oggolaanshada kamarada sii App-ka.");
-            }
-        }
-
-        function switchCameraFacing() {
-            facingMode = facingMode === "user" ? "environment" : "user";
-            startRealCamera();
-        }
-
-        function toggleFlash() {
-            flashOn = !flashOn;
-            document.getElementById('flashBtn').classList.toggle('bg-yellow-400');
-            document.getElementById('flashBtn').classList.toggle('text-black');
-        }
-
-        function applyFilter(filterClass) {
-            document.getElementById('cameraVideo').className = `w-full h-full object-cover ${filterClass}`;
-        }
-
-        function applyZoom(val) {
-            zoomLevel = parseFloat(val);
-            document.getElementById('cameraVideo').style.transform = `scale(${zoomLevel})`;
-        }
-
-        function setMode(mode) {
-            currentMode = mode;
-            const photoBtn = document.getElementById('photoModeBtn');
-            const videoBtn = document.getElementById('videoModeBtn');
-            const shutterInner = document.getElementById('shutterInner');
-
-            if (mode === 'photo') {
-                photoBtn.className = "text-emerald-400 font-bold border-b-2 border-emerald-400 pb-1";
-                videoBtn.className = "hover:text-white pb-1 text-white/50";
-                shutterInner.className = "w-full h-full bg-white rounded-full";
-            } else {
-                videoBtn.className = "text-red-500 font-bold border-b-2 border-red-500 pb-1";
-                photoBtn.className = "hover:text-white pb-1 text-white/50";
-                shutterInner.className = "w-full h-full bg-red-600 rounded-full";
-            }
-            startRealCamera();
-        }
-
-        function handleShutterClick() {
-            if (flashOn) {
-                const overlay = document.getElementById('flashOverlay');
-                overlay.style.opacity = '0.8';
-                setTimeout(() => overlay.style.opacity = '0', 150);
+            function showToast(msg) {
+                const toast = document.getElementById('toast');
+                document.getElementById('toastMsg').textContent = msg;
+                toast.classList.remove('opacity-0');
+                setTimeout(() => toast.classList.add('opacity-0'), 2000);
             }
 
-            if (currentMode === 'photo') {
-                takeRealPhoto();
-            } else {
-                toggleRecordVideo();
-            }
-        }
+            async function startCamera(facingMode) {
+                if (stream) {
+                    stream.getTracks().forEach(t => t.stop());
+                }
 
-        function takeRealPhoto() {
-            const video = document.getElementById('cameraVideo');
-            const canvas = document.getElementById('cameraCanvas');
-            const ctx = canvas.getContext('2d');
-
-            canvas.width = video.videoWidth || 640;
-            canvas.height = video.videoHeight || 480;
-            ctx.filter = getComputedStyle(video).filter;
-            ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
-
-            const imageData = canvas.toDataURL('image/png');
-            galleryItems.push({ type: 'image', url: imageData });
-            
-            const preview = document.getElementById('galleryPreview');
-            preview.src = imageData;
-            preview.classList.remove('hidden');
-            document.getElementById('galleryPlaceholder').classList.add('hidden');
-        }
-
-        function toggleRecordVideo() {
-            if (!isRecording) {
-                recordedChunks = [];
                 try {
-                    mediaRecorder = new MediaRecorder(currentStream);
-                    mediaRecorder.ondataavailable = e => recordedChunks.push(e.data);
-                    mediaRecorder.onstop = () => {
-                        const blob = new Blob(recordedChunks, { type: 'video/mp4' });
-                        galleryItems.push({ type: 'video', url: URL.createObjectURL(blob) });
-                    };
-                    mediaRecorder.start();
-
-                    isRecording = true;
-                    document.getElementById('videoTimer').classList.remove('hidden');
-                    document.getElementById('shutterInner').classList.replace('rounded-full', 'rounded-md');
-
-                    seconds = 0;
-                    timerInterval = setInterval(() => {
-                        seconds++;
-                        let mins = Math.floor(seconds / 60).toString().padStart(2, '0');
-                        let secs = (seconds % 60).toString().padStart(2, '0');
-                        document.getElementById('timerText').innerText = `${mins}:${secs}`;
-                    }, 1000);
-                } catch (e) {
-                    alert("Duubista: " + e.message);
+                    // Codbso amar fudud oo aan adkayn
+                    stream = await navigator.mediaDevices.getUserMedia({
+                        video: { facingMode: facingMode },
+                        audio: false
+                    });
+                    video.srcObject = stream;
+                    video.classList.remove('hidden');
+                    fallback.classList.add('hidden');
+                } catch (err) {
+                    console.log("Error:", err);
+                    // Hadduu diado 'environment', tijaabi kamarad kasta
+                    try {
+                        stream = await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+                        video.srcObject = stream;
+                        video.classList.remove('hidden');
+                        fallback.classList.add('hidden');
+                    } catch (e) {
+                        video.classList.add('hidden');
+                        fallback.classList.remove('hidden');
+                        showToast("Fadlan ka fur koodhka Google Chrome!");
+                    }
                 }
-            } else {
-                if (mediaRecorder) mediaRecorder.stop();
-                isRecording = false;
-                clearInterval(timerInterval);
-                document.getElementById('videoTimer').classList.add('hidden');
-                document.getElementById('shutterInner').classList.replace('rounded-md', 'rounded-full');
             }
-        }
 
-        function openGalleryModal() {
-            const container = document.getElementById('galleryContainer');
-            container.innerHTML = '';
-            galleryItems.forEach(item => {
-                if (item.type === 'image') {
-                    container.innerHTML += `<img src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20">`;
-                } else {
-                    container.innerHTML += `<video src="${item.url}" class="w-full h-24 object-cover rounded-xl border border-white/20" controls></video>`;
-                }
+            // Bilow
+            startCamera(currentMode);
+
+            // Flip Button
+            flipBtn.addEventListener('click', () => {
+                currentMode = (currentMode === 'user') ? 'environment' : 'user';
+                startCamera(currentMode);
+                showToast(currentMode === 'environment' ? "Back Camera" : "Front Camera");
             });
-            document.getElementById('galleryModal').classList.remove('hidden');
-            document.getElementById('galleryModal').classList.add('flex');
-        }
-
-        function closeGalleryModal() {
-            document.getElementById('galleryModal').classList.add('hidden');
-            document.getElementById('galleryModal').classList.remove('flex');
-        }
-
-        function selectService(name, detail) {
-            document.getElementById('modalTitle').innerText = name;
-            document.getElementById('modalMessage').innerText = `Waxaad dooratay: ${detail}. Adeeggan dhawaan wuu diyaar noqon doonaa.`;
-            const modal = document.getElementById('serviceModal');
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeModal() {
-            const modal = document.getElementById('serviceModal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 200);
-        }
-
-        function toggleTheme() {
-            document.body.classList.toggle('bg-slate-900');
-        }
+        });
     </script>
 </body>
 </html>

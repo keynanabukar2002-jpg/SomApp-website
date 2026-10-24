@@ -63,13 +63,20 @@
         }
         .upload-nav-img:active { transform: scale(0.9); }
 
-        .custom-profile-nav-img {
-            height: 24px;
-            width: 24px;
+        .header-profile-img-container {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            cursor: pointer;
+        }
+
+        .header-profile-img {
+            height: 28px;
+            width: 28px;
             object-fit: cover;
-            border-radius: 6px;
+            border-radius: 50%;
             border: 1.5px solid #ffffff;
-            box-shadow: 0 0 6px rgba(255, 255, 255, 0.3);
+            box-shadow: 0 0 8px rgba(255, 255, 255, 0.35);
         }
     </style>
 </head>
@@ -269,17 +276,12 @@
             <div id="tabSomedia" class="hidden absolute inset-0 bg-[#0f0f0f] text-white flex flex-col justify-between z-40 overflow-y-auto no-scrollbar">
                 
                 <div>
-                    <!-- SOMEDIA HEADER (SWAPPED LAYOUT) -->
+                    <!-- SOMEDIA HEADER (SEARCH & NOTIFICATION REMOVED, PROFILE LOGO ADDED) -->
                     <div class="sticky top-0 bg-[#0f0f0f] border-b border-zinc-800 z-20 flex items-center justify-between p-3.5">
-                        <!-- Left: Search & Notification -->
-                        <div class="flex items-center gap-3">
-                            <button onclick="showToast('Search active')" class="text-white text-base">
-                                <i class="fa-solid fa-magnifying-glass"></i>
-                            </button>
-                            <button onclick="showToast('Notification active')" class="relative text-white text-base">
-                                <i class="fa-regular fa-bell"></i>
-                                <span class="absolute -top-1 -right-1 bg-red-600 text-white text-[8px] font-bold px-1 rounded-full">9+</span>
-                            </button>
+                        <!-- Left: Profile Logo -->
+                        <div class="header-profile-img-container" onclick="showToast('Profile active')">
+                            <img src="https://i.ibb.co/wZ7mx0wY/1792863661584.jpg" alt="Profile" class="header-profile-img">
+                            <span class="text-[9px] text-white font-medium mt-0.5">profile</span>
                         </div>
 
                         <!-- Right: SOMEDIA, Logo, and Leebka (>) -->
@@ -397,7 +399,7 @@
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/wZ7mx0wY/1792863661584.jpg" alt="Profile Logo" class="w-full h-full object-cover rounded-full">
                     </div>
-                    <span class="font-black text-slate-900 mt-0.5">Profile</span>
+                    <span class="font-black text-slate-900 mt-0.5">profile</span>
                 </button>
             </div>
         </div>
@@ -1110,7 +1112,7 @@
 
         function closeSomediaCameraModal() {
             if (mediaStream) {
-                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream.getTracks().questions.forEach(track => track.stop());
             }
             document.getElementById('somediaCameraModal').classList.add('hidden');
             document.getElementById('somediaCameraModal').classList.remove('flex');

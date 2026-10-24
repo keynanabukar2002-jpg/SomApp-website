@@ -62,14 +62,6 @@
             transition: transform 0.2s ease;
         }
         .upload-nav-img:active { transform: scale(0.9); }
-
-        .profile-nav-img {
-            height: 20px;
-            width: 20px;
-            object-fit: cover;
-            border-radius: 50%;
-            border: 1px solid #ffffff;
-        }
     </style>
 </head>
 <body class="bg-black md:bg-slate-900 text-slate-800 h-full w-full flex justify-center items-center p-0 md:p-4 overflow-hidden">
@@ -118,8 +110,8 @@
             <!-- Header Bar -->
             <div id="mainDashboardHeader" class="p-4 pt-6 bg-white/60 backdrop-blur-md border-b border-amber-200/40 flex justify-between items-center shrink-0 z-10">
                 <div class="flex items-center space-x-3">
-                    <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shadow-md text-sm overflow-hidden">
-                        <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Profile" class="w-full h-full object-cover">
+                    <div class="w-10 h-10 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center shadow-md text-sm">
+                        B
                     </div>
                     <div>
                         <p class="text-[10px] font-bold text-slate-400 uppercase tracking-wider">Good Morning</p>
@@ -337,9 +329,8 @@
                         <i class="fa-solid fa-layer-group text-sm"></i>
                         <span class="text-[9px]">Subscriptions</span>
                     </button>
-                    <!-- LOGO ADIGA OO SAWIR AH -->
                     <button onclick="showToast('Profile active')" class="flex flex-col items-center gap-0.5 text-zinc-400 w-1/5">
-                        <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Adiga Profile" class="profile-nav-img">
+                        <div class="w-4 h-4 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-[8px]">S</div>
                         <span class="text-[9px]">Adiga</span>
                     </button>
                 </div>
@@ -349,13 +340,15 @@
 
             </div>
 
-            <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER) -->
+            <!-- Bottom Mobile Navigation Bar (BAYAN MAIN FOOTER WITH WAAFI & CHAT) -->
             <div id="bayanMainFooter" class="bg-white border-t border-slate-200/80 px-2 py-2 flex justify-around items-center text-[10px] font-bold text-slate-400 shrink-0 z-10">
+                <!-- 1. Home Button -->
                 <button onclick="switchTab('tabHome', this)" class="nav-btn flex flex-col items-center text-indigo-950 font-bold">
                     <i class="fa-solid fa-house text-base mb-0.5"></i>
                     <span>Home</span>
                 </button>
 
+                <!-- 2. Floating Internet Button -->
                 <button onclick="switchTab('tabInternet', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/MxZmZR9j/wireless-network-symbol-1284-42447.jpg" alt="Internet Logo" class="w-full h-full object-cover rounded-full mix-blend-multiply">
@@ -363,6 +356,7 @@
                     <span class="font-black text-slate-900 mt-0.5">Internet</span>
                 </button>
 
+                <!-- 3. Floating SOMEDIA Button -->
                 <button onclick="switchTab('tabSomedia', this)" class="nav-btn flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="SOMEDIA Custom Logo" class="w-full h-full object-cover rounded-full">
@@ -370,11 +364,68 @@
                     <span class="font-black text-slate-900 mt-0.5">SOMEDIA</span>
                 </button>
 
+                <!-- 4. Floating WAAFI Button -->
                 <button onclick="openWaafiApp()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
                     <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] overflow-hidden p-0.5">
                         <img src="https://i.ibb.co/HfjgqSdg/file-00000000e88c81f4a88cb2648ccfc850.png" alt="WAAFI Custom Logo" class="w-full h-full object-cover rounded-full">
                     </div>
                     <span class="font-black text-slate-900 mt-0.5">WAAFI</span>
+                </button>
+
+                <!-- 5. Floating CHAT Button (KU XIGA WAAFI) -->
+                <button onclick="openChatModal()" class="flex flex-col items-center -mt-5 active:scale-90 transition">
+                    <div class="w-12 h-12 bg-emerald-600 text-white rounded-full flex items-center justify-center shadow-lg border-4 border-[#FEFBEA] text-lg">
+                        <i class="fa-solid fa-comments"></i>
+                    </div>
+                    <span class="font-black text-emerald-800 mt-0.5">Chat</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- ==========================================
+             NEW CHAT MODAL / MESSAGING UI
+        =========================================== -->
+        <div id="chatModal" class="fixed inset-0 bg-[#f0f2f5] z-50 hidden flex-col justify-between">
+            <!-- CHAT HEADER -->
+            <div class="bg-emerald-800 text-white p-3.5 pt-4 flex items-center justify-between shadow-md">
+                <div class="flex items-center gap-3">
+                    <button onclick="closeChatModal()" class="text-white text-lg active:scale-90">
+                        <i class="fa-solid fa-arrow-left"></i>
+                    </button>
+                    <div class="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center font-bold text-sm">
+                        <i class="fa-solid fa-user-gear text-xs"></i>
+                    </div>
+                    <div>
+                        <h3 class="text-xs font-bold leading-tight">Bayan Support Chat</h3>
+                        <p class="text-[9px] text-emerald-200">Online • Live Assistant</p>
+                    </div>
+                </div>
+                <div class="flex items-center gap-3 text-sm">
+                    <button onclick="showToast('Call function coming soon')"><i class="fa-solid fa-phone"></i></button>
+                    <button onclick="showToast('Options')"><i class="fa-solid fa-ellipsis-vertical"></i></button>
+                </div>
+            </div>
+
+            <!-- CHAT MESSAGES BODY -->
+            <div id="chatMessagesContainer" class="flex-1 p-3 overflow-y-auto space-y-3 no-scrollbar">
+                <!-- Incoming System Welcome -->
+                <div class="flex items-start gap-2 max-w-[85%]">
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-[10px] shrink-0 mt-1">B</div>
+                    <div class="bg-white text-slate-800 p-3 rounded-2xl rounded-tl-none shadow-sm text-xs leading-relaxed border border-slate-100">
+                        Kusoo dhawoow **Bayan Live Chat**! 👋🏼 Sidaad kaaga caawin karnaa adeegyada app-ka?
+                        <span class="block text-[8px] text-slate-400 text-right mt-1">12:00 PM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- CHAT INPUT FOOTER -->
+            <div class="p-2.5 bg-white border-t border-slate-200 flex items-center gap-2">
+                <button onclick="showToast('Attachment selector')" class="text-slate-400 text-lg p-1">
+                    <i class="fa-solid fa-paperclip"></i>
+                </button>
+                <input type="text" id="chatInputMessage" placeholder="Qor fariintaada halkan..." class="flex-1 bg-slate-100 text-xs text-slate-800 px-3.5 py-2.5 rounded-full focus:outline-none focus:ring-1 focus:ring-emerald-600" onkeypress="if(event.key==='Enter') sendChatMessage()">
+                <button onclick="sendChatMessage()" class="w-9 h-9 rounded-full bg-emerald-700 text-white flex items-center justify-center text-sm shadow-md active:scale-95">
+                    <i class="fa-solid fa-paper-plane"></i>
                 </button>
             </div>
         </div>
@@ -411,7 +462,7 @@
                 </div>
             </div>
 
-            <!-- SOMEDIA CAMERA TOOLBAR (WITH FLASH BUTTON) -->
+            <!-- SOMEDIA CAMERA TOOLBAR -->
             <div class="absolute right-4 top-20 z-20 flex flex-col items-center gap-5 text-white bg-black/30 p-2 rounded-2xl backdrop-blur-md border border-white/10">
                 <button id="somediaFlashBtn" onclick="toggleSomediaTorch()" class="flex flex-col items-center transition active:scale-90">
                     <i id="somediaFlashIcon" class="fa-solid fa-bolt text-lg text-white"></i>
@@ -605,9 +656,7 @@
 
                 <div class="flex items-center justify-between py-1 border-t border-b border-zinc-800/80">
                     <div class="flex items-center gap-2.5">
-                        <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-sm overflow-hidden">
-                            <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Channel Logo" class="w-full h-full object-cover">
-                        </div>
+                        <div class="w-9 h-9 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-sm">S</div>
                         <div>
                             <h3 class="text-xs font-bold text-white">SOMEDIA Channel</h3>
                             <p class="text-[10px] text-zinc-400">1 subscriber</p>
@@ -790,6 +839,55 @@
             renderSomediaGrid();
         });
 
+        // CHAT MODAL LOGIC
+        function openChatModal() {
+            const chat = document.getElementById('chatModal');
+            chat.classList.remove('hidden');
+            chat.classList.add('flex');
+        }
+
+        function closeChatModal() {
+            const chat = document.getElementById('chatModal');
+            chat.classList.add('hidden');
+            chat.classList.remove('flex');
+        }
+
+        function sendChatMessage() {
+            const input = document.getElementById('chatInputMessage');
+            const msg = input.value.trim();
+            if (!msg) return;
+
+            const container = document.getElementById('chatMessagesContainer');
+            
+            // User Message
+            const userBubble = document.createElement('div');
+            userBubble.className = "flex items-end justify-end gap-2 ml-auto max-w-[85%]";
+            userBubble.innerHTML = `
+                <div class="bg-emerald-700 text-white p-3 rounded-2xl rounded-tr-none shadow-sm text-xs leading-relaxed">
+                    ${msg}
+                    <span class="block text-[8px] text-emerald-200 text-right mt-1">Haddal</span>
+                </div>
+            `;
+            container.appendChild(userBubble);
+            input.value = '';
+            container.scrollTop = container.scrollHeight;
+
+            // Auto Bot Response Simulation
+            setTimeout(() => {
+                const botBubble = document.createElement('div');
+                botBubble.className = "flex items-start gap-2 max-w-[85%]";
+                botBubble.innerHTML = `
+                    <div class="w-7 h-7 rounded-full bg-emerald-700 text-white font-bold flex items-center justify-center text-[10px] shrink-0 mt-1">B</div>
+                    <div class="bg-white text-slate-800 p-3 rounded-2xl rounded-tl-none shadow-sm text-xs leading-relaxed border border-slate-100">
+                        Mahadsanid! Fariintaada waa nala soo gaaray. Kooxda Bayan waxay kugu soo jawaabi doonaan marka ugu soo dhow.
+                        <span class="block text-[8px] text-slate-400 text-right mt-1">Right now</span>
+                    </div>
+                `;
+                container.appendChild(botBubble);
+                container.scrollTop = container.scrollHeight;
+            }, 800);
+        }
+
         function openWaafiApp() {
             window.location.href = "intent://launch#Intent;scheme=waafi;package=com.safarifone.waafi;S.browser_fallback_url=https://play.google.com/store/apps/details?id=com.safarifone.waafi;end";
         }
@@ -889,8 +987,8 @@
                         </div>
 
                         <div class="pt-2.5 flex gap-2.5">
-                            <div class="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5 overflow-hidden">
-                                <img src="https://i.ibb.co/XfQxpdDX/20261022-043354998.png" alt="Channel Logo" class="w-full h-full object-cover">
+                            <div class="w-8 h-8 rounded-full bg-orange-600 text-white flex items-center justify-center font-bold text-xs shrink-0 mt-0.5">
+                                S
                             </div>
                             <div class="flex-1 pr-2">
                                 <h3 class="text-xs font-bold text-white leading-snug line-clamp-2 mb-0.5">${vid.title}</h3>

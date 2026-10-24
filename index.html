@@ -529,8 +529,8 @@
 
             <div class="flex-1 py-4 space-y-4 overflow-y-auto no-scrollbar">
                 <div class="flex gap-3">
-                    <div class="w-32 aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0">
-                        <video id="finalPreviewThumbnail" class="w-full h-full object-contain"></video>
+                    <div class="w-32 aspect-video bg-black rounded-xl overflow-hidden border border-zinc-800 shrink-0 flex items-center justify-center">
+                        <video id="finalPreviewThumbnail" class="w-full h-full object-cover" muted playsinline></video>
                     </div>
                     <div class="flex-1">
                         <textarea id="finalTitleInput" rows="3" placeholder="Write video title... #Somalia" class="w-full bg-transparent text-sm text-white focus:outline-none resize-none"></textarea>
@@ -862,9 +862,17 @@
                     const card = document.createElement('div');
                     card.className = "w-full cursor-pointer group";
                     card.onclick = () => openPlayer(idx);
+                    
+                    const mediaElementHtml = vid.thumbnail 
+                        ? `<img src="${vid.thumbnail}" class="w-full h-full object-cover">`
+                        : `<video src="${vid.url}#t=0.5" class="w-full h-full object-cover" preload="metadata" muted playsinline></video>`;
+
                     card.innerHTML = `
                         <div class="w-full aspect-video bg-black relative overflow-hidden rounded-xl">
-                            <img src="${vid.thumbnail}" class="w-full h-full object-cover">
+                            ${mediaElementHtml}
+                            <div class="absolute inset-0 bg-black/10 group-hover:bg-black/30 transition flex items-center justify-center">
+                                <i class="fa-solid fa-play text-white/80 text-2xl group-hover:scale-110 transition"></i>
+                            </div>
                             <span class="absolute bottom-2 right-2 bg-black/80 text-white text-[10px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">0:10</span>
                         </div>
 
@@ -999,21 +1007,30 @@
             const tempVideo = document.createElement('video');
             tempVideo.src = videoUrl;
             tempVideo.crossOrigin = 'anonymous';
-            tempVideo.currentTime = 1;
+            tempVideo.muted = true;
+            tempVideo.playsInline = true;
 
-            tempVideo.onloadeddata = () => {
-                const canvas = document.createElement('canvas');
-                canvas.width = tempVideo.videoWidth || 640;
-                canvas.height = tempVideo.videoHeight || 360;
-                const ctx = canvas.getContext('2d');
-                ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
-                selectedThumbnail = canvas.toDataURL('image/jpeg');
+            tempVideo.onloadedmetadata = () => {
+                tempVideo.currentTime = 0.5;
+            };
+
+            tempVideo.onseeked = () => {
+                try {
+                    const canvas = document.createElement('canvas');
+                    canvas.width = tempVideo.videoWidth || 640;
+                    canvas.height = tempVideo.videoHeight || 360;
+                    const ctx = canvas.getContext('2d');
+                    ctx.drawImage(tempVideo, 0, 0, canvas.width, canvas.height);
+                    selectedThumbnail = canvas.toDataURL('image/jpeg');
+                } catch(err) {
+                    selectedThumbnail = '';
+                }
 
                 const strip = document.getElementById('filmstripFrames');
                 strip.innerHTML = '';
                 for(let i = 0; i < 6; i++) {
                     const img = document.createElement('img');
-                    img.src = selectedThumbnail;
+                    img.src = selectedThumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80';
                     img.className = "h-full w-1/6 object-cover opacity-60 rounded";
                     strip.appendChild(img);
                 }
@@ -1090,7 +1107,7 @@
                 views: '1 view • Right now',
                 category: category,
                 url: selectedVideoUrl,
-                thumbnail: selectedThumbnail || 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=500&q=80'
+                thumbnail: selectedThumbnail
             };
 
             videoList.unshift(newVideo);
@@ -1122,9 +1139,14 @@
                     const item = document.createElement('div');
                     item.className = "flex gap-3 cursor-pointer";
                     item.onclick = () => openPlayer(videoList.indexOf(oVid));
+
+                    const thumbMedia = oVid.thumbnail 
+                        ? `<img src="${oVid.thumbnail}" class="w-full h-full object-cover">`
+                        : `<video src="${oVid.url}#t=0.5" class="w-full h-full object-cover" preload="metadata" muted></video>`;
+
                     item.innerHTML = `
                         <div class="w-32 aspect-video bg-zinc-900 rounded-lg overflow-hidden shrink-0 relative">
-                            <img src="${oVid.thumbnail}" class="w-full h-full object-cover">
+                            ${thumbMedia}
                             <span class="absolute bottom-1 right-1 bg-black/80 text-[10px] px-1 rounded font-bold text-white">0:10</span>
                         </div>
                         <div class="flex-1 space-y-1">

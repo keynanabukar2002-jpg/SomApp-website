@@ -68,11 +68,11 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
 
-        /* SOMALI FLAG IMAGE STYLE CENTER BUTTON - ENLARGED */
+        /* SOMALI FLAG STYLE CENTER BUTTON - EXACT MATCH */
         .create-btn {
             width: 54px;
             height: 34px;
-            background: #4189DD;
+            background: #4189DD; /* Buluugga calanka Soomaaliya */
             border-radius: 10px;
             position: relative;
             display: flex;
@@ -81,15 +81,18 @@
             cursor: pointer;
             box-shadow: 0 0 12px rgba(65, 137, 221, 0.6);
             border: 1px solid rgba(255, 255, 255, 0.5);
-            overflow: hidden;
         }
 
         .create-btn-inner {
-            width: 100%;
+            width: 46px;
             height: 100%;
+            background-color: #4189DD;
+            border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
+            color: #ffffff;
+            font-size: 18px; /* Xiddigta oo dhexda ku taal */
         }
 
         /* ENLARGED BOTTOM NAVIGATION BAR FOR SOMEDIA */
@@ -376,7 +379,7 @@
                     </main>
                 </div>
 
-                <!-- SOMALI FLAG IMAGE-STYLE FIXED BOTTOM NAVIGATION BAR FOR SOMEDIA (ENLARGED) -->
+                <!-- SOMALI FLAG-STYLE FIXED BOTTOM NAVIGATION BAR FOR SOMEDIA (EXACT) -->
                 <div class="bottom-nav">
                   <div class="nav-btn active" onclick="showToast('Home active')">
                     <i class="fa-solid fa-house"></i>
@@ -386,10 +389,10 @@
                     <i class="fa-solid fa-wallet"></i>
                     <span>Wallet</span>
                   </div>
-                  <!-- Center Button: Somali Flag Image Style -->
+                  <!-- Center Button: Somali Flag & Star Style -->
                   <div class="create-btn" onclick="openSomediaCameraModal()">
                     <div class="create-btn-inner">
-                      <img src="https://i.ibb.co/3stJpZ9/1000091955.png" alt="Somali Flag Icon" class="w-full h-full object-cover">
+                      <i class="fa-solid fa-star text-white"></i>
                     </div>
                   </div>
                   <div class="nav-btn" onclick="showToast('Inbox active')">

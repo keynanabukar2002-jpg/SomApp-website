@@ -1,1093 +1,521 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="so">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport"
-      content="width=device-width, initial-scale=1.0">
-
-<title>SalaamWallet Crypto</title>
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-:root {
-    --background: #050b18;
-    --card: #0e1930;
-    --blue: #247cff;
-    --light-blue: #55a5ff;
-    --text: #ffffff;
-    --muted: #8d9bb5;
-    --green: #21d49a;
-    --red: #ff6878;
-}
-
-body {
-    background: var(--background);
-    color: var(--text);
-    font-family: Arial, sans-serif;
-    min-height: 100vh;
-}
-
-.app {
-    width: 100%;
-    max-width: 691px;
-    min-height: 100vh;
-    margin: auto;
-    padding: 26px 22px 100px;
-    background:
-      radial-gradient(
-        ellipse at top right,
-        #102957 0%,
-        transparent 42%
-      ),
-      var(--background);
-}
-
-/* HEADER */
-
-.header {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 30px;
-}
-
-.brand {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.logo {
-    width: 46px;
-    height: 46px;
-    border-radius: 15px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 25px;
-    font-weight: bold;
-    background: linear-gradient(
-        135deg,
-        #1687ff,
-        #1548d8
-    );
-    box-shadow: 0 5px 25px #1677ff35;
-}
-
-.brand-name {
-    font-size: 21px;
-    font-weight: bold;
-    letter-spacing: -.5px;
-}
-
-.brand-name span {
-    color: var(--light-blue);
-}
-
-.notification {
-    width: 44px;
-    height: 44px;
-    border: 1px solid #243653;
-    background: #101d33;
-    border-radius: 15px;
-    color: white;
-    font-size: 21px;
-}
-
-/* GREETING */
-
-.greeting {
-    margin-bottom: 22px;
-}
-
-.greeting p {
-    font-size: 14px;
-    color: var(--muted);
-    margin-bottom: 7px;
-}
-
-.greeting h1 {
-    font-size: 27px;
-}
-
-/* BALANCE CARD */
-
-.balance-card {
-    position: relative;
-    overflow: hidden;
-    padding: 27px 24px;
-    border-radius: 25px;
-    background: linear-gradient(
-        135deg,
-        #1264e8,
-        #183bb4 65%,
-        #172a73
-    );
-    box-shadow: 0 15px 40px #1255d522;
-}
-
-.balance-card::after {
-    content: "";
-    position: absolute;
-    width: 210px;
-    height: 210px;
-    border: 35px solid #ffffff0b;
-    border-radius: 50%;
-    right: -65px;
-    top: -90px;
-}
-
-.balance-label {
-    font-size: 14px;
-    color: #d5e5ff;
-}
-
-.balance-top {
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
-
-.eye {
-    border: none;
-    background: transparent;
-    color: white;
-    font-size: 20px;
-    cursor: pointer;
-}
-
-.balance {
-    font-size: clamp(30px, 7vw, 43px);
-    font-weight: bold;
-    margin: 13px 0;
-    letter-spacing: -1px;
-}
-
-.change {
-    display: inline-block;
-    font-size: 13px;
-    color: #b6ffe3;
-    background: #ffffff18;
-    padding: 8px 11px;
-    border-radius: 10px;
-}
-
-.chart {
-    width: 100%;
-    height: 78px;
-    margin-top: 15px;
-}
-
-.chart svg {
-    width: 100%;
-    height: 100%;
-}
-
-/* ACTIONS */
-
-.actions {
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    gap: 10px;
-    margin: 27px 0 32px;
-}
-
-.action {
-    text-align: center;
-    cursor: pointer;
-    border: none;
-    background: transparent;
-    color: white;
-}
-
-.action-icon {
-    width: 57px;
-    height: 57px;
-    margin: auto auto 10px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    border-radius: 19px;
-    background: #112544;
-    border: 1px solid #1c365c;
-    color: #64aaff;
-    font-size: 24px;
-    transition: .2s;
-}
-
-.action:active .action-icon {
-    transform: scale(.93);
-    background: #1b4f9b;
-}
-
-.action span:last-child {
-    font-size: 12px;
-    color: #d7e0f2;
-}
-
-/* SECTION TITLES */
-
-.section-title {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    margin-bottom: 17px;
-}
-
-.section-title h2 {
-    font-size: 20px;
-}
-
-.section-title button {
-    color: var(--light-blue);
-    background: none;
-    border: none;
-    font-size: 13px;
-    cursor: pointer;
-}
-
-/* ASSETS */
-
-.assets {
-    display: flex;
-    flex-direction: column;
-    gap: 12px;
-}
-
-.asset {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    gap: 10px;
-    padding: 16px 13px;
-    border-radius: 19px;
-    background: linear-gradient(
-        120deg,
-        #101d33,
-        #0b1528
-    );
-    border: 1px solid #192b45;
-}
-
-.asset-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    min-width: 0;
-}
-
-.coin {
-    width: 47px;
-    height: 47px;
-    flex-shrink: 0;
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 23px;
-    font-weight: bold;
-}
-
-.btc {
-    background: #3c2b18;
-    color: #ffae36;
-}
-
-.eth {
-    background: #242d51;
-    color: #a5b8ff;
-}
-
-.usdt {
-    background: #123b36;
-    color: #35d7ac;
-}
-
-.ltc {
-    background: #27303c;
-    color: #d7e2f2;
-}
-
-.coin-name {
-    font-weight: bold;
-    font-size: 15px;
-    margin-bottom: 5px;
-}
-
-.coin-symbol {
-    font-size: 12px;
-    color: var(--muted);
-}
-
-.asset-right {
-    text-align: right;
-    min-width: 0;
-}
-
-.asset-balance {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 6px;
-    overflow-wrap: anywhere;
-}
-
-.asset-change {
-    font-size: 12px;
-}
-
-.positive {
-    color: var(--green);
-}
-
-.negative {
-    color: var(--red);
-}
-
-.neutral {
-    color: var(--muted);
-}
-
-/* ACTIVITY */
-
-.activity {
-    margin-top: 30px;
-}
-
-.transaction {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 15px 13px;
-    margin-bottom: 10px;
-    background: #101b30;
-    border-radius: 17px;
-}
-
-.transaction-left {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-}
-
-.transaction-icon {
-    width: 43px;
-    height: 43px;
-    border-radius: 14px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: #182c49;
-    color: #66aaff;
-    font-size: 21px;
-}
-
-.transaction-name {
-    font-size: 14px;
-    font-weight: bold;
-    margin-bottom: 5px;
-}
-
-.transaction-date {
-    color: var(--muted);
-    font-size: 11px;
-}
-
-.transaction-amount {
-    font-size: 14px;
-    font-weight: bold;
-}
-
-/* BOTTOM NAVIGATION */
-
-.bottom-nav {
-    position: fixed;
-    z-index: 10;
-    bottom: 0;
-    left: 50%;
-    transform: translateX(-50%);
-    width: 100%;
-    max-width: 691px;
-    min-height: 76px;
-    padding: 10px 10px calc(10px + env(safe-area-inset-bottom));
-    display: grid;
-    grid-template-columns: repeat(4, 1fr);
-    background: #091326f5;
-    border-top: 1px solid #1a2b46;
-    backdrop-filter: blur(18px);
-}
-
-.nav-item {
-    border: none;
-    background: transparent;
-    color: #7d8da8;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    gap: 5px;
-    font-size: 11px;
-    cursor: pointer;
-}
-
-.nav-icon {
-    font-size: 22px;
-}
-
-.nav-item.active {
-    color: #58a4ff;
-}
-
-/* MODAL */
-
-.modal-overlay {
-    display: none;
-    position: fixed;
-    inset: 0;
-    z-index: 30;
-    background: #000b1dce;
-    align-items: center;
-    justify-content: center;
-    padding: 20px;
-}
-
-.modal-overlay.show {
-    display: flex;
-}
-
-.modal {
-    width: 100%;
-    max-width: 420px;
-    background: #101d33;
-    border: 1px solid #28436b;
-    border-radius: 23px;
-    padding: 24px;
-}
-
-.modal h2 {
-    margin-bottom: 10px;
-}
-
-.modal p {
-    font-size: 13px;
-    color: var(--muted);
-    line-height: 1.6;
-    margin-bottom: 18px;
-}
-
-.modal label {
-    display: block;
-    margin: 14px 0 8px;
-    font-size: 13px;
-    color: #c4d4eb;
-}
-
-.modal input,
-.modal select {
-    width: 100%;
-    padding: 14px;
-    border-radius: 12px;
-    border: 1px solid #294061;
-    background: #091326;
-    color: white;
-    outline: none;
-}
-
-.modal input:focus,
-.modal select:focus {
-    border-color: #438fff;
-}
-
-.primary-button {
-    width: 100%;
-    margin-top: 18px;
-    padding: 14px;
-    border: none;
-    border-radius: 13px;
-    background: linear-gradient(
-        135deg,
-        #278bff,
-        #2055df
-    );
-    color: white;
-    font-size: 15px;
-    font-weight: bold;
-    cursor: pointer;
-}
-
-.secondary-button {
-    width: 100%;
-    margin-top: 10px;
-    padding: 12px;
-    border: 1px solid #294061;
-    border-radius: 13px;
-    background: transparent;
-    color: white;
-    cursor: pointer;
-}
-
-.notice {
-    margin-top: 15px;
-    padding: 12px;
-    background: #152946;
-    border-radius: 12px;
-    color: #bcd5f7;
-    font-size: 12px;
-    line-height: 1.5;
-}
-
-@media (max-width: 380px) {
-    .app {
-        padding-left: 15px;
-        padding-right: 15px;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>TikTok UI Replica</title>
+  <!-- FontAwesome Icons -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      user-select: none;
     }
 
-    .actions {
-        gap: 4px;
+    body {
+      background-color: #000;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
     }
 
-    .action-icon {
-        width: 49px;
-        height: 49px;
+    /* Mobile Container Structure */
+    .app-container {
+      width: 100%;
+      max-width: 412px;
+      height: 100vh;
+      max-height: 915px;
+      background-color: #000;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.1);
     }
 
-    .asset {
-        padding: 13px 9px;
+    /* Background Video / Image Container */
+    .media-container {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 1;
+      background: linear-gradient(45deg, #111, #222);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .coin {
-        width: 40px;
-        height: 40px;
+    .media-container img, .media-container video {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
     }
-}
-</style>
+
+    /* Top Overlay Navigation */
+    .top-bar {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 15px 20px;
+      z-index: 10;
+      color: #fff;
+    }
+
+    .top-tabs {
+      display: flex;
+      gap: 15px;
+      font-weight: 600;
+      font-size: 16px;
+    }
+
+    .top-tab {
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+    }
+
+    .top-tab.active {
+      color: #fff;
+      border-bottom: 2px solid #fff;
+      padding-bottom: 2px;
+    }
+
+    /* Right Side Action Buttons */
+    .sidebar-actions {
+      position: absolute;
+      right: 12px;
+      bottom: 90px;
+      z-index: 10;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 18px;
+    }
+
+    .action-btn {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #fff;
+      cursor: pointer;
+    }
+
+    .action-btn i {
+      font-size: 32px;
+      filter: drop-shadow(0px 2px 5px rgba(0,0,0,0.5));
+      transition: transform 0.2s ease, color 0.2s ease;
+    }
+
+    .action-btn span {
+      font-size: 12px;
+      margin-top: 4px;
+      font-weight: 600;
+      text-shadow: 0px 1px 3px rgba(0,0,0,0.8);
+    }
+
+    /* Like Active State */
+    .action-btn.liked i {
+      color: #fe2c55;
+      animation: pulse 0.3s ease;
+    }
+
+    @keyframes pulse {
+      0% { transform: scale(1); }
+      50% { transform: scale(1.3); }
+      100% { transform: scale(1); }
+    }
+
+    /* Avatar Badge */
+    .avatar-container {
+      position: relative;
+      margin-bottom: 10px;
+    }
+
+    .avatar-img {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      border: 2px solid #fff;
+      object-fit: cover;
+    }
+
+    .follow-badge {
+      position: absolute;
+      bottom: -6px;
+      left: 50%;
+      transform: translateX(-50%);
+      background-color: #fe2c55;
+      color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    /* Disc / Audio animation */
+    .sound-disc {
+      width: 40px;
+      height: 40px;
+      border-radius: 50%;
+      background: #222;
+      border: 8px solid #111;
+      animation: spin 4s linear infinite;
+    }
+
+    @keyframes spin {
+      100% { transform: rotate(360deg); }
+    }
+
+    /* Bottom Information (Username & Description) */
+    .bottom-info {
+      position: absolute;
+      bottom: 75px;
+      left: 12px;
+      width: 75%;
+      z-index: 10;
+      color: #fff;
+      text-shadow: 0px 1px 4px rgba(0,0,0,0.8);
+    }
+
+    .username {
+      font-weight: 700;
+      font-size: 16px;
+      margin-bottom: 6px;
+    }
+
+    .description {
+      font-size: 14px;
+      line-height: 1.3;
+      margin-bottom: 8px;
+    }
+
+    .music-track {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 13px;
+    }
+
+    /* Bottom Navigation Bar */
+    .bottom-nav {
+      position: absolute;
+      bottom: 0;
+      left: 0;
+      width: 100%;
+      height: 60px;
+      background-color: #000;
+      border-top: 0.5px solid rgba(255, 255, 255, 0.15);
+      z-index: 20;
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+    }
+
+    .nav-item {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #8a8b91;
+      font-size: 10px;
+      cursor: pointer;
+      gap: 3px;
+    }
+
+    .nav-item i {
+      font-size: 20px;
+    }
+
+    .nav-item.active {
+      color: #fff;
+    }
+
+    /* Center Plus Icon Button */
+    .create-btn {
+      width: 45px;
+      height: 28px;
+      background: linear-gradient(90deg, #00f2fe 0%, #4facfe 30%, #ff0844 70%, #ffb199 100%);
+      border-radius: 8px;
+      position: relative;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .create-btn-inner {
+      width: 39px;
+      height: 100%;
+      background-color: #fff;
+      border-radius: 6px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #000;
+    }
+
+    /* Modal / Popups for Comment */
+    .comment-modal {
+      position: absolute;
+      bottom: -100%;
+      left: 0;
+      width: 100%;
+      height: 65%;
+      background-color: #121212;
+      border-top-left-radius: 12px;
+      border-top-right-radius: 12px;
+      z-index: 30;
+      transition: bottom 0.3s ease-in-out;
+      display: flex;
+      flex-direction: column;
+      color: #fff;
+    }
+
+    .comment-modal.open {
+      bottom: 0;
+    }
+
+    .comment-header {
+      padding: 12px 16px;
+      border-bottom: 1px solid #222;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 13px;
+      font-weight: 600;
+    }
+
+    .comment-body {
+      flex: 1;
+      padding: 15px;
+      overflow-y: auto;
+      font-size: 14px;
+    }
+
+    .comment-item {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 15px;
+    }
+
+    .comment-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+    }
+
+    .comment-input-area {
+      padding: 10px 15px;
+      border-top: 1px solid #222;
+      display: flex;
+      gap: 10px;
+    }
+
+    .comment-input-area input {
+      flex: 1;
+      background: #222;
+      border: none;
+      border-radius: 20px;
+      padding: 8px 15px;
+      color: #fff;
+      outline: none;
+    }
+  </style>
 </head>
-
 <body>
 
-<div class="app" id="homePage">
-
-    <header class="header">
-        <div class="brand">
-            <div class="logo">S</div>
-            <div class="brand-name">
-                Salaam<span>Wallet</span>
-            </div>
-        </div>
-
-        <button class="notification"
-                onclick="showNotice('Notifications','You have no new notifications.')"
-                aria-label="Notifications">♧</button>
-    </header>
-
-    <section class="greeting">
-        <p>Good evening 👋</p>
-        <h1>Welcome back, Keynan</h1>
-    </section>
-
-    <section class="balance-card">
-
-        <div class="balance-top">
-            <span class="balance-label">Total Balance (USD)</span>
-            <button class="eye" onclick="toggleBalance()"
-                    aria-label="Hide or show balance">◉</button>
-        </div>
-
-        <div class="balance" id="totalBalance">$2,458.60</div>
-
-        <div class="change">↗ +4.8% this month</div>
-
-        <div class="chart">
-            <svg viewBox="0 0 500 85"
-                 preserveAspectRatio="none">
-                <defs>
-                    <linearGradient id="area"
-                        x1="0" y1="0" x2="0" y2="1">
-                        <stop offset="0%"
-                              stop-color="#ffffff"
-                              stop-opacity=".24"/>
-                        <stop offset="100%"
-                              stop-color="#ffffff"
-                              stop-opacity="0"/>
-                    </linearGradient>
-                </defs>
-
-                <path d="M0,65 L45,55 L90,63 L135,37
-                         L180,46 L225,25 L270,40
-                         L315,18 L360,29 L405,12
-                         L450,22 L500,5 L500,85 L0,85 Z"
-                      fill="url(#area)"/>
-
-                <path d="M0,65 L45,55 L90,63 L135,37
-                         L180,46 L225,25 L270,40
-                         L315,18 L360,29 L405,12
-                         L450,22 L500,5"
-                      fill="none"
-                      stroke="#d5eaff"
-                      stroke-width="3"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"/>
-            </svg>
-        </div>
-
-    </section>
-
-    <section class="actions">
-
-        <button class="action" onclick="openAction('Send')">
-            <span class="action-icon">↗</span>
-            <span>Send</span>
-        </button>
-
-        <button class="action" onclick="openAction('Receive')">
-            <span class="action-icon">↙</span>
-            <span>Receive</span>
-        </button>
-
-        <button class="action" onclick="openAction('Buy')">
-            <span class="action-icon">＋</span>
-            <span>Buy</span>
-        </button>
-
-        <button class="action" onclick="openAction('Swap')">
-            <span class="action-icon">⇄</span>
-            <span>Swap</span>
-        </button>
-
-    </section>
-
-    <section>
-        <div class="section-title">
-            <h2>My Assets</h2>
-            <button onclick="showNotice('My Assets',
-            'These are demonstration balances, not live blockchain balances.')">
-                View all
-            </button>
-        </div>
-
-        <div class="assets">
-
-            <div class="asset">
-                <div class="asset-left">
-                    <div class="coin btc">₿</div>
-                    <div>
-                        <div class="coin-name">Bitcoin</div>
-                        <div class="coin-symbol">BTC</div>
-                    </div>
-                </div>
-                <div class="asset-right">
-                    <div class="asset-balance">$1,240.00</div>
-                    <div class="asset-change positive">↗ +2.4%</div>
-                </div>
-            </div>
-
-            <div class="asset">
-                <div class="asset-left">
-                    <div class="coin eth">◆</div>
-                    <div>
-                        <div class="coin-name">Ethereum</div>
-                        <div class="coin-symbol">ETH</div>
-                    </div>
-                </div>
-                <div class="asset-right">
-                    <div class="asset-balance">$680.40</div>
-                    <div class="asset-change positive">↗ +1.8%</div>
-                </div>
-            </div>
-
-            <div class="asset">
-                <div class="asset-left">
-                    <div class="coin usdt">₮</div>
-                    <div>
-                        <div class="coin-name">Tether</div>
-                        <div class="coin-symbol">USDT</div>
-                    </div>
-                </div>
-                <div class="asset-right">
-                    <div class="asset-balance">$350.00</div>
-                    <div class="asset-change neutral">0.0%</div>
-                </div>
-            </div>
-
-            <div class="asset">
-                <div class="asset-left">
-                    <div class="coin ltc">Ł</div>
-                    <div>
-                        <div class="coin-name">Litecoin</div>
-                        <div class="coin-symbol">LTC</div>
-                    </div>
-                </div>
-                <div class="asset-right">
-                    <div class="asset-balance">$188.20</div>
-                    <div class="asset-change negative">↘ -0.6%</div>
-                </div>
-            </div>
-
-        </div>
-    </section>
-
-    <section class="activity">
-        <div class="section-title">
-            <h2>Recent Activity</h2>
-            <button onclick="showPage('Activity')">See all</button>
-        </div>
-
-        <div class="transaction">
-            <div class="transaction-left">
-                <div class="transaction-icon">↓</div>
-                <div>
-                    <div class="transaction-name">Received BTC</div>
-                    <div class="transaction-date">Today · 10:45 AM</div>
-                </div>
-            </div>
-            <div>
-                <div class="transaction-amount positive">+$120.00</div>
-            </div>
-        </div>
-
-        <div class="transaction">
-            <div class="transaction-left">
-                <div class="transaction-icon">↑</div>
-                <div>
-                    <div class="transaction-name">Sent USDT</div>
-                    <div class="transaction-date">Yesterday · 4:20 PM</div>
-                </div>
-            </div>
-            <div>
-                <div class="transaction-amount">-$35.00</div>
-            </div>
-        </div>
-    </section>
-
-</div>
-
-<nav class="bottom-nav">
-
-    <button class="nav-item active"
-            onclick="showPage('Home', this)">
-        <span class="nav-icon">⌂</span>
-        <span>Home</span>
-    </button>
-
-    <button class="nav-item"
-            onclick="showPage('Markets', this)">
-        <span class="nav-icon">▥</span>
-        <span>Markets</span>
-    </button>
-
-    <button class="nav-item"
-            onclick="showPage('Activity', this)">
-        <span class="nav-icon">◷</span>
-        <span>Activity</span>
-    </button>
-
-    <button class="nav-item"
-            onclick="showPage('Profile', this)">
-        <span class="nav-icon">♙</span>
-        <span>Profile</span>
-    </button>
-
-</nav>
-
-<!-- ACTION MODAL -->
-
-<div class="modal-overlay" id="modalOverlay"
-     onclick="overlayClose(event)">
-
-    <div class="modal">
-        <h2 id="modalTitle">Send Crypto</h2>
-
-        <p id="modalDescription">
-            This is a demonstration wallet.
-        </p>
-
-        <div id="modalFields"></div>
-
-        <div id="modalNotice" class="notice">
-            No real cryptocurrency will be transferred.
-        </div>
-
-        <button class="primary-button"
-                id="modalSubmit"
-                onclick="submitAction()">
-            Continue
-        </button>
-
-        <button class="secondary-button"
-                onclick="closeModal()">
-            Close
-        </button>
+  <div class="app-container">
+    
+    <!-- Top Bar Navigation -->
+    <div class="top-bar">
+      <i class="fa-solid fa-tv"></i>
+      <div class="top-tabs">
+        <span class="top-tab">Following</span>
+        <span class="top-tab active">For You</span>
+      </div>
+      <i class="fa-solid fa-magnifying-glass"></i>
     </div>
 
-</div>
+    <!-- Background Media Player (Image / Video placeholder) -->
+    <div class="media-container" id="mediaContainer">
+      <img src="https://picsum.photos/400/800" alt="TikTok Content Video Placeholder">
+    </div>
 
-<script>
-const modalOverlay = document.getElementById("modalOverlay");
-const modalTitle = document.getElementById("modalTitle");
-const modalDescription = document.getElementById("modalDescription");
-const modalFields = document.getElementById("modalFields");
-const modalNotice = document.getElementById("modalNotice");
-const modalSubmit = document.getElementById("modalSubmit");
+    <!-- Action Bar (Right Side Buttons) -->
+    <div class="sidebar-actions">
+      <!-- Profile Avatar -->
+      <div class="avatar-container">
+        <img class="avatar-img" src="https://picsum.photos/100/100" alt="User Profile">
+        <div class="follow-badge" id="followBtn"><i class="fa-solid fa-plus"></i></div>
+      </div>
 
-let currentAction = "";
-let balanceVisible = true;
+      <!-- Like Button -->
+      <div class="action-btn" id="likeBtn">
+        <i class="fa-solid fa-heart"></i>
+        <span id="likeCount">124.5K</span>
+      </div>
 
-function toggleBalance() {
-    const balance = document.getElementById("totalBalance");
+      <!-- Comment Button -->
+      <div class="action-btn" id="commentBtn">
+        <i class="fa-solid fa-comment-dots"></i>
+        <span>1,420</span>
+      </div>
 
-    balanceVisible = !balanceVisible;
+      <!-- Bookmark Button -->
+      <div class="action-btn" id="bookmarkBtn">
+        <i class="fa-solid fa-bookmark"></i>
+        <span>8,910</span>
+      </div>
 
-    balance.textContent = balanceVisible
-        ? "$2,458.60"
-        : "••••••••";
+      <!-- Share Button -->
+      <div class="action-btn" id="shareBtn">
+        <i class="fa-solid fa-share"></i>
+        <span>Share</span>
+      </div>
 
-    document.querySelector(".balance-label").textContent =
-        balanceVisible
-        ? "Total Balance (USD)"
-        : "Balance hidden";
-}
+      <!-- Sound Disc Animation -->
+      <div class="sound-disc"></div>
+    </div>
 
-function openAction(action) {
-    currentAction = action;
+    <!-- Post Metadata (User & Caption) -->
+    <div class="bottom-info">
+      <div class="username">@somali_creator <i class="fa-solid fa-circle-check" style="color:#20d5ec; font-size: 13px;"></i></div>
+      <div class="description">Ku soo dhawoow interface-ka rasmiga ah oo u shaqaynaya sida TikTok! 🚀 #viral #somalia #developer</div>
+      <div class="music-track">
+        <i class="fa-solid fa-music"></i>
+        <marquee scrollamount="4">Original Sound - Creator Studio Music</marquee>
+      </div>
+    </div>
 
-    modalTitle.textContent = action + " Crypto";
-    modalFields.innerHTML = "";
+    <!-- Bottom Navigation Bar -->
+    <div class="bottom-nav">
+      <div class="nav-item active">
+        <i class="fa-solid fa-house"></i>
+        <span>Home</span>
+      </div>
+      <div class="nav-item">
+        <i class="fa-solid fa-user-group"></i>
+        <span>Friends</span>
+      </div>
+      <div class="create-btn">
+        <div class="create-btn-inner">
+          <i class="fa-solid fa-plus"></i>
+        </div>
+      </div>
+      <div class="nav-item">
+        <i class="fa-regular fa-message"></i>
+        <span>Inbox</span>
+      </div>
+      <div class="nav-item">
+        <i class="fa-regular fa-user"></i>
+        <span>Profile</span>
+      </div>
+    </div>
 
-    modalNotice.textContent =
-        "Demo mode: this app does not connect to a blockchain or transfer real funds.";
+    <!-- Comment Popup Modal -->
+    <div class="comment-modal" id="commentModal">
+      <div class="comment-header">
+        <span>1,420 comments</span>
+        <i class="fa-solid fa-xmark" id="closeComment" style="cursor: pointer; font-size: 16px;"></i>
+      </div>
+      <div class="comment-body" id="commentList">
+        <div class="comment-item">
+          <img src="https://picsum.photos/50/50?random=1" class="comment-avatar">
+          <div>
+            <div style="font-weight: 600; font-size: 12px; color: #888;">@ali_user</div>
+            <div>Masha Allah koodh aad u qurux badan! 🔥</div>
+          </div>
+        </div>
+      </div>
+      <div class="comment-input-area">
+        <input type="text" id="commentInput" placeholder="Add comment...">
+      </div>
+    </div>
 
-    modalSubmit.textContent = "Continue";
+  </div>
 
-    if (action === "Send") {
-        modalDescription.textContent =
-            "Enter the recipient address and amount for a demonstration.";
+  <!-- JavaScript Functionalities -->
+  <script>
+    // 1. Like Button Counter & Toggle Functionality
+    const likeBtn = document.getElementById('likeBtn');
+    const likeCount = document.getElementById('likeCount');
+    let isLiked = false;
+    let count = 124500;
 
-        modalFields.innerHTML = `
-            <label for="crypto">Cryptocurrency</label>
-            <select id="crypto">
-                <option>Bitcoin (BTC)</option>
-                <option>Ethereum (ETH)</option>
-                <option>Tether (USDT)</option>
-                <option>Litecoin (LTC)</option>
-            </select>
+    likeBtn.addEventListener('click', () => {
+      isLiked = !isLiked;
+      if (isLiked) {
+        likeBtn.classList.add('liked');
+        count++;
+      } else {
+        likeBtn.classList.remove('liked');
+        count--;
+      }
+      likeCount.textContent = (count / 1000).toFixed(1) + 'K';
+    });
 
-            <label for="address">Recipient wallet address</label>
-            <input id="address"
-                   placeholder="Enter wallet address">
+    // 2. Follow Button Action
+    const followBtn = document.getElementById('followBtn');
+    followBtn.addEventListener('click', () => {
+      followBtn.style.display = 'none';
+    });
 
-            <label for="amount">Amount (USD)</label>
-            <input id="amount"
-                   type="number"
-                   min="0"
-                   step="0.01"
-                   placeholder="0.00">
+    // 3. Comment Drawer Functionality
+    const commentBtn = document.getElementById('commentBtn');
+    const commentModal = document.getElementById('commentModal');
+    const closeComment = document.getElementById('closeComment');
+
+    commentBtn.addEventListener('click', () => {
+      commentModal.classList.add('open');
+    });
+
+    closeComment.addEventListener('click', () => {
+      commentModal.classList.remove('open');
+    });
+
+    // 4. Add Comment Dynamically
+    const commentInput = document.getElementById('commentInput');
+    const commentList = document.getElementById('commentList');
+
+    commentInput.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter' && commentInput.value.trim() !== '') {
+        const newComment = document.createElement('div');
+        newComment.className = 'comment-item';
+        newComment.innerHTML = `
+          <img src="https://picsum.photos/50/50?random=2" class="comment-avatar">
+          <div>
+            <div style="font-weight: 600; font-size: 12px; color: #888;">@you</div>
+            <div>${commentInput.value}</div>
+          </div>
         `;
-    }
+        commentList.prepend(newComment);
+        commentInput.value = '';
+      }
+    });
 
-    else if (action === "Receive") {
-        modalDescription.textContent =
-            "Choose an asset to see the demo receiving information.";
-
-        modalFields.innerHTML = `
-            <label for="crypto">Cryptocurrency</label>
-            <select id="crypto">
-                <option>Bitcoin (BTC)</option>
-                <option>Ethereum (ETH)</option>
-                <option>Tether (USDT)</option>
-                <option>Litecoin (LTC)</option>
-            </select>
-        `;
-
-        modalSubmit.textContent = "Show Instructions";
-    }
-
-    else if (action === "Buy") {
-        modalDescription.textContent =
-            "This prototype cannot purchase cryptocurrency.";
-
-        modalFields.innerHTML = `
-            <label for="crypto">Cryptocurrency</label>
-            <select id="crypto">
-                <option>Bitcoin (BTC)</option>
-                <option>Ethereum (ETH)</option>
-                <option>Tether (USDT)</option>
-                <option>Litecoin (LTC)</option>
-            </select>
-
-            <label for="amount">Amount (USD)</label>
-            <input id="amount"
-                   type="number"
-                   min="0"
-                   placeholder="0.00">
-        `;
-
-        modalSubmit.textContent = "Review Demo";
-    }
-
-    else if (action === "Swap") {
-        modalDescription.textContent =
-            "Select the assets for a simulated exchange.";
-
-        modalFields.innerHTML = `
-            <label for="fromAsset">From</label>
-            <select id="fromAsset">
-                <option>BTC</option>
-                <option>ETH</option>
-                <option>USDT</option>
-                <option>LTC</option>
-            </select>
-
-            <label for="toAsset">To</label>
-            <select id="toAsset">
-                <option>USDT</option>
-                <option>BTC</option>
-                <option>ETH</option>
-                <option>LTC</option>
-            </select>
-
-            <label for="amount">Amount (USD)</label>
-            <input id="amount"
-                   type="number"
-                   min="0"
-                   placeholder="0.00">
-        `;
-
-        modalSubmit.textContent = "Preview Swap";
-    }
-
-    modalOverlay.classList.add("show");
-}
-
-function showNotice(title, message) {
-    currentAction = "Notice";
-
-    modalTitle.textContent = title;
-    modalDescription.textContent = message;
-    modalFields.innerHTML = "";
-
-    modalNotice.textContent =
-        "SalaamWallet prototype. No real account or blockchain connection is active.";
-
-    modalSubmit.style.display = "none";
-
-    modalOverlay.classList.add("show");
-}
-
-function closeModal() {
-    modalOverlay.classList.remove("show");
-    modalSubmit.style.display = "block";
-}
-
-function overlayClose(event) {
-    if (event.target === modalOverlay) {
-        closeModal();
-    }
-}
-
-function submitAction() {
-    if (currentAction === "Notice") {
-        closeModal();
-        return;
-    }
-
-    if (currentAction === "Receive") {
-        const asset = document.getElementById("crypto").value;
-
-        modalTitle.textContent = "Receive " + asset;
-
-        modalDescription.textContent =
-            "To receive " + asset +
-            ", a real wallet must provide a valid address.";
-
-        modalFields.innerHTML = `
-            <div class="notice">
-                Demo address: Not available.<br><br>
-                No wallet address has been generated.
-                Connect a secure wallet backend before accepting deposits.
-            </div>
-        `;
-
-        modalNotice.textContent =
-            "Do not send cryptocurrency to a demo address.";
-
-        modalSubmit.style.display = "none";
-        return;
-    }
-
-    if (currentAction === "Send") {
-        const address = document.getElementById("address").value.trim();
-        const amount = Number(document.getElementById("amount").value);
-
-        if (!address) {
-            alert("Please enter a recipient address.");
-            return;
-        }
-
-        if (!Number.isFinite(amount) || amount <= 0) {
-            alert("Please enter a valid amount.");
-            return;
-        }
-
-        alert(
-            "Demo only: your transfer has NOT been sent. " +
-            "No blockchain transaction was created."
-        );
-
-        closeModal();
-        return;
-    }
-
-    if (currentAction === "Buy" || currentAction === "Swap") {
-        const amountInput = document.getElementById("amount");
-        const amount = Number(amountInput.value);
-
-        if (!Number.isFinite(amount) || amount <= 0) {
-            alert("Please enter a valid amount.");
-            return;
-        }
-
-        alert(
-            currentAction + " preview only. " +
-            "No purchase, exchange, or blockchain transaction occurred."
-        );
-
-        closeModal();
-    }
-}
-
-function showPage(page, button) {
-    if (button) {
-        document.querySelectorAll(".nav-item").forEach(item => {
-            item.classList.remove("active");
+    // 5. Native Share Option Integration
+    const shareBtn = document.getElementById('shareBtn');
+    shareBtn.addEventListener('click', () => {
+      if (navigator.share) {
+        navigator.share({
+          title: 'TikTok Video',
+          url: window.location.href
         });
-
-        button.classList.add("active");
-    }
-
-    if (page === "Home") {
-        window.scrollTo({
-            top: 0,
-            behavior: "smooth"
-        });
-        return;
-    }
-
-    const messages = {
-        Markets:
-            "Markets page: live prices require a market-data API.",
-        Activity:
-            "Activity page: the transactions shown are sample data.",
-        Profile:
-            "Profile: Keynan. Account authentication has not been configured."
-    };
-
-    showNotice(page, messages[page] || "Demo page.");
-}
-</script>
-
+      } else {
+        alert("Link-ga waa la koobiyey!");
+      }
+    });
+  </script>
 </body>
 </html>

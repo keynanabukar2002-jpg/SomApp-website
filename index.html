@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-  <title>TikTok Mobile App</title>
+  <title>TikTok Mobile App Replica</title>
   <!-- FontAwesome Icons -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <style>
@@ -23,7 +23,7 @@
       overflow: hidden;
     }
 
-    /* Fullscreen Viewport for Social Media In-App Browsers */
+    /* Mobile App Frame Viewport */
     .app-viewport {
       width: 100%;
       height: 100vh;
@@ -35,7 +35,7 @@
       flex-direction: column;
     }
 
-    /* Background Media Player */
+    /* Video Background Media Player */
     .media-player {
       position: absolute;
       top: 0;
@@ -44,6 +44,24 @@
       height: 100%;
       z-index: 1;
       object-fit: cover;
+    }
+
+    /* Gradient overlay for readability */
+    .media-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      background: linear-gradient(
+        180deg,
+        rgba(0,0,0,0.4) 0%,
+        rgba(0,0,0,0) 20%,
+        rgba(0,0,0,0) 70%,
+        rgba(0,0,0,0.85) 100%
+      );
+      pointer-events: none;
     }
 
     /* Top Navigation Bar */
@@ -235,9 +253,7 @@
       white-space: nowrap;
     }
 
-    /* ------------------------------------------------------------- */
-    /* SAXIDKA RASMIGA AH EE BOTTOM NAVIGATION BAR-KA (FIXED IN-APP) */
-    /* ------------------------------------------------------------- */
+    /* FIXED BOTTOM NAVIGATION BAR */
     .bottom-nav {
       position: fixed !important;
       bottom: 0 !important;
@@ -381,6 +397,7 @@
     
     <!-- Video / Image Background -->
     <img class="media-player" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80" alt="TikTok Video Background">
+    <div class="media-overlay"></div>
 
     <!-- Top Navigation Bar -->
     <div class="top-bar">

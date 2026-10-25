@@ -68,29 +68,31 @@
             box-shadow: 0 0 10px rgba(239, 68, 68, 0.5);
         }
 
-        /* SOMALI FLAG CENTER BUTTON - ENLARGED */
+        /* SOMALI FLAG STYLE CENTER BUTTON - ENLARGED */
         .create-btn {
-            width: 52px;
-            height: 32px;
-            background: linear-gradient(90deg, #00f2fe 0%, #00f2fe 30%, #fe2c55 70%, #fe2c55 100%);
+            width: 54px;
+            height: 34px;
+            background: #4189DD;
             border-radius: 10px;
             position: relative;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
+            box-shadow: 0 0 10px rgba(65, 137, 221, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.4);
         }
 
         .create-btn-inner {
             width: 46px;
             height: 100%;
-            background-color: #ffffff;
+            background-color: #4189DD;
             border-radius: 8px;
             display: flex;
             justify-content: center;
             align-items: center;
-            color: #000000;
-            font-size: 16px;
+            color: #ffffff;
+            font-size: 17px;
         }
 
         /* ENLARGED BOTTOM NAVIGATION BAR FOR SOMEDIA */
@@ -377,7 +379,7 @@
                     </main>
                 </div>
 
-                <!-- TIKTOK-STYLE FIXED BOTTOM NAVIGATION BAR FOR SOMEDIA (ENLARGED & WALLET) -->
+                <!-- SOMALI FLAG-STYLE FIXED BOTTOM NAVIGATION BAR FOR SOMEDIA (ENLARGED) -->
                 <div class="bottom-nav">
                   <div class="nav-btn active" onclick="showToast('Home active')">
                     <i class="fa-solid fa-house"></i>
@@ -387,9 +389,10 @@
                     <i class="fa-solid fa-wallet"></i>
                     <span>Wallet</span>
                   </div>
+                  <!-- Center Button: Somali Flag Style -->
                   <div class="create-btn" onclick="openSomediaCameraModal()">
                     <div class="create-btn-inner">
-                      <i class="fa-solid fa-plus"></i>
+                      <i class="fa-solid fa-star"></i>
                     </div>
                   </div>
                   <div class="nav-btn" onclick="showToast('Inbox active')">

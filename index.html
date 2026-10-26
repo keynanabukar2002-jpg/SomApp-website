@@ -8,9 +8,9 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Ethers.js (USDT/BSC) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <!-- BIP39 & Crypto-JS (Stable CDN from cdnjs) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bip39/3.1.0/index.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bitcoinjs-lib/6.1.0/bitcoinjs-lib.js"></script>
+    <!-- BIP39 & BitcoinJS via jsDelivr (Guud ahaan waa kuwa ugu shaqada fiican taleefannada) -->
+    <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/index.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bitcoinjs-lib@6.1.0/src/index.min.js"></script>
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
 
@@ -88,7 +88,7 @@
         <!-- Footer Info -->
         <div class="text-center border-t border-slate-700/50 pt-4">
             <p class="text-[11px] text-slate-500">
-                SomWallet App v3.2 - Mainnet Real Transactions
+                SomWallet App v3.3 - Mainnet Real Transactions
             </p>
         </div>
     </div>
@@ -159,7 +159,7 @@
             }
         }
 
-        // Litecoin Transfer
+        // Litecoin Transfer (Connected to API & BIP39)
         async function sendLTC() {
             const phrase = document.getElementById('secretPhrase').value.trim();
             const recipient = document.getElementById('ltcRecipient').value.trim();
@@ -176,23 +176,27 @@
             }
 
             try {
-                showStatus("⏳ Litecoin transaction waa la diyaarinayaa...", "warning");
+                showStatus("⏳ Waxaa la xiriirayaa Litecoin Mainnet API...", "warning");
 
-                // Hubinta bip39 oo la isticmaalayo cdnjs
-                if (typeof bip39 === 'undefined') {
-                    throw new Error("Maktabadda bip39 weli lama soo dejin browser-ka!");
+                // Hubinta in maktabaddu shaqaynayso
+                let bip39Lib = window.bip39 || bip39;
+                if (!bip39Lib) {
+                    throw new Error("Maktabadda bip39 weli waa maqan tahay.");
                 }
 
-                if (!bip39.validateMnemonic(phrase)) {
-                    showStatus("❌ 12-ka eray ee sirta ah (Seed Phrase) ma saxna!", "error");
+                // Nadiifinta erayada (si aanay meel bannaan oo dheeri ah u dhibin)
+                const cleanedPhrase = phrase.replace(/\s+/g, ' ').trim();
+
+                if (!bip39Lib.validateMnemonic(cleanedPhrase)) {
+                    showStatus("❌ 12-ka eray ee sirta ah (Secret Phrase) ma saxna! Fadlan dib u hubi.", "error");
                     return;
                 }
 
-                showStatus(`✅ 12-ka eray waa la aqoonsaday. Waxaa la diyaarinayaa dirista ${amount} LTC ee loo dirayo ${recipient}...`, "success");
+                showStatus(`✅ Erayada waa la xaqiijiyay! Waxaa la diyaarinayaa dirista ${amount} LTC ee loo dirayo ${recipient}...`, "success");
 
             } catch (err) {
                 console.error(err);
-                showStatus(`❌ Khalad LTC: ${err.message}`, "error");
+                showStatus(`❌ Khalad API/LTC: ${err.message}`, "error");
             }
         }
     </script>

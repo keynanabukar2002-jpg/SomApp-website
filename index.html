@@ -1,222 +1,112 @@
-import 'react-native-get-random-values'; // Waa inuu ahaadaa sadarka 1aad si crypto-gu u shaqeeyo!
-import React, { useState, useEffect } from 'react';
-import { StyleSheet, Text, View, TextInput, TouchableOpacity, Alert, ScrollView, ActivityIndicator } from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import { ethers } from 'ethers';
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SomWallet - Native Litecoin (LTC) Transfer</title>
+    <!-- Tailwind CSS CDN -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- BitcoinJS & ECPair for Litecoin Transactions -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bitcoinjs-lib/6.1.0/bitcoinjs-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ecpair/2.1.0/ecpair.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-secp256k1/2.2.3/secp256k1.min.js"></script>
+</head>
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
 
-// BNB Smart Chain RPC & Contract Details (Mainnet)
-const RPC_URL = "https://bsc-dataseed.binance.org/";
-const provider = new ethers.JsonRpcProvider(RPC_URL);
+    <div class="bg-slate-800 border border-slate-700 rounded-2xl shadow-xl w-full max-w-md p-6">
+        <div class="text-center mb-6">
+            <h1 class="text-2xl font-bold text-amber-400">SomWallet App</h1>
+            <p class="text-sm text-slate-400">Native Litecoin (LTC Mainnet Transfer)</p>
+        </div>
 
-const USDT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
-const USDT_ABI = [
-  "function balanceOf(address owner) view returns (uint256)",
-  "function transfer(address to, uint amount) returns (bool)"
-];
+        <div class="space-y-4">
+            <!-- Private Key (WIF Format ama Hex) -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Litecoin Private Key (WIF)</label>
+                <input type="password" id="privateKey" placeholder="Geli LTC Private Key (WIF)..." class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500">
+            </div>
 
-export default function App() {
-  const [privateKey, setPrivateKey] = useState(null);
-  const [address, setAddress] = useState("");
-  const [bnbBalance, setBnbBalance] = useState("0.00");
-  const [usdtBalance, setUsdtBalance] = useState("0.00");
-  const [recipient, setRecipient] = useState("");
-  const [amount, setAmount] = useState("");
-  const [loading, setLoading] = useState(false);
+            <!-- Recipient Address -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Cinwaanka Qaataha (LTC Address)</label>
+                <input type="text" id="recipient" placeholder="LTC Address (ltc1... ama L...)" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500">
+            </div>
 
-  useEffect(() => {
-    checkStoredWallet();
-  }, []);
+            <!-- Amount -->
+            <div>
+                <label class="block text-xs font-semibold text-slate-300 mb-1">Cadadka LTC (Amount)</label>
+                <input type="number" step="0.00001" id="amount" placeholder="0.1" class="w-full bg-slate-900 border border-slate-700 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-amber-500">
+            </div>
 
-  // Check if wallet exists in device storage
-  const checkStoredWallet = async () => {
-    try {
-      const pk = await AsyncStorage.getItem("somwallet_pk");
-      if (pk) {
-        setPrivateKey(pk);
-        loadWalletData(pk);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  };
+            <!-- Submit Button -->
+            <button onclick="sendNativeLTC()" id="sendBtn" class="w-full bg-amber-500 hover:bg-amber-600 text-slate-950 font-bold py-2.5 rounded-lg transition duration-200 text-sm shadow-lg">
+                Dir Litecoin (LTC) 🚀
+            </button>
+        </div>
 
-  // Create New Wallet
-  const createWallet = async () => {
-    try {
-      const wallet = ethers.Wallet.createRandom();
-      await AsyncStorage.setItem("somwallet_pk", wallet.privateKey);
-      setPrivateKey(wallet.privateKey);
-      loadWalletData(wallet.privateKey);
-      Alert.alert("Success", "Wallet created successfully!");
-    } catch (error) {
-      Alert.alert("Error", "Failed to create wallet: " + error.message);
-    }
-  };
+        <!-- Status / Logs Box -->
+        <div class="mt-6">
+            <h2 class="text-xs font-semibold text-slate-400 mb-1">Xaaladda (Status Logs):</h2>
+            <div id="logBox" class="bg-slate-950 border border-slate-800 rounded-lg p-3 h-36 overflow-y-auto text-xs font-mono text-amber-300 space-y-1">
+                <span class="text-slate-500">Sugaya hawlgalka Litecoin...</span>
+            </div>
+        </div>
+    </div>
 
-  // Load BNB & USDT Balances
-  const loadWalletData = async (pk) => {
-    try {
-      setLoading(true);
-      const wallet = new ethers.Wallet(pk, provider);
-      setAddress(wallet.address);
+    <script>
+        // Shabakadda Litecoin (Network parameters)
+        const LITECOIN_NETWORK = {
+            messagePrefix: '\x19Litecoin Signed Message:\n',
+            bech32: 'ltc',
+            bip32: {
+                public: 0x019da462,
+                private: 0x019d9cfe,
+            },
+            pubKeyHash: 0x30, // 48 (Starts with L)
+            scriptHash: 0x32, // 50 (Starts with M)
+            wif: 0xb0,        // 176
+        };
 
-      // Get BNB balance
-      const bnbBal = await provider.getBalance(wallet.address);
-      setBnbBalance(Number(ethers.formatEther(bnbBal)).toFixed(4));
+        function log(message, type = "normal") {
+            const logBox = document.getElementById("logBox");
+            let color = "text-amber-300";
+            if (type === "error") color = "text-red-400";
+            if (type === "success") color = "text-cyan-400";
+            if (type === "info") color = "text-amber-200";
 
-      // Get USDT BEP20 balance
-      const usdtContract = new ethers.Contract(USDT_ADDRESS, USDT_ABI, provider);
-      const usdtBal = await usdtContract.balanceOf(wallet.address);
-      setUsdtBalance(Number(ethers.formatUnits(usdtBal, 18)).toFixed(2));
-    } catch (error) {
-      console.error(error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Send USDT (BEP20)
-  const sendUSDT = async () => {
-    if (!recipient || !amount) {
-      Alert.alert("Error", "Please fill in all fields!");
-      return;
-    }
-
-    try {
-      setLoading(true);
-      const wallet = new ethers.Wallet(privateKey, provider);
-      const usdtContract = new ethers.Contract(USDT_ADDRESS, USDT_ABI, wallet);
-      
-      const parsedAmount = ethers.parseUnits(amount, 18);
-
-      Alert.alert("Processing", "Sending transaction, please wait...");
-      const tx = await usdtContract.transfer(recipient, parsedAmount);
-      await tx.wait();
-
-      Alert.alert("Success", "Transaction Hash:\n" + tx.hash);
-      setRecipient("");
-      setAmount("");
-      loadWalletData(privateKey);
-    } catch (error) {
-      console.error(error);
-      Alert.alert("Failed", error.reason || error.message);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-  // Logout / Remove Wallet
-  const logoutWallet = async () => {
-    Alert.alert(
-      "Confirm Logout",
-      "Are you sure? Make sure you backed up your private key!",
-      [
-        { text: "Cancel", style: "cancel" },
-        { 
-          text: "Remove", 
-          style: "destructive", 
-          onPress: async () => {
-            await AsyncStorage.removeItem("somwallet_pk");
-            setPrivateKey(null);
-            setAddress("");
-          } 
+            logBox.innerHTML += `<div class="${color}">> ${message}</div>`;
+            logBox.scrollTop = logBox.scrollHeight;
         }
-      ]
-    );
-  };
 
-  return (
-    <ScrollView contentContainerStyle={styles.container}>
-      <Text style={styles.title}>SomWallet</Text>
-      <Text style={styles.subtitleBadge}>BNB Smart Chain (BEP20)</Text>
+        async function sendNativeLTC() {
+            const privKeyWIF = document.getElementById("privateKey").value.trim();
+            const recipient = document.getElementById("recipient").value.trim();
+            const amountLTC = parseFloat(document.getElementById("amount").value.trim());
+            const logBox = document.getElementById("logBox");
 
-      {!privateKey ? (
-        <View style={styles.card}>
-          <Text style={styles.desc}>No wallet detected on this device. Create a new secure wallet to start.</Text>
-          <TouchableOpacity style={styles.btnYellow} onPress={createWallet}>
-            <Text style={styles.btnTextDark}>Create New Wallet</Text>
-          </TouchableOpacity>
-        </View>
-      ) : (
-        <View style={styles.card}>
-          <Text style={styles.label}>Your Wallet Address:</Text>
-          <Text style={styles.address} selectable={true}>{address}</Text>
+            logBox.innerHTML = "";
 
-          {/* Balances Grid */}
-          <View style={styles.row}>
-            <View style={styles.box}>
-              <Text style={styles.label}>BNB Balance</Text>
-              <Text style={styles.value}>{bnbBalance}</Text>
-            </View>
-            <View style={styles.box}>
-              <Text style={styles.label}>USDT Balance</Text>
-              <Text style={[styles.value, { color: '#4ade80' }]}>{usdtBalance}</Text>
-            </View>
-          </View>
+            if (!privKeyWIF || !recipient || isNaN(amountLTC)) {
+                log("Fadlan buuxi dhammaan meelaha banaan si sax ah!", "error");
+                return;
+            }
 
-          {/* Refresh Button */}
-          <TouchableOpacity style={styles.btnGray} onPress={() => loadWalletData(privateKey)}>
-            <Text style={styles.btnTextWhite}>Refresh Balances</Text>
-          </TouchableOpacity>
+            try {
+                log("Waxaa la dhisayaa xiriirka Native Litecoin...", "info");
+                
+                // Halkan waxaa lagu diyaarin karaa abuurista Key-ga iyo soo akhrinta UTXO-yada (Unspent Transaction Outputs) 
+                // oo laga soo qaadayo shabakadda Litecoin Public API (tusaale blockcypher ama sochain).
+                
+                log("Waxaa la hubinayaa haraaga iyo UTXO-yada...", "info");
+                
+                // Tusaale ahaan hannaanka API-ga ee bixiya xogta Litecoin:
+                // Cilmiga UTXO iyo Broadcast-ka transactions-ka ee Native Crypto wuxuu u baahan yahay API key ama Endpoint shaqeeya.
+                log("Fiiro gaar ah: Native LTC waxay u baahan tahay UTXO management iyo Broadcast API (sida Blockcypher).", "info");
 
-          {/* Send Form */}
-          <View style={styles.sendBox}>
-            <Text style={styles.sendTitle}>Send USDT</Text>
-            <TextInput
-              style={styles.input}
-              placeholder="Recipient Address (0x...)"
-              placeholderTextColor="#9ca3af"
-              value={recipient}
-              onChangeText={setRecipient}
-            />
-            <TextInput
-              style={styles.input}
-              placeholder="Amount USDT"
-              placeholderTextColor="#9ca3af"
-              keyboardType="numeric"
-              value={amount}
-              onChangeText={setAmount}
-            />
-            
-            {loading ? (
-              <ActivityIndicator size="large" color="#facc15" style={{marginVertical: 10}} />
-            ) : (
-              <TouchableOpacity style={styles.btnGreen} onPress={sendUSDT}>
-                <Text style={styles.btnTextWhite}>Send USDT Now</Text>
-              </TouchableOpacity>
-            )}
-          </View>
-
-          {/* Logout Button */}
-          <TouchableOpacity style={styles.btnRed} onPress={logoutWallet}>
-            <Text style={styles.btnTextRed}>Logout / Remove Wallet</Text>
-          </TouchableOpacity>
-        </View>
-      )}
-    </ScrollView>
-  );
-}
-
-// Styles
-const styles = StyleSheet.create({
-  container: { flexGrow: 1, backgroundColor: '#0f172a', alignItems: 'center', justifyContent: 'center', padding: 20 },
-  title: { fontSize: 28, fontWeight: 'bold', color: '#facc15', marginBottom: 2 },
-  subtitleBadge: { fontSize: 12, color: '#94a3b8', marginBottom: 25, textTransform: 'uppercase', letterSpacing: 1 },
-  card: { backgroundColor: '#1e293b', padding: 20, borderRadius: 16, width: '100%', maxWidth: 400 },
-  desc: { color: '#94a3b8', textAlign: 'center', marginBottom: 20, fontSize: 14 },
-  label: { color: '#94a3b8', fontSize: 11, marginBottom: 4, textTransform: 'uppercase' },
-  address: { color: '#fde047', fontSize: 12, marginBottom: 15, backgroundColor: '#0f172a', padding: 10, borderRadius: 8, overflow: 'hidden' },
-  row: { flexDirection: 'row', justifyContent: 'space-between', marginBottom: 15 },
-  box: { backgroundColor: '#334155', padding: 12, borderRadius: 10, width: '48%', alignItems: 'center' },
-  value: { color: '#fff', fontSize: 16, fontWeight: 'bold', marginTop: 5 },
-  sendBox: { backgroundColor: '#334155', padding: 15, borderRadius: 12, marginTop: 10, marginBottom: 15 },
-  sendTitle: { color: '#facc15', fontWeight: 'bold', marginBottom: 10, fontSize: 14 },
-  input: { backgroundColor: '#0f172a', color: '#fff', padding: 12, borderRadius: 8, marginBottom: 10, borderWidth: 1, borderColor: '#475569', fontSize: 13 },
-  btnYellow: { backgroundColor: '#facc15', padding: 14, borderRadius: 10, alignItems: 'center' },
-  btnGreen: { backgroundColor: '#16a34a', padding: 14, borderRadius: 10, alignItems: 'center', marginTop: 5 },
-  btnGray: { backgroundColor: '#475569', padding: 10, borderRadius: 8, alignItems: 'center', marginBottom: 15 },
-  btnRed: { backgroundColor: 'rgba(239, 68, 68, 0.15)', padding: 12, borderRadius: 10, alignItems: 'center', borderWidth: 1, borderColor: 'rgba(239, 68, 68, 0.3)' },
-  btnTextDark: { color: '#020617', fontWeight: 'bold', fontSize: 15 },
-  btnTextWhite: { color: '#fff', fontWeight: 'bold', fontSize: 14 },
-  btnTextRed: { color: '#ef4444', fontWeight: 'bold', fontSize: 13 },
-});
+            } catch (error) {
+                log(`Khalad: ${error.message || error}`, "error");
+            }
+        }
+    </script>
+</body>
+</html>

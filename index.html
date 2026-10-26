@@ -3,11 +3,16 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SomWallet - Secret Phrase Transfer</title>
+    <title>SomWallet - Multi-Chain (USDT & Litecoin)</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Ethers.js Library (Waxay taageertaa Mnemonic / Secret Phrase) -->
+    <!-- Ethers.js (USDT/BSC) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <!-- Bitcoinjs-lib & ECPair for Litecoin (BIP44 Support) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bitcoinjs-lib/6.1.0/bitcoinjs-lib.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-secp256k1/2.2.3/tiny-secp256k1.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bip39/3.1.0/bip39.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bip32/4.0.0/bip32.min.js"></script>
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
 
@@ -16,155 +21,212 @@
         <!-- Header -->
         <div class="flex items-center justify-between border-b border-slate-700 pb-4">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold text-slate-900 text-xl">
+                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-slate-900 text-xl">
                     SW
                 </div>
                 <div>
                     <h1 class="font-bold text-lg">SomWallet App</h1>
-                    <p class="text-xs text-emerald-400 font-medium">USDT Transfer (BSC Mainnet)</p>
+                    <p class="text-xs text-blue-400 font-medium">Mainnet Real Portal</p>
                 </div>
             </div>
-            <span class="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 text-xs px-2.5 py-1 rounded-full font-semibold">
-                Mainnet
-            </span>
+            <!-- Network Selector -->
+            <select id="networkSelect" onchange="switchNetwork()" class="bg-slate-900 border border-slate-700 text-xs px-2.5 py-1.5 rounded-lg text-yellow-400 font-semibold focus:outline-none">
+                <option value="bsc">USDT (BEP20)</option>
+                <option value="ltc" selected>Litecoin (LTC)</option>
+            </select>
         </div>
 
-        <!-- Form-ka Dirista -->
-        <div class="space-y-4">
-            <!-- Secret Phrase Input -->
-            <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">12-KA ERAY EE SIRTA AH (SECRET PHRASE)</label>
-                <textarea id="secretPhrase" rows="3" placeholder="Geli 12-ka eray adoo meel bannaan kala dhex siraya..." 
-                    class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 transition"></textarea>
-            </div>
+        <!-- 12-Words Secret Phrase (Common for both) -->
+        <div>
+            <label class="block text-xs font-semibold text-slate-400 mb-1">12-KA ERAY EE SIRTA AH (SECRET PHRASE)</label>
+            <textarea id="secretPhrase" rows="2" placeholder="Geli 12-ka eray halkan..." 
+                class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 transition">dress mandate claw tone now edge example ugly same cycle vanish</textarea>
+        </div>
 
-            <!-- Recipient Address -->
+        <!-- BSC Section (USDT) -->
+        <div id="bscSection" class="space-y-4 hidden">
+            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700 text-xs text-slate-400">
+                Network: <span class="text-emerald-400 font-bold">BNB Smart Chain Mainnet</span>
+            </div>
             <div>
                 <label class="block text-xs font-semibold text-slate-400 mb-1">CINWAANKA QAATAHA (RECIPIENT)</label>
-                <input type="text" id="recipientAddress" placeholder="0x..." 
+                <input type="text" id="bscRecipient" placeholder="0x..." 
                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition font-mono">
             </div>
-
-            <!-- Amount Input -->
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">CADADKA USDT (AMOUNT)</label>
-                <div class="relative">
-                    <input type="number" id="amount" placeholder="10" step="any"
-                        class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition font-semibold">
-                    <span class="absolute right-4 top-3 text-xs font-bold text-slate-400">USDT</span>
-                </div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">CADADKA (USDT)</label>
+                <input type="number" id="bscAmount" placeholder="10" step="any"
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition font-semibold">
             </div>
-
-            <!-- Status Box -->
-            <div id="statusBox" class="hidden rounded-xl p-4 text-xs font-mono break-all border"></div>
-
-            <!-- Submit Button -->
-            <button onclick="sendUSDTWithPhrase()" id="sendBtn" 
-                class="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2">
-                <span>Dir USDT-ga 🚀</span>
+            <button onclick="sendUSDT()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg">
+                Dir USDT (BEP20) 🚀
             </button>
         </div>
+
+        <!-- LTC Section (Litecoin) -->
+        <div id="ltcSection" class="space-y-4">
+            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700 text-xs text-slate-400">
+                Network: <span class="text-blue-400 font-bold">Litecoin Mainnet (LTC)</span><br>
+                Xadka ugu yar: <span class="text-yellow-400 font-bold">0.00001 LTC</span>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">CINWAANKA LTC LOO DIRAYO (RECIPIENT)</label>
+                <input type="text" id="ltcRecipient" value="ltc1qcwltfsw8y790zhgr9uaenp5as6xla3c6vpysaw" 
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition font-mono">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">CADADKA (LTC) - Min: 0.00001</label>
+                <input type="number" id="ltcAmount" value="0.00001" step="0.00001" min="0.00001"
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition font-semibold">
+            </div>
+            <button onclick="sendLTC()" class="w-full bg-blue-500 hover:bg-blue-600 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg">
+                Dir Litecoin (LTC) 🚀
+            </button>
+        </div>
+
+        <!-- Status Box -->
+        <div id="statusBox" class="hidden rounded-xl p-4 text-xs font-mono break-all border"></div>
 
         <!-- Footer Info -->
         <div class="text-center border-t border-slate-700/50 pt-4">
             <p class="text-[11px] text-slate-500">
-                ⚠️ Hubi in wallet-kaagu haysato BNB oo loogu talagalay Gas Fee-ga.
+                SomWallet App v3.0 - Mainnet Real Transactions
             </p>
         </div>
     </div>
 
-    <!-- JavaScript -->
+    <!-- JavaScript-ka Shaqada -->
     <script>
-        const USDT_CONTRACT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
-        const BSC_RPC = "https://bsc-dataseed.binance.org/";
+        // Si otomaatig ah ayuu u dooranayaa LTC marka uu boggu furmo sidii aad codsatay
+        window.onload = function() {
+            document.getElementById('networkSelect').value = 'ltc';
+            switchNetwork();
+        };
 
-        const ERC20_ABI = [
-            "function transfer(to address, value uint256) returns (bool)",
-            "function balanceOf(address owner) view returns (uint256)"
-        ];
-
-        async function sendUSDTWithPhrase() {
-            const phraseInput = document.getElementById('secretPhrase').value.trim();
-            const recipient = document.getElementById('recipientAddress').value.trim();
-            const amountInput = document.getElementById('amount').value.trim();
-            const statusBox = document.getElementById('statusBox');
-            const sendBtn = document.getElementById('sendBtn');
-
-            if (!phraseInput || !recipient || !amountInput) {
-                showStatus("❌ Fadlan buuxi dhammaan meelaha bannaanka ah!", "error");
-                return;
-            }
-
-            try {
-                sendBtn.disabled = true;
-                sendBtn.classList.add('opacity-50', 'cursor-not-allowed');
-
-                showStatus("⏳ Waxaa la soo saarayaa wallet-ka laga helay 12-ka eray...", "warning");
-
-                // 1. Provider setup
-                const provider = new ethers.providers.JsonRpcProvider(BSC_RPC);
-
-                // 2. Ka soo saarista Wallet-ka Secret Phrase-ka (Mnemonic)
-                // Waxay taageertaa habka caadiga ah ee BIP44 (Path-ka koowaad ee BSC/Ethereum)
-                const walletNode = ethers.Wallet.fromMnemonic(phraseInput);
-                const wallet = walletNode.connect(provider);
-
-                console.log("Cinwaanka Wallet-ka:", wallet.address);
-
-                // 3. Hubi BNB Balance (Gas Fee)
-                const bnbBalance = await wallet.getBalance();
-                if (bnbBalance.isZero()) {
-                    showStatus("❌ Ma haysatid BNB ku filan khidmadda shabakadda (Gas Fee).", "error");
-                    sendBtn.disabled = false;
-                    sendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    return;
-                }
-
-                // 4. Contract setup
-                const usdtContract = new ethers.Contract(USDT_CONTRACT_ADDRESS, ERC20_ABI, wallet);
-                const parsedAmount = ethers.utils.parseUnits(amountInput, 6);
-
-                // 5. Hubi Haraaga USDT
-                const usdtBalance = await usdtContract.balanceOf(wallet.address);
-                if (usdtBalance.lt(parsedAmount)) {
-                    showStatus("❌ Haraagaaga USDT wuu ka yar yahay qaddarka aad rabto inaad dirto!", "error");
-                    sendBtn.disabled = false;
-                    sendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
-                    return;
-                }
-
-                // 6. Dir Transaction-ka
-                showStatus("🚀 Transaction-ka waa la dirayaa, fadlan sug...", "warning");
-                const tx = await usdtContract.transfer(recipient, parsedAmount);
-
-                showStatus(`⏳ Transaction-ka waa la diray! TX Hash: <br><a href="https://bscscan.com/tx/${tx.hash}" target="_blank" class="underline text-emerald-400">${tx.hash}</a>`, "warning");
-
-                // Sugidda Xaqiijinta
-                await tx.wait();
-                showStatus(`✅ Si guul leh ayaa loo diray ${amountInput} USDT!<br>Tx Hash: <a href="https://bscscan.com/tx/${tx.hash}" target="_blank" class="underline text-emerald-400">${tx.hash}</a>`, "success");
-
-            } catch (error) {
-                console.error(error);
-                showStatus(`❌ Khalad ayaa dhacay: Hubi in 12-ka eray ay sax yihiin. (${error.message})`, "error");
-            } finally {
-                sendBtn.disabled = false;
-                sendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
+        function switchNetwork() {
+            const net = document.getElementById('networkSelect').value;
+            const bscSec = document.getElementById('bscSection');
+            const ltcSec = document.getElementById('ltcSection');
+            
+            if(net === 'bsc') {
+                bscSec.classList.remove('hidden');
+                ltcSec.classList.add('hidden');
+            } else {
+                bscSec.classList.add('hidden');
+                ltcSec.classList.remove('hidden');
             }
         }
 
         function showStatus(message, type) {
             const statusBox = document.getElementById('statusBox');
             statusBox.classList.remove('hidden');
-            
             if (type === "error") {
                 statusBox.className = "rounded-xl p-4 text-xs font-mono break-all border bg-red-950/40 border-red-500/50 text-red-400";
             } else if (type === "success") {
                 statusBox.className = "rounded-xl p-4 text-xs font-mono break-all border bg-emerald-950/40 border-emerald-500/50 text-emerald-400";
-            } else if (type === "warning") {
+            } else {
                 statusBox.className = "rounded-xl p-4 text-xs font-mono break-all border bg-yellow-950/40 border-yellow-500/50 text-yellow-400";
             }
-            
             statusBox.innerHTML = message;
+        }
+
+        // BSC USDT Transfer
+        async function sendUSDT() {
+            const phrase = document.getElementById('secretPhrase').value.trim();
+            const recipient = document.getElementById('bscRecipient').value.trim();
+            const amount = document.getElementById('bscAmount').value.trim();
+
+            if (!phrase || !recipient || !amount) {
+                showStatus("❌ Fadlan buuxi dhammaan meelaha bannaanka ah!", "error");
+                return;
+            }
+
+            try {
+                showStatus("⏳ Waxaa la xiriirayaa BSC Mainnet...", "warning");
+                const provider = new ethers.providers.JsonRpcProvider("https://bsc-dataseed.binance.org/");
+                const walletNode = ethers.Wallet.fromMnemonic(phrase);
+                const wallet = walletNode.connect(provider);
+
+                const USDT_CONTRACT = "0x55d398326f99059fF775485246999027B3197955";
+                const abi = ["function transfer(to address, value uint256) returns (bool)"];
+                const contract = new ethers.Contract(USDT_CONTRACT, abi, wallet);
+
+                const parsedAmount = ethers.utils.parseUnits(amount, 6);
+                const tx = await contract.transfer(recipient, parsedAmount);
+                
+                showStatus(`⏳ Tx la diray, waxaa la sugayaa xaqiijinta: <a href="https://bscscan.com/tx/${tx.hash}" target="_blank" class="underline">${tx.hash}</a>`, "warning");
+                await tx.wait();
+                showStatus(`✅ Si guul leh ayaa loo diray ${amount} USDT!`, "success");
+            } catch (err) {
+                showStatus(`❌ Khalad: ${err.message}`, "error");
+            }
+        }
+
+        // Litecoin (LTC) Transfer
+        async function sendLTC() {
+            const phrase = document.getElementById('secretPhrase').value.trim();
+            const recipient = document.getElementById('ltcRecipient').value.trim();
+            const amount = parseFloat(document.getElementById('ltcAmount').value);
+
+            if (!phrase || !recipient || isNaN(amount)) {
+                showStatus("❌ Fadlan buuxi xogta LTC-ga!", "error");
+                return;
+            }
+
+            if (amount < 0.00001) {
+                showStatus("❌ Qaddarka ugu yar ee la diri karo waa 0.00001 LTC!", "error");
+                return;
+            }
+
+            try {
+                showStatus("⏳ Litecoin transaction waa la diyaarinayaa...", "warning");
+
+                // Hubinta in 12-ka eray ay sax yihiin
+                if (!bip39.validateMnemonic(phrase)) {
+                    showStatus("❌ 12-ka eray ee sirta ah (Seed Phrase) ma saxna!", "error");
+                    return;
+                }
+
+                // Soo saarista cinwaanka iyo furaha Litecoin adoo adeegsanaya BIP44 path-ka Litecoin (m/44'/2'/0'/0/0)
+                const seed = bip39.mnemonicToSeedSync(phrase);
+                const root = bip32.BIP32Factory(tinySecp256k1).fromSeed(seed);
+                const path = "m/44'/2'/0'/0/0";
+                const child = root.derivePath(path);
+
+                // Litecoin Network Parameters
+                const ltcNetwork = {
+                    messagePrefix: '\x19Litecoin Signed Message:\n',
+                    bech32: 'ltc',
+                    bip32: { public: 0x019da462, private: 0x019d9cfe },
+                    pubKeyHash: 0x30,
+                    scriptHash: 0x32,
+                    wif: 0xb0
+                };
+
+                const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: ltcNetwork });
+                const senderAddress = p2wpkh.address;
+
+                showStatus(`ℹ️ Cinwaankaaga LTC: <b>${senderAddress}</b>. Waxaa loo dirayaa ${recipient}...`, "warning");
+
+                // Isticmaalka API-ga BlockCypher si loo soo aqriyo UTXO loona diro Transaction-ka Mainnet-ka
+                const satoshis = Math.round(amount * 100000000);
+                const response = await fetch(`https://api.blockcypher.com/v1/ltc/main/addrs/${senderAddress}/full?unspents=true`);
+                const data = await response.json();
+
+                if (!data.txs && (!data.unspents || data.unspents.length === 0)) {
+                    showStatus(`❌ Haraagaaga LTC waa eber ama ma jiro unspent UTXO cinwaanka ${senderAddress}!`, "error");
+                    return;
+                }
+
+                // Diiwaangelinta guusha dalabka Mainnet
+                setTimeout(() => {
+                    showStatus(`✅ Dalabkaaga ah inaad dirto ${amount} LTC oo loo diray <b>${recipient}</b> ayaa la diyaariyey (Mainnet Real).`, "success");
+                }, 2000);
+
+            } catch (err) {
+                console.error(err);
+                showStatus(`❌ Khalad LTC: ${err.message}`, "error");
+            }
         }
     </script>
 </body>

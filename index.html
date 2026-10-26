@@ -8,27 +8,30 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Ethers.js (USDT/BSC) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <!-- BIP39 & BitcoinJS via jsDelivr (Guud ahaan waa kuwa ugu shaqada fiican taleefannada) -->
-    <script src="https://cdn.jsdelivr.net/npm/bip39@3.1.0/dist/index.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/bitcoinjs-lib@6.1.0/src/index.min.js"></script>
+    <!-- BIP39 & BitcoinJS (CDN Alternative si ay u shaqeyso) -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bip39/3.1.0/bip39.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bitcoinjs-lib/6.1.0/bitcoinjs-lib.js"></script>
 </head>
-<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
+<body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4 antialiased">
 
-    <div class="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 p-6 space-y-6">
+    <div class="max-w-md w-full bg-slate-800/90 backdrop-blur-md rounded-2xl shadow-2xl border border-slate-700/80 p-6 space-y-6">
         
         <!-- Header -->
-        <div class="flex items-center justify-between border-b border-slate-700 pb-4">
+        <div class="flex items-center justify-between border-b border-slate-700/60 pb-4">
             <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center font-bold text-slate-900 text-xl">
+                <div class="w-10 h-10 bg-gradient-to-tr from-blue-600 to-emerald-400 rounded-xl flex items-center justify-center font-extrabold text-slate-950 text-xl shadow-lg shadow-blue-500/20">
                     SW
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg">SomWallet App</h1>
-                    <p class="text-xs text-blue-400 font-medium">Mainnet Real Portal</p>
+                    <h1 class="font-bold text-lg tracking-wide">SomWallet App</h1>
+                    <p class="text-[11px] text-emerald-400 font-medium flex items-center gap-1">
+                        <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                        Mainnet Real Portal
+                    </p>
                 </div>
             </div>
             <!-- Network Selector -->
-            <select id="networkSelect" onchange="switchNetwork()" class="bg-slate-900 border border-slate-700 text-xs px-2.5 py-1.5 rounded-lg text-yellow-400 font-semibold focus:outline-none">
+            <select id="networkSelect" onchange="switchNetwork()" class="bg-slate-900 border border-slate-700 text-xs px-3 py-2 rounded-xl text-amber-400 font-semibold focus:outline-none focus:ring-2 focus:ring-amber-400/50 transition">
                 <option value="bsc">USDT (BEP20)</option>
                 <option value="ltc" selected>Litecoin (LTC)</option>
             </select>
@@ -36,59 +39,59 @@
 
         <!-- 12-Words Secret Phrase -->
         <div>
-            <label class="block text-xs font-semibold text-slate-400 mb-1">12-KA ERAY EE SIRTA AH (SECRET PHRASE)</label>
+            <label class="block text-xs font-semibold text-slate-400 mb-1.5 uppercase tracking-wider">12-KA ERAY EE SIRTA AH (SECRET PHRASE)</label>
             <textarea id="secretPhrase" rows="2" placeholder="Geli 12-ka eray halkan..." 
-                class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 transition">dress mandate claw tone now edge example ugly same cycle vanish</textarea>
+                class="w-full bg-slate-900/90 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition font-mono placeholder-slate-600">dress mandate claw tone now edge example ugly same cycle vanish</textarea>
         </div>
 
         <!-- BSC Section (USDT) -->
         <div id="bscSection" class="space-y-4 hidden">
-            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700 text-xs text-slate-400">
+            <div class="bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/20 text-xs text-slate-300">
                 Network: <span class="text-emerald-400 font-bold">BNB Smart Chain Mainnet</span>
             </div>
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">CINWAANKA QAATAHA (RECIPIENT)</label>
+                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">CINWAANKA QAATAHA (RECIPIENT)</label>
                 <input type="text" id="bscRecipient" placeholder="0x..." 
-                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition font-mono">
+                    class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition font-mono">
             </div>
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">CADADKA (USDT)</label>
+                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">CADADKA (USDT)</label>
                 <input type="number" id="bscAmount" placeholder="10" step="any"
-                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition font-semibold">
+                    class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 focus:ring-1 focus:ring-emerald-500 transition font-semibold">
             </div>
-            <button onclick="sendUSDT()" class="w-full bg-emerald-500 hover:bg-emerald-600 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg">
+            <button onclick="sendUSDT()" class="w-full bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-emerald-500/20 active:scale-[0.99]">
                 Dir USDT (BEP20) 🚀
             </button>
         </div>
 
         <!-- LTC Section (Litecoin) -->
         <div id="ltcSection" class="space-y-4">
-            <div class="bg-slate-900/50 p-3 rounded-xl border border-slate-700 text-xs text-slate-400">
+            <div class="bg-blue-950/30 p-3 rounded-xl border border-blue-500/20 text-xs text-slate-300">
                 Network: <span class="text-blue-400 font-bold">Litecoin Mainnet (LTC)</span><br>
-                Xadka ugu yar: <span class="text-yellow-400 font-bold">0.00001 LTC</span>
+                Xadka ugu yar: <span class="text-amber-400 font-bold">0.00001 LTC</span>
             </div>
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">CINWAANKA LTC LOO DIRAYO (RECIPIENT)</label>
+                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">CINWAANKA LTC LOO DIRAYO (RECIPIENT)</label>
                 <input type="text" id="ltcRecipient" value="ltc1qcwltfsw8y790zhgr9uaenp5as6xla3c6vpysaw" 
-                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition font-mono">
+                    class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition font-mono text-xs">
             </div>
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">CADADKA (LTC) - Min: 0.00001</label>
+                <label class="block text-xs font-semibold text-slate-400 mb-1 uppercase tracking-wider">CADADKA (LTC) - Min: 0.00001</label>
                 <input type="number" id="ltcAmount" value="0.00001" step="0.00001" min="0.00001"
-                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 transition font-semibold">
+                    class="w-full bg-slate-900/90 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-blue-500 focus:ring-1 focus:ring-blue-500 transition font-semibold">
             </div>
-            <button onclick="sendLTC()" class="w-full bg-blue-500 hover:bg-blue-600 text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg">
+            <button onclick="sendLTC()" class="w-full bg-blue-500 hover:bg-blue-400 text-slate-950 font-bold py-3.5 rounded-xl transition-all shadow-lg shadow-blue-500/20 active:scale-[0.99]">
                 Dir Litecoin (LTC) 🚀
             </button>
         </div>
 
         <!-- Status Box -->
-        <div id="statusBox" class="hidden rounded-xl p-4 text-xs font-mono break-all border"></div>
+        <div id="statusBox" class="hidden rounded-xl p-4 text-xs font-mono break-all border transition-all duration-300"></div>
 
         <!-- Footer Info -->
         <div class="text-center border-t border-slate-700/50 pt-4">
             <p class="text-[11px] text-slate-500">
-                SomWallet App v3.3 - Mainnet Real Transactions
+                SomWallet App v3.4 - Real Crypto Transfer
             </p>
         </div>
     </div>
@@ -122,7 +125,7 @@
             } else if (type === "success") {
                 statusBox.className = "rounded-xl p-4 text-xs font-mono break-all border bg-emerald-950/40 border-emerald-500/50 text-emerald-400";
             } else {
-                statusBox.className = "rounded-xl p-4 text-xs font-mono break-all border bg-yellow-950/40 border-yellow-500/50 text-yellow-400";
+                statusBox.className = "rounded-xl p-4 text-xs font-mono break-all border bg-amber-950/40 border-amber-500/50 text-amber-400";
             }
             statusBox.innerHTML = message;
         }
@@ -148,10 +151,10 @@
                 const abi = ["function transfer(to address, value uint256) returns (bool)"];
                 const contract = new ethers.Contract(USDT_CONTRACT, abi, wallet);
 
-                const parsedAmount = ethers.utils.parseUnits(amount, 6);
+                const parsedAmount = ethers.utils.parseUnits(amount, 18);
                 const tx = await contract.transfer(recipient, parsedAmount);
                 
-                showStatus(`⏳ Tx la diray, waxaa la sugayaa xaqiijinta: <a href="https://bscscan.com/tx/${tx.hash}" target="_blank" class="underline">${tx.hash}</a>`, "warning");
+                showStatus(`⏳ Tx la diray, waxaa la sugayaa xaqiijinta: <a href="https://bscscan.com/tx/${tx.hash}" target="_blank" class="underline font-bold">${tx.hash}</a>`, "warning");
                 await tx.wait();
                 showStatus(`✅ Si guul leh ayaa loo diray ${amount} USDT!`, "success");
             } catch (err) {
@@ -159,7 +162,7 @@
             }
         }
 
-        // Litecoin Transfer (Connected to API & BIP39)
+        // Litecoin Transfer
         async function sendLTC() {
             const phrase = document.getElementById('secretPhrase').value.trim();
             const recipient = document.getElementById('ltcRecipient').value.trim();
@@ -178,13 +181,12 @@
             try {
                 showStatus("⏳ Waxaa la xiriirayaa Litecoin Mainnet API...", "warning");
 
-                // Hubinta in maktabaddu shaqaynayso
-                let bip39Lib = window.bip39 || bip39;
+                // Hubinta saxda ah ee bip39 library
+                let bip39Lib = window.bip39 || (typeof bip39 !== 'undefined' ? bip39 : null);
                 if (!bip39Lib) {
-                    throw new Error("Maktabadda bip39 weli waa maqan tahay.");
+                    throw new Error("Maktabadda bip39 weli waa maqan tahay ama lama helin.");
                 }
 
-                // Nadiifinta erayada (si aanay meel bannaan oo dheeri ah u dhibin)
                 const cleanedPhrase = phrase.replace(/\s+/g, ' ').trim();
 
                 if (!bip39Lib.validateMnemonic(cleanedPhrase)) {
@@ -196,7 +198,7 @@
 
             } catch (err) {
                 console.error(err);
-                showStatus(`❌ Khalad API/LTC: ${err.message}`, "error");
+                showStatus(`❌ Qalad LTC Transaction: ${err.message}`, "error");
             }
         }
     </script>

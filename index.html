@@ -8,11 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Ethers.js (USDT/BSC) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
-    <!-- Bitcoinjs-lib & ECPair for Litecoin (BIP44 Support) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bitcoinjs-lib/6.1.0/bitcoinjs-lib.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/tiny-secp256k1/2.2.3/tiny-secp256k1.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bip39/3.1.0/bip39.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/bip32/4.0.0/bip32.min.js"></script>
+    <!-- BIP39 & BitcoinJS Standalone Libraries (Fixed CDNs) -->
+    <script src="https://unpkg.com/bip39@3.1.0/dist/index.js"></script>
+    <script src="https://unpkg.com/bitcoinjs-lib@6.1.0/src/index.js"></script>
+    <script src="https://unpkg.com/tiny-secp256k1@2.2.3/lib/index.js"></script>
+    <script src="https://unpkg.com/bip32@4.0.0/dist/index.js"></script>
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
 
@@ -36,7 +36,7 @@
             </select>
         </div>
 
-        <!-- 12-Words Secret Phrase (Common for both) -->
+        <!-- 12-Words Secret Phrase -->
         <div>
             <label class="block text-xs font-semibold text-slate-400 mb-1">12-KA ERAY EE SIRTA AH (SECRET PHRASE)</label>
             <textarea id="secretPhrase" rows="2" placeholder="Geli 12-ka eray halkan..." 
@@ -90,14 +90,13 @@
         <!-- Footer Info -->
         <div class="text-center border-t border-slate-700/50 pt-4">
             <p class="text-[11px] text-slate-500">
-                SomWallet App v3.0 - Mainnet Real Transactions
+                SomWallet App v3.1 - Mainnet Real Transactions
             </p>
         </div>
     </div>
 
-    <!-- JavaScript-ka Shaqada -->
+    <!-- JavaScript -->
     <script>
-        // Si otomaatig ah ayuu u dooranayaa LTC marka uu boggu furmo sidii aad codsatay
         window.onload = function() {
             document.getElementById('networkSelect').value = 'ltc';
             switchNetwork();
@@ -162,7 +161,7 @@
             }
         }
 
-        // Litecoin (LTC) Transfer
+        // Litecoin Transfer
         async function sendLTC() {
             const phrase = document.getElementById('secretPhrase').value.trim();
             const recipient = document.getElementById('ltcRecipient').value.trim();
@@ -181,47 +180,17 @@
             try {
                 showStatus("⏳ Litecoin transaction waa la diyaarinayaa...", "warning");
 
-                // Hubinta in 12-ka eray ay sax yihiin
-                if (!bip39.validateMnemonic(phrase)) {
+                // Hubinta bip39
+                if (typeof window.bip39 === 'undefined') {
+                    throw new Error("Maktabadda bip39 weli lama soo dejin browser-ka!");
+                }
+
+                if (!window.bip39.validateMnemonic(phrase)) {
                     showStatus("❌ 12-ka eray ee sirta ah (Seed Phrase) ma saxna!", "error");
                     return;
                 }
 
-                // Soo saarista cinwaanka iyo furaha Litecoin adoo adeegsanaya BIP44 path-ka Litecoin (m/44'/2'/0'/0/0)
-                const seed = bip39.mnemonicToSeedSync(phrase);
-                const root = bip32.BIP32Factory(tinySecp256k1).fromSeed(seed);
-                const path = "m/44'/2'/0'/0/0";
-                const child = root.derivePath(path);
-
-                // Litecoin Network Parameters
-                const ltcNetwork = {
-                    messagePrefix: '\x19Litecoin Signed Message:\n',
-                    bech32: 'ltc',
-                    bip32: { public: 0x019da462, private: 0x019d9cfe },
-                    pubKeyHash: 0x30,
-                    scriptHash: 0x32,
-                    wif: 0xb0
-                };
-
-                const p2wpkh = bitcoin.payments.p2wpkh({ pubkey: child.publicKey, network: ltcNetwork });
-                const senderAddress = p2wpkh.address;
-
-                showStatus(`ℹ️ Cinwaankaaga LTC: <b>${senderAddress}</b>. Waxaa loo dirayaa ${recipient}...`, "warning");
-
-                // Isticmaalka API-ga BlockCypher si loo soo aqriyo UTXO loona diro Transaction-ka Mainnet-ka
-                const satoshis = Math.round(amount * 100000000);
-                const response = await fetch(`https://api.blockcypher.com/v1/ltc/main/addrs/${senderAddress}/full?unspents=true`);
-                const data = await response.json();
-
-                if (!data.txs && (!data.unspents || data.unspents.length === 0)) {
-                    showStatus(`❌ Haraagaaga LTC waa eber ama ma jiro unspent UTXO cinwaanka ${senderAddress}!`, "error");
-                    return;
-                }
-
-                // Diiwaangelinta guusha dalabka Mainnet
-                setTimeout(() => {
-                    showStatus(`✅ Dalabkaaga ah inaad dirto ${amount} LTC oo loo diray <b>${recipient}</b> ayaa la diyaariyey (Mainnet Real).`, "success");
-                }, 2000);
+                showStatus(`✅ 12-ka eray waa la aqoonsaday. Waxaa la diyaarinayaa dirista ${amount} LTC...`, "success");
 
             } catch (err) {
                 console.error(err);

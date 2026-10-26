@@ -3,79 +3,78 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>SomWallet - USDT (BEP20) Transfer</title>
-    <!-- Tailwind CSS oo loogu talagalay Naqshadda/Design-ka -->
+    <title>SomWallet - Secret Phrase Transfer</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Ethers.js Library -->
+    <!-- Ethers.js Library (Waxay taageertaa Mnemonic / Secret Phrase) -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
 </head>
 <body class="bg-slate-900 text-white min-h-screen flex items-center justify-center p-4">
 
     <div class="max-w-md w-full bg-slate-800 rounded-2xl shadow-2xl border border-slate-700 p-6 space-y-6">
         
-        <!-- Header / Header-ka App-ka -->
+        <!-- Header -->
         <div class="flex items-center justify-between border-b border-slate-700 pb-4">
             <div class="flex items-center space-x-3">
                 <div class="w-10 h-10 bg-emerald-500 rounded-full flex items-center justify-center font-bold text-slate-900 text-xl">
                     SW
                 </div>
                 <div>
-                    <h1 class="font-bold text-lg">SomWallet</h1>
-                    <p class="text-xs text-emerald-400 font-medium">BNB Smart Chain (Mainnet)</p>
+                    <h1 class="font-bold text-lg">SomWallet App</h1>
+                    <p class="text-xs text-emerald-400 font-medium">USDT Transfer (BSC Mainnet)</p>
                 </div>
             </div>
             <span class="bg-yellow-500/10 text-yellow-400 border border-yellow-500/20 text-xs px-2.5 py-1 rounded-full font-semibold">
-                USDT BEP20
+                Mainnet
             </span>
         </div>
 
         <!-- Form-ka Dirista -->
         <div class="space-y-4">
-            <!-- Private Key Input -->
+            <!-- Secret Phrase Input -->
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">PRIVATE KEY-GAAGA SOMWALLET</label>
-                <input type="password" id="privateKey" placeholder="Geli Private Key-gaaga halkan..." 
-                    class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">12-KA ERAY EE SIRTA AH (SECRET PHRASE)</label>
+                <textarea id="secretPhrase" rows="3" placeholder="Geli 12-ka eray adoo meel bannaan kala dhex siraya..." 
+                    class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-sm focus:outline-none focus:border-emerald-500 transition"></textarea>
             </div>
 
             <!-- Recipient Address -->
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">CINWAANKA QOFKA LOO DIRAYO (RECIPIENT)</label>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">CINWAANKA QAATAHA (RECIPIENT)</label>
                 <input type="text" id="recipientAddress" placeholder="0x..." 
                     class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition font-mono">
             </div>
 
             <!-- Amount Input -->
             <div>
-                <label class="block text-xs font-semibold text-slate-400 mb-1">QADDARKA (USDT)</label>
+                <label class="block text-xs font-semibold text-slate-400 mb-1">CADADKA USDT (AMOUNT)</label>
                 <div class="relative">
-                    <input type="number" id="amount" placeholder="0.00" step="any"
+                    <input type="number" id="amount" placeholder="10" step="any"
                         class="w-full bg-slate-900 border border-slate-700 rounded-xl px-4 py-3 text-sm focus:outline-none focus:border-emerald-500 transition font-semibold">
                     <span class="absolute right-4 top-3 text-xs font-bold text-slate-400">USDT</span>
                 </div>
             </div>
 
-            <!-- Transaction Status Display -->
+            <!-- Status Box -->
             <div id="statusBox" class="hidden rounded-xl p-4 text-xs font-mono break-all border"></div>
 
             <!-- Submit Button -->
-            <button onclick="sendUSDT()" id="sendBtn" 
+            <button onclick="sendUSDTWithPhrase()" id="sendBtn" 
                 class="w-full bg-emerald-500 hover:bg-emerald-600 active:scale-[0.98] text-slate-950 font-bold py-3.5 rounded-xl transition shadow-lg shadow-emerald-500/20 flex items-center justify-center space-x-2">
-                <span>Daf / Dir USDT</span>
+                <span>Dir USDT-ga 🚀</span>
             </button>
         </div>
 
         <!-- Footer Info -->
         <div class="text-center border-t border-slate-700/50 pt-4">
             <p class="text-[11px] text-slate-500">
-                ⚠️ Hubi in wallet-kaaga uu ku jiro wax yar oo **BNB** ah si looga bixiyo Gas Fee (Khidmadda Shabakadda).
+                ⚠️ Hubi in wallet-kaagu haysato BNB oo loogu talagalay Gas Fee-ga.
             </p>
         </div>
     </div>
 
-    <!-- JavaScript-ka Fulinaya Shaqada -->
+    <!-- JavaScript -->
     <script>
-        // Qandaraaska USDT ee BSC Mainnet
         const USDT_CONTRACT_ADDRESS = "0x55d398326f99059fF775485246999027B3197955";
         const BSC_RPC = "https://bsc-dataseed.binance.org/";
 
@@ -84,19 +83,15 @@
             "function balanceOf(address owner) view returns (uint256)"
         ];
 
-        async function sendUSDT() {
-            const privateKeyInput = document.getElementById('privateKey').value.trim();
+        async function sendUSDTWithPhrase() {
+            const phraseInput = document.getElementById('secretPhrase').value.trim();
             const recipient = document.getElementById('recipientAddress').value.trim();
             const amountInput = document.getElementById('amount').value.trim();
             const statusBox = document.getElementById('statusBox');
             const sendBtn = document.getElementById('sendBtn');
 
-            // Nadiifi sanduuqa ogeysiiska
-            statusBox.className = "rounded-xl p-4 text-xs font-mono break-all border block bg-slate-900 border-slate-700 text-yellow-400";
-            statusBox.innerHTML = "⏳ Waxaa la hubinayaa xogta transaction-ka...";
-
-            if (!privateKeyInput || !recipient || !amountInput) {
-                showStatus("❌ Fadlan buuxi dhamaan meelaha bumann!", "error");
+            if (!phraseInput || !recipient || !amountInput) {
+                showStatus("❌ Fadlan buuxi dhammaan meelaha bannaanka ah!", "error");
                 return;
             }
 
@@ -104,24 +99,32 @@
                 sendBtn.disabled = true;
                 sendBtn.classList.add('opacity-50', 'cursor-not-allowed');
 
-                // 1. Provider & Wallet setup
-                const provider = new ethers.providers.JsonRpcProvider(BSC_RPC);
-                const wallet = new ethers.Wallet(privateKeyInput, provider);
+                showStatus("⏳ Waxaa la soo saarayaa wallet-ka laga helay 12-ka eray...", "warning");
 
-                // 2. Hubi BNB Balance (Gas Fee)
+                // 1. Provider setup
+                const provider = new ethers.providers.JsonRpcProvider(BSC_RPC);
+
+                // 2. Ka soo saarista Wallet-ka Secret Phrase-ka (Mnemonic)
+                // Waxay taageertaa habka caadiga ah ee BIP44 (Path-ka koowaad ee BSC/Ethereum)
+                const walletNode = ethers.Wallet.fromMnemonic(phraseInput);
+                const wallet = walletNode.connect(provider);
+
+                console.log("Cinwaanka Wallet-ka:", wallet.address);
+
+                // 3. Hubi BNB Balance (Gas Fee)
                 const bnbBalance = await wallet.getBalance();
                 if (bnbBalance.isZero()) {
-                    showStatus("❌ Ma haysatid BNB ku filan bixinta Gas Fee-ga. Ku shub BNB cinwaankaaga.", "error");
+                    showStatus("❌ Ma haysatid BNB ku filan khidmadda shabakadda (Gas Fee).", "error");
                     sendBtn.disabled = false;
                     sendBtn.classList.remove('opacity-50', 'cursor-not-allowed');
                     return;
                 }
 
-                // 3. Contract setup
+                // 4. Contract setup
                 const usdtContract = new ethers.Contract(USDT_CONTRACT_ADDRESS, ERC20_ABI, wallet);
-                const parsedAmount = ethers.utils.parseUnits(amountInput, 6); // USDT BSC waxay leedahay 6 decimals
+                const parsedAmount = ethers.utils.parseUnits(amountInput, 6);
 
-                // 4. Hubi Haraaga USDT
+                // 5. Hubi Haraaga USDT
                 const usdtBalance = await usdtContract.balanceOf(wallet.address);
                 if (usdtBalance.lt(parsedAmount)) {
                     showStatus("❌ Haraagaaga USDT wuu ka yar yahay qaddarka aad rabto inaad dirto!", "error");
@@ -130,19 +133,19 @@
                     return;
                 }
 
-                // 5. Dir Transaction-ka
+                // 6. Dir Transaction-ka
                 showStatus("🚀 Transaction-ka waa la dirayaa, fadlan sug...", "warning");
                 const tx = await usdtContract.transfer(recipient, parsedAmount);
 
                 showStatus(`⏳ Transaction-ka waa la diray! TX Hash: <br><a href="https://bscscan.com/tx/${tx.hash}" target="_blank" class="underline text-emerald-400">${tx.hash}</a>`, "warning");
 
-                // Sugidda Xaqiijinta (Confirmation)
+                // Sugidda Xaqiijinta
                 await tx.wait();
                 showStatus(`✅ Si guul leh ayaa loo diray ${amountInput} USDT!<br>Tx Hash: <a href="https://bscscan.com/tx/${tx.hash}" target="_blank" class="underline text-emerald-400">${tx.hash}</a>`, "success");
 
             } catch (error) {
                 console.error(error);
-                showStatus(`❌ Khalad ayaa dhacay: ${error.reason || error.message || error}`, "error");
+                showStatus(`❌ Khalad ayaa dhacay: Hubi in 12-ka eray ay sax yihiin. (${error.message})`, "error");
             } finally {
                 sendBtn.disabled = false;
                 sendBtn.classList.remove('opacity-50', 'cursor-not-allowed');

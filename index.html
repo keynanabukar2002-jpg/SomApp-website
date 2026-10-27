@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Crypto Wallet & Market Tracker</title>
-    <!-- Tailwind CSS -->
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
@@ -26,14 +26,14 @@
         }
     </script>
     <style>
-        .up-glow { animation: glowGreen 0.8s ease-out; }
-        .down-glow { animation: glowRed 0.8s ease-out; }
+        .up-glow { animation: glowGreen 0.7s ease-out; }
+        .down-glow { animation: glowRed 0.7s ease-out; }
         @keyframes glowGreen {
-            0% { background-color: rgba(16, 185, 129, 0.25); }
+            0% { background-color: rgba(16, 185, 129, 0.3); border-color: rgba(16, 185, 129, 0.6); }
             100% { background-color: transparent; }
         }
         @keyframes glowRed {
-            0% { background-color: rgba(244, 63, 94, 0.25); }
+            0% { background-color: rgba(244, 63, 94, 0.3); border-color: rgba(244, 63, 94, 0.6); }
             100% { background-color: transparent; }
         }
         .hide-scrollbar::-webkit-scrollbar { display: none; }
@@ -42,7 +42,7 @@
 </head>
 <body class="bg-slate-950 text-slate-100 min-h-screen flex justify-center items-center p-0 sm:p-4 font-sans antialiased selection:bg-brand-500 selection:text-white">
 
-    <!-- Container Principal (App Mobile) -->
+    <!-- Container Principal (App Mobile Container) -->
     <div class="w-full max-w-[390px] bg-slate-900 min-h-screen sm:min-h-[800px] sm:h-[840px] sm:rounded-[36px] shadow-2xl overflow-hidden flex flex-col relative border border-slate-800">
         
         <!-- Header -->
@@ -63,10 +63,10 @@
             </button>
         </header>
 
-        <!-- Contido Principal con Scroll -->
+        <!-- Contido Principal -->
         <main class="flex-1 overflow-y-auto px-4 pt-2 pb-24 hide-scrollbar space-y-4">
             
-            <!-- Separador TAB 1: HOYGA (Home) -->
+            <!-- TAB 1: HOYGA -->
             <div id="tab-home" class="space-y-4">
                 
                 <!-- Tarxeta de Saldo Principal -->
@@ -75,27 +75,26 @@
                     
                     <div class="flex justify-between items-center mb-1">
                         <span class="text-[11px] font-medium text-indigo-100/80 uppercase tracking-wider">QIIMAHA GUUD</span>
-                        <button id="toggle-balance-btn" class="text-indigo-200 hover:text-white transition-colors">
-                            <i class="fa-regular fa-eye text-xs"></i>
+                        <button id="toggle-balance-btn" onclick="toggleBalanceVisibility()" class="text-indigo-200 hover:text-white transition-colors">
+                            <i id="eye-icon" class="fa-regular fa-eye text-xs"></i>
                         </button>
                     </div>
 
                     <div class="flex items-baseline gap-2 mb-1">
-                        <h2 id="total-balance-display" class="text-2xl font-black tracking-tight">$29,320.11</h2>
+                        <h2 id="total-balance-display" class="text-2xl font-black tracking-tight">$0.00</h2>
                     </div>
                     
-                    <p id="total-btc-display" class="text-xs text-indigo-100/90 font-medium">≈ 0.3668 BTC</p>
+                    <p id="total-btc-display" class="text-xs text-indigo-100/90 font-medium">≈ 0.0000 BTC</p>
 
-                    <!-- Mini Gráfica Ilustrativa -->
                     <div class="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-indigo-100">
                         <span class="flex items-center gap-1 font-semibold text-emerald-300">
-                            <i class="fa-solid fa-arrow-trend-up"></i> +2.4% hoy
+                            <i class="fa-solid fa-arrow-trend-up"></i> +2.4% Suuq Nool
                         </span>
-                        <span class="opacity-75">Actualizado en tempo real</span>
+                        <span class="opacity-75">Live Streaming</span>
                     </div>
                 </div>
 
-                <!-- Botóns de Acción Principal (Action Buttons) -->
+                <!-- Action Buttons (Howlaha Muhiimka ah) -->
                 <div>
                     <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Howlaha Muhiimka ah</h3>
                     <div class="grid grid-cols-4 gap-2">
@@ -129,7 +128,7 @@
                     </div>
                 </div>
 
-                <!-- Liista Hantida (Crypto Assets) -->
+                <!-- Hantidaada (Crypto Assets) -->
                 <div>
                     <div class="flex justify-between items-center mb-2">
                         <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Hantidaada</h3>
@@ -137,7 +136,7 @@
 
                     <div id="crypto-list-container" class="space-y-2">
                         <!-- Bitcoin -->
-                        <div id="asset-BTC" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-colors">
+                        <div id="asset-BTC" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-all duration-300">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-sm">
                                     <i class="fa-bold fa-bitcoin"></i>
@@ -154,7 +153,7 @@
                         </div>
 
                         <!-- Ethereum -->
-                        <div id="asset-ETH" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-colors">
+                        <div id="asset-ETH" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-all duration-300">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
                                     <i class="fa-ethereum fab"></i>
@@ -171,7 +170,7 @@
                         </div>
 
                         <!-- Solana -->
-                        <div id="asset-SOL" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-colors">
+                        <div id="asset-SOL" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-all duration-300">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
                                     <i class="fa-solid fa-bolt"></i>
@@ -188,7 +187,7 @@
                         </div>
 
                         <!-- BNB -->
-                        <div id="asset-BNB" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-colors">
+                        <div id="asset-BNB" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-all duration-300">
                             <div class="flex items-center gap-3">
                                 <div class="w-9 h-9 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center font-bold text-sm">
                                     <i class="fa-solid fa-cube"></i>
@@ -207,17 +206,15 @@
                 </div>
             </div>
 
-            <!-- Separador TAB 2: SUUQYADA (Markets) -->
+            <!-- TAB 2: SUUQYADA -->
             <div id="tab-markets" class="space-y-3 hidden">
-                <div class="flex items-center justify-between">
-                    <h2 class="text-base font-bold text-slate-100">Suuqyada Nool</h2>
-                </div>
+                <h2 class="text-base font-bold text-slate-100">Suuqyada Nool</h2>
                 <div id="market-list-container" class="space-y-2">
-                    <!-- Enchese dinamicamente via JS -->
+                    <!-- Dynamic markets feed -->
                 </div>
             </div>
 
-            <!-- Separador TAB 3: BEDDELASHO (Swap) -->
+            <!-- TAB 3: BEDDELASHO -->
             <div id="tab-swap" class="space-y-4 hidden">
                 <h2 class="text-base font-bold text-slate-100">Beddelasho Dhaqsaha Ah</h2>
                 <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/50 space-y-3">
@@ -246,7 +243,7 @@
                 </div>
             </div>
 
-            <!-- Separador TAB 4: TAARIIKHDA (History) -->
+            <!-- TAB 4: TAARIIKHDA -->
             <div id="tab-history" class="space-y-3 hidden">
                 <h2 class="text-base font-bold text-slate-100">Tariikhda Macaamilka</h2>
                 <div class="space-y-2">
@@ -280,7 +277,7 @@
 
         </main>
 
-        <!-- Navigation Bar do Fundo (Bottom Navigation) -->
+        <!-- Navigation Bar (Bottom Navigation) -->
         <nav class="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-4 py-2 flex justify-between items-center z-20">
             <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center gap-1 text-brand-500 font-medium">
                 <i class="fa-solid fa-house text-base"></i>
@@ -302,7 +299,7 @@
 
     </div>
 
-    <!-- Modals de Acción (Popups) -->
+    <!-- Modals -->
     <div id="action-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden">
         <div class="bg-slate-900 border border-slate-800 w-full max-w-[390px] rounded-t-3xl sm:rounded-2xl p-5 space-y-4">
             <div class="flex justify-between items-center">
@@ -312,22 +309,36 @@
                 </button>
             </div>
             <div id="modal-body">
-                <!-- Contido dinámico do modal -->
+                <!-- Content inserted dynamically -->
             </div>
         </div>
     </div>
 
-    <!-- JavaScript para a actualización de prezos e navegación -->
+    <!-- JavaScript Engine (Real-Time WebSocket Stream) -->
     <script>
-        // Configuración dos activos
+        // Active Assets Configuration
         const cryptoData = {
-            'BTC': { name: 'Bitcoin', holdings: 0.25, price: 95000, change: 0 },
-            'ETH': { name: 'Ethereum', holdings: 1.8, price: 3400, change: 0 },
-            'SOL': { name: 'Solana', holdings: 12.5, price: 190, change: 0 },
-            'BNB': { name: 'Binance Coin', holdings: 4.2, price: 650, change: 0 }
+            'BTC': { name: 'Bitcoin', holdings: 0.25, price: 0, change: 0 },
+            'ETH': { name: 'Ethereum', holdings: 1.8, price: 0, change: 0 },
+            'SOL': { name: 'Solana', holdings: 12.5, price: 0, change: 0 },
+            'BNB': { name: 'Binance Coin', holdings: 4.2, price: 0, change: 0 }
         };
 
-        // Función para cambiar de lapela (Tab Navigation)
+        let isBalanceHidden = false;
+
+        function toggleBalanceVisibility() {
+            isBalanceHidden = !isBalanceHidden;
+            const eyeIcon = document.getElementById('eye-icon');
+            if (isBalanceHidden) {
+                eyeIcon.className = 'fa-regular fa-eye-slash text-xs';
+                document.getElementById('total-balance-display').textContent = '••••••••';
+                document.getElementById('total-btc-display').textContent = '≈ •••• BTC';
+            } else {
+                eyeIcon.className = 'fa-regular fa-eye text-xs';
+                updateTotalBalance();
+            }
+        }
+
         function switchTab(tabId) {
             ['home', 'markets', 'swap', 'history'].forEach(id => {
                 document.getElementById(`tab-${id}`).classList.add('hidden');
@@ -342,12 +353,12 @@
             activeBtn.classList.remove('text-slate-400');
         }
 
-        // Obtención de datos reais via Binance API cada 2 segundos
-        async function fetchLivePrices() {
-            try {
-                const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
-                const data = await response.json();
+        // Live WebSocket Streaming directly from Binance
+        function initRealTimeWebSocket() {
+            const socket = new WebSocket('wss://stream.binance.com:9443/ws/!miniTicker@arr');
 
+            socket.onmessage = function (event) {
+                const data = JSON.parse(event.data);
                 const symbolMap = {
                     'BTCUSDT': 'BTC',
                     'ETHUSDT': 'ETH',
@@ -355,56 +366,67 @@
                     'BNBUSDT': 'BNB'
                 };
 
-                let totalBalance = 0;
-
-                data.forEach(item => {
-                    const symbol = symbolMap[item.symbol];
+                data.forEach(ticker => {
+                    const symbol = symbolMap[ticker.s];
                     if (symbol && cryptoData[symbol]) {
-                        const newPrice = parseFloat(item.lastPrice);
-                        const changePercent = parseFloat(item.priceChangePercent);
+                        const newPrice = parseFloat(ticker.c);
+                        const openPrice = parseFloat(ticker.o);
+                        const changePercent = ((newPrice - openPrice) / openPrice) * 100;
                         const oldPrice = cryptoData[symbol].price;
 
                         cryptoData[symbol].price = newPrice;
                         cryptoData[symbol].change = changePercent;
 
-                        // Actualizar UI
+                        // UI Update
                         const card = document.getElementById(`asset-${symbol}`);
                         if (card) {
                             const priceEl = card.querySelector('.asset-price');
                             const changeEl = card.querySelector('.asset-change');
 
-                            priceEl.textContent = `$${newPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                            changeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
-                            changeEl.className = `asset-change text-[11px] font-semibold ${changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
+                            if (priceEl && changeEl) {
+                                priceEl.textContent = `$${newPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+                                changeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
+                                changeEl.className = `asset-change text-[11px] font-semibold ${changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
 
-                            // Saída de brillo (Glow) cando cambia o prezo
-                            if (newPrice > oldPrice) {
-                                card.classList.remove('up-glow', 'down-glow');
-                                void card.offsetWidth;
-                                card.classList.add('up-glow');
-                            } else if (newPrice < oldPrice) {
-                                card.classList.remove('up-glow', 'down-glow');
-                                void card.offsetWidth;
-                                card.classList.add('down-glow');
+                                // Visual flash indicator on price tick
+                                if (oldPrice > 0 && newPrice !== oldPrice) {
+                                    card.classList.remove('up-glow', 'down-glow');
+                                    void card.offsetWidth;
+                                    card.classList.add(newPrice > oldPrice ? 'up-glow' : 'down-glow');
+                                }
                             }
                         }
-
-                        totalBalance += newPrice * cryptoData[symbol].holdings;
                     }
                 });
 
-                // Actualizar o saldo total
-                document.getElementById('total-balance-display').textContent = `$${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                if (cryptoData['BTC'].price > 0) {
-                    document.getElementById('total-btc-display').textContent = `≈ ${(totalBalance / cryptoData['BTC'].price).toFixed(4)} BTC`;
+                if (!isBalanceHidden) {
+                    updateTotalBalance();
                 }
+            };
 
-            } catch (err) {
-                console.log('Error ao cargar datos:', err);
+            socket.onclose = function() {
+                setTimeout(initRealTimeWebSocket, 3000);
+            };
+        }
+
+        function updateTotalBalance() {
+            let totalBalance = 0;
+            Object.keys(cryptoData).forEach(sym => {
+                totalBalance += cryptoData[sym].price * cryptoData[sym].holdings;
+            });
+
+            const totalEl = document.getElementById('total-balance-display');
+            const btcEl = document.getElementById('total-btc-display');
+
+            if (totalEl && totalBalance > 0) {
+                totalEl.textContent = `$${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
+            }
+            if (btcEl && cryptoData['BTC'].price > 0) {
+                btcEl.textContent = `≈ ${(totalBalance / cryptoData['BTC'].price).toFixed(4)} BTC`;
             }
         }
 
-        // Modais (Dir, Hel, Beddel, Iibso)
+        // Action Modals
         function openModal(type) {
             const modal = document.getElementById('action-modal');
             const title = document.getElementById('modal-title');
@@ -448,9 +470,8 @@
             document.getElementById('action-modal').classList.add('hidden');
         }
 
-        // Executar a actualización de prezos cada 2 segundos
-        fetchLivePrices();
-        setInterval(fetchLivePrices, 2000);
+        // Initialize Live WebSocket Stream
+        initRealTimeWebSocket();
     </script>
 </body>
 </html>

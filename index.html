@@ -6,7 +6,6 @@
     <title>SomApp - Messenger & Wallet</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        /* Custom scrollbar hiding */
         .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
@@ -16,15 +15,14 @@
         }
     </style>
 </head>
-<body class="bg-[#0b141a] text-[#e9edef] font-sans antialiased h-screen w-screen overflow-hidden select-none m-0 p-0">
+<body class="bg-[#0b141a] text-[#e9edef] font-sans antialiased h-[100dvh] w-screen overflow-hidden select-none m-0 p-0">
 
-    <!-- Main Full Screen Shell -->
-    <div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] relative overflow-hidden shadow-2xl border-x border-[#1e293b]">
+    <!-- App Container -->
+    <div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] relative overflow-hidden shadow-2xl">
 
         <!-- Top Header -->
         <header class="bg-[#0f172a] pt-3 px-4 pb-2 flex justify-between items-center shrink-0 z-10 border-b border-[#1e293b]">
             <div class="flex items-center gap-2">
-                <!-- Logo -->
                 <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md">
                     S
                 </div>
@@ -69,7 +67,7 @@
         </div>
 
         <!-- Scrollable Chats Area -->
-        <main class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative">
+        <main class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar pb-24 relative">
 
             <!-- Chat Item 1 -->
             <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors">
@@ -180,7 +178,7 @@
             </div>
 
             <!-- Floating Action Button -->
-            <button class="fixed bottom-20 right-4 w-14 h-14 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-center shadow-xl active:scale-90 transition-all z-20" aria-label="New Message">
+            <button class="fixed bottom-20 right-4 w-14 h-14 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-center shadow-2xl active:scale-90 transition-all z-20" aria-label="New Message">
                 <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
                     <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
                 </svg>
@@ -188,7 +186,7 @@
         </main>
 
         <!-- Fixed Bottom Navigation Bar -->
-        <nav class="h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center shrink-0 z-30 px-1 w-full">
+        <nav class="fixed bottom-0 left-0 right-0 max-w-md mx-auto h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center z-30 px-1">
             
             <!-- 1. Chats Tab -->
             <button class="flex flex-col items-center justify-center flex-1 h-full text-white group">
@@ -245,3 +243,4 @@
     </div>
 
 </body>
+</html>

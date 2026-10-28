@@ -1,477 +1,161 @@
 <!DOCTYPE html>
-<html lang="so" class="dark">
+<html lang="so">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Crypto Wallet & Market Tracker</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chat App - Doodles Background</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <!-- FontAwesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: {
-                            50: '#eff6ff',
-                            500: '#3b82f6',
-                            600: '#2563eb',
-                            700: '#1d4ed8'
-                        }
-                    }
-                }
-            }
-        }
-    </script>
     <style>
-        .up-glow { animation: glowGreen 0.7s ease-out; }
-        .down-glow { animation: glowRed 0.7s ease-out; }
-        @keyframes glowGreen {
-            0% { background-color: rgba(16, 185, 129, 0.3); border-color: rgba(16, 185, 129, 0.6); }
-            100% { background-color: transparent; }
+        /* Custom Doodle SVG Background Pattern */
+        .doodle-bg {
+            background-color: #e5ddd5;
+            background-image: url("data:image/svg+xml,%3Csvg width='280' height='280' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='d' x='0' y='0' width='280' height='280' patternUnits='userSpaceOnUse'%3E%3Cg stroke='rgba(100,90,80,0.18)' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M25 35c0-15 30-15 40 0 10 15-10 25-23 25l-10 7 3-9c-13-3-13-18-10-23z'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='rgba(100,90,80,0.18)'/%3E%3Ccircle cx='47' cy='40' r='1.5' fill='rgba(100,90,80,0.18)'/%3E%3Ccircle cx='54' cy='40' r='1.5' fill='rgba(100,90,80,0.18)'/%3E%3Cpath d='M130 25c-5-10-20-5-15 7 5 12 15 22 15 22s10-10 15-22c5-12-10-17-15-7z'/%3E%3Cpath d='M210 35h28l-4 23c-1 5-19 5-20 0zM238 40c7 0 7 12-2 12'/%3E%3Ccircle cx='60' cy='130' r='16'/%3E%3Ccircle cx='54' cy='125' r='2' fill='rgba(100,90,80,0.18)'/%3E%3Ccircle cx='66' cy='125' r='2' fill='rgba(100,90,80,0.18)'/%3E%3Cpath d='M53 135q7 8 14 0'/%3E%3Crect x='220' y='110' width='22' height='38' rx='4'/%3E%3Cpath d='M35 210v-20l18-8v20'/%3E%3Cpath d='M120 200l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z'/%3E%3C/g%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23d)'/%3E%3C/svg%3E");
         }
-        @keyframes glowRed {
-            0% { background-color: rgba(244, 63, 94, 0.3); border-color: rgba(244, 63, 94, 0.6); }
-            100% { background-color: transparent; }
-        }
-        .hide-scrollbar::-webkit-scrollbar { display: none; }
-        .hide-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
     </style>
 </head>
-<body class="bg-slate-950 text-slate-100 min-h-screen flex justify-center items-center p-0 sm:p-4 font-sans antialiased selection:bg-brand-500 selection:text-white">
+<body class="bg-gray-100 h-screen flex flex-col justify-center items-center font-sans">
 
-    <!-- Container Principal (App Mobile Container) -->
-    <div class="w-full max-w-[390px] bg-slate-900 min-h-screen sm:min-h-[800px] sm:h-[840px] sm:rounded-[36px] shadow-2xl overflow-hidden flex flex-col relative border border-slate-800">
+    <!-- Main Chat Window Container -->
+    <div class="w-full max-w-4xl h-full md:h-[90vh] bg-white shadow-2xl md:rounded-2xl flex overflow-hidden border border-gray-200">
         
-        <!-- Header -->
-        <header class="p-4 pb-2 flex items-center justify-between">
-            <div class="flex items-center gap-3">
-                <div class="relative">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=100&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-full object-cover ring-2 ring-brand-500/50" alt="Profile">
-                    <span class="absolute bottom-0 right-0 w-2.5 h-2.5 bg-emerald-500 rounded-full ring-2 ring-slate-900"></span>
-                </div>
-                <div>
-                    <h2 class="text-xs font-medium text-slate-400">Boorsada Dhabta ah</h2>
-                    <h1 class="text-sm font-bold text-slate-100">Keynaan Abuukar Cumar</h1>
-                </div>
-            </div>
-            <button class="w-9 h-9 rounded-full bg-slate-800 border border-slate-700/60 flex items-center justify-center text-slate-300 hover:text-white transition-colors relative">
-                <i class="fa-regular fa-bell text-sm"></i>
-                <span class="absolute top-2 right-2 w-2 h-2 bg-brand-500 rounded-full"></span>
-            </button>
-        </header>
-
-        <!-- Contido Principal -->
-        <main class="flex-1 overflow-y-auto px-4 pt-2 pb-24 hide-scrollbar space-y-4">
-            
-            <!-- TAB 1: HOYGA -->
-            <div id="tab-home" class="space-y-4">
-                
-                <!-- Tarxeta de Saldo Principal -->
-                <div class="relative bg-gradient-to-br from-indigo-600 via-brand-600 to-blue-700 rounded-2xl p-4 text-white shadow-lg shadow-brand-500/10 overflow-hidden">
-                    <div class="absolute -right-6 -bottom-6 w-32 h-32 bg-white/10 rounded-full blur-xl pointer-events-none"></div>
-                    
-                    <div class="flex justify-between items-center mb-1">
-                        <span class="text-[11px] font-medium text-indigo-100/80 uppercase tracking-wider">QIIMAHA GUUD</span>
-                        <button id="toggle-balance-btn" onclick="toggleBalanceVisibility()" class="text-indigo-200 hover:text-white transition-colors">
-                            <i id="eye-icon" class="fa-regular fa-eye text-xs"></i>
-                        </button>
-                    </div>
-
-                    <div class="flex items-baseline gap-2 mb-1">
-                        <h2 id="total-balance-display" class="text-2xl font-black tracking-tight">$0.00</h2>
-                    </div>
-                    
-                    <p id="total-btc-display" class="text-xs text-indigo-100/90 font-medium">≈ 0.0000 BTC</p>
-
-                    <div class="mt-3 pt-2 border-t border-white/10 flex items-center justify-between text-[11px] text-indigo-100">
-                        <span class="flex items-center gap-1 font-semibold text-emerald-300">
-                            <i class="fa-solid fa-arrow-trend-up"></i> +2.4% Suuq Nool
-                        </span>
-                        <span class="opacity-75">Live Streaming</span>
-                    </div>
-                </div>
-
-                <!-- Action Buttons (Howlaha Muhiimka ah) -->
-                <div>
-                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Howlaha Muhiimka ah</h3>
-                    <div class="grid grid-cols-4 gap-2">
-                        <button onclick="openModal('send')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/50 transition-all active:scale-95 group">
-                            <div class="w-10 h-10 rounded-full bg-brand-500/10 text-brand-400 group-hover:bg-brand-500 group-hover:text-white flex items-center justify-center transition-colors">
-                                <i class="fa-solid fa-paper-plane text-sm"></i>
-                            </div>
-                            <span class="text-xs font-semibold text-slate-200">Dir</span>
-                        </button>
-                        
-                        <button onclick="openModal('receive')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/50 transition-all active:scale-95 group">
-                            <div class="w-10 h-10 rounded-full bg-emerald-500/10 text-emerald-400 group-hover:bg-emerald-500 group-hover:text-white flex items-center justify-center transition-colors">
-                                <i class="fa-solid fa-qrcode text-sm"></i>
-                            </div>
-                            <span class="text-xs font-semibold text-slate-200">Hel</span>
-                        </button>
-
-                        <button onclick="openModal('swap')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/50 transition-all active:scale-95 group">
-                            <div class="w-10 h-10 rounded-full bg-amber-500/10 text-amber-400 group-hover:bg-amber-500 group-hover:text-white flex items-center justify-center transition-colors">
-                                <i class="fa-solid fa-right-left text-sm"></i>
-                            </div>
-                            <span class="text-xs font-semibold text-slate-200">Beddel</span>
-                        </button>
-
-                        <button onclick="openModal('buy')" class="flex flex-col items-center gap-1.5 p-3 rounded-xl bg-slate-800/80 hover:bg-slate-800 border border-slate-700/50 transition-all active:scale-95 group">
-                            <div class="w-10 h-10 rounded-full bg-purple-500/10 text-purple-400 group-hover:bg-purple-500 group-hover:text-white flex items-center justify-center transition-colors">
-                                <i class="fa-solid fa-credit-card text-sm"></i>
-                            </div>
-                            <span class="text-xs font-semibold text-slate-200">Iibso</span>
-                        </button>
-                    </div>
-                </div>
-
-                <!-- Hantidaada (Crypto Assets) -->
-                <div>
-                    <div class="flex justify-between items-center mb-2">
-                        <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider">Hantidaada</h3>
-                    </div>
-
-                    <div id="crypto-list-container" class="space-y-2">
-                        <!-- Bitcoin -->
-                        <div id="asset-BTC" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-all duration-300">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-amber-500/20 text-amber-500 flex items-center justify-center font-bold text-sm">
-                                    <i class="fa-bold fa-bitcoin"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-slate-100">Bitcoin</h4>
-                                    <p class="text-[11px] text-slate-400">0.25 BTC</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="asset-price text-sm font-bold text-slate-100">$0.00</p>
-                                <p class="asset-change text-[11px] font-semibold text-slate-400">0.00%</p>
-                            </div>
-                        </div>
-
-                        <!-- Ethereum -->
-                        <div id="asset-ETH" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-all duration-300">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-indigo-500/20 text-indigo-400 flex items-center justify-center font-bold text-sm">
-                                    <i class="fa-ethereum fab"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-slate-100">Ethereum</h4>
-                                    <p class="text-[11px] text-slate-400">1.8 ETH</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="asset-price text-sm font-bold text-slate-100">$0.00</p>
-                                <p class="asset-change text-[11px] font-semibold text-slate-400">0.00%</p>
-                            </div>
-                        </div>
-
-                        <!-- Solana -->
-                        <div id="asset-SOL" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-all duration-300">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-purple-500/20 text-purple-400 flex items-center justify-center font-bold text-sm">
-                                    <i class="fa-solid fa-bolt"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-slate-100">Solana</h4>
-                                    <p class="text-[11px] text-slate-400">12.5 SOL</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="asset-price text-sm font-bold text-slate-100">$0.00</p>
-                                <p class="asset-change text-[11px] font-semibold text-slate-400">0.00%</p>
-                            </div>
-                        </div>
-
-                        <!-- BNB -->
-                        <div id="asset-BNB" class="p-3 bg-slate-800/50 border border-slate-700/40 rounded-xl flex items-center justify-between transition-all duration-300">
-                            <div class="flex items-center gap-3">
-                                <div class="w-9 h-9 rounded-full bg-yellow-500/20 text-yellow-500 flex items-center justify-center font-bold text-sm">
-                                    <i class="fa-solid fa-cube"></i>
-                                </div>
-                                <div>
-                                    <h4 class="text-sm font-bold text-slate-100">Binance Coin</h4>
-                                    <p class="text-[11px] text-slate-400">4.2 BNB</p>
-                                </div>
-                            </div>
-                            <div class="text-right">
-                                <p class="asset-price text-sm font-bold text-slate-100">$0.00</p>
-                                <p class="asset-change text-[11px] font-semibold text-slate-400">0.00%</p>
-                            </div>
-                        </div>
-                    </div>
+        <!-- Sidebar: Chat List -->
+        <div class="w-full md:w-80 bg-white border-r border-gray-200 flex flex-col">
+            <!-- Sidebar Header -->
+            <div class="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
+                <div class="flex items-center space-x-3">
+                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="w-10 h-10 rounded-full object-cover">
+                    <span class="font-bold text-gray-800">Fariimaha</span>
                 </div>
             </div>
 
-            <!-- TAB 2: SUUQYADA -->
-            <div id="tab-markets" class="space-y-3 hidden">
-                <h2 class="text-base font-bold text-slate-100">Suuqyada Nool</h2>
-                <div id="market-list-container" class="space-y-2">
-                    <!-- Dynamic markets feed -->
-                </div>
-            </div>
-
-            <!-- TAB 3: BEDDELASHO -->
-            <div id="tab-swap" class="space-y-4 hidden">
-                <h2 class="text-base font-bold text-slate-100">Beddelasho Dhaqsaha Ah</h2>
-                <div class="bg-slate-800/60 p-4 rounded-2xl border border-slate-700/50 space-y-3">
-                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/40">
-                        <label class="text-[11px] font-medium text-slate-400">Waxaad Bixinaysaa</label>
-                        <div class="flex justify-between items-center mt-1">
-                            <input type="number" value="1.0" class="bg-transparent text-xl font-bold text-slate-100 focus:outline-none w-1/2">
-                            <span class="bg-slate-800 px-3 py-1 rounded-lg text-xs font-bold text-slate-200 border border-slate-700">BTC</span>
+            <!-- Chat Contacts List -->
+            <div class="overflow-y-auto flex-1 divide-y divide-gray-100">
+                <div onclick="selectChat('Amina Calas', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80')" class="p-3.5 flex items-center space-x-3 hover:bg-gray-50 cursor-pointer transition">
+                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="w-12 h-12 rounded-full object-cover" alt="Amina">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-baseline">
+                            <h4 class="font-semibold text-sm text-gray-900">Amina Calas</h4>
+                            <span class="text-xs text-gray-400">10:15 AM</span>
                         </div>
-                    </div>
-                    <div class="flex justify-center -my-1">
-                        <button class="w-8 h-8 rounded-full bg-brand-500 text-white flex items-center justify-center text-xs shadow-md">
-                            <i class="fa-solid fa-arrow-down-up-lock"></i>
-                        </button>
-                    </div>
-                    <div class="bg-slate-900/80 p-3 rounded-xl border border-slate-700/40">
-                        <label class="text-[11px] font-medium text-slate-400">Waxaad Heleysaa (Ku dhawaad)</label>
-                        <div class="flex justify-between items-center mt-1">
-                            <input type="text" value="16.24" readonly class="bg-transparent text-xl font-bold text-emerald-400 focus:outline-none w-1/2">
-                            <span class="bg-slate-800 px-3 py-1 rounded-lg text-xs font-bold text-slate-200 border border-slate-700">ETH</span>
-                        </div>
-                    </div>
-                    <button class="w-full py-3 bg-brand-600 hover:bg-brand-500 font-bold text-sm text-white rounded-xl transition-all shadow-lg shadow-brand-600/20 active:scale-[0.98]">
-                        Ku Beddel Hada
-                    </button>
-                </div>
-            </div>
-
-            <!-- TAB 4: TAARIIKHDA -->
-            <div id="tab-history" class="space-y-3 hidden">
-                <h2 class="text-base font-bold text-slate-100">Tariikhda Macaamilka</h2>
-                <div class="space-y-2">
-                    <div class="p-3 bg-slate-800/40 border border-slate-700/40 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-arrow-down"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-200">Waa la helay (USDT)</h4>
-                                <p class="text-[10px] text-slate-400">Manta, 11:20 AM</p>
-                            </div>
-                        </div>
-                        <span class="text-xs font-bold text-emerald-400">+ $250.00</span>
-                    </div>
-
-                    <div class="p-3 bg-slate-800/40 border border-slate-700/40 rounded-xl flex items-center justify-between">
-                        <div class="flex items-center gap-3">
-                            <div class="w-8 h-8 rounded-full bg-rose-500/10 text-rose-400 flex items-center justify-center text-xs">
-                                <i class="fa-solid fa-arrow-up"></i>
-                            </div>
-                            <div>
-                                <h4 class="text-xs font-bold text-slate-200">Waa la diray (BTC)</h4>
-                                <p class="text-[10px] text-slate-400">Shalay, 04:15 PM</p>
-                            </div>
-                        </div>
-                        <span class="text-xs font-bold text-slate-200">- 0.05 BTC</span>
+                        <p class="text-xs text-gray-500 truncate">Project-gii ma dhameysay?</p>
                     </div>
                 </div>
-            </div>
 
-        </main>
-
-        <!-- Navigation Bar (Bottom Navigation) -->
-        <nav class="absolute bottom-0 left-0 right-0 bg-slate-900/95 backdrop-blur-md border-t border-slate-800 px-4 py-2 flex justify-between items-center z-20">
-            <button onclick="switchTab('home')" id="nav-home" class="nav-btn flex flex-col items-center gap-1 text-brand-500 font-medium">
-                <i class="fa-solid fa-house text-base"></i>
-                <span class="text-[10px]">Hoyga</span>
-            </button>
-            <button onclick="switchTab('markets')" id="nav-markets" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 font-medium transition-colors">
-                <i class="fa-solid fa-chart-simple text-base"></i>
-                <span class="text-[10px]">Suuqyada</span>
-            </button>
-            <button onclick="switchTab('swap')" id="nav-swap" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 font-medium transition-colors">
-                <i class="fa-solid fa-rotate text-base"></i>
-                <span class="text-[10px]">Beddelasho</span>
-            </button>
-            <button onclick="switchTab('history')" id="nav-history" class="nav-btn flex flex-col items-center gap-1 text-slate-400 hover:text-slate-200 font-medium transition-colors">
-                <i class="fa-solid fa-clock-rotate-left text-base"></i>
-                <span class="text-[10px]">Taariikhda</span>
-            </button>
-        </nav>
-
-    </div>
-
-    <!-- Modals -->
-    <div id="action-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-end sm:items-center justify-center hidden">
-        <div class="bg-slate-900 border border-slate-800 w-full max-w-[390px] rounded-t-3xl sm:rounded-2xl p-5 space-y-4">
-            <div class="flex justify-between items-center">
-                <h3 id="modal-title" class="text-base font-bold text-slate-100">Dir Crypto</h3>
-                <button onclick="closeModal()" class="w-7 h-7 bg-slate-800 text-slate-400 hover:text-white rounded-full flex items-center justify-center text-xs">
-                    <i class="fa-solid fa-xmark"></i>
-                </button>
-            </div>
-            <div id="modal-body">
-                <!-- Content inserted dynamically -->
+                <div onclick="selectChat('Guled Nuur', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80')" class="p-3.5 flex items-center space-x-3 hover:bg-gray-50 cursor-pointer transition">
+                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" class="w-12 h-12 rounded-full object-cover" alt="Guled">
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-baseline">
+                            <h4 class="font-semibold text-sm text-gray-900">Guled Nuur</h4>
+                            <span class="text-xs text-gray-400">Shalay</span>
+                        </div>
+                        <p class="text-xs text-gray-500 truncate">Shaaha caawa waa iiga!</p>
+                    </div>
+                </div>
             </div>
         </div>
+
+        <!-- Chat Main Window -->
+        <div class="flex-1 flex flex-col doodle-bg relative">
+            
+            <!-- Chat Header -->
+            <div class="p-3.5 bg-white/90 backdrop-blur-md border-b border-gray-200 flex items-center justify-between z-10">
+                <div class="flex items-center space-x-3">
+                    <img id="active-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-full object-cover" alt="Active Chat">
+                    <div>
+                        <h3 id="active-name" class="font-bold text-sm text-gray-800">Amina Calas</h3>
+                        <span class="text-xs text-emerald-600 font-medium">Online</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Messages Stream Area -->
+            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 z-10">
+                <div class="flex justify-start">
+                    <div class="bg-white text-gray-800 max-w-[75%] rounded-2xl rounded-tl-none p-3 shadow-sm text-sm">
+                        <p>Asc Walaal! Soo dhawoow 👋</p>
+                        <span class="text-[10px] text-gray-400 block text-right mt-1">10:14 AM</span>
+                    </div>
+                </div>
+                <div class="flex justify-start">
+                    <div class="bg-white text-gray-800 max-w-[75%] rounded-2xl rounded-tl-none p-3 shadow-sm text-sm">
+                        <p>Project-gii ma dhameysay?</p>
+                        <span class="text-[10px] text-gray-400 block text-right mt-1">10:15 AM</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Message Input Bar -->
+            <div class="p-3 bg-white/90 backdrop-blur-md border-t border-gray-200 flex items-center space-x-2 z-10">
+                <input 
+                    type="text" 
+                    id="message-input" 
+                    placeholder="Qor fariin..." 
+                    class="flex-1 py-2 px-4 bg-gray-100 border border-gray-200 rounded-full text-sm outline-none focus:border-emerald-500"
+                    onkeypress="handleKeyPress(event)"
+                >
+                <button 
+                    onclick="sendMessage()" 
+                    class="bg-emerald-500 hover:bg-emerald-600 text-white p-2.5 rounded-full transition shadow-md"
+                >
+                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+                    </svg>
+                </button>
+            </div>
+
+        </div>
+
     </div>
 
-    <!-- JavaScript Engine (Real-Time WebSocket Stream) -->
+    <!-- Simple JavaScript for Interactivity -->
     <script>
-        // Active Assets Configuration
-        const cryptoData = {
-            'BTC': { name: 'Bitcoin', holdings: 0.25, price: 0, change: 0 },
-            'ETH': { name: 'Ethereum', holdings: 1.8, price: 0, change: 0 },
-            'SOL': { name: 'Solana', holdings: 12.5, price: 0, change: 0 },
-            'BNB': { name: 'Binance Coin', holdings: 4.2, price: 0, change: 0 }
-        };
-
-        let isBalanceHidden = false;
-
-        function toggleBalanceVisibility() {
-            isBalanceHidden = !isBalanceHidden;
-            const eyeIcon = document.getElementById('eye-icon');
-            if (isBalanceHidden) {
-                eyeIcon.className = 'fa-regular fa-eye-slash text-xs';
-                document.getElementById('total-balance-display').textContent = '••••••••';
-                document.getElementById('total-btc-display').textContent = '≈ •••• BTC';
-            } else {
-                eyeIcon.className = 'fa-regular fa-eye text-xs';
-                updateTotalBalance();
-            }
+        function selectChat(name, avatar) {
+            document.getElementById('active-name').innerText = name;
+            document.getElementById('active-avatar').src = avatar;
         }
 
-        function switchTab(tabId) {
-            ['home', 'markets', 'swap', 'history'].forEach(id => {
-                document.getElementById(`tab-${id}`).classList.add('hidden');
-                const btn = document.getElementById(`nav-${id}`);
-                btn.classList.remove('text-brand-500');
-                btn.classList.add('text-slate-400');
-            });
+        function sendMessage() {
+            const input = document.getElementById('message-input');
+            const text = input.value.trim();
+            if(!text) return;
 
-            document.getElementById(`tab-${tabId}`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`nav-${tabId}`);
-            activeBtn.classList.add('text-brand-500');
-            activeBtn.classList.remove('text-slate-400');
-        }
+            const chatContainer = document.getElementById('chat-messages');
+            const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
 
-        // Live WebSocket Streaming directly from Binance
-        function initRealTimeWebSocket() {
-            const socket = new WebSocket('wss://stream.binance.com:9443/ws/!miniTicker@arr');
+            // Append My Message
+            const myMsgHTML = `
+                <div class="flex justify-end">
+                    <div class="bg-[#dcf8c6] text-gray-900 max-w-[75%] rounded-2xl rounded-tr-none p-3 shadow-sm text-sm">
+                        <p>${text}</p>
+                        <span class="text-[10px] text-gray-500 block text-right mt-1">${timeNow}</span>
+                    </div>
+                </div>
+            `;
+            chatContainer.insertAdjacentHTML('beforeend', myMsgHTML);
+            input.value = '';
+            chatContainer.scrollTop = chatContainer.scrollHeight;
 
-            socket.onmessage = function (event) {
-                const data = JSON.parse(event.data);
-                const symbolMap = {
-                    'BTCUSDT': 'BTC',
-                    'ETHUSDT': 'ETH',
-                    'SOLUSDT': 'SOL',
-                    'BNBUSDT': 'BNB'
-                };
-
-                data.forEach(ticker => {
-                    const symbol = symbolMap[ticker.s];
-                    if (symbol && cryptoData[symbol]) {
-                        const newPrice = parseFloat(ticker.c);
-                        const openPrice = parseFloat(ticker.o);
-                        const changePercent = ((newPrice - openPrice) / openPrice) * 100;
-                        const oldPrice = cryptoData[symbol].price;
-
-                        cryptoData[symbol].price = newPrice;
-                        cryptoData[symbol].change = changePercent;
-
-                        // UI Update
-                        const card = document.getElementById(`asset-${symbol}`);
-                        if (card) {
-                            const priceEl = card.querySelector('.asset-price');
-                            const changeEl = card.querySelector('.asset-change');
-
-                            if (priceEl && changeEl) {
-                                priceEl.textContent = `$${newPrice.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-                                changeEl.textContent = `${changePercent >= 0 ? '+' : ''}${changePercent.toFixed(2)}%`;
-                                changeEl.className = `asset-change text-[11px] font-semibold ${changePercent >= 0 ? 'text-emerald-400' : 'text-rose-400'}`;
-
-                                // Visual flash indicator on price tick
-                                if (oldPrice > 0 && newPrice !== oldPrice) {
-                                    card.classList.remove('up-glow', 'down-glow');
-                                    void card.offsetWidth;
-                                    card.classList.add(newPrice > oldPrice ? 'up-glow' : 'down-glow');
-                                }
-                            }
-                        }
-                    }
-                });
-
-                if (!isBalanceHidden) {
-                    updateTotalBalance();
-                }
-            };
-
-            socket.onclose = function() {
-                setTimeout(initRealTimeWebSocket, 3000);
-            };
-        }
-
-        function updateTotalBalance() {
-            let totalBalance = 0;
-            Object.keys(cryptoData).forEach(sym => {
-                totalBalance += cryptoData[sym].price * cryptoData[sym].holdings;
-            });
-
-            const totalEl = document.getElementById('total-balance-display');
-            const btcEl = document.getElementById('total-btc-display');
-
-            if (totalEl && totalBalance > 0) {
-                totalEl.textContent = `$${totalBalance.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}`;
-            }
-            if (btcEl && cryptoData['BTC'].price > 0) {
-                btcEl.textContent = `≈ ${(totalBalance / cryptoData['BTC'].price).toFixed(4)} BTC`;
-            }
-        }
-
-        // Action Modals
-        function openModal(type) {
-            const modal = document.getElementById('action-modal');
-            const title = document.getElementById('modal-title');
-            const body = document.getElementById('modal-body');
-
-            if (type === 'send') {
-                title.textContent = 'Dir Crypto';
-                body.innerHTML = `
-                    <div class="space-y-3">
-                        <div>
-                            <label class="text-xs text-slate-400">Cinwaanka Qaataha</label>
-                            <input type="text" placeholder="0x..." class="w-full mt-1 p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
+            // Simulated Reply after 1 second
+            setTimeout(() => {
+                const replyHTML = `
+                    <div class="flex justify-start">
+                        <div class="bg-white text-gray-800 max-w-[75%] rounded-2xl rounded-tl-none p-3 shadow-sm text-sm">
+                            <p>Waa helay fariintaada! 👍</p>
+                            <span class="text-[10px] text-gray-400 block text-right mt-1">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
                         </div>
-                        <div>
-                            <label class="text-xs text-slate-400">Qadarka (USD)</label>
-                            <input type="number" placeholder="0.00" class="w-full mt-1 p-2.5 bg-slate-800 border border-slate-700 rounded-xl text-xs text-white focus:outline-none focus:border-brand-500">
-                        </div>
-                        <button onclick="closeModal()" class="w-full py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl mt-2">Xaqiiji Dirista</button>
                     </div>
                 `;
-            } else if (type === 'receive') {
-                title.textContent = 'Hel Crypto';
-                body.innerHTML = `
-                    <div class="text-center space-y-3 py-2">
-                        <div class="w-32 h-32 bg-white p-2 rounded-xl mx-auto flex items-center justify-center">
-                            <i class="fa-solid fa-qrcode text-6xl text-slate-900"></i>
-                        </div>
-                        <p class="text-xs text-slate-400 break-all bg-slate-800 p-2 rounded-lg border border-slate-700 font-mono">0x71C...B94A</p>
-                        <button onclick="closeModal()" class="w-full py-2.5 bg-brand-600 text-white font-bold text-xs rounded-xl">Nuuxi Cinwaanka</button>
-                    </div>
-                `;
-            } else {
-                title.textContent = 'Howsha';
-                body.innerHTML = `<p class="text-xs text-slate-400">Qeybtaan waa laga shaqeynayaa...</p>`;
+                chatContainer.insertAdjacentHTML('beforeend', replyHTML);
+                chatContainer.scrollTop = chatContainer.scrollHeight;
+            }, 1000);
+        }
+
+        function handleKeyPress(e) {
+            if (e.key === 'Enter') {
+                sendMessage();
             }
-
-            modal.classList.remove('hidden');
         }
-
-        function closeModal() {
-            document.getElementById('action-modal').classList.add('hidden');
-        }
-
-        // Initialize Live WebSocket Stream
-        initRealTimeWebSocket();
     </script>
 </body>
 </html>

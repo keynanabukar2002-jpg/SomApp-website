@@ -3,395 +3,238 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>WhatsApp UI</title>
+    <title>WhatsApp Business - Bayan App</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
-        :root {
-            --bg-color: #111b21;
-            --header-bg: #111b21;
-            --card-bg: #202c33;
-            --text-main: #e9edef;
-            --text-muted: #8696a0;
-            --accent-color: #00a884;
-            --border-color: #222d34;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        html, body {
-            width: 100vw;
-            height: 100vh;
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            overflow: hidden;
-        }
-
-        .app-container {
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            position: relative;
-        }
-
-        /* Top Header */
-        .app-header {
-            background-color: var(--header-bg);
-            padding: 16px 16px 10px 16px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .app-header h1 {
-            font-size: 1.35rem;
-            color: var(--text-main);
-            font-weight: 600;
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 22px;
-            color: var(--text-muted);
-            align-items: center;
-        }
-
-        .header-icons svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
-            cursor: pointer;
-        }
-
-        /* Search Bar */
-        .search-container {
-            padding: 6px 16px 10px 16px;
-            background-color: var(--bg-color);
-        }
-
-        .search-box {
-            background-color: #202c33;
-            display: flex;
-            align-items: center;
-            padding: 9px 16px;
-            border-radius: 22px;
-            gap: 12px;
-            color: var(--text-muted);
-        }
-
-        .search-box input {
-            background: none;
-            border: none;
-            color: var(--text-main);
-            outline: none;
-            width: 100%;
-            font-size: 0.95rem;
-        }
-
-        /* Filter Chips */
-        .filter-chips {
-            display: flex;
-            gap: 8px;
-            padding: 0 16px 12px 16px;
-            overflow-x: auto;
-            scrollbar-width: none;
-        }
-
-        .filter-chips::-webkit-scrollbar {
+        .no-scrollbar::-webkit-scrollbar {
             display: none;
         }
-
-        .chip {
-            background-color: #202c33;
-            color: var(--text-muted);
-            padding: 6px 14px;
-            border-radius: 18px;
-            font-size: 0.85rem;
-            white-space: nowrap;
-            cursor: pointer;
-        }
-
-        .chip.active {
-            background-color: #005c4b;
-            color: #e2fef9;
-        }
-
-        /* Main Scrollable Chat Area */
-        .chat-list {
-            flex: 1;
-            overflow-y: auto;
-            padding-bottom: 70px; /* Space for fixed nav bar */
-        }
-
-        .chat-item {
-            display: flex;
-            align-items: center;
-            padding: 12px 16px;
-            gap: 14px;
-            cursor: pointer;
-        }
-
-        .chat-item:active {
-            background-color: rgba(255, 255, 255, 0.05);
-        }
-
-        .avatar {
-            width: 50px;
-            height: 50px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: 600;
-            font-size: 1.1rem;
-            color: #fff;
-            flex-shrink: 0;
-        }
-
-        .chat-info {
-            flex: 1;
-            min-width: 0;
-        }
-
-        .chat-title-row {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-
-        .chat-name {
-            font-weight: 600;
-            font-size: 1.02rem;
-            color: var(--text-main);
-        }
-
-        .chat-time {
-            font-size: 0.75rem;
-            color: var(--text-muted);
-        }
-
-        .chat-snippet {
-            font-size: 0.88rem;
-            color: var(--text-muted);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        /* Floating Action Button (FAB) */
-        .fab {
-            position: fixed;
-            bottom: 75px;
-            right: 18px;
-            width: 54px;
-            height: 54px;
-            border-radius: 16px;
-            background-color: var(--accent-color);
-            color: #111b21;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.4);
-            z-index: 10;
-            cursor: pointer;
-        }
-
-        .fab svg {
-            width: 24px;
-            height: 24px;
-            fill: #111b21;
-        }
-
-        /* Bottom Fixed Navigation Bar */
-        .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 0;
-            width: 100vw;
-            height: 64px;
-            background-color: #111b21;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            border-top: 1px solid var(--border-color);
-            z-index: 20;
-        }
-
-        .nav-btn {
-            background: none;
-            border: none;
-            color: var(--text-muted);
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            gap: 4px;
-            font-size: 0.75rem;
-            cursor: pointer;
-            width: 25%;
-            font-weight: 500;
-        }
-
-        .nav-btn.active {
-            color: var(--text-main);
-        }
-
-        .nav-btn .icon-wrapper {
-            padding: 4px 16px;
-            border-radius: 16px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        .nav-btn.active .icon-wrapper {
-            background-color: #103629;
-            color: #25d366;
-        }
-
-        .nav-btn svg {
-            width: 22px;
-            height: 22px;
-            fill: currentColor;
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
     </style>
 </head>
-<body>
+<body class="bg-[#0b141a] text-[#e9edef] font-sans antialiased h-screen w-screen overflow-hidden select-none">
 
-    <div class="app-container">
-        <!-- Header -->
-        <div class="app-header">
-            <h1>WhatsApp</h1>
-            <div class="header-icons">
-                <svg viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17l-1.86-2H8.03L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 11c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
-                <svg viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>
+    <!-- Main Container -->
+    <div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#111b21] relative shadow-2xl border-x border-[#222d34]">
+
+        <!-- Fixed Top Header -->
+        <header class="bg-[#111b21] pt-3 px-4 pb-2 flex justify-between items-center z-30 shrink-0">
+            <h1 class="text-xl font-semibold tracking-wide text-[#e9edef]">WhatsApp</h1>
+            <div class="flex items-center gap-5 text-[#8696a0]">
+                <button class="hover:text-white transition-colors p-1" aria-label="Camera">
+                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17l-1.86-2H8.03L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 11c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
+                    </svg>
+                </button>
+                <button class="hover:text-white transition-colors p-1" aria-label="Search">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                    </svg>
+                </button>
+                <button class="hover:text-white transition-colors p-1" aria-label="More options">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
+                    </svg>
+                </button>
+            </div>
+        </header>
+
+        <!-- Search Bar Row -->
+        <div class="px-3 py-1.5 bg-[#111b21] shrink-0">
+            <div class="flex items-center gap-3 bg-[#202c33] px-4 py-2 rounded-full text-[#8696a0]">
+                <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
+                </svg>
+                <input type="text" placeholder="Raadi..." class="bg-transparent border-none outline-none text-[#e9edef] text-sm w-full placeholder-[#8696a0]">
             </div>
         </div>
 
-        <!-- Search -->
-        <div class="search-container">
-            <div class="search-box">
-                <span style="font-size: 0.9rem;">🔍</span>
-                <input type="text" placeholder="Raadi...">
-            </div>
+        <!-- Horizontal Filter Chips Row -->
+        <div class="flex gap-2 px-3 py-2.5 overflow-x-auto no-scrollbar shrink-0 bg-[#111b21]">
+            <button class="bg-[#005c4b] text-[#e2fef9] text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Dhammaan</button>
+            <button class="bg-[#202c33] text-[#8696a0] hover:text-[#e9edef] text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Aan la aqrin</button>
+            <button class="bg-[#202c33] text-[#8696a0] hover:text-[#e9edef] text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Kuwa la jecel yahay</button>
+            <button class="bg-[#202c33] text-[#8696a0] hover:text-[#e9edef] text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Kooxaha</button>
         </div>
 
-        <!-- Filter Chips -->
-        <div class="filter-chips">
-            <div class="chip active">Dhammaan</div>
-            <div class="chip">Aan la aqrin</div>
-            <div class="chip">Kuwa la jecel yahay</div>
-            <div class="chip">Kooxaha</div>
-        </div>
+        <!-- Scrollable Chats Area -->
+        <main class="flex-1 overflow-y-auto divide-y divide-[#222d34]/40 no-scrollbar pb-24">
 
-        <!-- Chat List -->
-        <div class="chat-list">
-            <div class="chat-item">
-                <div class="avatar" style="background-color: #34b7f1;">RX</div>
-                <div class="chat-info">
-                    <div class="chat-title-row">
-                        <span class="chat-name">Reer Xaji Abati</span>
-                        <span class="chat-time">8:20 pm</span>
+            <!-- Chat Item 1 -->
+            <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#202c33]/60 cursor-pointer transition-colors relative">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-600 to-blue-500 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0 relative">
+                    RX
+                    <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#25d366] border-2 border-[#111b21] rounded-full"></span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline mb-0.5">
+                        <h2 class="text-[#e9edef] font-semibold text-base truncate">Reer Xaji Abati</h2>
+                        <span class="text-xs text-[#25d366] font-medium shrink-0">8:20 pm</span>
                     </div>
-                    <div class="chat-snippet">~ tem18084: 🎥 Video</div>
+                    <div class="flex items-center gap-1 text-sm text-[#8696a0] truncate">
+                        <span>~ tem18084:</span>
+                        <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                        <span class="truncate">Video</span>
+                    </div>
+                </div>
+                <div class="flex flex-col items-end gap-1">
+                    <span class="bg-[#25d366] text-[#111b21] text-[10px] font-bold px-1.5 py-0.5 rounded-full">2</span>
                 </div>
             </div>
 
-            <div class="chat-item">
-                <div class="avatar" style="background-color: #00a884;">+20</div>
-                <div class="chat-info">
-                    <div class="chat-title-row">
-                        <span class="chat-name">+20 15 01581248</span>
-                        <span class="chat-time">7:15 pm</span>
+            <!-- Chat Item 2 -->
+            <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#202c33]/60 cursor-pointer transition-colors">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center font-bold text-white text-sm shadow-md shrink-0">
+                    +20
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline mb-0.5">
+                        <h2 class="text-[#e9edef] font-semibold text-base truncate">+20 15 01581248</h2>
+                        <span class="text-xs text-[#8696a0] shrink-0">7:15 pm</span>
                     </div>
-                    <div class="chat-snippet">📞 Voice call</div>
+                    <div class="flex items-center gap-1.5 text-sm text-[#8696a0] truncate">
+                        <svg class="w-4 h-4 fill-current text-[#8696a0] shrink-0" viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+                        <span class="truncate">Voice call</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="chat-item">
-                <div class="avatar" style="background-color: #ff9800;">RB</div>
-                <div class="chat-info">
-                    <div class="chat-title-row">
-                        <span class="chat-name">Reer baba abukar ay Sawad</span>
-                        <span class="chat-time">7:08 pm</span>
+            <!-- Chat Item 3 -->
+            <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#202c33]/60 cursor-pointer transition-colors relative">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-amber-600 to-orange-500 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0 relative">
+                    RB
+                    <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-[#25d366] border-2 border-[#111b21] rounded-full"></span>
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline mb-0.5">
+                        <h2 class="text-[#e9edef] font-semibold text-base truncate">Reer baba abukar ay Sawad</h2>
+                        <span class="text-xs text-[#8696a0] shrink-0">7:08 pm</span>
                     </div>
-                    <div class="chat-snippet">Fatma mudhihir: Sticker</div>
+                    <div class="flex items-center gap-1 text-sm text-[#8696a0] truncate">
+                        <span>Fatma mudhihir:</span>
+                        <span class="truncate">Sticker</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="chat-item">
-                <div class="avatar" style="background-color: #00bcd4;">K</div>
-                <div class="chat-info">
-                    <div class="chat-title-row">
-                        <span class="chat-name">keynaan</span>
-                        <span class="chat-time">5:19 pm</span>
+            <!-- Chat Item 4 -->
+            <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#202c33]/60 cursor-pointer transition-colors">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-400 to-indigo-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">
+                    K
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline mb-0.5">
+                        <h2 class="text-[#e9edef] font-semibold text-base truncate">keynaan</h2>
+                        <span class="text-xs text-[#8696a0] shrink-0">5:19 pm</span>
                     </div>
-                    <div class="chat-snippet">✓ .</div>
+                    <div class="flex items-center gap-1 text-sm text-[#8696a0] truncate">
+                        <span class="text-[#34b7f1] font-bold">✓✓</span>
+                        <span class="truncate">Haye, sidee tahay?</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="chat-item">
-                <div class="avatar" style="background-color: #3f51b5;">X</div>
-                <div class="chat-info">
-                    <div class="chat-title-row">
-                        <span class="chat-name">Xisbiga N&N 🇸🇴✌️</span>
-                        <span class="chat-time">Yesterday</span>
+            <!-- Chat Item 5 -->
+            <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#202c33]/60 cursor-pointer transition-colors">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-blue-700 to-purple-800 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">
+                    X
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline mb-0.5">
+                        <h2 class="text-[#e9edef] font-semibold text-base truncate">Xisbiga N&N 🇸🇴✌️</h2>
+                        <span class="text-xs text-[#8696a0] shrink-0">Shalay</span>
                     </div>
-                    <div class="chat-snippet">~ Daahir America: 🌐 @ This grou...</div>
+                    <div class="flex items-center gap-1 text-sm text-[#8696a0] truncate">
+                        <span>~ Daahir America:</span>
+                        <span class="truncate">🌐 Shirka guud ee maanta...</span>
+                    </div>
                 </div>
             </div>
 
-            <div class="chat-item">
-                <div class="avatar" style="background-color: #e91e63;">+25</div>
-                <div class="chat-info">
-                    <div class="chat-title-row">
-                        <span class="chat-name">+252 770884484</span>
-                        <span class="chat-time">26/10/2026</span>
+            <!-- Chat Item 6 -->
+            <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#202c33]/60 cursor-pointer transition-colors">
+                <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-pink-600 to-rose-500 flex items-center justify-center font-bold text-white text-sm shadow-md shrink-0">
+                    +25
+                </div>
+                <div class="flex-1 min-w-0">
+                    <div class="flex justify-between items-baseline mb-0.5">
+                        <h2 class="text-[#e9edef] font-semibold text-base truncate">+252 770884484</h2>
+                        <span class="text-xs text-[#8696a0] shrink-0">26/10/2026</span>
                     </div>
-                    <div class="chat-snippet">📞 Voice call</div>
+                    <div class="flex items-center gap-1.5 text-sm text-[#8696a0] truncate">
+                        <svg class="w-4 h-4 fill-current text-[#8696a0] shrink-0" viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+                        <span class="truncate">Voice call</span>
+                    </div>
                 </div>
             </div>
-        </div>
 
-        <!-- Floating Button -->
-        <div class="fab">
-            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-        </div>
+        </main>
 
-        <!-- Bottom Navigation Bar (Fixed) -->
-        <div class="bottom-nav">
-            <button class="nav-btn active">
-                <div class="icon-wrapper">
-                    <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
+        <!-- Floating Action Button (FAB) -->
+        <button class="absolute bottom-20 right-4 w-14 h-14 bg-[#00a884] text-[#111b21] rounded-2xl flex items-center justify-center shadow-lg active:scale-90 transition-transform z-20" aria-label="New Chat">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
+            </svg>
+        </button>
+
+        <!-- Fixed Bottom Navigation Bar (Chats, Wallet, Calls, Status, Profile) -->
+        <nav class="absolute bottom-0 left-0 right-0 h-16 bg-[#111b21] border-t border-[#222d34] flex justify-around items-center z-30 px-1">
+            
+            <!-- Chats Tab (Active) -->
+            <button class="flex flex-col items-center justify-center flex-1 h-full text-[#e9edef] group">
+                <div class="px-3.5 py-1 rounded-full bg-[#103629] text-[#25d366] transition-colors">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
+                    </svg>
                 </div>
-                <span>Chats</span>
+                <span class="text-[11px] font-semibold mt-0.5 text-[#e9edef]">Chats</span>
             </button>
 
-            <button class="nav-btn">
-                <div class="icon-wrapper">
-                    <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
+            <!-- Wallet Tab -->
+            <button class="flex flex-col items-center justify-center flex-1 h-full text-[#8696a0] hover:text-[#e9edef] group transition-colors">
+                <div class="px-3.5 py-1 rounded-full group-hover:bg-[#202c33]/40 transition-colors">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
+                    </svg>
                 </div>
-                <span>Updates</span>
+                <span class="text-[11px] font-medium mt-0.5">Wallet</span>
             </button>
 
-            <button class="nav-btn">
-                <div class="icon-wrapper">
-                    <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5c-1.66 0-3 1.34-3 3s1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5C6.34 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+            <!-- Calls Tab -->
+            <button class="flex flex-col items-center justify-center flex-1 h-full text-[#8696a0] hover:text-[#e9edef] group transition-colors">
+                <div class="px-3.5 py-1 rounded-full group-hover:bg-[#202c33]/40 transition-colors">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                    </svg>
                 </div>
-                <span>Communities</span>
+                <span class="text-[11px] font-medium mt-0.5">Calls</span>
             </button>
 
-            <button class="nav-btn">
-                <div class="icon-wrapper">
-                    <svg viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+            <!-- Status Tab -->
+            <button class="flex flex-col items-center justify-center flex-1 h-full text-[#8696a0] hover:text-[#e9edef] group transition-colors">
+                <div class="px-3.5 py-1 rounded-full group-hover:bg-[#202c33]/40 transition-colors">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                    </svg>
                 </div>
-                <span>Calls</span>
+                <span class="text-[11px] font-medium mt-0.5">Status</span>
             </button>
-        </div>
+
+            <!-- Profile Tab -->
+            <button class="flex flex-col items-center justify-center flex-1 h-full text-[#8696a0] hover:text-[#e9edef] group transition-colors">
+                <div class="px-3.5 py-1 rounded-full group-hover:bg-[#202c33]/40 transition-colors">
+                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                    </svg>
+                </div>
+                <span class="text-[11px] font-medium mt-0.5">Profile</span>
+            </button>
+
+        </nav>
+
     </div>
 
 </body>

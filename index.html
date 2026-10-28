@@ -1,153 +1,824 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App</title>
-    <style>
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            font-family: Arial, sans-serif;
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>WhatsApp Web (Firebase & Gemini AI Enabled)</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          colors: {
+            wa: {
+              teal: '#00a884',
+              'teal-dark': '#008069',
+              green: '#25d366',
+              bg: '#efeae2',
+              'bg-dark': '#0b141a',
+              'panel-dark': '#111b21',
+              'header-dark': '#202c33',
+              'hover-dark': '#2a3942',
+              'border-dark': '#222d34',
+              'bubble-out': '#d9fdd3',
+              'bubble-out-dark': '#005c4b',
+              'bubble-in': '#ffffff',
+              'bubble-in-dark': '#202c33'
+            }
+          }
         }
-        body {
-            background-color: #0f172a;
-            color: #f8fafc;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-        }
-        .chat-container {
-            width: 100%;
-            max-width: 400px;
-            height: 90vh;
-            background: #1e293b;
-            border-radius: 12px;
-            display: flex;
-            flex-direction: column;
-            overflow: hidden;
-            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
-        }
-        .chat-header {
-            background: #334155;
-            padding: 15px;
-            font-size: 18px;
-            font-weight: bold;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .status-dot {
-            width: 10px;
-            height: 10px;
-            background-color: #22c55e;
-            border-radius: 50%;
-        }
-        .chat-messages {
-            flex: 1;
-            padding: 15px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-        }
-        .message {
-            max-width: 75%;
-            padding: 10px 14px;
-            border-radius: 8px;
-            font-size: 14px;
-            line-height: 1.4;
-        }
-        .message.received {
-            background: #334155;
-            align-self: flex-start;
-        }
-        .message.sent {
-            background: #2563eb;
-            align-self: flex-end;
-        }
-        .chat-input-area {
-            display: flex;
-            padding: 10px;
-            background: #1e293b;
-            border-top: 1px solid #334155;
-        }
-        .chat-input-area input {
-            flex: 1;
-            padding: 10px;
-            border: none;
-            border-radius: 6px;
-            background: #0f172a;
-            color: #f8fafc;
-            outline: none;
-        }
-        .chat-input-area button {
-            background: #2563eb;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            margin-left: 8px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: bold;
-        }
-        .chat-input-area button:hover {
-            background: #1d4ed8;
-        }
-    </style>
+      }
+    }
+  </script>
+
+  <!-- Lucide Icons -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <!-- Emoji Picker Component -->
+  <script type="module" src="https://cdn.jsdelivr.net/npm/emoji-picker-element@1/index.js"></script>
+
+  <style>
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-thumb { background-color: rgba(120, 120, 120, 0.3); border-radius: 3px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+
+    /* WhatsApp Doodle Pattern */
+    .wa-bg-pattern {
+      background-image: url("data:image/svg+xml,%3Csvg width='80' height='80' viewBox='0 0 80 80' xmlns='http://www.w3.org/2000/svg'%3E%3Cg fill='%23888888' fill-opacity='0.05' fill-rule='evenodd'%3E%3Cpath d='M11 0l3 3-3 3-3-3 3-3zm28 0l3 3-3 3-3-3 3-3zm28 0l3 3-3 3-3-3 3-3kM0 11l3 3-3 3-3-3 3-3zm28 0l3 3-3 3-3-3 3-3zm28 0l3 3-3 3-3-3 3-3kM11 22l3 3-3 3-3-3 3-3zm28 0l3 3-3 3-3-3 3-3zm28 0l3 3-3 3-3-3 3-3kM0 33l3 3-3 3-3-3 3-3zm28 0l3 3-3 3-3-3 3-3zm28 0l3 3-3 3-3-3 3-3k'/%3E%3C/g%3E%3C/svg%3E");
+    }
+
+    /* Chat bubble tails */
+    .bubble-tail-out::before {
+      content: "";
+      position: absolute;
+      top: 0; right: -8px;
+      border-top: 9px solid #d9fdd3;
+      border-right: 9px solid transparent;
+    }
+    .dark .bubble-tail-out::before {
+      border-top-color: #005c4b;
+    }
+
+    .bubble-tail-in::before {
+      content: "";
+      position: absolute;
+      top: 0; left: -8px;
+      border-top: 9px solid #ffffff;
+      border-left: 9px solid transparent;
+    }
+    .dark .bubble-tail-in::before {
+      border-top-color: #202c33;
+    }
+
+    @keyframes pulse-red {
+      0%, 100% { transform: scale(1); opacity: 1; }
+      50% { transform: scale(1.15); opacity: 0.6; }
+    }
+    .animate-rec { animation: pulse-red 1s infinite ease-in-out; }
+  </style>
 </head>
-<body>
+<body class="bg-gray-200 dark:bg-[#0c1317] h-screen overflow-hidden font-sans antialiased text-gray-900 dark:text-gray-100 flex justify-center items-center">
 
-<div class="chat-container">
-    <div class="chat-header">
-        <div class="status-dot"></div>
-        WhatsApp Style Chat
-    </div>
-    <div class="chat-messages" id="messageBox">
-        <div class="message received">Kem cho? Aa ek sample chat app chhe[span_5](start_span)[span_5](end_span).</div>
-    </div>
-    <div class="chat-input-area">
-        <input type="text" id="userInput" placeholder="Message lakho..." onkeypress="handleKeyPress(event)">
-        <button onclick="sendMessage()">Moklo</button>
-    </div>
-</div>
+  <!-- Main Container -->
+  <div class="w-full h-full max-w-[1750px] xl:h-[96vh] xl:w-[98vw] xl:rounded-2xl xl:shadow-2xl overflow-hidden flex bg-white dark:bg-wa-panel-dark border border-gray-300 dark:border-gray-800 relative">
 
-<script>
-    function sendMessage() {
-        const input = document.getElementById('userInput');
-        const messageText = input.value.trim();
+    <!-- LEFT SIDEBAR -->
+    <div id="sidebar" class="w-full md:w-[380px] lg:w-[420px] flex-shrink-0 flex flex-col bg-white dark:bg-wa-panel-dark border-r border-gray-200 dark:border-wa-border-dark z-20 h-full">
+
+      <!-- Header -->
+      <div class="h-16 px-4 bg-gray-100 dark:bg-wa-header-dark flex items-center justify-between border-b border-gray-200 dark:border-wa-border-dark">
+        <div class="flex items-center space-x-3 cursor-pointer" onclick="openProfileModal()">
+          <img id="user-avatar-img" src="https://api.dicebear.com/7.x/bottts/svg?seed=User" class="w-10 h-10 rounded-full object-cover bg-gray-200 border border-gray-300 dark:border-gray-600">
+          <div>
+            <div id="user-name-txt" class="font-semibold text-sm leading-tight">Guest User</div>
+            <div id="auth-status-badge" class="text-[10px] text-yellow-500 font-medium">Demo Mode (Offline)</div>
+          </div>
+        </div>
+
+        <!-- Controls -->
+        <div class="flex items-center space-x-1 sm:space-x-2 text-gray-600 dark:text-gray-300">
+          <button onclick="switchTab('chats')" id="btn-tab-chats" title="Chats" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-wa-hover-dark text-wa-teal">
+            <i data-lucide="message-square" class="w-5 h-5"></i>
+          </button>
+          <button onclick="switchTab('contacts')" id="btn-tab-contacts" title="New Chat / Contacts" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-wa-hover-dark">
+            <i data-lucide="user-plus" class="w-5 h-5"></i>
+          </button>
+          <button onclick="openConfigModal()" title="Firebase & Gemini Settings" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-wa-hover-dark text-amber-500">
+            <i data-lucide="settings" class="w-5 h-5"></i>
+          </button>
+          <button onclick="toggleDarkMode()" title="Toggle Theme" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-wa-hover-dark">
+            <i data-lucide="moon" id="theme-icon" class="w-5 h-5"></i>
+          </button>
+          <button onclick="openAuthModal()" title="Login / Register" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-wa-hover-dark">
+            <i data-lucide="log-in" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Search Bar -->
+      <div class="p-2 bg-white dark:bg-wa-panel-dark border-b border-gray-100 dark:border-wa-border-dark">
+        <div class="relative flex items-center bg-gray-100 dark:bg-wa-header-dark rounded-lg px-3 py-1.5">
+          <i data-lucide="search" class="w-4 h-4 text-gray-500 dark:text-gray-400 mr-2"></i>
+          <input type="text" id="search-input" oninput="filterChats(this.value)" placeholder="Raadi ama bilow wadahadal cusub" class="w-full bg-transparent text-sm text-gray-800 dark:text-gray-200 focus:outline-none placeholder-gray-500 dark:placeholder-gray-400">
+        </div>
+      </div>
+
+      <!-- SIDEBAR TABS -->
+      <div class="flex-1 overflow-y-auto relative">
         
-        if (messageText === '') return;
+        <!-- CHATS PANEL -->
+        <div id="panel-chats" class="divide-y divide-gray-100 dark:divide-wa-border-dark">
+          <!-- Gemini AI Chat (Always pinned) -->
+          <div onclick="openChat('gemini-ai')" id="chat-item-gemini-ai" class="flex items-center space-x-3 p-3 cursor-pointer transition hover:bg-gray-100 dark:hover:bg-wa-hover-dark border-b border-gray-100 dark:border-wa-border-dark bg-gradient-to-r from-teal-500/10 to-transparent">
+            <div class="relative flex-shrink-0">
+              <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-purple-500 via-pink-500 to-amber-400 p-0.5 flex items-center justify-center shadow-md">
+                <img src="https://api.dicebear.com/7.x/bottts/svg?seed=GeminiAI" class="w-full h-full rounded-full bg-slate-900 p-1 object-cover">
+              </div>
+              <span class="absolute bottom-0 right-0 w-3.5 h-3.5 bg-green-500 border-2 border-white dark:border-wa-panel-dark rounded-full"></span>
+            </div>
+            <div class="flex-1 min-w-0">
+              <div class="flex justify-between items-baseline mb-0.5">
+                <h3 class="font-bold text-sm truncate text-purple-600 dark:text-purple-400 flex items-center gap-1">
+                  Gemini AI Assistant <i data-lucide="sparkles" class="w-3.5 h-3.5 text-amber-400 fill-amber-400"></i>
+                </h3>
+                <span class="text-[11px] text-gray-400">AI</span>
+              </div>
+              <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Iweydi su'aal kasta ama talo qaado!</p>
+            </div>
+          </div>
 
-        const messageBox = document.getElementById('messageBox');
+          <!-- Dynamic Chat List Container -->
+          <div id="chats-list"></div>
+        </div>
 
-        // User message
-        const sentDiv = document.createElement('div');
-        sentDiv.classList.add('message', 'sent');
-        sentDiv.textContent = messageText;
-        messageBox.appendChild(sentDiv);
+        <!-- CONTACTS PANEL -->
+        <div id="panel-contacts" class="hidden divide-y divide-gray-100 dark:divide-wa-border-dark">
+          <div class="p-3 bg-gray-50 dark:bg-wa-header-dark flex justify-between items-center">
+            <span class="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">Dadka aad la xiriiri karto</span>
+            <button onclick="promptCreateGroup()" class="text-xs text-wa-teal font-semibold flex items-center gap-1 hover:underline">
+              <i data-lucide="users" class="w-3.5 h-3.5"></i> Koox Cusub
+            </button>
+          </div>
+          <div id="contacts-list"></div>
+        </div>
 
-        input.value = '';
-        messageBox.scrollTop = messageBox.scrollHeight;
+      </div>
+    </div>
 
-        // Auto reply mock (WhatsApp feel)
-        setTimeout(() => {
-            const receivedDiv = document.createElement('div');
-            receivedDiv.classList.add('message', 'received');
-            receivedDiv.textContent = "Tamaro sandesho malyo che: " + sentDiv.textContent;
-            messageBox.appendChild(receivedDiv);
-            messageBox.scrollTop = messageBox.scrollHeight;
-        }, 1000);
+    <!-- MAIN CHAT SCREEN -->
+    <div id="chat-window" class="flex-1 flex flex-col h-full bg-wa-bg dark:bg-wa-bg-dark relative hidden md:flex">
+
+      <!-- Active Chat Header -->
+      <div id="chat-header" class="h-16 px-4 bg-gray-100 dark:bg-wa-header-dark flex items-center justify-between border-b border-gray-200 dark:border-wa-border-dark z-10">
+        <div class="flex items-center space-x-3">
+          <button onclick="closeChatMobile()" class="md:hidden text-gray-600 dark:text-gray-300 mr-1">
+            <i data-lucide="arrow-left" class="w-6 h-6"></i>
+          </button>
+          <img id="active-chat-avatar" src="https://api.dicebear.com/7.x/bottts/svg?seed=GeminiAI" class="w-10 h-10 rounded-full object-cover border border-gray-300 dark:border-gray-600">
+          <div>
+            <h2 id="active-chat-name" class="font-semibold text-sm leading-tight">Gemini AI Assistant</h2>
+            <p id="active-chat-status" class="text-xs text-wa-teal dark:text-wa-teal h-4">online</p>
+          </div>
+        </div>
+
+        <div class="flex items-center space-x-2 text-gray-600 dark:text-gray-300">
+          <button onclick="simulateCall('video')" title="Wicitaanka Muuqaalka (Video)" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-wa-hover-dark">
+            <i data-lucide="video" class="w-5 h-5"></i>
+          </button>
+          <button onclick="simulateCall('voice')" title="Wicitaanka Codka" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-wa-hover-dark">
+            <i data-lucide="phone" class="w-5 h-5"></i>
+          </button>
+          <button onclick="clearChatHistory()" title="Tirtir Fariimaha" class="p-2 rounded-full hover:bg-gray-200 dark:hover:bg-wa-hover-dark text-red-400">
+            <i data-lucide="trash-2" class="w-5 h-5"></i>
+          </button>
+        </div>
+      </div>
+
+      <!-- Messages Area -->
+      <div id="messages-container" class="flex-1 overflow-y-auto p-4 sm:p-6 space-y-3 wa-bg-pattern relative"></div>
+
+      <!-- Emoji Picker Overlay -->
+      <div id="emoji-picker-container" class="hidden absolute bottom-16 left-4 z-30 shadow-2xl rounded-lg overflow-hidden">
+        <emoji-picker class="dark"></emoji-picker>
+      </div>
+
+      <!-- Input Bar -->
+      <div id="chat-input-container" class="px-4 py-3 bg-gray-100 dark:bg-wa-header-dark flex items-center space-x-2 border-t border-gray-200 dark:border-wa-border-dark z-10">
+        <button onclick="toggleEmojiPicker()" class="p-2 text-gray-600 dark:text-gray-400 hover:text-wa-teal transition">
+          <i data-lucide="smile" class="w-6 h-6"></i>
+        </button>
+
+        <label title="Soo geli Sawir" class="p-2 text-gray-600 dark:text-gray-400 hover:text-wa-teal cursor-pointer transition">
+          <i data-lucide="paperclip" class="w-6 h-6"></i>
+          <input type="file" id="file-input" accept="image/*" class="hidden" onchange="handleFileUpload(event)">
+        </label>
+
+        <!-- Normal Text Input -->
+        <div id="input-text-wrapper" class="flex-1 relative">
+          <input type="text" id="message-input" placeholder="Qor fariin..." onkeydown="handleKeyPress(event)" class="w-full bg-white dark:bg-wa-panel-dark text-gray-800 dark:text-gray-100 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-1 focus:ring-wa-teal placeholder-gray-500">
+        </div>
+
+        <!-- Voice Recording Indicator Bar -->
+        <div id="recording-bar" class="hidden flex-1 items-center justify-between bg-red-100 dark:bg-red-950/40 px-4 py-2 rounded-lg text-red-600 dark:text-red-400 text-sm">
+          <div class="flex items-center space-x-2">
+            <div class="w-3 h-3 rounded-full bg-red-600 animate-rec"></div>
+            <span id="recording-timer">Duubaya... 0:00</span>
+          </div>
+          <button onclick="cancelVoiceRecording()" class="text-xs uppercase font-semibold hover:underline text-gray-500 dark:text-gray-400">Jooji</button>
+        </div>
+
+        <!-- Send or Mic Button -->
+        <button id="send-btn" onclick="handleSendButtonClick()" class="p-2.5 bg-wa-teal hover:bg-wa-teal-dark text-white rounded-full transition flex items-center justify-center">
+          <i data-lucide="send" id="send-icon" class="w-5 h-5"></i>
+          <i data-lucide="mic" id="mic-icon" class="w-5 h-5 hidden"></i>
+        </button>
+      </div>
+
+      <!-- NO CHAT SELECTED PLACEHOLDER -->
+      <div id="no-chat-placeholder" class="absolute inset-0 bg-gray-50 dark:bg-wa-panel-dark flex flex-col items-center justify-center z-20 text-center p-6">
+        <div class="w-24 h-24 mb-6 rounded-full bg-wa-teal/10 flex items-center justify-center text-wa-teal">
+          <i data-lucide="message-square" class="w-12 h-12"></i>
+        </div>
+        <h1 class="text-2xl font-light text-gray-700 dark:text-gray-200 mb-2">WhatsApp Web App</h1>
+        <p class="text-sm text-gray-500 dark:text-gray-400 max-w-md">Ku dir fariimo si toos ah ama la hadal kaaliyaha AI-ga ee Gemini!</p>
+        <div class="mt-8 flex items-center space-x-2 text-xs text-gray-400 border border-gray-200 dark:border-gray-800 rounded-full px-4 py-1.5">
+          <i data-lucide="lock" class="w-3.5 h-3.5 text-wa-teal"></i>
+          <span>Amni buuxa iyo kaydinta xogta</span>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- MODAL: AUTH / LOGIN / SIGNUP -->
+  <div id="modal-auth" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-wa-panel-dark w-full max-w-md rounded-xl shadow-2xl p-6 border border-gray-200 dark:border-gray-700">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <i data-lucide="user-check" class="w-5 h-5 text-wa-teal"></i> Gelitaanka (Authentication)
+        </h3>
+        <button onclick="closeModal('modal-auth')" class="text-gray-400 hover:text-gray-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Email-ka</label>
+          <input type="email" id="auth-email" placeholder="user@example.com" class="w-full bg-gray-100 dark:bg-wa-header-dark border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-wa-teal">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Furaha (Password)</label>
+          <input type="password" id="auth-password" placeholder="••••••••" class="w-full bg-gray-100 dark:bg-wa-header-dark border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-wa-teal">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-gray-500 dark:text-gray-400 mb-1">Magacaaga (Username)</label>
+          <input type="text" id="auth-username" placeholder="tusaale: Ahmed Cali" class="w-full bg-gray-100 dark:bg-wa-header-dark border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-wa-teal">
+        </div>
+
+        <div class="flex flex-col gap-2 pt-2">
+          <button onclick="handleAuthAction('login')" class="w-full bg-wa-teal hover:bg-wa-teal-dark text-white font-medium py-2 rounded-lg text-sm transition">Gal (Sign In)</button>
+          <button onclick="handleAuthAction('register')" class="w-full border border-wa-teal text-wa-teal hover:bg-wa-teal/10 font-medium py-2 rounded-lg text-sm transition">Samee Account Cusub</button>
+          <button onclick="handleAuthAction('anonymous')" class="W-full bg-gray-200 dark:bg-gray-800 text-gray-700 dark:text-gray-300 font-medium py-2 rounded-lg text-sm transition">Sida Marti ah (Guest)</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: FIREBASE & GEMINI CONFIG -->
+  <div id="modal-config" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-wa-panel-dark w-full max-w-lg rounded-xl shadow-2xl p-6 border border-gray-200 dark:border-gray-700 max-h-[90vh] overflow-y-auto">
+      <div class="flex justify-between items-center mb-4">
+        <h3 class="text-lg font-bold text-gray-800 dark:text-gray-100 flex items-center gap-2">
+          <i data-lucide="sliders" class="w-5 h-5 text-amber-500"></i> API & Firebase Settings
+        </h3>
+        <button onclick="closeModal('modal-config')" class="text-gray-400 hover:text-gray-200"><i data-lucide="x" class="w-5 h-5"></i></button>
+      </div>
+
+      <div class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-amber-400 mb-1">Gemini AI API Key</label>
+          <input type="password" id="cfg-gemini-key" placeholder="AIzaSy..." class="w-full bg-gray-100 dark:bg-wa-header-dark border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-wa-teal">
+          <p class="text-[11px] text-gray-500 mt-1">Haddii aad rabto inaad isticmaasho furahaaga gaarka ah ee Gemini AI.</p>
+        </div>
+
+        <hr class="border-gray-200 dark:border-gray-700">
+
+        <h4 class="font-semibold text-sm text-wa-teal">Firebase Firestore Configuration (JSON format)</h4>
+        <div>
+          <textarea id="cfg-firebase-json" rows="6" placeholder='{
+  "apiKey": "AIzaSy...",
+  "authDomain": "my-app.firebaseapp.com",
+  "projectId": "my-app",
+  "storageBucket": "my-app.appspot.com",
+  "messagingSenderId": "12345...",
+  "appId": "1:12345..."
+}' class="w-full bg-gray-100 dark:bg-wa-header-dark border border-gray-300 dark:border-gray-600 rounded-lg p-3 text-xs font-mono focus:outline-none focus:border-wa-teal"></textarea>
+        </div>
+
+        <button onclick="saveApiConfig()" class="w-full bg-wa-teal hover:bg-wa-teal-dark text-white font-medium py-2 rounded-lg text-sm transition">Keydso oo Xir (Save)</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: PROFILE SETUP -->
+  <div id="modal-profile" class="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center hidden p-4">
+    <div class="bg-white dark:bg-wa-panel-dark w-full max-w-md rounded-xl shadow-2xl p-6 border border-gray-200 dark:border-gray-700">
+      <h3 class="text-lg font-bold mb-4 text-gray-800 dark:text-gray-100">Dejinta Astaantaada (Profile)</h3>
+      <div class="space-y-4">
+        <div class="flex justify-center">
+          <img id="profile-preview-avatar" src="" class="w-20 h-20 rounded-full object-cover border-2 border-wa-teal">
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Magacaaga</label>
+          <input type="text" id="profile-input-name" class="w-full bg-gray-100 dark:bg-wa-header-dark border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-wa-teal">
+        </div>
+        <div>
+          <label class="block text-xs text-gray-500 dark:text-gray-400 mb-1">Avatar Image URL / Seed</label>
+          <input type="text" id="profile-input-avatar" oninput="document.getElementById('profile-preview-avatar').src=this.value" class="w-full bg-gray-100 dark:bg-wa-header-dark border border-gray-300 dark:border-gray-600 rounded-lg px-3 py-2 text-sm focus:outline-none focus:border-wa-teal">
+        </div>
+      </div>
+      <div class="mt-6 flex justify-end space-x-3">
+        <button onclick="closeModal('modal-profile')" class="px-4 py-2 text-sm text-gray-500">Ka tago</button>
+        <button onclick="saveProfile()" class="px-4 py-2 bg-wa-teal text-white rounded-lg text-sm font-medium">Keydso</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- FIREBASE MODULAR SDKs VIA CDN -->
+  <script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, collection, doc, setDoc, addDoc, onSnapshot, query, orderBy, serverTimestamp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+
+    window.FirebaseModules = {
+      initializeApp, getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously, onAuthStateChanged,
+      getFirestore, collection, doc, setDoc, addDoc, onSnapshot, query, orderBy, serverTimestamp
+    };
+
+    window.initAppCore();
+  </script>
+
+  <!-- CORE LOGIC & GEMINI INTEGRATION -->
+  <script>
+    let db = null;
+    let auth = null;
+    let currentUser = JSON.parse(localStorage.getItem('wa_user')) || {
+      uid: 'user_' + Math.random().toString(36).substring(2, 9),
+      name: 'Isticmaale ' + Math.floor(Math.random() * 1000),
+      avatar: 'https://api.dicebear.com/7.x/bottts/svg?seed=' + Math.random()
+    };
+
+    let activeChatId = 'gemini-ai';
+    let localMessages = JSON.parse(localStorage.getItem('wa_messages')) || {
+      'gemini-ai': [
+        { id: 'm1', sender: 'gemini-ai', text: 'Nabad! Anigu ahankaaga AI ah. Sidee baan ku caawin karaa maanta?', timestamp: 'Hadda', type: 'text' }
+      ]
+    };
+
+    let demoContacts = [
+      { id: 'contact_1', name: 'Amina Cali', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Amina' },
+      { id: 'contact_2', name: 'Farah Axmed', avatar: 'https://api.dicebear.com/7.x/avataaars/svg?seed=Farah' },
+      { id: 'contact_3', name: 'Kooxda Soomaaliyeed', avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=Group', isGroup: true }
+    ];
+
+    let mediaRecorder = null;
+    let audioChunks = [];
+    let recTimerInterval = null;
+    let firestoreUnsubscribe = null;
+
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+    function playBeep(freq = 600) {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      gain.gain.setValueAtTime(0.1, audioCtx.currentTime);
+      gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+      osc.start();
+      osc.stop(audioCtx.currentTime + 0.1);
     }
 
-    function handleKeyPress(event) {
-        if (event.key === 'Enter') {
-            sendMessage();
+    window.initAppCore = function() {
+      lucide.createIcons();
+      updateUserHeaderUI();
+      attemptFirebaseInit();
+      renderChatsList();
+      renderContactsList();
+      openChat('gemini-ai');
+
+      const picker = document.querySelector('emoji-picker');
+      if (picker) {
+        picker.addEventListener('emoji-click', event => {
+          const input = document.getElementById('message-input');
+          input.value += event.detail.unicode;
+          toggleEmojiPicker(false);
+        });
+      }
+    };
+
+    function attemptFirebaseInit() {
+      const cfgString = localStorage.getItem('wa_firebase_cfg');
+      if (!cfgString) return;
+
+      try {
+        const config = JSON.parse(cfgString);
+        const { initializeApp, getAuth, getFirestore, onAuthStateChanged } = window.FirebaseModules;
+
+        const app = initializeApp(config);
+        auth = getAuth(app);
+        db = getFirestore(app);
+
+        document.getElementById('auth-status-badge').innerText = 'Firebase Connected';
+        document.getElementById('auth-status-badge').className = 'text-[10px] text-green-400 font-medium';
+
+        onAuthStateChanged(auth, (user) => {
+          if (user) {
+            currentUser.uid = user.uid;
+            currentUser.name = user.displayName || user.email.split('@')[0] || currentUser.name;
+            updateUserHeaderUI();
+            listenToFirestoreMessages();
+          }
+        });
+      } catch (err) {
+        console.warn('Firebase init fallback:', err);
+      }
+    }
+
+    function listenToFirestoreMessages() {
+      if (!db || !activeChatId || activeChatId === 'gemini-ai') return;
+      if (firestoreUnsubscribe) firestoreUnsubscribe();
+
+      const { collection, query, orderBy, onSnapshot } = window.FirebaseModules;
+      const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-whatsapp-app';
+      const messagesRef = collection(db, 'artifacts', appId, 'public', 'data', `chat_${activeChatId}`);
+      const q = query(messagesRef, orderBy('createdAt', 'asc'));
+
+      firestoreUnsubscribe = onSnapshot(q, (snapshot) => {
+        localMessages[activeChatId] = [];
+        snapshot.forEach((doc) => {
+          const data = doc.data();
+          localMessages[activeChatId].push({
+            id: doc.id,
+            sender: data.senderId,
+            senderName: data.senderName,
+            text: data.text,
+            mediaUrl: data.mediaUrl,
+            type: data.type || 'text',
+            timestamp: data.createdAt ? new Date(data.createdAt.seconds * 1000).toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'}) : 'Hadda'
+          });
+        });
+        renderMessages();
+        playBeep(800);
+      });
+    }
+
+    async function callGeminiAPI(promptText) {
+      const customKey = localStorage.getItem('wa_gemini_key') || "";
+      const apiUrl = `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${customKey}`;
+
+      const payload = {
+        contents: [{ parts: [{ text: promptText }] }],
+        systemInstruction: {
+          parts: [{ text: "Waxaad tahay kaaliyaha AI ee WhatsApp. Bixi jawaabo caawinaya, gaaban, oo dabiici ah oo ku habboon app-ka fariimaha." }]
         }
-    }
-</script>
+      };
 
+      try {
+        const response = await fetch(apiUrl, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload)
+        });
+
+        const result = await response.json();
+        const aiResponse = result.candidates?.[0]?.content?.parts?.[0]?.text;
+        return aiResponse || "Waan ka xumahay, hadda ma soo saari karo jawaab.";
+      } catch (e) {
+        return "Waan ka xumahay, waxaa jira dhibaato xagga isku xirka ah. Hubi furahaaga Gemini API Settings-ka!";
+      }
+    }
+
+    function openChat(chatId) {
+      activeChatId = chatId;
+      document.getElementById('no-chat-placeholder').classList.add('hidden');
+      document.getElementById('chat-window').classList.remove('hidden');
+
+      if (chatId === 'gemini-ai') {
+        document.getElementById('active-chat-name').innerText = 'Gemini AI Assistant';
+        document.getElementById('active-chat-avatar').src = 'https://api.dicebear.com/7.x/bottts/svg?seed=GeminiAI';
+        document.getElementById('active-chat-status').innerText = 'online • AI Bot';
+      } else {
+        const contact = demoContacts.find(c => c.id === chatId) || { name: chatId, avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=' + chatId };
+        document.getElementById('active-chat-name').innerText = contact.name;
+        document.getElementById('active-chat-avatar').src = contact.avatar;
+        document.getElementById('active-chat-status').innerText = 'online';
+      }
+
+      if (db && chatId !== 'gemini-ai') {
+        listenToFirestoreMessages();
+      } else {
+        renderMessages();
+      }
+    }
+
+    function renderMessages() {
+      const container = document.getElementById('messages-container');
+      container.innerHTML = '';
+
+      const msgs = localMessages[activeChatId] || [];
+
+      msgs.forEach(msg => {
+        const isMe = msg.sender === currentUser.uid || msg.sender === 'me';
+        const msgDiv = document.createElement('div');
+        msgDiv.className = `flex flex-col ${isMe ? 'items-end' : 'items-start'} mb-2`;
+
+        let bodyHTML = '';
+        if (msg.type === 'image') {
+          bodyHTML = `<img src="${msg.mediaUrl}" class="rounded-lg max-w-xs mb-1 max-h-60 object-cover cursor-pointer">`;
+        } else if (msg.type === 'audio') {
+          bodyHTML = `<audio controls src="${msg.mediaUrl}" class="max-w-[240px] h-10 py-1"></audio>`;
+        } else {
+          bodyHTML = `<p class="text-sm leading-relaxed">${escapeHTML(msg.text || '')}</p>`;
+        }
+
+        msgDiv.innerHTML = `
+          <div class="relative max-w-[85%] sm:max-w-[70%] px-3 py-2 rounded-lg shadow-sm ${
+            isMe 
+              ? 'bg-wa-bubble-out dark:bg-wa-bubble-out-dark text-gray-900 dark:text-gray-100 bubble-tail-out' 
+              : 'bg-wa-bubble-in dark:bg-wa-bubble-in-dark text-gray-900 dark:text-gray-100 bubble-tail-in'
+          }">
+            ${!isMe && msg.senderName ? `<div class="text-[10px] font-bold text-wa-teal mb-0.5">${escapeHTML(msg.senderName)}</div>` : ''}
+            ${bodyHTML}
+            <div class="flex items-center justify-end space-x-1 mt-1 text-[10px] text-gray-500 dark:text-gray-400">
+              <span>${msg.timestamp || 'Hadda'}</span>
+              ${isMe ? `<i data-lucide="check-check" class="w-3.5 h-3.5 text-wa-teal"></i>` : ''}
+            </div>
+          </div>
+        `;
+        container.appendChild(msgDiv);
+      });
+
+      lucide.createIcons();
+      container.scrollTop = container.scrollHeight;
+    }
+
+    function renderChatsList() {
+      const container = document.getElementById('chats-list');
+      container.innerHTML = '';
+
+      demoContacts.forEach(contact => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center space-x-3 p-3 cursor-pointer transition hover:bg-gray-100 dark:hover:bg-wa-hover-dark border-b border-gray-100 dark:border-wa-border-dark';
+        div.onclick = () => openChat(contact.id);
+
+        div.innerHTML = `
+          <img src="${contact.avatar}" class="w-12 h-12 rounded-full object-cover">
+          <div class="flex-1 min-w-0">
+            <div class="flex justify-between items-baseline mb-0.5">
+              <h3 class="font-semibold text-sm truncate">${contact.name}</h3>
+              <span class="text-[11px] text-gray-400">Active</span>
+            </div>
+            <p class="text-xs text-gray-500 dark:text-gray-400 truncate">Guji si aad u bilowdo</p>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    function renderContactsList() {
+      const container = document.getElementById('contacts-list');
+      container.innerHTML = '';
+
+      demoContacts.forEach(c => {
+        const div = document.createElement('div');
+        div.className = 'flex items-center space-x-3 p-3 cursor-pointer hover:bg-gray-100 dark:hover:bg-wa-hover-dark';
+        div.onclick = () => { openChat(c.id); switchTab('chats'); };
+        div.innerHTML = `
+          <img src="${c.avatar}" class="w-10 h-10 rounded-full object-cover">
+          <div>
+            <h4 class="font-semibold text-sm">${c.name}</h4>
+            <p class="text-xs text-gray-400">Diyaar ayuu yahay</p>
+          </div>
+        `;
+        container.appendChild(div);
+      });
+    }
+
+    async function handleSendButtonClick() {
+      const input = document.getElementById('message-input');
+      const text = input.value.trim();
+
+      if (text) {
+        await dispatchMessage({ text, type: 'text' });
+        input.value = '';
+      } else {
+        toggleVoiceRecording();
+      }
+    }
+
+    async function dispatchMessage(msgData) {
+      const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+
+      if (db && activeChatId !== 'gemini-ai') {
+        const { collection, addDoc, serverTimestamp } = window.FirebaseModules;
+        const appId = typeof __app_id !== 'undefined' ? __app_id : 'default-whatsapp-app';
+        await addDoc(collection(db, 'artifacts', appId, 'public', 'data', `chat_${activeChatId}`), {
+          senderId: currentUser.uid,
+          senderName: currentUser.name,
+          text: msgData.text || '',
+          mediaUrl: msgData.mediaUrl || '',
+          type: msgData.type || 'text',
+          createdAt: serverTimestamp()
+        });
+        return;
+      }
+
+      if (!localMessages[activeChatId]) localMessages[activeChatId] = [];
+      localMessages[activeChatId].push({
+        id: 'msg_' + Date.now(),
+        sender: currentUser.uid,
+        senderName: currentUser.name,
+        timestamp: timestamp,
+        ...msgData
+      });
+
+      renderMessages();
+      playBeep(600);
+
+      if (activeChatId === 'gemini-ai' && msgData.type === 'text') {
+        document.getElementById('active-chat-status').innerText = 'qoraya jawaab...';
+        const aiText = await callGeminiAPI(msgData.text);
+        
+        localMessages['gemini-ai'].push({
+          id: 'ai_' + Date.now(),
+          sender: 'gemini-ai',
+          senderName: 'Gemini AI',
+          text: aiText,
+          timestamp: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+          type: 'text'
+        });
+
+        document.getElementById('active-chat-status').innerText = 'online • AI Bot';
+        renderMessages();
+        playBeep(900);
+      }
+
+      localStorage.setItem('wa_messages', JSON.stringify(localMessages));
+    }
+
+    async function toggleVoiceRecording() {
+      const recBar = document.getElementById('recording-bar');
+      const inputWrap = document.getElementById('input-text-wrapper');
+
+      if (!mediaRecorder || mediaRecorder.state === 'inactive') {
+        try {
+          const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+          mediaRecorder = new MediaRecorder(stream);
+          audioChunks = [];
+
+          mediaRecorder.ondataavailable = e => audioChunks.push(e.data);
+          mediaRecorder.onstop = async () => {
+            const audioBlob = new Blob(audioChunks, { type: 'audio/webm' });
+            const reader = new FileReader();
+            reader.onloadend = () => {
+              dispatchMessage({ mediaUrl: reader.result, type: 'audio' });
+            };
+            reader.readAsDataURL(audioBlob);
+          };
+
+          mediaRecorder.start();
+          recBar.classList.remove('hidden');
+          recBar.classList.add('flex');
+          inputWrap.classList.add('hidden');
+
+          let sec = 0;
+          recTimerInterval = setInterval(() => {
+            sec++;
+            document.getElementById('recording-timer').innerText = `Duubaya... 0:${sec < 10 ? '0' : ''}${sec}`;
+          }, 1000);
+
+        } catch (err) {
+          alert('Fadlan ogolow Mic-ga si aad u dirto fariimaha codka ah.');
+        }
+      } else {
+        mediaRecorder.stop();
+        stopRecState();
+      }
+    }
+
+    function cancelVoiceRecording() {
+      if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+        mediaRecorder.stop();
+      }
+      stopRecState();
+    }
+
+    function stopRecState() {
+      clearInterval(recTimerInterval);
+      document.getElementById('recording-bar').classList.add('hidden');
+      document.getElementById('recording-bar').classList.remove('flex');
+      document.getElementById('input-text-wrapper').classList.remove('hidden');
+    }
+
+    function handleFileUpload(e) {
+      const file = e.target.files[0];
+      if (!file) return;
+
+      const reader = new FileReader();
+      reader.onload = function(evt) {
+        dispatchMessage({ mediaUrl: evt.target.result, type: 'image' });
+      };
+      reader.readAsDataURL(file);
+    }
+
+    function handleAuthAction(mode) {
+      const email = document.getElementById('auth-email').value;
+      const pass = document.getElementById('auth-password').value;
+      const uname = document.getElementById('auth-username').value;
+
+      if (!auth) {
+        currentUser.name = uname || 'Demo User';
+        updateUserHeaderUI();
+        closeModal('modal-auth');
+        return;
+      }
+
+      const { signInWithEmailAndPassword, createUserWithEmailAndPassword, signInAnonymously } = window.FirebaseModules;
+
+      if (mode === 'login') {
+        signInWithEmailAndPassword(auth, email, pass).then(() => closeModal('modal-auth')).catch(e => alert(e.message));
+      } else if (mode === 'register') {
+        createUserWithEmailAndPassword(auth, email, pass).then(() => closeModal('modal-auth')).catch(e => alert(e.message));
+      } else {
+        signInAnonymously(auth).then(() => closeModal('modal-auth')).catch(e => alert(e.message));
+      }
+    }
+
+    function saveApiConfig() {
+      const key = document.getElementById('cfg-gemini-key').value.trim();
+      const fbJson = document.getElementById('cfg-firebase-json').value.trim();
+
+      if (key) localStorage.setItem('wa_gemini_key', key);
+      if (fbJson) localStorage.setItem('wa_firebase_cfg', fbJson);
+
+      closeModal('modal-config');
+      attemptFirebaseInit();
+    }
+
+    function updateUserHeaderUI() {
+      document.getElementById('user-avatar-img').src = currentUser.avatar;
+      document.getElementById('user-name-txt').innerText = currentUser.name;
+    }
+
+    function openProfileModal() {
+      document.getElementById('profile-input-name').value = currentUser.name;
+      document.getElementById('profile-input-avatar').value = currentUser.avatar;
+      document.getElementById('profile-preview-avatar').src = currentUser.avatar;
+      openModal('modal-profile');
+    }
+
+    function saveProfile() {
+      currentUser.name = document.getElementById('profile-input-name').value;
+      currentUser.avatar = document.getElementById('profile-input-avatar').value;
+      localStorage.setItem('wa_user', JSON.stringify(currentUser));
+      updateUserHeaderUI();
+      closeModal('modal-profile');
+    }
+
+    function switchTab(tab) {
+      document.getElementById('panel-chats').classList.add('hidden');
+      document.getElementById('panel-contacts').classList.add('hidden');
+      document.getElementById(`panel-${tab}`).classList.remove('hidden');
+    }
+
+    function filterChats(val) {
+      const items = document.querySelectorAll('#chats-list > div');
+      items.forEach(item => {
+        const text = item.innerText.toLowerCase();
+        item.style.display = text.includes(val.toLowerCase()) ? 'flex' : 'none';
+      });
+    }
+
+    function toggleDarkMode() {
+      document.documentElement.classList.toggle('dark');
+    }
+
+    function handleKeyPress(e) { if (e.key === 'Enter') handleSendButtonClick(); }
+    function toggleEmojiPicker(force) { document.getElementById('emoji-picker-container').classList.toggle('hidden', force !== undefined ? !force : undefined); }
+    function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+    function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
+    function openConfigModal() { openModal('modal-config'); }
+    function openAuthModal() { openModal('modal-auth'); }
+    function closeChatMobile() { document.getElementById('chat-window').classList.add('hidden'); }
+    function simulateCall(type) { alert(`Wuxuu bilaabayaa wicitaanka ${type.toUpperCase()}...`); }
+    function clearChatHistory() { if (confirm('Ma tirtirayaa fariimaha?')) { localMessages[activeChatId] = []; renderMessages(); } }
+    function promptCreateGroup() { const name = prompt('Magaca Kooxda:'); if (name) { demoContacts.push({ id: 'grp_' + Date.now(), name, avatar: 'https://api.dicebear.com/7.x/identicon/svg?seed=' + name }); renderChatsList(); } }
+    function escapeHTML(str) { return str.replace(/[&<>'"]/g, tag => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' }[tag] || tag)); }
+  </script>
 </body>
 </html>

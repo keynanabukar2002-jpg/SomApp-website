@@ -1,161 +1,153 @@
 <!DOCTYPE html>
-<html lang="so">
+<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Chat App - Doodles Background</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
+    <title>Chat App</title>
     <style>
-        /* Custom Doodle SVG Background Pattern */
-        .doodle-bg {
-            background-color: #e5ddd5;
-            background-image: url("data:image/svg+xml,%3Csvg width='280' height='280' xmlns='http://www.w3.org/2000/svg'%3E%3Cdefs%3E%3Cpattern id='d' x='0' y='0' width='280' height='280' patternUnits='userSpaceOnUse'%3E%3Cg stroke='rgba(100,90,80,0.18)' stroke-width='1.4' fill='none' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M25 35c0-15 30-15 40 0 10 15-10 25-23 25l-10 7 3-9c-13-3-13-18-10-23z'/%3E%3Ccircle cx='40' cy='40' r='1.5' fill='rgba(100,90,80,0.18)'/%3E%3Ccircle cx='47' cy='40' r='1.5' fill='rgba(100,90,80,0.18)'/%3E%3Ccircle cx='54' cy='40' r='1.5' fill='rgba(100,90,80,0.18)'/%3E%3Cpath d='M130 25c-5-10-20-5-15 7 5 12 15 22 15 22s10-10 15-22c5-12-10-17-15-7z'/%3E%3Cpath d='M210 35h28l-4 23c-1 5-19 5-20 0zM238 40c7 0 7 12-2 12'/%3E%3Ccircle cx='60' cy='130' r='16'/%3E%3Ccircle cx='54' cy='125' r='2' fill='rgba(100,90,80,0.18)'/%3E%3Ccircle cx='66' cy='125' r='2' fill='rgba(100,90,80,0.18)'/%3E%3Cpath d='M53 135q7 8 14 0'/%3E%3Crect x='220' y='110' width='22' height='38' rx='4'/%3E%3Cpath d='M35 210v-20l18-8v20'/%3E%3Cpath d='M120 200l3 7 8 1-6 5 2 8-7-4-7 4 2-8-6-5 8-1z'/%3E%3C/g%3E%3C/pattern%3E%3C/defs%3E%3Crect width='100%25' height='100%25' fill='url(%23d)'/%3E%3C/svg%3E");
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: Arial, sans-serif;
+        }
+        body {
+            background-color: #0f172a;
+            color: #f8fafc;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .chat-container {
+            width: 100%;
+            max-width: 400px;
+            height: 90vh;
+            background: #1e293b;
+            border-radius: 12px;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+        }
+        .chat-header {
+            background: #334155;
+            padding: 15px;
+            font-size: 18px;
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .status-dot {
+            width: 10px;
+            height: 10px;
+            background-color: #22c55e;
+            border-radius: 50%;
+        }
+        .chat-messages {
+            flex: 1;
+            padding: 15px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+        .message {
+            max-width: 75%;
+            padding: 10px 14px;
+            border-radius: 8px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .message.received {
+            background: #334155;
+            align-self: flex-start;
+        }
+        .message.sent {
+            background: #2563eb;
+            align-self: flex-end;
+        }
+        .chat-input-area {
+            display: flex;
+            padding: 10px;
+            background: #1e293b;
+            border-top: 1px solid #334155;
+        }
+        .chat-input-area input {
+            flex: 1;
+            padding: 10px;
+            border: none;
+            border-radius: 6px;
+            background: #0f172a;
+            color: #f8fafc;
+            outline: none;
+        }
+        .chat-input-area button {
+            background: #2563eb;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            margin-left: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: bold;
+        }
+        .chat-input-area button:hover {
+            background: #1d4ed8;
         }
     </style>
 </head>
-<body class="bg-gray-100 h-screen flex flex-col justify-center items-center font-sans">
+<body>
 
-    <!-- Main Chat Window Container -->
-    <div class="w-full max-w-4xl h-full md:h-[90vh] bg-white shadow-2xl md:rounded-2xl flex overflow-hidden border border-gray-200">
-        
-        <!-- Sidebar: Chat List -->
-        <div class="w-full md:w-80 bg-white border-r border-gray-200 flex flex-col">
-            <!-- Sidebar Header -->
-            <div class="p-4 bg-gray-50 border-b border-gray-200 flex items-center justify-between">
-                <div class="flex items-center space-x-3">
-                    <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100&auto=format&fit=crop&q=80" alt="Profile" class="w-10 h-10 rounded-full object-cover">
-                    <span class="font-bold text-gray-800">Fariimaha</span>
-                </div>
-            </div>
-
-            <!-- Chat Contacts List -->
-            <div class="overflow-y-auto flex-1 divide-y divide-gray-100">
-                <div onclick="selectChat('Amina Calas', 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80')" class="p-3.5 flex items-center space-x-3 hover:bg-gray-50 cursor-pointer transition">
-                    <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="w-12 h-12 rounded-full object-cover" alt="Amina">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-baseline">
-                            <h4 class="font-semibold text-sm text-gray-900">Amina Calas</h4>
-                            <span class="text-xs text-gray-400">10:15 AM</span>
-                        </div>
-                        <p class="text-xs text-gray-500 truncate">Project-gii ma dhameysay?</p>
-                    </div>
-                </div>
-
-                <div onclick="selectChat('Guled Nuur', 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80')" class="p-3.5 flex items-center space-x-3 hover:bg-gray-50 cursor-pointer transition">
-                    <img src="https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150&auto=format&fit=crop&q=80" class="w-12 h-12 rounded-full object-cover" alt="Guled">
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-baseline">
-                            <h4 class="font-semibold text-sm text-gray-900">Guled Nuur</h4>
-                            <span class="text-xs text-gray-400">Shalay</span>
-                        </div>
-                        <p class="text-xs text-gray-500 truncate">Shaaha caawa waa iiga!</p>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Chat Main Window -->
-        <div class="flex-1 flex flex-col doodle-bg relative">
-            
-            <!-- Chat Header -->
-            <div class="p-3.5 bg-white/90 backdrop-blur-md border-b border-gray-200 flex items-center justify-between z-10">
-                <div class="flex items-center space-x-3">
-                    <img id="active-avatar" src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150&auto=format&fit=crop&q=80" class="w-10 h-10 rounded-full object-cover" alt="Active Chat">
-                    <div>
-                        <h3 id="active-name" class="font-bold text-sm text-gray-800">Amina Calas</h3>
-                        <span class="text-xs text-emerald-600 font-medium">Online</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Messages Stream Area -->
-            <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 z-10">
-                <div class="flex justify-start">
-                    <div class="bg-white text-gray-800 max-w-[75%] rounded-2xl rounded-tl-none p-3 shadow-sm text-sm">
-                        <p>Asc Walaal! Soo dhawoow 👋</p>
-                        <span class="text-[10px] text-gray-400 block text-right mt-1">10:14 AM</span>
-                    </div>
-                </div>
-                <div class="flex justify-start">
-                    <div class="bg-white text-gray-800 max-w-[75%] rounded-2xl rounded-tl-none p-3 shadow-sm text-sm">
-                        <p>Project-gii ma dhameysay?</p>
-                        <span class="text-[10px] text-gray-400 block text-right mt-1">10:15 AM</span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Message Input Bar -->
-            <div class="p-3 bg-white/90 backdrop-blur-md border-t border-gray-200 flex items-center space-x-2 z-10">
-                <input 
-                    type="text" 
-                    id="message-input" 
-                    placeholder="Qor fariin..." 
-                    class="flex-1 py-2 px-4 bg-gray-100 border border-gray-200 rounded-full text-sm outline-none focus:border-emerald-500"
-                    onkeypress="handleKeyPress(event)"
-                >
-                <button 
-                    onclick="sendMessage()" 
-                    class="bg-emerald-500 hover:bg-emerald-600 text-white p-2.5 rounded-full transition shadow-md"
-                >
-                    <svg xmlns="http://www.w3.org/2000/svg" class="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-                    </svg>
-                </button>
-            </div>
-
-        </div>
-
+<div class="chat-container">
+    <div class="chat-header">
+        <div class="status-dot"></div>
+        WhatsApp Style Chat
     </div>
+    <div class="chat-messages" id="messageBox">
+        <div class="message received">Kem cho? Aa ek sample chat app chhe[span_5](start_span)[span_5](end_span).</div>
+    </div>
+    <div class="chat-input-area">
+        <input type="text" id="userInput" placeholder="Message lakho..." onkeypress="handleKeyPress(event)">
+        <button onclick="sendMessage()">Moklo</button>
+    </div>
+</div>
 
-    <!-- Simple JavaScript for Interactivity -->
-    <script>
-        function selectChat(name, avatar) {
-            document.getElementById('active-name').innerText = name;
-            document.getElementById('active-avatar').src = avatar;
+<script>
+    function sendMessage() {
+        const input = document.getElementById('userInput');
+        const messageText = input.value.trim();
+        
+        if (messageText === '') return;
+
+        const messageBox = document.getElementById('messageBox');
+
+        // User message
+        const sentDiv = document.createElement('div');
+        sentDiv.classList.add('message', 'sent');
+        sentDiv.textContent = messageText;
+        messageBox.appendChild(sentDiv);
+
+        input.value = '';
+        messageBox.scrollTop = messageBox.scrollHeight;
+
+        // Auto reply mock (WhatsApp feel)
+        setTimeout(() => {
+            const receivedDiv = document.createElement('div');
+            receivedDiv.classList.add('message', 'received');
+            receivedDiv.textContent = "Tamaro sandesho malyo che: " + sentDiv.textContent;
+            messageBox.appendChild(receivedDiv);
+            messageBox.scrollTop = messageBox.scrollHeight;
+        }, 1000);
+    }
+
+    function handleKeyPress(event) {
+        if (event.key === 'Enter') {
+            sendMessage();
         }
+    }
+</script>
 
-        function sendMessage() {
-            const input = document.getElementById('message-input');
-            const text = input.value.trim();
-            if(!text) return;
-
-            const chatContainer = document.getElementById('chat-messages');
-            const timeNow = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-
-            // Append My Message
-            const myMsgHTML = `
-                <div class="flex justify-end">
-                    <div class="bg-[#dcf8c6] text-gray-900 max-w-[75%] rounded-2xl rounded-tr-none p-3 shadow-sm text-sm">
-                        <p>${text}</p>
-                        <span class="text-[10px] text-gray-500 block text-right mt-1">${timeNow}</span>
-                    </div>
-                </div>
-            `;
-            chatContainer.insertAdjacentHTML('beforeend', myMsgHTML);
-            input.value = '';
-            chatContainer.scrollTop = chatContainer.scrollHeight;
-
-            // Simulated Reply after 1 second
-            setTimeout(() => {
-                const replyHTML = `
-                    <div class="flex justify-start">
-                        <div class="bg-white text-gray-800 max-w-[75%] rounded-2xl rounded-tl-none p-3 shadow-sm text-sm">
-                            <p>Waa helay fariintaada! 👍</p>
-                            <span class="text-[10px] text-gray-400 block text-right mt-1">${new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</span>
-                        </div>
-                    </div>
-                `;
-                chatContainer.insertAdjacentHTML('beforeend', replyHTML);
-                chatContainer.scrollTop = chatContainer.scrollHeight;
-            }, 1000);
-        }
-
-        function handleKeyPress(e) {
-            if (e.key === 'Enter') {
-                sendMessage();
-            }
-        }
-    </script>
 </body>
 </html>

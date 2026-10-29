@@ -465,21 +465,20 @@
                 const isMe = msg.senderId === currentUserData.uid;
 
                 let contentHtml = "";
-                // Sawirka iyo Video-ga oo laga dhigay kuwo waaweyn oo cad (max-h-72 ama wixi la mid ah)
+                // Cabbirka fiidiyowga oo laga dhigay mid dhex-dhexaad ah oo qurux badan (w-64, max-h-48)
                 if (msg.fileType === 'image') {
-                    contentHtml = `<img src="${msg.fileData}" class="rounded-xl w-full h-auto mb-2 max-h-80 object-cover cursor-pointer chat-media shadow-md" data-type="image" data-src="${msg.fileData}">`;
+                    contentHtml = `<img src="${msg.fileData}" class="rounded-xl w-64 h-auto mb-2 max-h-60 object-cover cursor-pointer chat-media shadow-md" data-type="image" data-src="${msg.fileData}">`;
                 } else if (msg.fileType === 'video') {
-                    contentHtml = `<video src="${msg.fileData}" class="rounded-xl w-full h-auto mb-2 max-h-80 cursor-pointer chat-media shadow-md" data-type="video" data-src="${msg.fileData}" controls></video>`;
+                    contentHtml = `<video src="${msg.fileData}" class="rounded-xl w-64 h-auto mb-2 max-h-48 cursor-pointer chat-media shadow-md" data-type="video" data-src="${msg.fileData}" controls></video>`;
                 } else if (msg.fileType === 'document') {
                     contentHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="flex items-center gap-2 text-sky-300 underline text-sm mb-2 bg-black/30 p-2.5 rounded-xl">📄 ${msg.fileName}</a>`;
                 }
 
-                // Qoraalka oo la weyneeyay cabbirkooda (text-base badalkii text-sm)
                 if (msg.text) contentHtml += `<div class="text-base leading-relaxed px-1">${msg.text}</div>`;
 
                 const msgBubble = document.createElement('div');
                 msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'} my-1`;
-                msgBubble.innerHTML = `<div class="max-w-[85%] px-3.5 py-2.5 rounded-2xl ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-md">${contentHtml}</div>`;
+                msgBubble.innerHTML = `<div class="max-w-[85%] px-3 py-2 rounded-2xl ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-md">${contentHtml}</div>`;
                 messagesContainer.appendChild(msgBubble);
             });
 

@@ -34,7 +34,7 @@
                 S
             </div>
             <h2 class="text-2xl font-bold text-white mb-2">Ku soo dhowow SomApp</h2>
-                <p class="text-sm text-[#94a3b8] mb-8">Ku gal Google Account-kaaga si aad ugu shaqeyso fariimaha iyo wallet-kaaga gaarka ah.</p>
+            <p class="text-sm text-[#94a3b8] mb-8">Ku gal Google Account-kaaga si aad ugu shaqeyso fariimaha iyo wallet-kaaga gaarka ah.</p>
             <button onclick="loginWithGoogle()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3">
                 <span>Google ku gal</span>
             </button>
@@ -125,38 +125,42 @@
       let unsubscribeChat = null;
       let base64Image = "";
 
-      // 1. Si adag u qabo natiijada Redirect-ka markuu user-ku soo laabto
-      window.addEventListener('DOMContentLoaded', async () => {
-          try {
-              const result = await getRedirectResult(auth);
-              if (result && result.user) {
-                  currentUser = result.user;
-                  checkUserInDatabase(currentUser);
-              }
-          } catch (error) {
-              console.error("Redirect Result Error: ", error);
+      // Habka saxda ah ee lagu qabto redirect-ka iyo xogta user-ka
+      getRedirectResult(auth).then((result) => {
+          if (result && result.user) {
+              currentUser = result.user;
+              handleUserSession(currentUser);
           }
+      }).catch((error) => {
+          console.error("Redirect Error:", error);
       });
 
-      // Hubinta User-ka Authentication-ka guud
-      onAuthStateChanged(auth, async (user) => {
+      onAuthStateChanged(auth, (user) => {
           if (user) {
               currentUser = user;
-              checkUserInDatabase(user);
+              handleUserSession(user);
+          } else {
+              document.getElementById("login-section").style.display = "flex";
+              document.getElementById("profile-setup-section").style.display = "none";
+              document.getElementById("search-section").style.display = "none";
           }
       });
 
-      async function checkUserInDatabase(user) {
-          const userRef = doc(db, "users", user.uid);
-          const userSnap = await getDoc(userRef);
+      async function handleUserSession(user) {
+          try {
+              const userRef = doc(db, "users", user.uid);
+              const userSnap = await getDoc(userRef);
 
-          document.getElementById("login-section").style.display = "none";
+              document.getElementById("login-section").style.display = "none";
 
-          if (userSnap.exists()) {
-              userData = userSnap.data();
-              showSearchSection();
-          } else {
-              document.getElementById("profile-setup-section").style.display = "flex";
+              if (userSnap.exists()) {
+                  userData = userSnap.data();
+                  showSearchSection();
+              } else {
+                  document.getElementById("profile-setup-section").style.display = "flex";
+              }
+          } catch (e) {
+              console.error("Error checking user session:", e);
           }
       }
 

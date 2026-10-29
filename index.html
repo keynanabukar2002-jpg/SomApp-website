@@ -1,368 +1,423 @@
-<!DOCTYPE html>
-<html lang="so">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SomApp - Messenger & Wallet</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #0b141a;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
-        #signup-section, #signin-section, #search-section, #chat-section { display: none; }
-    </style>
-</head>
-<body class="text-[#e9edef] font-sans antialiased h-full w-full overflow-hidden select-none flex justify-center items-center bg-[#070d14]">
+<!DOCTYPE html>  
+<html lang="so">  
+<head>  
+    <meta charset="UTF-8">  
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
+    <title>SomApp - Messenger & Wallet</title>  
+    <script src="https://cdn.tailwindcss.com"></script>  
+    <style>  
+        html, body {  
+            height: 100%;  
+            margin: 0;  
+            padding: 0;  
+            overflow: hidden;  
+            background-color: #0b141a;  
+        }  
+        .no-scrollbar::-webkit-scrollbar {  
+            display: none;  
+        }  
+        .no-scrollbar {  
+            -ms-overflow-style: none;  
+            scrollbar-width: none;  
+        }  
+    </style>  
+</head>  
+<body class="text-[#e9edef] font-sans antialiased h-full w-full overflow-hidden select-none">  
 
-    <!-- App Container -->
-    <div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] shadow-2xl overflow-hidden relative border-x border-[#1e293b]">
-
-        <!-- 1. LANDING / INITIAL CHOICE SECTION (Sign In / Sign Up) -->
-        <div id="login-section" class="flex flex-col items-center justify-center h-full p-6 text-center">
-            <div class="w-24 h-24 rounded-3xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-4xl shadow-xl shadow-sky-500/20 mb-6">
-                S
+<!-- Auth Modal (Sign In / Sign Up) -->
+<div id="authModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
+    <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-6 w-full max-w-sm shadow-2xl">
+        <div class="flex justify-between items-center mb-4">
+            <h2 id="modalTitle" class="text-xl font-bold text-white">Soo Gal (Sign In)</h2>
+            <button id="toggleAuthBtn" class="text-xs text-sky-400 font-semibold hover:underline">Sameyso Akoon (Sign Up)</button>
+        </div>
+        
+        <form id="authForm" class="space-y-3">
+            <div id="usernameGroup" class="hidden">
+                <label class="text-xs text-[#94a3b8] block mb-1">Username-kaaga</label>
+                <input type="text" id="authUsername" placeholder="Tusaale: keynaan123" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
             </div>
-            <h2 class="text-2xl font-bold text-white mb-2">Ku soo dhowow SomApp</h2>
-            <p class="text-sm text-[#94a3b8] mb-8 leading-relaxed">Fariimaha iyo wallet-kaaga hal meel ku adeegso.</p>
-            
-            <div class="w-full space-y-3">
-                <button onclick="handleGoogleAuth('signin')" class="w-full bg-sky-600 hover:bg-sky-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3">
-                    <span>Google ku gal (Sign In)</span>
-                </button>
-                <button onclick="handleGoogleAuth('signup')" class="w-full bg-[#1e293b] hover:bg-[#334155] border border-[#334155] text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3">
-                    <span>Account cusub sameyso (Sign Up)</span>
-                </button>
+
+            <div>
+                <label class="text-xs text-[#94a3b8] block mb-1">Email-kaaga</label>
+                <input type="email" id="authEmail" placeholder="example@mail.com" required class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+            </div>
+
+            <div>
+                <label class="text-xs text-[#94a3b8] block mb-1">Password-kaaga</label>
+                <input type="password" id="authPassword" placeholder="******" required class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+            </div>
+
+            <div id="profileImageGroup" class="hidden">
+                <label class="text-xs text-[#94a3b8] block mb-1">Sawirka Profile-ka (Gallery)</label>
+                <input type="file" id="authProfilePic" accept="image/*" class="w-full text-xs text-[#94a3b8] file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-sky-500 file:text-white file:font-semibold hover:file:bg-sky-400">
+            </div>
+
+            <p id="authError" class="text-red-400 text-xs hidden"></p>
+
+            <button type="submit" id="submitAuthBtn" class="w-full bg-sky-500 hover:bg-sky-400 text-white font-bold py-2.5 rounded-xl shadow-lg transition-colors mt-2 text-sm">
+                Soo Gal
+            </button>
+        </form>
+    </div>
+</div>
+
+<!-- Chat Window Modal -->
+<div id="chatModal" class="fixed inset-0 bg-[#0f172a] z-40 hidden flex flex-col h-full w-full max-w-md mx-auto">
+    <div class="bg-[#0f172a] p-3 flex items-center justify-between border-b border-[#1e293b]">
+        <div class="flex items-center gap-3">
+            <button id="closeChatBtn" class="text-[#94a3b8] hover:text-white">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
+            </button>
+            <div id="chatUserAvatar" class="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white overflow-hidden bg-cover bg-center"></div>
+            <div>
+                <h3 id="chatUserName" class="text-white font-semibold text-sm">Saaxiib</h3>
+                <span class="text-[10px] text-emerald-400 font-medium">Online</span>
             </div>
         </div>
-
-        <!-- 2. SIGN UP (PROFILE SETUP) SECTION -->
-        <div id="signup-section" class="flex flex-col items-center justify-center h-full p-6 text-center">
-            <h2 class="text-xl font-bold text-white mb-2">Dhammeystir Sign Up-kaaga</h2>
-            <p class="text-sm text-[#94a3b8] mb-6">Geli Username oo dooro sawir gallery-gaaga ah:</p>
-            
-            <div class="w-full space-y-4">
-                <input type="text" id="usernameInput" placeholder="Tusaale: Ahmed123" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-3 text-white outline-none focus:border-sky-500 text-center transition-colors">
-                
-                <div class="flex flex-col items-center">
-                    <input type="file" id="profilePicInput" accept="image/*" onchange="previewImage(event)" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-2.5 text-white text-sm file:mr-4 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-semibold file:bg-sky-500 file:text-white hover:file:bg-sky-600">
-                    <img id="preview-img" alt="Sawirkaaga" class="w-20 h-20 rounded-full object-cover mt-4 border-2 border-sky-500 hidden shadow-md">
-                </div>
-
-                <button onclick="saveProfile()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all active:scale-95">
-                    Dhameystir Sign Up
-                </button>
-                <button onclick="backToLogin()" class="text-xs text-sky-400 hover:underline mt-2">⬅️ Dib ugu noqo</button>
-            </div>
-        </div>
-
-        <!-- 3. MAIN APP SECTION (CHATS & SEARCH) -->
-        <div id="search-section" class="flex flex-col h-full w-full hidden">
-            <!-- Top Header -->
-            <header class="bg-[#0f172a] pt-4 px-4 pb-3 flex justify-between items-center shrink-0 border-b border-[#1e293b]">
-                <div class="flex items-center gap-3">
-                    <img id="my-avatar" src="" class="w-9 h-9 rounded-full object-cover border-2 border-sky-500">
-                    <h1 id="welcome-user" class="text-base font-bold tracking-wide text-white"></h1>
-                </div>
-                <button onclick="logoutApp()" class="text-xs text-red-400 hover:text-red-300 font-semibold bg-red-500/10 px-3 py-1.5 rounded-lg transition-colors">Ka bax (Sign Out)</button>
-            </header>
-
-            <!-- Search Bar -->
-            <div class="px-4 py-3 bg-[#0f172a] shrink-0 border-b border-[#1e293b]/40">
-                <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2.5 rounded-xl text-[#94a3b8] border border-[#334155]/50 focus-within:border-sky-500 transition-colors">
-                    <input type="text" id="searchFriendInput" placeholder="Geli username-ka saaxiibka..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">
-                    <button onclick="searchFriend()" class="text-sky-400 font-semibold text-xs bg-sky-500/20 hover:bg-sky-500/30 px-3 py-1.5 rounded-lg transition-colors shrink-0">Raadi</button>
-                </div>
-                <div id="search-result" class="mt-2"></div>
-            </div>
-
-            <!-- Scrollable Chats Area -->
-            <main class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative min-h-0 p-4">
-                <div class="flex flex-col items-center justify-center h-full text-center">
-                    <p class="text-xs text-[#94a3b8]">Raadi saaxiibadaada adigoo adeegsanaya Username-kooda saxda ah si aad u bilowdo sheeko.</p>
-                </div>
-            </main>
-        </div>
-
-        <!-- 4. CHAT ROOM SECTION -->
-        <div id="chat-section" class="flex flex-col h-full w-full hidden">
-            <header class="bg-[#0f172a] px-4 py-3 border-b border-[#1e293b] flex items-center gap-3 shrink-0">
-                <button onclick="goBackToSearch()" class="text-sky-400 font-semibold text-sm flex items-center gap-1 hover:underline">⬅️ Ku noqo</button>
-                <h3 id="chat-title" class="text-white font-bold truncate"></h3>
-            </header>
-            
-            <div id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0b141a] no-scrollbar"></div>
-            
-            <div class="p-3 bg-[#0f172a] flex gap-2 border-t border-[#1e293b] shrink-0">
-                <input type="text" id="messageInput" placeholder="Qor fariin..." class="flex-1 bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-2.5 text-white text-sm outline-none focus:border-sky-500 transition-colors" onkeypress="if(event.key === 'Enter') sendMsg()">
-                <button onclick="sendMsg()" class="bg-sky-500 hover:bg-sky-600 text-white px-5 rounded-xl font-bold transition-all active:scale-95 text-sm">Dir</button>
-            </div>
-        </div>
-
+    </div>
+    
+    <div id="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3 no-scrollbar bg-[#0b141a]">
+        <!-- Messages will load here -->
     </div>
 
-    <!-- Firebase SDK Scripts -->
-    <script type="module">
-      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-      import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <form id="messageForm" class="p-3 bg-[#0f172a] border-t border-[#1e293b] flex gap-2">
+        <input type="text" id="messageInput" placeholder="Qor fariin..." required class="flex-1 bg-[#1e293b] border-none outline-none rounded-full px-4 py-2 text-sm text-white placeholder-[#64748b]">
+        <button type="submit" class="w-10 h-10 bg-sky-500 hover:bg-sky-400 text-white rounded-full flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        </button>
+    </form>
+</div>
 
-      const firebaseConfig = {
-        apiKey: "AIzaSyBCe8ZiIPsTxT1fGA0IT3nIUaQjFK67al0",
-        authDomain: "somchat-1910a.firebaseapp.com",
-        projectId: "somchat-1910a",
-        storageBucket: "somchat-1910a.firebasestorage.app",
-        messagingSenderId: "981092599681",
-        appId: "1:981092599681:web:cc01745c6831ab8ea44a80",
-        measurementId: "G-8B6P8RSDQG"
-      };
+<!-- App Container -->  
+<div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] overflow-hidden">  
 
-      const app = initializeApp(firebaseConfig);
-      const auth = getAuth(app);
-      const db = getFirestore(app);
+    <!-- Top Header -->  
+    <header class="bg-[#0f172a] pt-3 px-4 pb-2 flex justify-between items-center shrink-0 border-b border-[#1e293b]">  
+        <div class="flex items-center gap-2">  
+            <div id="myHeaderAvatar" class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md overflow-hidden bg-cover bg-center">  
+                S  
+            </div>  
+            <h1 class="text-xl font-bold tracking-wide text-white">Som<span class="text-sky-400">App</span></h1>  
+        </div>  
+          
+        <div class="flex items-center gap-4 text-[#94a3b8]">  
+            <button class="hover:text-white transition-colors p-1" aria-label="Camera">  
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">  
+                    <path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17l-1.86-2H8.03L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 11c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>  
+                </svg>  
+            </button>  
+            <button class="hover:text-white transition-colors p-1" aria-label="Search">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">  
+                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>  
+                </svg>  
+            </button>  
+            <button id="logoutBtn" class="hover:text-white transition-colors p-1" aria-label="More options" title="Ka bax akoonka">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">  
+                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>  
+                </svg>  
+            </button>  
+        </div>  
+    </header>  
 
-      let currentUser = null;
-      let userData = null;
-      let activeChatRoomId = "";
-      let unsubscribeChat = null;
-      let base64Image = "";
-      let authIntent = ""; // "signin" ama "signup"
+    <!-- Search Bar -->  
+    <div class="px-3 py-2 bg-[#0f172a] shrink-0">  
+        <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2 rounded-full text-[#94a3b8]">  
+            <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">  
+                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>  
+            </svg>  
+            <input type="text" id="searchInput" placeholder="Raadi saaxiib (Username)..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">  
+        </div>  
+    </div>  
 
-      // 1. Hubinta LocalStorage markay app-ka furmo
-      window.addEventListener('DOMContentLoaded', () => {
-          const cachedUser = localStorage.getItem("somapp_user");
-          if (cachedUser) {
-              userData = JSON.parse(cachedUser);
-              currentUser = { uid: userData.uid, email: userData.email };
-              showSearchSection();
-          }
-      });
+    <!-- Filter Chips -->  
+    <div class="flex gap-2 px-3 py-2 overflow-x-auto no-scrollbar shrink-0 bg-[#0f172a] border-b border-[#1e293b]/50">  
+        <button class="bg-sky-500 text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform shadow-sm">Dhammaan</button>  
+        <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Aan la aqrin</button>  
+        <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Kuwa la jecel yahay</button>  
+        <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Kooxaha</button>  
+    </div>  
 
-      // Google Sign-In ama Sign-Up Action
-      window.handleGoogleAuth = async function(intent) {
-          authIntent = intent;
-          const provider = new GoogleAuthProvider();
-          try {
-              await signInWithPopup(auth, provider);
-          } catch (e) {
-              console.error("Khalad Google Auth ah: ", e);
-          }
-      };
+    <!-- Scrollable Chats Area -->  
+    <main id="chatsList" class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative min-h-0">  
+        <!-- Dynamic & Search List Items will render here -->
+    </main>  
 
-      // Hubinta Firebase Auth State
-      onAuthStateChanged(auth, async (user) => {
-          if (user) {
-              currentUser = user;
-              const cachedUser = localStorage.getItem("somapp_user");
-              if (cachedUser) {
-                  userData = JSON.parse(cachedUser);
-                  showSearchSection();
-              } else {
-                  checkUserInDatabase(user);
-              }
-          }
-      });
+    <!-- GUARANTEED VISIBLE FLEX BOTTOM NAVIGATION BAR -->  
+    <nav class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1">  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-white group">  
+            <div class="px-3.5 py-1 rounded-full bg-sky-500/20 text-sky-400 transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-semibold mt-0.5 text-sky-400">Chats</span>  
+        </button>  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-medium mt-0.5">Wallet</span>  
+        </button>  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-medium mt-0.5">Calls</span>  
+        </button>  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-medium mt-0.5">Status</span>  
+        </button>  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-medium mt-0.5">Profile</span>  
+        </button>  
+    </nav>  
 
-      async function checkUserInDatabase(user) {
-          try {
-              const userRef = doc(db, "users", user.uid);
-              const userSnap = await getDoc(userRef);
+</div>
 
-              if (userSnap.exists()) {
-                  // User wuu jiraa -> Sign In ayuu si toos ah u galay
-                  userData = userSnap.data();
-                  localStorage.setItem("somapp_user", JSON.stringify(userData));
-                  showSearchSection();
-              } else {
-                  // User ma jiro
-                  if (authIntent === "signin") {
-                      // Haddii uu Sign In gujiyay lakiin uusan account lahayn
-                      alert("Account-kan ma jisan. Fadlan isticmaal 'Account cusub sameyso (Sign Up)'");
-                      await signOut(auth);
-                      location.reload();
-                  } else {
-                      // Haddii uu Sign Up doorbiday, u gudbi bogga diiwaangelinta
-                      document.getElementById("login-section").style.display = "none";
-                      document.getElementById("signup-section").style.display = "flex";
-                  }
-              }
-          } catch (e) {
-              console.error("Error checking user:", e);
-          }
-      }
+<!-- Firebase SDK Integration -->
+<script type="module">
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-      window.backToLogin = async function() {
-          await signOut(auth);
-          document.getElementById("signup-section").style.display = "none";
-          document.getElementById("login-section").style.display = "flex";
-      };
+    // Firebase Config
+    const firebaseConfig = {
+      apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
+      authDomain: "somapp-61ebd.firebaseapp.com",
+      projectId: "somapp-61ebd",
+      storageBucket: "somapp-61ebd.firebasestorage.app",
+      messagingSenderId: "890890688001",
+      appId: "1:890890688001:web:9e0005896694fa465f5200",
+      measurementId: "G-NB6MX4GNCQ"
+    };
 
-      // Logout (Sign Out) function
-      window.logoutApp = async function() {
-          await signOut(auth);
-          localStorage.removeItem("somapp_user");
-          location.reload();
-      };
+    const app = initializeApp(firebaseConfig);
+    const auth = getAuth(app);
+    const db = getFirestore(app);
 
-      // Gallery Image Preview to Base64
-      window.previewImage = function(event) {
-          const file = event.target.files[0];
-          if (file) {
-              const reader = new FileReader();
-              reader.onload = function(e) {
-                  base64Image = e.target.result;
-                  const imgElement = document.getElementById("preview-img");
-                  imgElement.src = base64Image;
-                  imgElement.style.display = "block";
-              };
-              reader.readAsDataURL(file);
-          }
-      };
+    let currentUserData = null;
+    let isSignUp = false;
+    let activeChatUser = null;
+    let unsubscribeMessages = null;
 
-      // Profile Kaydinta (Sign Up Complete)
-      window.saveProfile = async function() {
-          const username = document.getElementById("usernameInput").value.trim();
+    // DOM Elements
+    const authModal = document.getElementById('authModal');
+    const authForm = document.getElementById('authForm');
+    const modalTitle = document.getElementById('modalTitle');
+    const toggleAuthBtn = document.getElementById('toggleAuthBtn');
+    const usernameGroup = document.getElementById('usernameGroup');
+    const profileImageGroup = document.getElementById('profileImageGroup');
+    const submitAuthBtn = document.getElementById('submitAuthBtn');
+    const authError = document.getElementById('authError');
+    const myHeaderAvatar = document.getElementById('myHeaderAvatar');
+    const searchInput = document.getElementById('searchInput');
+    const chatsList = document.getElementById('chatsList');
+    const chatModal = document.getElementById('chatModal');
+    const closeChatBtn = document.getElementById('closeChatBtn');
+    const messageForm = document.getElementById('messageForm');
+    const messageInput = document.getElementById('messageInput');
+    const messagesContainer = document.getElementById('messagesContainer');
+    const logoutBtn = document.getElementById('logoutBtn');
 
-          if (!username) {
-              alert("Fadlan geli username!");
-              return;
-          }
-          if (!base64Image) {
-              alert("Fadlan dooro sawir profile gallery-gaaga ah!");
-              return;
-          }
+    // Toggle Sign In / Sign Up Modal
+    toggleAuthBtn.addEventListener('click', () => {
+        isSignUp = !isSignUp;
+        modalTitle.innerText = isSignUp ? "Sign Up (Diiwaangeli)" : "Soo Gal (Sign In)";
+        submitAuthBtn.innerText = isSignUp ? "Isdiiwaangeli" : "Soo Gal";
+        toggleAuthBtn.innerText = isSignUp ? "Hadaad leedahay akoon? Sign In" : "Sameyso Akoon (Sign Up)";
+        usernameGroup.classList.toggle('hidden', !isSignUp);
+        profileImageGroup.classList.toggle('hidden', !isSignUp);
+        authError.classList.add('hidden');
+    });
 
-          try {
-              userData = {
-                  uid: currentUser.uid,
-                  username: username,
-                  email: currentUser.email,
-                  photoURL: base64Image
-              };
+    // Image Convert to Base64
+    function convertToBase64(file) {
+        return new Promise((resolve, reject) => {
+            const reader = new FileReader();
+            reader.readAsDataURL(file);
+            reader.onload = () => resolve(reader.result);
+            reader.onerror = err => reject(err);
+        });
+    }
 
-              await setDoc(doc(db, "users", currentUser.uid), userData);
-              await setDoc(doc(db, "usernames", username), { uid: currentUser.uid });
+    // Auth Form Submission
+    authForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        authError.classList.add('hidden');
+        const email = document.getElementById('authEmail').value;
+        const password = document.getElementById('authPassword').value;
 
-              localStorage.setItem("somapp_user", JSON.stringify(userData));
-              showSearchSection();
-          } catch (e) {
-              console.error("Khalad kaydinta ah: ", e);
-              alert("Khalad ayaa dhacay intii profile-ka la keydiyay.");
-          }
-      };
+        try {
+            if (isSignUp) {
+                const username = document.getElementById('authUsername').value.trim().toLowerCase();
+                const imageFile = document.getElementById('authProfilePic').files[0];
 
-      function showSearchSection() {
-          document.getElementById("login-section").style.display = "none";
-          document.getElementById("signup-section").style.display = "none";
-          document.getElementById("search-section").style.display = "flex";
-          document.getElementById("welcome-user").innerText = userData.username;
-          document.getElementById("my-avatar").src = userData.photoURL;
-      }
+                if (!username) throw new Error("Fadlan qor Username-kaaga");
 
-      // Raadinta Saaxiibka
-      window.searchFriend = async function() {
-          const friendUsername = document.getElementById("searchFriendInput").value.trim();
-          const resultDiv = document.getElementById("search-result");
-          resultDiv.innerHTML = "";
+                // Check username uniqueness
+                const q = query(collection(db, "users"), where("username", "==", username));
+                const querySnap = await getDocs(q);
+                if (!querySnap.empty) throw new Error("Username-kan waa la qaatay!");
 
-          if (!friendUsername) return;
+                let base64Pic = "";
+                if (imageFile) {
+                    base64Pic = await convertToBase64(imageFile);
+                }
 
-          if (friendUsername === userData.username) {
-              resultDiv.innerHTML = "<p class='text-red-400 text-xs mt-2'>Naftaada lama sheekaysan kartid!</p>";
-              return;
-          }
+                const userCred = await createUserWithEmailAndPassword(auth, email, password);
+                await setDoc(doc(db, "users", userCred.user.uid), {
+                    uid: userCred.user.uid,
+                    email: email,
+                    username: username,
+                    profilePic: base64Pic,
+                    createdAt: new Date()
+                });
 
-          try {
-              const usernameSnap = await getDoc(doc(db, "usernames", friendUsername));
-              if (usernameSnap.exists()) {
-                  const friendUid = usernameSnap.data().uid;
-                  const friendSnap = await getDoc(doc(db, "users", friendUid));
-                  const friendData = friendSnap.data();
+                await sendEmailVerification(userCred.user);
+            } else {
+                await signInWithEmailAndPassword(auth, email, password);
+            }
+        } catch (err) {
+            authError.innerText = err.message;
+            authError.classList.remove('hidden');
+        }
+    });
 
-                  resultDiv.innerHTML = `
-                      <div class="flex items-center justify-between bg-[#1e293b] p-3 rounded-xl mt-2 border border-[#334155]/50">
-                          <div class="flex items-center gap-3">
-                              <img src="${friendData.photoURL}" class="w-10 h-10 rounded-full object-cover border border-sky-500">
-                              <span class="text-white font-semibold text-sm">${friendData.username}</span>
-                          </div>
-                          <button onclick='openChat(${JSON.stringify(friendData)})' class="bg-sky-500 hover:bg-sky-600 text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">Sheekeyso</button>
-                      </div>
-                  `;
-              } else {
-                  resultDiv.innerHTML = "<p class='text-red-400 text-xs mt-2'>Saaxiibkan lama helin!</p>";
-              }
-          } catch (e) {
-              console.error("Khalad raadinta ah: ", e);
-          }
-      };
+    // Check Auth State
+    onAuthStateChanged(auth, async (user) => {
+        if (user) {
+            const userDoc = await getDoc(doc(db, "users", user.uid));
+            if (userDoc.exists()) {
+                currentUserData = userDoc.data();
+                if (currentUserData.profilePic) {
+                    myHeaderAvatar.style.backgroundImage = `url(${currentUserData.profilePic})`;
+                    myHeaderAvatar.innerText = "";
+                } else {
+                    myHeaderAvatar.innerText = currentUserData.username.charAt(0).toUpperCase();
+                }
+            }
+            authModal.classList.add('hidden');
+        } else {
+            authModal.classList.remove('hidden');
+        }
+    });
 
-      window.openChat = function(friend) {
-          activeChatRoomId = [userData.uid, friend.uid].sort().join("_");
-          document.getElementById("search-section").style.display = "none";
-          document.getElementById("chat-section").style.display = "flex";
-          document.getElementById("chat-title").innerText = friend.username;
-          loadMessages();
-      };
+    // Logout
+    logoutBtn.addEventListener('click', () => signOut(auth));
 
-      window.goBackToSearch = function() {
-          if (unsubscribeChat) unsubscribeChat();
-          document.getElementById("chat-section").style.display = "none";
-          document.getElementById("search-section").style.display = "flex";
-      };
+    // Search Users by Username
+    searchInput.addEventListener('input', async (e) => {
+        const searchText = e.target.value.trim().toLowerCase();
+        if (!searchText) {
+            chatsList.innerHTML = "";
+            return;
+        }
 
-      window.sendMsg = async function() {
-          const input = document.getElementById("messageInput");
-          if (!input.value.trim()) return;
+        const q = query(collection(db, "users"), where("username", ">=", searchText), where("username", "<=", searchText + '\uf8ff'));
+        const querySnap = await getDocs(q);
 
-          try {
-              await addDoc(collection(db, "chats", activeChatRoomId, "messages"), {
-                  senderUid: userData.uid,
-                  senderName: userData.username,
-                  senderPhoto: userData.photoURL,
-                  message: input.value,
-                  timestamp: serverTimestamp()
-              });
-              input.value = "";
-          } catch (e) {
-              console.error("Khalad dirista ah: ", e);
-          }
-      };
+        chatsList.innerHTML = "";
+        querySnap.forEach((docSnap) => {
+            const userData = docSnap.data();
+            if (currentUserData && userData.uid === currentUserData.uid) return;
 
-      function loadMessages() {
-          const msgRef = collection(db, "chats", activeChatRoomId, "messages");
-          const q = query(msgRef, orderBy("timestamp", "asc"));
+            const userItem = document.createElement('div');
+            userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
+            
+            const avatarHtml = userData.profilePic 
+                ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
+                : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
 
-          unsubscribeChat = onSnapshot(q, (snapshot) => {
-              const chatBox = document.getElementById("chat-box");
-              chatBox.innerHTML = "";
-              
-              snapshot.forEach((doc) => {
-                  const data = doc.data();
-                  const isMe = data.senderUid === userData.uid;
-                  
-                  chatBox.innerHTML += `
-                      <div class="flex items-start gap-2.5 ${isMe ? 'flex-row-reverse' : ''} mb-2">
-                          <img src="${data.senderPhoto}" class="w-7 h-7 rounded-full object-cover shrink-0">
-                          <div class="bg-[#1e293b] p-3 rounded-2xl max-w-[75%] border border-[#334155]/40 shadow-sm">
-                              <div class="text-[10px] text-sky-400 font-bold mb-0.5 ${isMe ? 'text-right' : ''}">${data.senderName}</div>
-                              <div class="text-white text-sm break-words">${data.message}</div>
-                          </div>
-                      </div>
-                  `;
-              });
-              chatBox.scrollTop = chatBox.scrollHeight;
-          });
-      }
-    </script>
-</body>
+            userItem.innerHTML = `
+                ${avatarHtml}
+                <div class="flex-1 min-w-0">
+                    <h2 class="text-white font-semibold text-base truncate">@${userData.username}</h2>
+                    <span class="text-xs text-[#94a3b8] truncate">Guji si aad fariin u dirto</span>
+                </div>
+            `;
+
+            userItem.addEventListener('click', () => openChatWithUser(userData));
+            chatsList.appendChild(userItem);
+        });
+    });
+
+    // Open Chat
+    function openChatWithUser(targetUser) {
+        activeChatUser = targetUser;
+        document.getElementById('chatUserName').innerText = `@${targetUser.username}`;
+        const avatarEl = document.getElementById('chatUserAvatar');
+        
+        if (targetUser.profilePic) {
+            avatarEl.style.backgroundImage = `url(${targetUser.profilePic})`;
+            avatarEl.innerText = "";
+        } else {
+            avatarEl.style.backgroundImage = "";
+            avatarEl.innerText = targetUser.username.charAt(0).toUpperCase();
+        }
+
+        chatModal.classList.remove('hidden');
+        loadMessages();
+    }
+
+    closeChatBtn.addEventListener('click', () => {
+        chatModal.classList.add('hidden');
+        if (unsubscribeMessages) unsubscribeMessages();
+    });
+
+    // Chat ID Helper
+    function getChatId(uid1, uid2) {
+        return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
+    }
+
+    // Send Message
+    messageForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = messageInput.value.trim();
+        if (!text || !activeChatUser || !currentUserData) return;
+
+        const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
+        await addDoc(collection(db, "chats", chatId, "messages"), {
+            senderId: currentUserData.uid,
+            text: text,
+            createdAt: new Date()
+        });
+
+        messageInput.value = "";
+    });
+
+    // Realtime Load Messages
+    function loadMessages() {
+        if (!activeChatUser || !currentUserData) return;
+        const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
+        
+        const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
+        
+        if (unsubscribeMessages) unsubscribeMessages();
+
+        unsubscribeMessages = onSnapshot(q, (snapshot) => {
+            messagesContainer.innerHTML = "";
+            snapshot.forEach((doc) => {
+                const msg = doc.data();
+                const isMe = msg.senderId === currentUserData.uid;
+
+                const msgBubble = document.createElement('div');
+                msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
+                msgBubble.innerHTML = `
+                    <div class="max-w-[75%] px-3 py-1.5 rounded-2xl text-sm ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-sm">
+                        ${msg.text}
+                    </div>
+                `;
+                messagesContainer.appendChild(msgBubble);
+            });
+            messagesContainer.scrollTop = messagesContainer.scrollHeight;
+        });
+    }
+</script>
+
+</body>  
 </html>

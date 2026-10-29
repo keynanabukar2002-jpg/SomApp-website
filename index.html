@@ -125,7 +125,7 @@
       let unsubscribeChat = null;
       let base64Image = "";
 
-      // Habka saxda ah ee lagu qabto redirect-ka iyo xogta user-ka
+      // Qabashada natiijada Google Redirect-ka
       getRedirectResult(auth).then((result) => {
           if (result && result.user) {
               currentUser = result.user;

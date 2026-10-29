@@ -67,6 +67,7 @@
                     <img id="my-avatar" src="" class="w-8 h-8 rounded-full object-cover border border-sky-500">
                     <h1 id="welcome-user" class="text-lg font-bold tracking-wide text-white"></h1>
                 </div>
+                <button onclick="logoutApp()" class="text-xs text-red-400 hover:underline">Ka bax</button>
             </header>
 
             <!-- Search Bar -->
@@ -102,7 +103,7 @@
     <!-- Firebase SDK Scripts -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+      import { getAuth, signInWithPopup, GoogleAuthProvider, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
       import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
       const firebaseConfig = {
@@ -125,15 +126,27 @@
       let unsubscribeChat = null;
       let base64Image = "";
 
-      // Hubinta Xaaladda User-ka si toos ah (Real-time Auth State)
-      onAuthStateChanged(auth, (user) => {
+      // 1. Marka uu app-ku furmo, isla markiiba ka eeg xogta LocalStorage-ka (Si uusan dib ugu celin)
+      window.addEventListener('DOMContentLoaded', () => {
+          const cachedUser = localStorage.getItem("somapp_user");
+          if (cachedUser) {
+              userData = JSON.parse(cachedUser);
+              currentUser = { uid: userData.uid, email: userData.email };
+              showSearchSection();
+          }
+      });
+
+      // Hubinta Firebase Auth State
+      onAuthStateChanged(auth, async (user) => {
           if (user) {
               currentUser = user;
-              handleUserSession(user);
-          } else {
-              document.getElementById("login-section").style.display = "flex";
-              document.getElementById("profile-setup-section").style.display = "none";
-              document.getElementById("search-section").style.display = "none";
+              const cachedUser = localStorage.getItem("somapp_user");
+              if (cachedUser) {
+                  userData = JSON.parse(cachedUser);
+                  showSearchSection();
+              } else {
+                  handleUserSession(user);
+              }
           }
       });
 
@@ -142,12 +155,12 @@
               const userRef = doc(db, "users", user.uid);
               const userSnap = await getDoc(userRef);
 
-              document.getElementById("login-section").style.display = "none";
-
               if (userSnap.exists()) {
                   userData = userSnap.data();
+                  localStorage.setItem("somapp_user", JSON.stringify(userData));
                   showSearchSection();
               } else {
+                  document.getElementById("login-section").style.display = "none";
                   document.getElementById("profile-setup-section").style.display = "flex";
               }
           } catch (e) {
@@ -155,15 +168,21 @@
           }
       }
 
-      // Google Sign-In iyadoo la adeegsanayo Popup (Ka hortagga Loop-ka)
+      // Google Sign-In Popup
       window.loginWithGoogle = async function() {
           const provider = new GoogleAuthProvider();
           try {
               await signInWithPopup(auth, provider);
           } catch (e) {
               console.error("Khalad Google Login ah: ", e);
-              alert("Galitaankii wuu guuldarraystay: " + e.message);
           }
+      };
+
+      // Logout function
+      window.logoutApp = async function() {
+          await signOut(auth);
+          localStorage.removeItem("somapp_user");
+          location.reload();
       };
 
       // Gallery Image Preview to Base64
@@ -204,6 +223,9 @@
 
               await setDoc(doc(db, "users", currentUser.uid), userData);
               await setDoc(doc(db, "usernames", username), { uid: currentUser.uid });
+
+              // Ku keydi LocalStorage si uusan mar dambe u tirtirin xogta
+              localStorage.setItem("somapp_user", JSON.stringify(userData));
 
               showSearchSection();
           } catch (e) {

@@ -102,7 +102,7 @@
     <!-- Firebase SDK Scripts -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+      import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
       import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
       const firebaseConfig = {
@@ -125,16 +125,7 @@
       let unsubscribeChat = null;
       let base64Image = "";
 
-      // Qabashada natiijada Google Redirect-ka
-      getRedirectResult(auth).then((result) => {
-          if (result && result.user) {
-              currentUser = result.user;
-              handleUserSession(currentUser);
-          }
-      }).catch((error) => {
-          console.error("Redirect Error:", error);
-      });
-
+      // Hubinta Xaaladda User-ka si toos ah (Real-time Auth State)
       onAuthStateChanged(auth, (user) => {
           if (user) {
               currentUser = user;
@@ -164,13 +155,14 @@
           }
       }
 
-      // Google Sign-In Trigger
+      // Google Sign-In iyadoo la adeegsanayo Popup (Ka hortagga Loop-ka)
       window.loginWithGoogle = async function() {
           const provider = new GoogleAuthProvider();
           try {
-              await signInWithRedirect(auth, provider);
+              await signInWithPopup(auth, provider);
           } catch (e) {
               console.error("Khalad Google Login ah: ", e);
+              alert("Galitaankii wuu guuldarraystay: " + e.message);
           }
       };
 

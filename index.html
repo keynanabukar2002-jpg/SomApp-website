@@ -62,14 +62,12 @@
     </div>
 </div>
 
-<!-- Fullscreen Media Viewer Modal (Sawirka & Video markii la furo) -->
+<!-- Fullscreen Media Viewer Modal -->
 <div id="mediaViewerModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-2">
     <button id="closeMediaViewer" class="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full">
         <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
     </button>
-    <div id="mediaViewerContent" class="max-w-full max-h-full flex items-center justify-center">
-        <!-- Media content will load here -->
-    </div>
+    <div id="mediaViewerContent" class="max-w-full max-h-full flex items-center justify-center"></div>
 </div>
 
 <!-- Chat Window Modal -->
@@ -87,11 +85,8 @@
         </div>
     </div>
     
-    <div id="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3 no-scrollbar bg-[#0b141a]">
-        <!-- Messages will load here -->
-    </div>
+    <div id="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3 no-scrollbar bg-[#0b141a]"></div>
 
-    <!-- Message Input Form -->
     <form id="messageForm" class="p-3 bg-[#0f172a] border-t border-[#1e293b] flex items-center gap-2">
         <label for="mediaInput" class="cursor-pointer text-[#94a3b8] hover:text-white p-1" title="Soo hel sawir ama dukumiinti">
             <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
@@ -109,7 +104,7 @@
 </div>
 
 <!-- App Container -->  
-<div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] overflow-hidden">  
+<div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] overflow-hidden relative">  
     <header class="bg-[#0f172a] pt-3 px-4 pb-2 flex justify-between items-center shrink-0 border-b border-[#1e293b]">  
         <div class="flex items-center gap-2">  
             <div id="myHeaderAvatar" class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md overflow-hidden bg-cover bg-center">  
@@ -117,10 +112,27 @@
             </div>  
             <h1 class="text-xl font-bold tracking-wide text-white">Som<span class="text-sky-400">App</span></h1>  
         </div>  
-        <div class="flex items-center gap-4 text-[#94a3b8]">  
-            <button id="logoutBtn" class="hover:text-white transition-colors p-1" title="Ka bax akoonka">  
+          
+        <div class="flex items-center gap-4 text-[#94a3b8] relative">  
+            <button class="hover:text-white transition-colors p-1" aria-label="Camera">  
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17l-1.86-2H8.03L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 11c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>  
+            </button>  
+            <button class="hover:text-white transition-colors p-1" aria-label="Search">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>  
+            </button>  
+            
+            <!-- 3 Dots Menu Button -->
+            <button id="menuBtn" class="hover:text-white transition-colors p-1 relative" aria-label="More options" title="Menu">  
                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>  
             </button>  
+
+            <!-- Dropdown Logout Menu -->
+            <div id="dropdownMenu" class="hidden absolute right-0 top-10 w-36 bg-[#1e293b] border border-[#334155] rounded-xl shadow-2xl py-1 z-50">
+                <button id="logoutBtn" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#0f172a] font-medium flex items-center gap-2">
+                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
+                    Logout
+                </button>
+            </div>
         </div>  
     </header>  
 
@@ -185,11 +197,32 @@
     const messageForm = document.getElementById('messageForm');
     const messageInput = document.getElementById('messageInput');
     const messagesContainer = document.getElementById('messagesContainer');
-    const logoutBtn = document.getElementById('logoutBtn');
     const mediaInput = document.getElementById('mediaInput');
     const mediaViewerModal = document.getElementById('mediaViewerModal');
     const mediaViewerContent = document.getElementById('mediaViewerContent');
     const closeMediaViewer = document.getElementById('closeMediaViewer');
+    
+    // Menu & Logout elements
+    const menuBtn = document.getElementById('menuBtn');
+    const dropdownMenu = document.getElementById('dropdownMenu');
+    const logoutBtn = document.getElementById('logoutBtn');
+
+    // Toggle 3 dots menu
+    menuBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        dropdownMenu.classList.toggle('hidden');
+    });
+
+    // Close menu when clicking outside
+    document.addEventListener('click', () => {
+        dropdownMenu.classList.add('hidden');
+    });
+
+    // Logout action
+    logoutBtn.addEventListener('click', async () => {
+        dropdownMenu.classList.add('hidden');
+        await signOut(auth);
+    });
 
     toggleAuthBtn.addEventListener('click', () => {
         isSignUp = !isSignUp;
@@ -259,11 +292,10 @@
             }
             authModal.classList.add('hidden');
         } else {
+            currentUserData = null;
             authModal.classList.remove('hidden');
         }
     });
-
-    logoutBtn.addEventListener('click', () => signOut(auth));
 
     searchInput.addEventListener('input', async (e) => {
         const searchText = e.target.value.trim().toLowerCase();
@@ -368,7 +400,6 @@
                 messagesContainer.appendChild(msgBubble);
             });
 
-            // Event listener si sawirka ama video-ga loo taabto oo loo weyneeyo (Full screen)
             document.querySelectorAll('.chat-media').forEach(mediaEl => {
                 mediaEl.addEventListener('click', (e) => {
                     e.stopPropagation();

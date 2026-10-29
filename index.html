@@ -121,12 +121,10 @@
                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>  
             </button>  
             
-            <!-- 3 Dots Menu Button -->
             <button id="menuBtn" class="hover:text-white transition-colors p-1 relative" aria-label="More options" title="Menu">  
                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>  
             </button>  
 
-            <!-- Dropdown Logout Menu -->
             <div id="dropdownMenu" class="hidden absolute right-0 top-10 w-36 bg-[#1e293b] border border-[#334155] rounded-xl shadow-2xl py-1 z-50">
                 <button id="logoutBtn" class="w-full text-left px-4 py-2 text-sm text-red-400 hover:bg-[#0f172a] font-medium flex items-center gap-2">
                     <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
@@ -136,7 +134,6 @@
         </div>  
     </header>  
 
-    <!-- Search Bar Area -->
     <div id="searchSection" class="px-3 py-2 bg-[#0f172a] shrink-0">  
         <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2 rounded-full text-[#94a3b8]">  
             <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>  
@@ -144,12 +141,10 @@
         </div>  
     </div>  
 
-    <!-- Main Content Area (Dynamic views for Chats, Wallet, Calls, Status, Profile) -->  
     <main id="mainContentArea" class="flex-1 overflow-y-auto no-scrollbar relative min-h-0 flex flex-col">
         <div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>
     </main>  
 
-    <!-- Navigation Bar Hoose -->  
     <nav class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1 z-30">  
         <button data-tab="chats" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-sky-400 group">  
             <div class="px-3.5 py-1 rounded-full bg-sky-500/20 transition-colors">  
@@ -221,7 +216,6 @@
     const submitAuthBtn = document.getElementById('submitAuthBtn');
     const authError = document.getElementById('authError');
     const myHeaderAvatar = document.getElementById('myHeaderAvatar');
-    const searchInput = document.getElementById('searchInput');
     const searchSection = document.getElementById('searchSection');
     const chatsList = document.getElementById('chatsList');
     const mainContentArea = document.getElementById('mainContentArea');
@@ -253,7 +247,6 @@
         await signOut(auth);
     });
 
-    // Navigation Bar Switching Tabs logic
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => {
         btn.addEventListener('click', () => {
@@ -278,7 +271,6 @@
             if (tab === 'chats') {
                 searchSection.classList.remove('hidden');
                 mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
-                // Re-bind search functionality or reload list
             } else if (tab === 'wallet') {
                 searchSection.classList.add('hidden');
                 mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">💰</div><h3 class="text-white font-bold text-lg mb-1">SomApp Wallet</h3><p class="text-xs">Waa la hirgelin doonaa hantidaada iyo lacag dirista dhowaan.</p></div>`;
@@ -382,7 +374,6 @@
         }
     });
 
-    // Search input event listener binding helper
     document.addEventListener('input', async (e) => {
         if(e.target && e.target.id === 'searchInput') {
             const searchText = e.target.value.trim().toLowerCase();
@@ -474,19 +465,21 @@
                 const isMe = msg.senderId === currentUserData.uid;
 
                 let contentHtml = "";
+                // Sawirka iyo Video-ga oo laga dhigay kuwo waaweyn oo cad (max-h-72 ama wixi la mid ah)
                 if (msg.fileType === 'image') {
-                    contentHtml = `<img src="${msg.fileData}" class="rounded-lg max-w-full h-auto mb-1 max-h-48 object-cover cursor-pointer chat-media" data-type="image" data-src="${msg.fileData}">`;
+                    contentHtml = `<img src="${msg.fileData}" class="rounded-xl w-full h-auto mb-2 max-h-80 object-cover cursor-pointer chat-media shadow-md" data-type="image" data-src="${msg.fileData}">`;
                 } else if (msg.fileType === 'video') {
-                    contentHtml = `<video src="${msg.fileData}" class="rounded-lg max-w-full h-auto mb-1 max-h-48 cursor-pointer chat-media" data-type="video" data-src="${msg.fileData}" controls></video>`;
+                    contentHtml = `<video src="${msg.fileData}" class="rounded-xl w-full h-auto mb-2 max-h-80 cursor-pointer chat-media shadow-md" data-type="video" data-src="${msg.fileData}" controls></video>`;
                 } else if (msg.fileType === 'document') {
-                    contentHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="flex items-center gap-2 text-sky-300 underline text-xs mb-1 bg-black/20 p-2 rounded">📄 ${msg.fileName}</a>`;
+                    contentHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="flex items-center gap-2 text-sky-300 underline text-sm mb-2 bg-black/30 p-2.5 rounded-xl">📄 ${msg.fileName}</a>`;
                 }
 
-                if (msg.text) contentHtml += `<div>${msg.text}</div>`;
+                // Qoraalka oo la weyneeyay cabbirkooda (text-base badalkii text-sm)
+                if (msg.text) contentHtml += `<div class="text-base leading-relaxed px-1">${msg.text}</div>`;
 
                 const msgBubble = document.createElement('div');
-                msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
-                msgBubble.innerHTML = `<div class="max-w-[75%] px-3 py-2 rounded-2xl text-sm ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-sm">${contentHtml}</div>`;
+                msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'} my-1`;
+                msgBubble.innerHTML = `<div class="max-w-[85%] px-3.5 py-2.5 rounded-2xl ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-md">${contentHtml}</div>`;
                 messagesContainer.appendChild(msgBubble);
             });
 

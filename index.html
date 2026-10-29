@@ -136,24 +136,55 @@
         </div>  
     </header>  
 
-    <div class="px-3 py-2 bg-[#0f172a] shrink-0">  
+    <!-- Search Bar Area -->
+    <div id="searchSection" class="px-3 py-2 bg-[#0f172a] shrink-0">  
         <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2 rounded-full text-[#94a3b8]">  
             <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>  
             <input type="text" id="searchInput" placeholder="Raadi saaxiib (Username)..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">  
         </div>  
     </div>  
 
-    <main id="chatsList" class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative min-h-0"></main>  
+    <!-- Main Content Area (Dynamic views for Chats, Wallet, Calls, Status, Profile) -->  
+    <main id="mainContentArea" class="flex-1 overflow-y-auto no-scrollbar relative min-h-0 flex flex-col">
+        <div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>
+    </main>  
 
-    <nav class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1">  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-white group">  
-            <div class="px-3.5 py-1 rounded-full bg-sky-500/20 text-sky-400"><svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>  
-            <span class="text-[11px] font-semibold mt-0.5 text-sky-400">Chats</span>  
+    <!-- Navigation Bar Hoose -->  
+    <nav class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1 z-30">  
+        <button data-tab="chats" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-sky-400 group">  
+            <div class="px-3.5 py-1 rounded-full bg-sky-500/20 transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-semibold mt-0.5">Chats</span>  
         </button>  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white"><span class="text-[11px] font-medium">Wallet</span></button>  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white"><span class="text-[11px] font-medium">Calls</span></button>  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white"><span class="text-[11px] font-medium">Status</span></button>  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white"><span class="text-[11px] font-medium">Profile</span></button>  
+
+        <button data-tab="wallet" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-medium mt-0.5">Wallet</span>  
+        </button>  
+
+        <button data-tab="calls" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-medium mt-0.5">Calls</span>  
+        </button>  
+
+        <button data-tab="status" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-medium mt-0.5">Status</span>  
+        </button>  
+
+        <button data-tab="profile" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>  
+            </div>  
+            <span class="text-[11px] font-medium mt-0.5">Profile</span>  
+        </button>  
     </nav>  
 </div>
 
@@ -191,7 +222,9 @@
     const authError = document.getElementById('authError');
     const myHeaderAvatar = document.getElementById('myHeaderAvatar');
     const searchInput = document.getElementById('searchInput');
+    const searchSection = document.getElementById('searchSection');
     const chatsList = document.getElementById('chatsList');
+    const mainContentArea = document.getElementById('mainContentArea');
     const chatModal = document.getElementById('chatModal');
     const closeChatBtn = document.getElementById('closeChatBtn');
     const messageForm = document.getElementById('messageForm');
@@ -202,26 +235,78 @@
     const mediaViewerContent = document.getElementById('mediaViewerContent');
     const closeMediaViewer = document.getElementById('closeMediaViewer');
     
-    // Menu & Logout elements
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Toggle 3 dots menu
     menuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         dropdownMenu.classList.toggle('hidden');
     });
 
-    // Close menu when clicking outside
     document.addEventListener('click', () => {
         dropdownMenu.classList.add('hidden');
     });
 
-    // Logout action
     logoutBtn.addEventListener('click', async () => {
         dropdownMenu.classList.add('hidden');
         await signOut(auth);
+    });
+
+    // Navigation Bar Switching Tabs logic
+    const navButtons = document.querySelectorAll('.nav-btn');
+    navButtons.forEach(btn => {
+        btn.addEventListener('click', () => {
+            navButtons.forEach(b => {
+                b.classList.remove('text-sky-400');
+                b.classList.add('text-[#94a3b8]');
+                const div = b.querySelector('div');
+                div.classList.remove('bg-sky-500/20');
+                const span = b.querySelector('span');
+                span.classList.remove('font-semibold');
+                span.classList.add('font-medium');
+            });
+            btn.classList.remove('text-[#94a3b8]');
+            btn.classList.add('text-sky-400');
+            const activeDiv = btn.querySelector('div');
+            activeDiv.classList.add('bg-sky-500/20');
+            const activeSpan = btn.querySelector('span');
+            activeSpan.classList.remove('font-medium');
+            activeSpan.classList.add('font-semibold');
+
+            const tab = btn.getAttribute('data-tab');
+            if (tab === 'chats') {
+                searchSection.classList.remove('hidden');
+                mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
+                // Re-bind search functionality or reload list
+            } else if (tab === 'wallet') {
+                searchSection.classList.add('hidden');
+                mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">💰</div><h3 class="text-white font-bold text-lg mb-1">SomApp Wallet</h3><p class="text-xs">Waa la hirgelin doonaa hantidaada iyo lacag dirista dhowaan.</p></div>`;
+            } else if (tab === 'calls') {
+                searchSection.classList.add('hidden');
+                mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">📞</div><h3 class="text-white font-bold text-lg mb-1">Calls</h3><p class="text-xs">Ma jiraan wicitaano diiwaangashan hadda.</p></div>`;
+            } else if (tab === 'status') {
+                searchSection.classList.add('hidden');
+                mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">⭕</div><h3 class="text-white font-bold text-lg mb-1">Status</h3><p class="text-xs">Ma jiraan Status cusub oo la daawaday.</p></div>`;
+            } else if (tab === 'profile') {
+                searchSection.classList.add('hidden');
+                const pPic = currentUserData && currentUserData.profilePic ? `style="background-image: url('${currentUserData.profilePic}')"` : '';
+                const pInit = currentUserData ? currentUserData.username.charAt(0).toUpperCase() : 'S';
+                const pName = currentUserData ? '@' + currentUserData.username : 'User';
+                const pEmail = currentUserData ? currentUserData.email : '';
+                mainContentArea.innerHTML = `
+                    <div class="p-6 flex flex-col items-center text-center">
+                        <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center mb-4 shadow-xl flex items-center justify-center text-white text-3xl font-bold" ${pPic}>${currentUserData && currentUserData.profilePic ? '' : pInit}</div>
+                        <h2 class="text-white font-bold text-lg">${pName}</h2>
+                        <p class="text-xs text-[#94a3b8] mb-4">${pEmail}</p>
+                        <div class="w-full bg-[#1e293b] rounded-2xl p-4 text-left space-y-2">
+                            <div class="text-xs text-sky-400 font-semibold">Macluumaadka Akoonka</div>
+                            <div class="text-xs text-white">Status: <span class="text-emerald-400">Active & Verified</span></div>
+                        </div>
+                    </div>
+                `;
+            }
+        });
     });
 
     toggleAuthBtn.addEventListener('click', () => {
@@ -297,28 +382,33 @@
         }
     });
 
-    searchInput.addEventListener('input', async (e) => {
-        const searchText = e.target.value.trim().toLowerCase();
-        if (!searchText) { chatsList.innerHTML = ""; return; }
+    // Search input event listener binding helper
+    document.addEventListener('input', async (e) => {
+        if(e.target && e.target.id === 'searchInput') {
+            const searchText = e.target.value.trim().toLowerCase();
+            const listEl = document.getElementById('chatsList');
+            if (!listEl) return;
+            if (!searchText) { listEl.innerHTML = ""; return; }
 
-        const q = query(collection(db, "users"), where("username", ">=", searchText), where("username", "<=", searchText + '\uf8ff'));
-        const querySnap = await getDocs(q);
+            const q = query(collection(db, "users"), where("username", ">=", searchText), where("username", "<=", searchText + '\uf8ff'));
+            const querySnap = await getDocs(q);
 
-        chatsList.innerHTML = "";
-        querySnap.forEach((docSnap) => {
-            const userData = docSnap.data();
-            if (currentUserData && userData.uid === currentUserData.uid) return;
+            listEl.innerHTML = "";
+            querySnap.forEach((docSnap) => {
+                const userData = docSnap.data();
+                if (currentUserData && userData.uid === currentUserData.uid) return;
 
-            const userItem = document.createElement('div');
-            userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
-            const avatarHtml = userData.profilePic 
-                ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
-                : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
+                const userItem = document.createElement('div');
+                userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
+                const avatarHtml = userData.profilePic 
+                    ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
+                    : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
 
-            userItem.innerHTML = `${avatarHtml}<div class="flex-1 min-w-0"><h2 class="text-white font-semibold text-base truncate">@${userData.username}</h2><span class="text-xs text-[#94a3b8] truncate">Guji si aad fariin u dirto</span></div>`;
-            userItem.addEventListener('click', () => openChatWithUser(userData));
-            chatsList.appendChild(userItem);
-        });
+                userItem.innerHTML = `${avatarHtml}<div class="flex-1 min-w-0"><h2 class="text-white font-semibold text-base truncate">@${userData.username}</h2><span class="text-xs text-[#94a3b8] truncate">Guji si aad fariin u dirto</span></div>`;
+                userItem.addEventListener('click', () => openChatWithUser(userData));
+                listEl.appendChild(userItem);
+            });
+        }
     });
 
     function openChatWithUser(targetUser) {

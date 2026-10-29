@@ -186,7 +186,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
@@ -206,6 +206,7 @@
     let isSignUp = false;
     let activeChatUser = null;
     let unsubscribeMessages = null;
+    let currentTab = 'chats';
 
     const authModal = document.getElementById('authModal');
     const authForm = document.getElementById('authForm');
@@ -267,39 +268,75 @@
             activeSpan.classList.remove('font-medium');
             activeSpan.classList.add('font-semibold');
 
-            const tab = btn.getAttribute('data-tab');
-            if (tab === 'chats') {
-                searchSection.classList.remove('hidden');
-                mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
-            } else if (tab === 'wallet') {
-                searchSection.classList.add('hidden');
-                mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">💰</div><h3 class="text-white font-bold text-lg mb-1">SomApp Wallet</h3><p class="text-xs">Waa la hirgelin doonaa hantidaada iyo lacag dirista dhowaan.</p></div>`;
-            } else if (tab === 'calls') {
-                searchSection.classList.add('hidden');
-                mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">📞</div><h3 class="text-white font-bold text-lg mb-1">Calls</h3><p class="text-xs">Ma jiraan wicitaano diiwaangashan hadda.</p></div>`;
-            } else if (tab === 'status') {
-                searchSection.classList.add('hidden');
-                mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">⭕</div><h3 class="text-white font-bold text-lg mb-1">Status</h3><p class="text-xs">Ma jiraan Status cusub oo la daawaday.</p></div>`;
-            } else if (tab === 'profile') {
-                searchSection.classList.add('hidden');
-                const pPic = currentUserData && currentUserData.profilePic ? `style="background-image: url('${currentUserData.profilePic}')"` : '';
-                const pInit = currentUserData ? currentUserData.username.charAt(0).toUpperCase() : 'S';
-                const pName = currentUserData ? '@' + currentUserData.username : 'User';
-                const pEmail = currentUserData ? currentUserData.email : '';
-                mainContentArea.innerHTML = `
-                    <div class="p-6 flex flex-col items-center text-center">
-                        <div class="w-24 h-24 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center mb-4 shadow-xl flex items-center justify-center text-white text-3xl font-bold" ${pPic}>${currentUserData && currentUserData.profilePic ? '' : pInit}</div>
-                        <h2 class="text-white font-bold text-lg">${pName}</h2>
-                        <p class="text-xs text-[#94a3b8] mb-4">${pEmail}</p>
-                        <div class="w-full bg-[#1e293b] rounded-2xl p-4 text-left space-y-2">
-                            <div class="text-xs text-sky-400 font-semibold">Macluumaadka Akoonka</div>
-                            <div class="text-xs text-white">Status: <span class="text-emerald-400">Active & Verified</span></div>
-                        </div>
-                    </div>
-                `;
-            }
+            currentTab = btn.getAttribute('data-tab');
+            renderTabContent();
         });
     });
+
+    function renderTabContent() {
+        if (currentTab === 'chats') {
+            searchSection.classList.remove('hidden');
+            mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
+        } else if (currentTab === 'wallet') {
+            searchSection.classList.add('hidden');
+            mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">💰</div><h3 class="text-white font-bold text-lg mb-1">SomApp Wallet</h3><p class="text-xs">Waa la hirgelin doonaa hantidaada iyo lacag dirista dhowaan.</p></div>`;
+        } else if (currentTab === 'calls') {
+            searchSection.classList.add('hidden');
+            mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">📞</div><h3 class="text-white font-bold text-lg mb-1">Calls</h3><p class="text-xs">Ma jiraan wicitaano diiwaangashan hadda.</p></div>`;
+        } else if (currentTab === 'status') {
+            searchSection.classList.add('hidden');
+            mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">⭕</div><h3 class="text-white font-bold text-lg mb-1">Status</h3><p class="text-xs">Ma jiraan Status cusub oo la daawaday.</p></div>`;
+        } else if (currentTab === 'profile') {
+            searchSection.classList.add('hidden');
+            const pPic = currentUserData && currentUserData.profilePic ? `style="background-image: url('${currentUserData.profilePic}')"` : '';
+            const pInit = currentUserData ? currentUserData.username.charAt(0).toUpperCase() : 'S';
+            const pName = currentUserData ? '@' + currentUserData.username : 'User';
+            const pEmail = currentUserData ? currentUserData.email : '';
+            mainContentArea.innerHTML = `
+                <div class="p-6 flex flex-col items-center text-center">
+                    <div class="relative group cursor-pointer mb-4">
+                        <div id="profilePageAvatar" class="w-24 h-24 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-xl flex items-center justify-center text-white text-3xl font-bold" ${pPic}>${currentUserData && currentUserData.profilePic ? '' : pInit}</div>
+                        <label for="changeProfilePicInput" class="absolute bottom-0 right-0 bg-sky-500 hover:bg-sky-400 text-white p-2 rounded-full cursor-pointer shadow-lg">
+                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
+                        </label>
+                        <input type="file" id="changeProfilePicInput" accept="image/*" class="hidden">
+                    </div>
+                    <h2 class="text-white font-bold text-lg">${pName}</h2>
+                    <p class="text-xs text-[#94a3b8] mb-4">${pEmail}</p>
+                    <div class="w-full bg-[#1e293b] rounded-2xl p-4 text-left space-y-2">
+                        <div class="text-xs text-sky-400 font-semibold">Macluumaadka Akoonka</div>
+                        <div class="text-xs text-white">Status: <span class="text-emerald-400">Active & Verified</span></div>
+                    </div>
+                </div>
+            `;
+
+            // Bind change profile picture event
+            const changePicInput = document.getElementById('changeProfilePicInput');
+            if(changePicInput) {
+                changePicInput.addEventListener('change', async (e) => {
+                    const file = e.target.files[0];
+                    if(!file || !currentUserData) return;
+                    try {
+                        const newBase64 = await convertToBase64(file);
+                        await updateDoc(doc(db, "users", currentUserData.uid), {
+                            profilePic: newBase64
+                        });
+                        currentUserData.profilePic = newBase64;
+                        
+                        // Update header avatar too
+                        myHeaderAvatar.style.backgroundImage = `url(${newBase64})`;
+                        myHeaderAvatar.innerText = "";
+                        
+                        renderTabContent();
+                        alert("Sawirka profile-ka si guul leh ayaa loo beddelay!");
+                    } catch(err) {
+                        console.error(err);
+                        alert("Cillad ayaa dhacday beddelka sawirka.");
+                    }
+                });
+            }
+        }
+    }
 
     toggleAuthBtn.addEventListener('click', () => {
         isSignUp = !isSignUp;
@@ -368,6 +405,7 @@
                 }
             }
             authModal.classList.add('hidden');
+            renderTabContent();
         } else {
             currentUserData = null;
             authModal.classList.remove('hidden');
@@ -465,7 +503,6 @@
                 const isMe = msg.senderId === currentUserData.uid;
 
                 let contentHtml = "";
-                // Cabbirka fiidiyowga oo laga dhigay mid dhex-dhexaad ah oo qurux badan (w-64, max-h-48)
                 if (msg.fileType === 'image') {
                     contentHtml = `<img src="${msg.fileData}" class="rounded-xl w-64 h-auto mb-2 max-h-60 object-cover cursor-pointer chat-media shadow-md" data-type="image" data-src="${msg.fileData}">`;
                 } else if (msg.fileType === 'video') {

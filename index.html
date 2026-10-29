@@ -2,316 +2,283 @@
 <html lang="so">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>SomApp - Login & Messenger</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SomApp - Pro Chat</title>
     <style>
-        html, body {
-            height: 100%;
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            background-color: #0b141a;
-        }
-        .no-scrollbar::-webkit-scrollbar {
-            display: none;
-        }
-        .no-scrollbar {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        body { font-family: Arial, sans-serif; background: #0f172a; color: #fff; padding: 20px; max-width: 600px; margin: auto; }
+        .card { background: #1e293b; padding: 20px; border-radius: 10px; border: 1px solid #334155; margin-bottom: 15px; text-align: center; }
+        #profile-setup-section, #search-section, #chat-section { display: none; }
+        #chat-box { height: 300px; border: 1px solid #334155; overflow-y: scroll; padding: 15px; margin-bottom: 15px; border-radius: 8px; background: #0f172a; display: flex; flex-direction: column; gap: 10px; text-align: left; }
+        .msg { background: #334155; padding: 8px 12px; border-radius: 6px; width: fit-content; max-width: 80%; word-break: break-word; display: flex; align-items: center; gap: 8px; }
+        .msg img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; }
+        .input-container { display: flex; gap: 10px; margin-top: 10px; }
+        input[type="text"], input[type="file"] { flex: 1; padding: 12px; font-size: 16px; border-radius: 6px; border: none; background: #0f172a; color: #fff; border: 1px solid #334155; outline: none; }
+        button { padding: 12px 20px; font-size: 16px; border-radius: 6px; border: none; background: #3b82f6; color: #fff; cursor: pointer; font-weight: bold; }
+        button:hover { background: #2563eb; }
+        .google-btn { background: #ea4335; width: 100%; padding: 14px; font-size: 16px; border-radius: 6px; color: #fff; border: none; cursor: pointer; font-weight: bold; }
+        .google-btn:hover { background: #d33828; }
+        .user-item { background: #334155; padding: 10px; margin-top: 8px; border-radius: 6px; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+        .user-item img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; }
+        .back-btn { background: #64748b; margin-bottom: 10px; float: left; }
+        #preview-img { width: 80px; height: 80px; border-radius: 50%; object-fit: cover; margin-top: 10px; display: none; border: 2px solid #3b82f6; }
     </style>
 </head>
-<body class="text-[#e9edef] font-sans antialiased h-full w-full overflow-hidden select-none">
+<body>
 
-    <!-- App Main Container -->
-    <div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] overflow-hidden relative">
-
-        <!-- ========================================== -->
-        <!-- SCREEN 1: PHONE NUMBER LOGIN               -->
-        <!-- ========================================== -->
-        <div id="screen-phone" class="flex flex-col h-full w-full p-6 justify-between bg-[#0f172a] z-50">
-            <div class="flex flex-col items-center mt-8">
-                <!-- App Logo -->
-                <div class="w-16 h-16 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-3xl shadow-xl mb-4">
-                    S
-                </div>
-                <h1 class="text-2xl font-bold text-white mb-2">Soo Dhaawaw Som<span class="text-sky-400">App</span></h1>
-                <p class="text-sm text-[#94a3b8] text-center max-w-xs">Geli nambarkaaga telefonka si aad u furato akaounkaaga cusub.</p>
-
-                <!-- Phone Input Box -->
-                <div class="w-full mt-8 flex flex-col gap-3">
-                    <label class="text-xs font-semibold text-sky-400 uppercase tracking-wider">Nambarka Telefonka</label>
-                    <div class="flex items-center gap-2 bg-[#1e293b] rounded-xl px-4 py-3 border border-[#334155] focus-within:border-sky-500 transition-colors">
-                        <span class="text-base font-semibold text-white flex items-center gap-1">
-                            🇸🇴 +252
-                        </span>
-                        <div class="w-[1px] h-6 bg-[#334155]"></div>
-                        <input id="phone-input" type="tel" placeholder="61XXXXXXX" class="bg-transparent border-none outline-none text-white font-semibold text-base w-full placeholder-[#64748b]">
-                    </div>
-                </div>
-            </div>
-
-            <!-- Submit Button -->
-            <div class="mb-6">
-                <button onclick="goToOTP()" class="w-full bg-sky-500 hover:bg-sky-400 active:scale-95 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
-                    <span>Sogeli Koodka (SMS)</span>
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
-                </button>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- SCREEN 2: OTP VERIFICATION                 -->
-        <!-- ========================================== -->
-        <div id="screen-otp" class="hidden flex flex-col h-full w-full p-6 justify-between bg-[#0f172a] z-50">
-            <div class="flex flex-col items-center mt-6">
-                <button onclick="goToPhone()" class="self-start text-[#94a3b8] hover:text-white p-2 -ml-2 mb-4">
-                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-                </button>
-
-                <h1 class="text-2xl font-bold text-white mb-2">Xaqiiji Koodka</h1>
-                <p class="text-sm text-[#94a3b8] text-center">Waxaan SMS kuugu dirnay nambarka <span id="display-phone" class="text-sky-400 font-semibold">+252 61XXXXXXX</span></p>
-
-                <!-- 6 Digit OTP Inputs -->
-                <div class="flex gap-2 mt-8">
-                    <input type="text" maxlength="1" class="otp-box w-12 h-14 bg-[#1e293b] border border-[#334155] rounded-xl text-center text-xl font-bold text-white focus:border-sky-500 outline-none">
-                    <input type="text" maxlength="1" class="otp-box w-12 h-14 bg-[#1e293b] border border-[#334155] rounded-xl text-center text-xl font-bold text-white focus:border-sky-500 outline-none">
-                    <input type="text" maxlength="1" class="otp-box w-12 h-14 bg-[#1e293b] border border-[#334155] rounded-xl text-center text-xl font-bold text-white focus:border-sky-500 outline-none">
-                    <input type="text" maxlength="1" class="otp-box w-12 h-14 bg-[#1e293b] border border-[#334155] rounded-xl text-center text-xl font-bold text-white focus:border-sky-500 outline-none">
-                    <input type="text" maxlength="1" class="otp-box w-12 h-14 bg-[#1e293b] border border-[#334155] rounded-xl text-center text-xl font-bold text-white focus:border-sky-500 outline-none">
-                    <input type="text" maxlength="1" class="otp-box w-12 h-14 bg-[#1e293b] border border-[#334155] rounded-xl text-center text-xl font-bold text-white focus:border-sky-500 outline-none">
-                </div>
-
-                <p class="text-xs text-[#64748b] mt-6">Koodka ma helin? <button class="text-sky-400 font-semibold underline">Abaar mar kale</button></p>
-            </div>
-
-            <div class="mb-6">
-                <button onclick="goToProfile()" class="w-full bg-sky-500 hover:bg-sky-400 active:scale-95 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all">
-                    Xaqiiji Koodka
-                </button>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- SCREEN 3: PROFILE SETUP                    -->
-        <!-- ========================================== -->
-        <div id="screen-profile" class="hidden flex flex-col h-full w-full p-6 justify-between bg-[#0f172a] z-50">
-            <div class="flex flex-col items-center mt-8">
-                <h1 class="text-2xl font-bold text-white mb-2">Setup Profile</h1>
-                <p class="text-sm text-[#94a3b8] text-center mb-6">Geli magacaaga iyo sawirkaaga profile-ka.</p>
-
-                <!-- Avatar Upload -->
-                <div class="w-24 h-24 rounded-full bg-[#1e293b] border-2 border-dashed border-sky-500 flex items-center justify-center cursor-pointer relative group mb-6">
-                    <svg class="w-8 h-8 fill-current text-sky-400" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                </div>
-
-                <!-- Name Input -->
-                <div class="w-full flex flex-col gap-2">
-                    <label class="text-xs font-semibold text-sky-400 uppercase tracking-wider">Magacaaga Buuxa</label>
-                    <input id="username-input" type="text" placeholder="Tusaale: Axmed Cali" class="bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-3 text-white outline-none focus:border-sky-500 font-medium">
-                </div>
-            </div>
-
-            <div class="mb-6">
-                <button onclick="enterApp()" class="w-full bg-sky-500 hover:bg-sky-400 active:scale-95 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all">
-                    Bilaw Isticmaalka SomApp
-                </button>
-            </div>
-        </div>
-
-        <!-- ========================================== -->
-        <!-- MAIN APP INTERFACE                         -->
-        <!-- ========================================== -->
-        <div id="screen-main" class="hidden flex flex-col h-full w-full bg-[#0f172a] overflow-hidden">
-            <!-- Top Header -->
-            <header class="bg-[#0f172a] pt-3 px-4 pb-2 flex justify-between items-center shrink-0 border-b border-[#1e293b]">
-                <div class="flex items-center gap-2">
-                    <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md">
-                        S
-                    </div>
-                    <h1 class="text-xl font-bold tracking-wide text-white">Som<span class="text-sky-400">App</span></h1>
-                </div>
-                
-                <div class="flex items-center gap-4 text-[#94a3b8]">
-                    <button class="hover:text-white transition-colors p-1" aria-label="Camera">
-                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17l-1.86-2H8.03L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 11c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>
-                    </button>
-                    <button class="hover:text-white transition-colors p-1" aria-label="Search">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    </button>
-                </div>
-            </header>
-
-            <!-- Search & Filters -->
-            <div class="px-3 py-2 bg-[#0f172a] shrink-0">
-                <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2 rounded-full text-[#94a3b8]">
-                    <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
-                    <input type="text" placeholder="Raadi fariimo..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">
-                </div>
-            </div>
-
-            <!-- Scrollable Main Content Tabs -->
-            <main class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative min-h-0">
-                
-                <!-- CHATS VIEW -->
-                <div id="tab-chats" class="tab-content">
-                    <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-cyan-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">
-                            RX
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-baseline mb-0.5">
-                                <h2 class="text-white font-semibold text-base truncate">Reer Xaji Abati</h2>
-                                <span class="text-xs text-sky-400 font-medium shrink-0">8:20 pm</span>
-                            </div>
-                            <p class="text-sm text-[#94a3b8] truncate">~ tem18084: Video Call</p>
-                        </div>
-                    </div>
-
-                    <div class="flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer">
-                        <div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-400 to-indigo-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">
-                            K
-                        </div>
-                        <div class="flex-1 min-w-0">
-                            <div class="flex justify-between items-baseline mb-0.5">
-                                <h2 class="text-white font-semibold text-base truncate">keynaan</h2>
-                                <span class="text-xs text-[#94a3b8] shrink-0">5:19 pm</span>
-                            </div>
-                            <p class="text-sm text-[#94a3b8] truncate"><span class="text-sky-400 font-bold">✓✓</span> Haye, soo dhawow!</p>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- WALLET VIEW -->
-                <div id="tab-wallet" class="tab-content hidden p-4">
-                    <div class="bg-gradient-to-tr from-sky-600 to-blue-700 rounded-2xl p-5 text-white shadow-xl mb-4">
-                        <p class="text-xs text-sky-200 uppercase font-semibold">Haraaga Wallet-ka</p>
-                        <h2 class="text-3xl font-extrabold mt-1">$250.00</h2>
-                        <div class="flex gap-3 mt-6">
-                            <button class="flex-1 bg-white/20 hover:bg-white/30 text-white font-semibold py-2 rounded-xl text-xs backdrop-blur-sm">Lacag Dir</button>
-                            <button class="flex-1 bg-white text-sky-700 font-bold py-2 rounded-xl text-xs shadow-md">EVC Plus</button>
-                        </div>
-                    </div>
-                </div>
-
-                <!-- CALLS VIEW -->
-                <div id="tab-calls" class="tab-content hidden p-4 text-center text-[#94a3b8]">
-                    <p class="mt-8 text-sm">Ma jiraan wicitaano dhowaan dhacay.</p>
-                </div>
-
-                <!-- STATUS VIEW -->
-                <div id="tab-status" class="tab-content hidden p-4 text-center text-[#94a3b8]">
-                    <p class="mt-8 text-sm">Ma jiraan status cusub.</p>
-                </div>
-
-                <!-- PROFILE VIEW -->
-                <div id="tab-profile" class="tab-content hidden p-6 flex flex-col items-center">
-                    <div class="w-20 h-20 rounded-full bg-sky-500 flex items-center justify-center text-white font-bold text-2xl shadow-lg mb-3">
-                        U
-                    </div>
-                    <h2 id="user-display-name" class="text-lg font-bold text-white">Isticmaale</h2>
-                    <p id="user-display-phone" class="text-xs text-[#94a3b8] mb-6">+252 61XXXXXXX</p>
-                    <button onclick="goToPhone()" class="w-full bg-rose-500/20 text-rose-400 font-semibold py-2.5 rounded-xl text-sm border border-rose-500/30">
-                        Ka Bax Akaounka (Log Out)
-                    </button>
-                </div>
-
-            </main>
-
-            <!-- GUARANTEED VISIBLE BOTTOM NAVIGATION BAR -->
-            <nav class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1">
-                <button onclick="switchTab('chats')" id="nav-chats" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-white">
-                    <div class="px-3 py-1 rounded-full bg-sky-500/20 text-sky-400">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>
-                    </div>
-                    <span class="text-[11px] font-semibold mt-0.5 text-sky-400">Chats</span>
-                </button>
-
-                <button onclick="switchTab('wallet')" id="nav-wallet" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8]">
-                    <div class="px-3 py-1 rounded-full">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
-                    </div>
-                    <span class="text-[11px] font-medium mt-0.5">Wallet</span>
-                </button>
-
-                <button onclick="switchTab('calls')" id="nav-calls" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8]">
-                    <div class="px-3 py-1 rounded-full">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                    </div>
-                    <span class="text-[11px] font-medium mt-0.5">Calls</span>
-                </button>
-
-                <button onclick="switchTab('status')" id="nav-status" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8]">
-                    <div class="px-3 py-1 rounded-full">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-                    </div>
-                    <span class="text-[11px] font-medium mt-0.5">Status</span>
-                </button>
-
-                <button onclick="switchTab('profile')" id="nav-profile" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8]">
-                    <div class="px-3 py-1 rounded-full">
-                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
-                    </div>
-                    <span class="text-[11px] font-medium mt-0.5">Profile</span>
-                </button>
-            </nav>
-        </div>
-
+    <!-- 1. QAYBTA GOOGLE SIGN-IN -->
+    <div id="login-section" class="card">
+        <h2>Ku soo dhowow SomApp</h2>
+        <p>Fadlan ku gal Google Account-kaaga si aad u bilowdo:</p>
+        <button class="google-btn" onclick="loginWithGoogle()">Google ku gal</button>
     </div>
 
-    <!-- Navigation Logic Script -->
-    <script>
-        let currentPhoneNumber = '';
+    <!-- 2. QAYBTA SAMEENTA USERNAME-KA & SAWIRKA GALLERY-GA -->
+    <div id="profile-setup-section" class="card">
+        <h2>Dhammeystir Profile-kaaga</h2>
+        <p>Geli Username oo dooro sawir gallery-gaaga ah:</p>
+        <div style="margin-bottom: 10px;">
+            <input type="text" id="usernameInput" placeholder="Tusaale: Ahmed123">
+        </div>
+        <div style="margin-bottom: 15px;">
+            <input type="file" id="profilePicInput" accept="image/*" onchange="previewImage(event)">
+            <br>
+            <center><img id="preview-img" alt="Sawirkaaga"></center>
+        </div>
+        <button onclick="saveProfile()" style="width: 100%;">Kaydi oo Soco</button>
+    </div>
 
-        function goToOTP() {
-            const phone = document.getElementById('phone-input').value.trim();
-            if(!phone) {
-                alert('Fadlan geli nambarkaaga telefonka!');
-                return;
-            }
-            currentPhoneNumber = '+252 ' + phone;
-            document.getElementById('display-phone').innerText = currentPhoneNumber;
-            
-            document.getElementById('screen-phone').classList.add('hidden');
-            document.getElementById('screen-otp').classList.remove('hidden');
-        }
+    <!-- 3. QAYBTA RAADINTA SAAXIIBKA -->
+    <div id="search-section" class="card">
+        <div style="display: flex; align-items: center; gap: 10px; margin-bottom: 15px;">
+            <img id="my-avatar" src="" style="width: 50px; height: 50px; border-radius: 50%; object-fit: cover;">
+            <h3 id="welcome-user" style="color: #38bdf8; margin: 0; text-align: left;"></h3>
+        </div>
+        <p style="text-align: left;">Raadi saaxiibkaaga adigoo gelinaya *username*-kiisa saxda ah:</p>
+        
+        <div class="input-container">
+            <input type="text" id="searchFriendInput" placeholder="Geli username-ka saaxiibka...">
+            <button onclick="searchFriend()">Raadi</button>
+        </div>
+        
+        <div id="search-result" style="margin-top: 15px;"></div>
+    </div>
 
-        function goToPhone() {
-            document.getElementById('screen-otp').classList.add('hidden');
-            document.getElementById('screen-main').classList.add('hidden');
-            document.getElementById('screen-phone').classList.remove('hidden');
-        }
+    <!-- 4. QAYBTA CHAT-KA GAARKA AH -->
+    <div id="chat-section" class="card">
+        <button class="back-btn" onclick="goBackToSearch()">⬅️ Ku noqo Raadinta</button>
+        <h3 id="chat-title" style="color: #38bdf8; margin-top: 0; text-align: right;"></h3>
+        
+        <div id="chat-box"></div>
 
-        function goToProfile() {
-            document.getElementById('screen-otp').classList.add('hidden');
-            document.getElementById('screen-profile').classList.remove('hidden');
-        }
+        <div class="input-container">
+            <input type="text" id="messageInput" placeholder="Qor fariin..." onkeypress="if(event.key === 'Enter') sendMsg()">
+            <button onclick="sendMsg()">Dir</button>
+        </div>
+    </div>
 
-        function enterApp() {
-            const username = document.getElementById('username-input').value.trim() || 'Isticmaale';
-            document.getElementById('user-display-name').innerText = username;
-            document.getElementById('user-display-phone').innerText = currentPhoneNumber;
+    <!-- Firebase SDK Scripts -->
+    <script type="module">
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+      import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-            document.getElementById('screen-profile').classList.add('hidden');
-            document.getElementById('screen-main').classList.remove('hidden');
-        }
+      const firebaseConfig = {
+        apiKey: "AIzaSyBCe8ZiIPsTxT1fGA0IT3nIUaQjFK67al0",
+        authDomain: "somchat-1910a.firebaseapp.com",
+        projectId: "somchat-1910a",
+        storageBucket: "somchat-1910a.firebasestorage.app",
+        messagingSenderId: "981092599681",
+        appId: "1:981092599681:web:cc01745c6831ab8ea44a80",
+        measurementId: "G-8B6P8RSDQG"
+      };
 
-        function switchTab(tabName) {
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
-            document.getElementById('tab-' + tabName).classList.remove('hidden');
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
 
-            document.querySelectorAll('.nav-btn').forEach(btn => {
-                btn.classList.remove('text-white');
-                btn.classList.add('text-[#94a3b8]');
-                btn.querySelector('div').classList.remove('bg-sky-500/20', 'text-sky-400');
-            });
+      let currentUser = null;
+      let userData = null;
+      let activeChatRoomId = "";
+      let unsubscribeChat = null;
+      let base64Image = "";
 
-            const activeBtn = document.getElementById('nav-' + tabName);
-            activeBtn.classList.add('text-white');
-            activeBtn.classList.remove('text-[#94a3b8]');
-            activeBtn.querySelector('div').classList.add('bg-sky-500/20', 'text-sky-400');
-        }
+      // Beddelista sawirka gallery-ga looga soo xulay Base64
+      window.previewImage = function(event) {
+          const file = event.target.files[0];
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  base64Image = e.target.result;
+                  const imgElement = document.getElementById("preview-img");
+                  imgElement.src = base64Image;
+                  imgElement.style.display = "block";
+              };
+              reader.readAsDataURL(file);
+          }
+      };
+
+      // Hubi haddii uu isticmaaluhu horay u soo galay
+      onAuthStateChanged(auth, async (user) => {
+          if (user) {
+              currentUser = user;
+              const userRef = doc(db, "users", user.uid);
+              const userSnap = await getDoc(userRef);
+
+              if (userSnap.exists()) {
+                  userData = userSnap.data();
+                  showSearchSection();
+              } else {
+                  document.getElementById("login-section").style.display = "none";
+                  document.getElementById("profile-setup-section").style.display = "block";
+              }
+          }
+      });
+
+      // 1. Google Sign-In
+      window.loginWithGoogle = async function() {
+          const provider = new GoogleAuthProvider();
+          try {
+              await signInWithPopup(auth, provider);
+          } catch (e) {
+              console.error("Khalad Google Login ah: ", e);
+          }
+      };
+
+      // 2. Kaydinta Username-ka iyo Sawirka Profile-ka (Firestore Database iyadoo la adeegsanayo Base64)
+      window.saveProfile = async function() {
+          const username = document.getElementById("usernameInput").value.trim();
+
+          if (!username) {
+              alert("Fadlan geli username!");
+              return;
+          }
+          if (!base64Image) {
+              alert("Fadlan dooro sawir profile gallery-gaaga ah!");
+              return;
+          }
+
+          try {
+              userData = {
+                  uid: currentUser.uid,
+                  username: username,
+                  email: currentUser.email,
+                  photoURL: base64Image
+              };
+
+              // Ku keydi Firestore
+              await setDoc(doc(db, "users", currentUser.uid), userData);
+              await setDoc(doc(db, "usernames", username), { uid: currentUser.uid });
+
+              showSearchSection();
+          } catch (e) {
+              console.error("Khalad kaydinta ah: ", e);
+              alert("Khalad ayaa dhacay intii profile-ka la keydiyay.");
+          }
+      };
+
+      function showSearchSection() {
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("profile-setup-section").style.display = "none";
+          document.getElementById("search-section").style.display = "block";
+          document.getElementById("welcome-user").innerText = userData.username;
+          document.getElementById("my-avatar").src = userData.photoURL;
+      }
+
+      // 3. Raadinta Saaxiibka
+      window.searchFriend = async function() {
+          const friendUsername = document.getElementById("searchFriendInput").value.trim();
+          const resultDiv = document.getElementById("search-result");
+          resultDiv.innerHTML = "";
+
+          if (!friendUsername) return;
+
+          if (friendUsername === userData.username) {
+              resultDiv.innerHTML = "<p style='color: #f87171;'>Naftaada lama sheekaysan kartid!</p>";
+              return;
+          }
+
+          try {
+              const usernameSnap = await getDoc(doc(db, "usernames", friendUsername));
+              if (usernameSnap.exists()) {
+                  const friendUid = usernameSnap.data().uid;
+                  const friendSnap = await getDoc(doc(db, "users", friendUid));
+                  const friendData = friendSnap.data();
+
+                  resultDiv.innerHTML = `
+                      <div class="user-item">
+                          <div style="display: flex; align-items: center; gap: 10px;">
+                              <img src="${friendData.photoURL}">
+                              <span><b>${friendData.username}</b></span>
+                          </div>
+                          <button onclick='openChat(${JSON.stringify(friendData)})'>Sheekeyso</button>
+                      </div>
+                  `;
+              } else {
+                  resultDiv.innerHTML = "<p style='color: #f87171;'>Saaxiibkan lama helin!</p>";
+              }
+          } catch (e) {
+              console.error("Khalad raadinta ah: ", e);
+          }
+      };
+
+      // 4. Furitaanka Chat-ka Gaarka ah
+      window.openChat = function(friend) {
+          activeChatRoomId = [userData.uid, friend.uid].sort().join("_");
+
+          document.getElementById("search-section").style.display = "none";
+          document.getElementById("chat-section").style.display = "block";
+          document.getElementById("chat-title").innerText = `Chat: ${friend.username}`;
+
+          loadMessages();
+      };
+
+      window.goBackToSearch = function() {
+          if (unsubscribeChat) unsubscribeChat();
+          document.getElementById("chat-section").style.display = "none";
+          document.getElementById("search-section").style.display = "block";
+      };
+
+      // 5. Dirista Fariimaha
+      window.sendMsg = async function() {
+          const input = document.getElementById("messageInput");
+          if (!input.value.trim()) return;
+
+          try {
+              await addDoc(collection(db, "chats", activeChatRoomId, "messages"), {
+                  senderUid: userData.uid,
+                  senderName: userData.username,
+                  senderPhoto: userData.photoURL,
+                  message: input.value,
+                  timestamp: serverTimestamp()
+              });
+              input.value = "";
+          } catch (e) {
+              console.error("Khalad dirista ah: ", e);
+          }
+      };
+
+      // 6. Soo bandhigida fariimaha si Real-time ah
+      function loadMessages() {
+          const msgRef = collection(db, "chats", activeChatRoomId, "messages");
+          const q = query(msgRef, orderBy("timestamp", "asc"));
+
+          unsubscribeChat = onSnapshot(q, (snapshot) => {
+              const chatBox = document.getElementById("chat-box");
+              chatBox.innerHTML = "";
+              
+              snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  chatBox.innerHTML += `
+                      <div class="msg">
+                          <img src="${data.senderPhoto}">
+                          <div><b>${data.senderName}:</b> ${data.message}</div>
+                      </div>
+                  `;
+              });
+              
+              chatBox.scrollTop = chatBox.scrollHeight;
+          });
+      }
     </script>
 </body>
 </html>

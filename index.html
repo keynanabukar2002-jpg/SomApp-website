@@ -81,8 +81,17 @@
         <!-- Messages will load here -->
     </div>
 
-    <form id="messageForm" class="p-3 bg-[#0f172a] border-t border-[#1e293b] flex gap-2">
-        <input type="text" id="messageInput" placeholder="Qor fariin..." required class="flex-1 bg-[#1e293b] border-none outline-none rounded-full px-4 py-2 text-sm text-white placeholder-[#64748b]">
+    <!-- Message Input Form with File Attachment Support -->
+    <form id="messageForm" class="p-3 bg-[#0f172a] border-t border-[#1e293b] flex items-center gap-2">
+        <label for="mediaInput" class="cursor-pointer text-[#94a3b8] hover:text-white p-1" title="Soo hel sawir ama dukumiinti">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.76-2.24-5-5-5S5 2.24 5 5v12.5c0 3.87 3.13 7 7 7s7-3.13 7-7V6h-2.5z"/>
+            </svg>
+        </label>
+        <input type="file" id="mediaInput" accept="image/*,video/*,.pdf,.doc,.docx,.txt" class="hidden">
+        
+        <input type="text" id="messageInput" placeholder="Qor fariin ama soo dir fayl..." class="flex-1 bg-[#1e293b] border-none outline-none rounded-full px-4 py-2 text-sm text-white placeholder-[#64748b]">
+        
         <button type="submit" class="w-10 h-10 bg-sky-500 hover:bg-sky-400 text-white rounded-full flex items-center justify-center shrink-0">
             <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
         </button>
@@ -223,6 +232,7 @@
     const messageInput = document.getElementById('messageInput');
     const messagesContainer = document.getElementById('messagesContainer');
     const logoutBtn = document.getElementById('logoutBtn');
+    const mediaInput = document.getElementById('mediaInput');
 
     // Toggle Sign In / Sign Up Modal
     toggleAuthBtn.addEventListener('click', () => {
@@ -235,7 +245,7 @@
         authError.classList.add('hidden');
     });
 
-    // Image Convert to Base64
+    // Image/File Convert to Base64
     function convertToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -259,7 +269,6 @@
 
                 if (!username) throw new Error("Fadlan qor Username-kaaga");
 
-                // Check username uniqueness
                 const q = query(collection(db, "users"), where("username", "==", username));
                 const querySnap = await getDocs(q);
                 if (!querySnap.empty) throw new Error("Username-kan waa la qaatay!");
@@ -290,7 +299,6 @@
         }
     });
 
-    // Check Auth State
     onAuthStateChanged(auth, async (user) => {
         if (user) {
             const userDoc = await getDoc(doc(db, "users", user.uid));
@@ -309,10 +317,8 @@
         }
     });
 
-    // Logout
     logoutBtn.addEventListener('click', () => signOut(auth));
 
-    // Search Users by Username
     searchInput.addEventListener('input', async (e) => {
         const searchText = e.target.value.trim().toLowerCase();
         if (!searchText) {
@@ -348,7 +354,6 @@
         });
     });
 
-    // Open Chat
     function openChatWithUser(targetUser) {
         activeChatUser = targetUser;
         document.getElementById('chatUserName').innerText = `@${targetUser.username}`;
@@ -371,28 +376,49 @@
         if (unsubscribeMessages) unsubscribeMessages();
     });
 
-    // Chat ID Helper
     function getChatId(uid1, uid2) {
         return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
     }
 
-    // Send Message
+    // Send Message with Text or File/Media Support
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = messageInput.value.trim();
-        if (!text || !activeChatUser || !currentUserData) return;
+        const file = mediaInput.files[0];
+
+        if (!text && !file) return;
+        if (!activeChatUser || !currentUserData) return;
+
+        let fileData = null;
+        let fileType = null;
+        let fileName = null;
+
+        if (file) {
+            fileData = await convertToBase64(file);
+            fileName = file.name;
+            if (file.type.startsWith('image/')) {
+                fileType = 'image';
+            } else if (file.type.startsWith('video/')) {
+                fileType = 'video';
+            } else {
+                fileType = 'document';
+            }
+        }
 
         const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
         await addDoc(collection(db, "chats", chatId, "messages"), {
             senderId: currentUserData.uid,
             text: text,
+            fileData: fileData,
+            fileType: fileType,
+            fileName: fileName,
             createdAt: new Date()
         });
 
         messageInput.value = "";
+        mediaInput.value = "";
     });
 
-    // Realtime Load Messages
     function loadMessages() {
         if (!activeChatUser || !currentUserData) return;
         const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
@@ -407,11 +433,24 @@
                 const msg = doc.data();
                 const isMe = msg.senderId === currentUserData.uid;
 
+                let contentHtml = "";
+                if (msg.fileType === 'image') {
+                    contentHtml = `<img src="${msg.fileData}" class="rounded-lg max-w-full h-auto mb-1 max-h-48 object-cover">`;
+                } else if (msg.fileType === 'video') {
+                    contentHtml = `<video src="${msg.fileData}" controls class="rounded-lg max-w-full h-auto mb-1 max-h-48"></video>`;
+                } else if (msg.fileType === 'document') {
+                    contentHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="flex items-center gap-2 text-sky-300 underline text-xs mb-1 bg-black/20 p-2 rounded">📄 ${msg.fileName}</a>`;
+                }
+
+                if (msg.text) {
+                    contentHtml += `<div>${msg.text}</div>`;
+                }
+
                 const msgBubble = document.createElement('div');
                 msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
                 msgBubble.innerHTML = `
-                    <div class="max-w-[75%] px-3 py-1.5 rounded-2xl text-sm ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-sm">
-                        ${msg.text}
+                    <div class="max-w-[75%] px-3 py-2 rounded-2xl text-sm ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-sm">
+                        ${contentHtml}
                     </div>
                 `;
                 messagesContainer.appendChild(msgBubble);

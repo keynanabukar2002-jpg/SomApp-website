@@ -1,4 +1,3 @@
-```html
 <!DOCTYPE html>
 <html lang="so">
 <head>
@@ -21,503 +20,302 @@
             -ms-overflow-style: none;
             scrollbar-width: none;
         }
+        #profile-setup-section, #search-section, #chat-section { display: none; }
     </style>
 </head>
 <body class="text-[#e9edef] font-sans antialiased h-full w-full overflow-hidden select-none">
 
     <!-- App Container -->
-    <div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] overflow-hidden relative">
+    <div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] overflow-hidden">
 
-        <!-- Top Header -->
-        <header id="main-header" class="bg-[#0f172a] pt-3 px-4 pb-2 flex justify-between items-center shrink-0 border-b border-[#1e293b]">
-            <div class="flex items-center gap-2">
-                <div class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md">
-                    S
-                </div>
-                <h1 class="text-xl font-bold tracking-wide text-white">Som<span class="text-sky-400">App</span></h1>
-            </div>
-            
-            <div class="flex items-center gap-4 text-[#94a3b8]">
-                <button class="hover:text-white transition-colors p-1" aria-label="Camera" onclick="alert('Kaameradu hadda ma shaqeynaysid')">
-                    <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17l-1.86-2H8.03L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 11c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>
-                    </svg>
-                </button>
-                <button class="hover:text-white transition-colors p-1" aria-label="Search" onclick="switchTab('chats')">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>
-                    </svg>
-                </button>
-                <button class="hover:text-white transition-colors p-1" aria-label="More options" onclick="switchTab('profile')">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>
-                    </svg>
-                </button>
-            </div>
-        </header>
-
-        <!-- 1. LOGIN VIEW -->
-        <div id="login-view" class="flex-1 flex flex-col justify-center items-center p-6 text-center">
-            <div class="w-20 h-20 rounded-3xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-4xl shadow-xl mb-6">
+        <!-- 1. GOOGLE LOGIN SECTION -->
+        <div id="login-section" class="flex flex-col items-center justify-center h-full p-6 text-center">
+            <div class="w-20 h-20 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-3xl shadow-xl mb-6">
                 S
             </div>
             <h2 class="text-2xl font-bold text-white mb-2">Ku soo dhowow SomApp</h2>
-            <p class="text-slate-400 text-sm mb-8">Ku gal Google Account-kaaga si aad ugu shaqeyso fariimaha iyo wallet-kaaga gaarka ah.</p>
-            <button onclick="loginWithGoogle()" class="w-full bg-red-600 hover:bg-red-500 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg flex items-center justify-center gap-3 active:scale-95">
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12.545,10.239v3.821h5.445c-0.712,2.315-2.647,3.972-5.445,3.972c-3.332,0-6.033-2.701-6.033-6.032s2.701-6.032,6.033-6.032c1.498,0,2.866,0.549,3.921,1.453l2.814-2.814C17.503,2.988,15.139,2,12.545,2C7.021,2,2.543,6.477,2.543,12s4.478,10,10.002,10c8.396,0,10.249-7.85,9.426-11.761H12.545z"/></svg>
-                Google ku gal
+                <p class="text-sm text-[#94a3b8] mb-8">Ku gal Google Account-kaaga si aad ugu shaqeyso fariimaha iyo wallet-kaaga gaarka ah.</p>
+            <button onclick="loginWithGoogle()" class="w-full bg-red-600 hover:bg-red-700 text-white font-bold py-3.5 px-4 rounded-xl shadow-lg transition-all active:scale-95 flex items-center justify-center gap-3">
+                <span>Google ku gal</span>
             </button>
         </div>
 
-        <!-- 2. SETUP PROFILE VIEW -->
-        <div id="setup-view" class="hidden flex-1 flex flex-col p-6 overflow-y-auto">
-            <h2 class="text-2xl font-bold text-white mb-2">Dhammeystir Profile-kaaga</h2>
-            <p class="text-slate-400 text-sm mb-6">Geli username-kaaga saxda ah ka dibna gallery-ga ka soo xulo sawirkaaga profile-ka.</p>
+        <!-- 2. PROFILE SETUP SECTION -->
+        <div id="profile-setup-section" class="flex flex-col items-center justify-center h-full p-6 text-center">
+            <h2 class="text-xl font-bold text-white mb-2">Dhammeystir Profile-kaaga</h2>
+            <p class="text-sm text-[#94a3b8] mb-6">Geli Username oo dooro sawir gallery-gaaga ah:</p>
             
-            <div class="space-y-4">
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">USERNAME</label>
-                    <input type="text" id="setupUsername" placeholder="Tusaale: Ahmed123" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl p-3.5 text-white outline-none focus:border-sky-500 transition-colors">
+            <div class="w-full space-y-4">
+                <input type="text" id="usernameInput" placeholder="Tusaale: Ahmed123" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-3 text-white outline-none focus:border-sky-500 text-center">
+                
+                <div class="flex flex-col items-center">
+                    <input type="file" id="profilePicInput" accept="image/*" onchange="previewImage(event)" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-2.5 text-white text-sm">
+                    <img id="preview-img" alt="Sawirkaaga" class="w-20 h-20 rounded-full object-cover mt-4 border-2 border-sky-500 hidden shadow-md">
                 </div>
-                <div>
-                    <label class="block text-xs font-semibold text-slate-400 mb-1">SAWIRKA PROFILE-KA (GALLERY)</label>
-                    <input type="file" id="setupProfilePic" accept="image/*" onchange="previewProfilePic(event)" class="w-full text-slate-400 file:mr-4 file:py-2.5 file:px-4 file:rounded-xl file:border-0 file:text-sm file:font-semibold file:bg-sky-500 file:text-white hover:file:bg-sky-400 cursor-pointer">
-                </div>
-                <div class="flex justify-center my-4">
-                    <img id="previewAvatar" class="w-24 h-24 rounded-full object-cover border-2 border-sky-500 hidden shadow-md">
-                </div>
-                <button onclick="saveProfile()" class="w-full bg-sky-500 hover:bg-sky-400 text-white font-bold py-3.5 px-4 rounded-xl transition-all shadow-lg active:scale-95">
+
+                <button onclick="saveProfile()" class="w-full bg-sky-500 hover:bg-sky-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all active:scale-95">
                     Kaydi oo Soco
                 </button>
             </div>
         </div>
 
-        <!-- 3. CHATS VIEW -->
-        <div id="chats-tab" class="hidden flex-1 flex flex-col overflow-hidden">
+        <!-- 3. MAIN APP SECTION (CHATS & SEARCH) -->
+        <div id="search-section" class="flex flex-col h-full w-full hidden">
+            <!-- Top Header -->
+            <header class="bg-[#0f172a] pt-3 px-4 pb-2 flex justify-between items-center shrink-0 border-b border-[#1e293b]">
+                <div class="flex items-center gap-2">
+                    <img id="my-avatar" src="" class="w-8 h-8 rounded-full object-cover border border-sky-500">
+                    <h1 id="welcome-user" class="text-lg font-bold tracking-wide text-white"></h1>
+                </div>
+            </header>
+
             <!-- Search Bar -->
             <div class="px-3 py-2 bg-[#0f172a] shrink-0">
                 <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2 rounded-full text-[#94a3b8]">
-                    <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>
-                    </svg>
-                    <input type="text" id="friendSearchInput" placeholder="Raadi username-ka saaxiibkaaga..." onkeypress="if(event.key==='Enter') searchFriend()" class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">
-                    <button onclick="searchFriend()" class="text-xs bg-sky-500 px-2.5 py-1 rounded-full text-white font-semibold">Raadi</button>
+                    <input type="text" id="searchFriendInput" placeholder="Geli username-ka saaxiibka..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">
+                    <button onclick="searchFriend()" class="text-sky-400 font-semibold text-xs bg-sky-500/20 px-3 py-1.5 rounded-full">Raadi</button>
                 </div>
-                <!-- Search Result Container -->
                 <div id="search-result" class="mt-2"></div>
             </div>
 
-            <!-- Filter Chips -->
-            <div class="flex gap-2 px-3 py-2 overflow-x-auto no-scrollbar shrink-0 bg-[#0f172a] border-b border-[#1e293b]/50">
-                <button class="bg-sky-500 text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap">Dhammaan</button>
-                <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap">Aan la aqrin</button>
-                <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap">Kuwa la jecel yahay</button>
-                <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap">Kooxaha</button>
-            </div>
-
             <!-- Scrollable Chats Area -->
-            <main class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative min-h-0" id="chats-list">
-                <!-- Active or Recent Chat Item Placeholder -->
-                <div class="p-6 text-center text-slate-500 text-sm">
-                    Geli username-ka saaxiibkaaga sare si aad u bilowdo wada-sheekaysi gaar ah.
-                </div>
+            <main class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative min-h-0 p-4">
+                <p class="text-xs text-[#94a3b8] text-center mt-10">Raadi saaxiibadaada adigoo adeegsanaya Username-kooda saxda ah.</p>
             </main>
-
-            <!-- Floating Action Button -->
-            <button onclick="document.getElementById('friendSearchInput').focus()" class="absolute bottom-4 right-4 w-14 h-14 bg-sky-500 hover:bg-sky-400 text-white rounded-2xl flex items-center justify-center shadow-2xl active:scale-90 transition-all z-20">
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                    <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/>
-                </svg>
-            </button>
         </div>
 
-        <!-- 4. ACTIVE CHAT SCREEN -->
-        <div id="active-chat-view" class="hidden absolute inset-0 bg-[#0f172a] z-30 flex flex-col h-full">
-            <!-- Chat Room Header -->
-            <div class="bg-[#1e293b] px-4 py-3 flex items-center gap-3 border-b border-[#334155] shrink-0">
-                <button onclick="closeChat()" class="text-slate-300 hover:text-white text-lg">⬅️</button>
-                <img id="chatRoomAvatar" class="w-10 h-10 rounded-full object-cover">
-                <div class="flex-1 min-w-0">
-                    <h3 id="chatRoomName" class="text-white font-bold text-base truncate"></h3>
-                    <span class="text-xs text-emerald-400">Online</span>
-                </div>
-            </div>
-
-            <!-- Chat Messages Box -->
-            <div id="chatMessagesBox" class="flex-1 overflow-y-auto p-4 space-y-3 no-scrollbar">
-                <!-- Messages populate dynamically -->
-            </div>
-
-            <!-- Chat Input Footer -->
-            <div class="p-3 bg-[#1e293b] border-t border-[#334155] flex items-center gap-2 shrink-0">
-                <input type="text" id="chatMsgInput" placeholder="Qor fariin..." onkeypress="if(event.key==='Enter') sendChatMessage()" class="flex-1 bg-[#0f172a] border border-[#334155] rounded-xl px-4 py-2.5 text-white outline-none focus:border-sky-500 text-sm">
-                <button onclick="sendChatMessage()" class="bg-sky-500 hover:bg-sky-400 text-white p-2.5 rounded-xl font-bold transition-all shrink-0">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-                </button>
+        <!-- 4. CHAT ROOM SECTION -->
+        <div id="chat-section" class="flex flex-col h-full w-full hidden">
+            <header class="bg-[#0f172a] p-3 border-b border-[#1e293b] flex items-center gap-3 shrink-0">
+                <button onclick="goBackToSearch()" class="text-sky-400 font-semibold text-sm">⬅️ Ku noqo</button>
+                <h3 id="chat-title" class="text-white font-bold"></h3>
+            </header>
+            <div id="chat-box" class="flex-1 overflow-y-auto p-4 space-y-3 bg-[#0b141a]"></div>
+            <div class="p-3 bg-[#0f172a] flex gap-2 border-t border-[#1e293b]">
+                <input type="text" id="messageInput" placeholder="Qor fariin..." class="flex-1 bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-2.5 text-white text-sm outline-none" onkeypress="if(event.key === 'Enter') sendMsg()">
+                <button onclick="sendMsg()" class="bg-sky-500 text-white px-5 rounded-xl font-bold">Dir</button>
             </div>
         </div>
-
-        <!-- 5. WALLET VIEW -->
-        <div id="wallet-tab" class="hidden flex-1 overflow-y-auto p-4 space-y-4 no-scrollbar">
-            <!-- Balance Card -->
-            <div class="bg-gradient-to-tr from-sky-600 to-blue-700 rounded-2xl p-5 text-white shadow-xl">
-                <span class="text-xs text-sky-100 font-medium">Hanti Guud (Wallet Balance)</span>
-                <h2 class="text-3xl font-black mt-1 mb-4">$1,250.50 <span class="text-xs font-normal">USD</span></h2>
-                <div class="flex gap-3">
-                    <button class="flex-1 bg-white/20 hover:bg-white/30 text-white font-semibold py-2 rounded-xl text-xs backdrop-blur-sm transition-all">
-                        + Lacag Ku Shubo
-                    </button>
-                    <button class="flex-1 bg-white text-blue-900 font-bold py-2 rounded-xl text-xs shadow-md transition-all">
-                        ⬆️ Dir Lacag
-                    </button>
-                </div>
-            </div>
-
-            <!-- Transactions List -->
-            <h3 class="text-sm font-bold text-slate-300">Dhaqdhaqaaqii Ugu Dambeeyay</h3>
-            <div class="space-y-2">
-                <div class="bg-[#1e293b] p-3.5 rounded-xl flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold">⬇️</div>
-                        <div>
-                            <p class="text-sm font-semibold text-white">Loo soo diray</p>
-                            <span class="text-xs text-slate-400">Maanta 2:15 PM</span>
-                        </div>
-                    </div>
-                    <span class="text-emerald-400 font-bold text-sm">+$50.00</span>
-                </div>
-                <div class="bg-[#1e293b] p-3.5 rounded-xl flex justify-between items-center">
-                    <div class="flex items-center gap-3">
-                        <div class="w-10 h-10 rounded-full bg-red-500/20 text-red-400 flex items-center justify-center font-bold">⬆️</div>
-                        <div>
-                            <p class="text-sm font-semibold text-white">Ku shubasho EVC</p>
-                            <span class="text-xs text-slate-400">Shalay 8:40 PM</span>
-                        </div>
-                    </div>
-                    <span class="text-red-400 font-bold text-sm">-$12.00</span>
-                </div>
-            </div>
-        </div>
-
-        <!-- 6. CALLS VIEW -->
-        <div id="calls-tab" class="hidden flex-1 p-6 text-center text-slate-400 flex flex-col justify-center items-center">
-            <svg class="w-16 h-16 fill-current text-slate-600 mb-3" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-            <p class="text-sm font-medium">Meynaan helin wax wicitaano ah maanta.</p>
-        </div>
-
-        <!-- 7. STATUS VIEW -->
-        <div id="status-tab" class="hidden flex-1 p-6 text-center text-slate-400 flex flex-col justify-center items-center">
-            <svg class="w-16 h-16 fill-current text-slate-600 mb-3" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>
-            <p class="text-sm font-medium">Ma jiraan wax status ah oo cusub.</p>
-        </div>
-
-        <!-- 8. PROFILE TAB -->
-        <div id="profile-tab" class="hidden flex-1 p-6 text-center overflow-y-auto">
-            <div class="flex flex-col items-center">
-                <img id="myProfileAvatar" class="w-24 h-24 rounded-full object-cover border-4 border-sky-500 shadow-xl mb-3">
-                <h2 id="myProfileUsername" class="text-xl font-bold text-white mb-1"></h2>
-                <p id="myProfileEmail" class="text-xs text-slate-400 mb-6"></p>
-                <button onclick="logout()" class="bg-red-600/20 text-red-400 hover:bg-red-600/30 px-6 py-2.5 rounded-xl font-bold text-sm transition-all">
-                    Ka bax Account-ka (Logout)
-                </button>
-            </div>
-        </div>
-
-        <!-- GUARANTEED VISIBLE FLEX BOTTOM NAVIGATION BAR -->
-        <nav id="main-nav" class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1">
-            
-            <!-- 1. Chats Tab -->
-            <button onclick="switchTab('chats')" id="tab-chats" class="flex flex-col items-center justify-center flex-1 h-full text-sky-400 group">
-                <div class="px-3.5 py-1 rounded-full bg-sky-500/20 transition-colors">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/>
-                    </svg>
-                </div>
-                <span class="text-[11px] font-semibold mt-0.5">Chats</span>
-            </button>
-
-            <!-- 2. Wallet Tab -->
-            <button onclick="switchTab('wallet')" id="tab-wallet" class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">
-                <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/>
-                    </svg>
-                </div>
-                <span class="text-[11px] font-medium mt-0.5">Wallet</span>
-            </button>
-
-            <!-- 3. Calls Tab -->
-            <button onclick="switchTab('calls')" id="tab-calls" class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">
-                <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                    </svg>
-                </div>
-                <span class="text-[11px] font-medium mt-0.5">Calls</span>
-            </button>
-
-            <!-- 4. Status Tab -->
-            <button onclick="switchTab('status')" id="tab-status" class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">
-                <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
-                    </svg>
-                </div>
-                <span class="text-[11px] font-medium mt-0.5">Status</span>
-            </button>
-
-            <!-- 5. Profile Tab -->
-            <button onclick="switchTab('profile')" id="tab-profile" class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">
-                <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">
-                    <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
-                        <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
-                    </svg>
-                </div>
-                <span class="text-[11px] font-medium mt-0.5">Profile</span>
-            </button>
-
-        </nav>
 
     </div>
 
-    <!-- Firebase Logic JavaScript -->
+    <!-- Firebase SDK Scripts -->
     <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+      import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
+      import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+      import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        const firebaseConfig = {
-            apiKey: "AIzaSyBCe8ZiIPsTxT1fGA0IT3nIUaQjFK67al0",
-            authDomain: "somchat-1910a.firebaseapp.com",
-            projectId: "somchat-1910a",
-            storageBucket: "somchat-1910a.firebasestorage.app",
-            messagingSenderId: "981092599681",
-            appId: "1:981092599681:web:cc01745c6831ab8ea44a80"
-        };
+      const firebaseConfig = {
+        apiKey: "AIzaSyBCe8ZiIPsTxT1fGA0IT3nIUaQjFK67al0",
+        authDomain: "somchat-1910a.firebaseapp.com",
+        projectId: "somchat-1910a",
+        storageBucket: "somchat-1910a.firebasestorage.app",
+        messagingSenderId: "981092599681",
+        appId: "1:981092599681:web:cc01745c6831ab8ea44a80",
+        measurementId: "G-8B6P8RSDQG"
+      };
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+      const app = initializeApp(firebaseConfig);
+      const auth = getAuth(app);
+      const db = getFirestore(app);
 
-        let currentUser = null;
-        let userData = null;
-        let activeChatRoomId = "";
-        let activeFriendData = null;
-        let unsubscribeChat = null;
-        let base64ProfilePic = "";
+      let currentUser = null;
+      let userData = null;
+      let activeChatRoomId = "";
+      let unsubscribeChat = null;
+      let base64Image = "";
 
-        // Check Redirect Auth Result
-        getRedirectResult(auth).catch((err) => console.error("Auth redirect error: ", err));
+      // 1. Si adag u qabo natiijada Redirect-ka markuu user-ku soo laabto
+      window.addEventListener('DOMContentLoaded', async () => {
+          try {
+              const result = await getRedirectResult(auth);
+              if (result && result.user) {
+                  currentUser = result.user;
+                  checkUserInDatabase(currentUser);
+              }
+          } catch (error) {
+              console.error("Redirect Result Error: ", error);
+          }
+      });
 
-        // Auth State Handler
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                const userRef = doc(db, "users", user.uid);
-                const userSnap = await getDoc(userRef);
+      // Hubinta User-ka Authentication-ka guud
+      onAuthStateChanged(auth, async (user) => {
+          if (user) {
+              currentUser = user;
+              checkUserInDatabase(user);
+          }
+      });
 
-                if (userSnap.exists()) {
-                    userData = userSnap.data();
-                    showMainApp();
-                } else {
-                    document.getElementById("login-view").classList.add("hidden");
-                    document.getElementById("setup-view").classList.remove("hidden");
-                }
-            } else {
-                document.getElementById("login-view").classList.remove("hidden");
-                document.getElementById("setup-view").classList.add("hidden");
-                document.getElementById("main-nav").classList.add("hidden");
-            }
-        });
+      async function checkUserInDatabase(user) {
+          const userRef = doc(db, "users", user.uid);
+          const userSnap = await getDoc(userRef);
 
-        // 1. Google Sign-In Redirect
-        window.loginWithGoogle = async function() {
-            const provider = new GoogleAuthProvider();
-            try {
-                await signInWithRedirect(auth, provider);
-            } catch (e) {
-                console.error("Google Sign-In Error: ", e);
-            }
-        };
+          document.getElementById("login-section").style.display = "none";
 
-        // 2. Profile Pic Base64 Conversion
-        window.previewProfilePic = function(event) {
-            const file = event.target.files[0];
-            if (file) {
-                const reader = new FileReader();
-                reader.onload = function(e) {
-                    base64ProfilePic = e.target.result;
-                    const img = document.getElementById("previewAvatar");
-                    img.src = base64ProfilePic;
-                    img.classList.remove("hidden");
-                };
-                reader.readAsDataURL(file);
-            }
-        };
+          if (userSnap.exists()) {
+              userData = userSnap.data();
+              showSearchSection();
+          } else {
+              document.getElementById("profile-setup-section").style.display = "flex";
+          }
+      }
 
-        // 3. Save Profile
-        window.saveProfile = async function() {
-            const username = document.getElementById("setupUsername").value.trim();
-            if (!username) return alert("Fadlan geli username!");
-            if (!base64ProfilePic) return alert("Fadlan dooro sawir profile!");
+      // Google Sign-In Trigger
+      window.loginWithGoogle = async function() {
+          const provider = new GoogleAuthProvider();
+          try {
+              await signInWithRedirect(auth, provider);
+          } catch (e) {
+              console.error("Khalad Google Login ah: ", e);
+          }
+      };
 
-            try {
-                userData = {
-                    uid: currentUser.uid,
-                    username: username,
-                    email: currentUser.email,
-                    photoURL: base64ProfilePic
-                };
+      // Gallery Image Preview to Base64
+      window.previewImage = function(event) {
+          const file = event.target.files[0];
+          if (file) {
+              const reader = new FileReader();
+              reader.onload = function(e) {
+                  base64Image = e.target.result;
+                  const imgElement = document.getElementById("preview-img");
+                  imgElement.src = base64Image;
+                  imgElement.style.display = "block";
+              };
+              reader.readAsDataURL(file);
+          }
+      };
 
-                await setDoc(doc(db, "users", currentUser.uid), userData);
-                await setDoc(doc(db, "usernames", username), { uid: currentUser.uid });
+      // Profile Kaydinta
+      window.saveProfile = async function() {
+          const username = document.getElementById("usernameInput").value.trim();
 
-                showMainApp();
-            } catch (e) {
-                console.error("Error saving profile: ", e);
-            }
-        };
+          if (!username) {
+              alert("Fadlan geli username!");
+              return;
+          }
+          if (!base64Image) {
+              alert("Fadlan dooro sawir profile gallery-gaaga ah!");
+              return;
+          }
 
-        function showMainApp() {
-            document.getElementById("login-view").classList.add("hidden");
-            document.getElementById("setup-view").classList.add("hidden");
-            document.getElementById("main-nav").classList.remove("hidden");
+          try {
+              userData = {
+                  uid: currentUser.uid,
+                  username: username,
+                  email: currentUser.email,
+                  photoURL: base64Image
+              };
 
-            // Profile info
-            document.getElementById("myProfileAvatar").src = userData.photoURL;
-            document.getElementById("myProfileUsername").innerText = userData.username;
-            document.getElementById("myProfileEmail").innerText = userData.email;
+              await setDoc(doc(db, "users", currentUser.uid), userData);
+              await setDoc(doc(db, "usernames", username), { uid: currentUser.uid });
 
-            switchTab('chats');
-        }
+              showSearchSection();
+          } catch (e) {
+              console.error("Khalad kaydinta ah: ", e);
+              alert("Khalad ayaa dhacay intii profile-ka la keydiyay.");
+          }
+      };
 
-        // 4. Tab Switcher Logic
-        window.switchTab = function(tabName) {
-            const tabs = ['chats', 'wallet', 'calls', 'status', 'profile'];
-            tabs.forEach(t => {
-                document.getElementById(`${t}-tab`).classList.add('hidden');
-                const btn = document.getElementById(`tab-${t}`);
-                if (btn) {
-                    btn.classList.remove('text-sky-400');
-                    btn.classList.add('text-[#94a3b8]');
-                    btn.querySelector('div').classList.remove('bg-sky-500/20');
-                }
-            });
+      function showSearchSection() {
+          document.getElementById("login-section").style.display = "none";
+          document.getElementById("profile-setup-section").style.display = "none";
+          document.getElementById("search-section").style.display = "flex";
+          document.getElementById("welcome-user").innerText = userData.username;
+          document.getElementById("my-avatar").src = userData.photoURL;
+      }
 
-            document.getElementById(`${tabName}-tab`).classList.remove('hidden');
-            const activeBtn = document.getElementById(`tab-${tabName}`);
-            if (activeBtn) {
-                activeBtn.classList.add('text-sky-400');
-                activeBtn.classList.remove('text-[#94a3b8]');
-                activeBtn.querySelector('div').classList.add('bg-sky-500/20');
-            }
-        };
+      // Raadinta Saaxiibka
+      window.searchFriend = async function() {
+          const friendUsername = document.getElementById("searchFriendInput").value.trim();
+          const resultDiv = document.getElementById("search-result");
+          resultDiv.innerHTML = "";
 
-        // 5. Search Friend (Exact Username Only)
-        window.searchFriend = async function() {
-            const friendUsername = document.getElementById("friendSearchInput").value.trim();
-            const resContainer = document.getElementById("search-result");
-            resContainer.innerHTML = "";
+          if (!friendUsername) return;
 
-            if (!friendUsername) return;
-            if (friendUsername === userData.username) {
-                resContainer.innerHTML = `<p class="text-xs text-red-400 mt-1">Naftaada lama sheekaysan kartid!</p>`;
-                return;
-            }
+          if (friendUsername === userData.username) {
+              resultDiv.innerHTML = "<p class='text-red-400 text-xs mt-2'>Naftaada lama sheekaysan kartid!</p>";
+              return;
+          }
 
-            try {
-                const uSnap = await getDoc(doc(db, "usernames", friendUsername));
-                if (uSnap.exists()) {
-                    const friendUid = uSnap.data().uid;
-                    const fSnap = await getDoc(doc(db, "users", friendUid));
-                    const fData = fSnap.data();
+          try {
+              const usernameSnap = await getDoc(doc(db, "usernames", friendUsername));
+              if (usernameSnap.exists()) {
+                  const friendUid = usernameSnap.data().uid;
+                  const friendSnap = await getDoc(doc(db, "users", friendUid));
+                  const friendData = friendSnap.data();
 
-                    resContainer.innerHTML = `
-                        <div class="bg-[#1e293b] p-3 rounded-xl flex items-center justify-between mt-2">
-                            <div class="flex items-center gap-3">
-                                <img src="${fData.photoURL}" class="w-10 h-10 rounded-full object-cover">
-                                <span class="font-bold text-white text-sm">${fData.username}</span>
-                            </div>
-                            <button onclick='startPrivateChat(${JSON.stringify(fData)})' class="bg-sky-500 hover:bg-sky-400 text-white text-xs px-3 py-1.5 rounded-lg font-bold">Sheekeyso</button>
-                        </div>
-                    `;
-                } else {
-                    resContainer.innerHTML = `<p class="text-xs text-red-400 mt-1">Saaxiibkan lama helin!</p>`;
-                }
-            } catch (e) {
-                console.error("Search error: ", e);
-            }
-        };
+                  resultDiv.innerHTML = `
+                      <div class="flex items-center justify-between bg-[#1e293b] p-3 rounded-xl mt-2">
+                          <div class="flex items-center gap-3">
+                              <img src="${friendData.photoURL}" class="w-10 h-10 rounded-full object-cover">
+                              <span class="text-white font-semibold text-sm">${friendData.username}</span>
+                          </div>
+                          <button onclick='openChat(${JSON.stringify(friendData)})' class="bg-sky-500 text-white px-3 py-1.5 rounded-lg text-xs font-bold">Sheekeyso</button>
+                      </div>
+                  `;
+              } else {
+                  resultDiv.innerHTML = "<p class='text-red-400 text-xs mt-2'>Saaxiibkan lama helin!</p>";
+              }
+          } catch (e) {
+              console.error("Khalad raadinta ah: ", e);
+          }
+      };
 
-        // 6. Open Chat Screen
-        window.startPrivateChat = function(friendData) {
-            activeFriendData = friendData;
-            activeChatRoomId = [userData.uid, friendData.uid].sort().join("_");
+      window.openChat = function(friend) {
+          activeChatRoomId = [userData.uid, friend.uid].sort().join("_");
+          document.getElementById("search-section").style.display = "none";
+          document.getElementById("chat-section").style.display = "flex";
+          document.getElementById("chat-title").innerText = friend.username;
+          loadMessages();
+      };
 
-            document.getElementById("chatRoomName").innerText = friendData.username;
-            document.getElementById("chatRoomAvatar").src = friendData.photoURL;
-            document.getElementById("active-chat-view").classList.remove("hidden");
+      window.goBackToSearch = function() {
+          if (unsubscribeChat) unsubscribeChat();
+          document.getElementById("chat-section").style.display = "none";
+          document.getElementById("search-section").style.display = "flex";
+      };
 
-            loadMessages();
-        };
+      window.sendMsg = async function() {
+          const input = document.getElementById("messageInput");
+          if (!input.value.trim()) return;
 
-        window.closeChat = function() {
-            if (unsubscribeChat) unsubscribeChat();
-            document.getElementById("active-chat-view").classList.add("hidden");
-        };
+          try {
+              await addDoc(collection(db, "chats", activeChatRoomId, "messages"), {
+                  senderUid: userData.uid,
+                  senderName: userData.username,
+                  senderPhoto: userData.photoURL,
+                  message: input.value,
+                  timestamp: serverTimestamp()
+              });
+              input.value = "";
+          } catch (e) {
+              console.error("Khalad dirista ah: ", e);
+          }
+      };
 
-        // 7. Send Message
-        window.sendChatMessage = async function() {
-            const input = document.getElementById("chatMsgInput");
-            if (!input.value.trim()) return;
+      function loadMessages() {
+          const msgRef = collection(db, "chats", activeChatRoomId, "messages");
+          const q = query(msgRef, orderBy("timestamp", "asc"));
 
-            try {
-                await addDoc(collection(db, "chats", activeChatRoomId, "messages"), {
-                    senderUid: userData.uid,
-                    senderName: userData.username,
-                    senderPhoto: userData.photoURL,
-                    message: input.value,
-                    timestamp: serverTimestamp()
-                });
-                input.value = "";
-            } catch (e) {
-                console.error("Send message error: ", e);
-            }
-        };
-
-        // 8. Load Real-time Messages
-        function loadMessages() {
-            const msgRef = collection(db, "chats", activeChatRoomId, "messages");
-            const q = query(msgRef, orderBy("timestamp", "asc"));
-
-            unsubscribeChat = onSnapshot(q, (snapshot) => {
-                const box = document.getElementById("chatMessagesBox");
-                box.innerHTML = "";
-
-                snapshot.forEach((docSnap) => {
-                    const data = docSnap.data();
-                    const isMe = data.senderUid === userData.uid;
-
-                    box.innerHTML += `
-                        <div class="flex items-end gap-2 ${isMe ? 'justify-end' : 'justify-start'}">
-                            ${!isMe ? `<img src="${data.senderPhoto}" class="w-6 h-6 rounded-full object-cover mb-1">` : ''}
-                            <div class="max-w-[75%] ${isMe ? 'bg-sky-600 text-white rounded-2xl rounded-tr-none' : 'bg-[#1e293b] text-slate-100 rounded-2xl rounded-tl-none'} p-3 shadow-md">
-                                <p class="text-xs font-bold mb-0.5 text-sky-200">${isMe ? 'Adiga' : data.senderName}</p>
-                                <p class="text-sm break-words">${data.message}</p>
-                            </div>
-                        </div>
-                    `;
-                });
-
-                box.scrollTop = box.scrollHeight;
-            });
-        }
-
-        // Logout
-        window.logout = function() {
-            signOut(auth);
-        };
+          unsubscribeChat = onSnapshot(q, (snapshot) => {
+              const chatBox = document.getElementById("chat-box");
+              chatBox.innerHTML = "";
+              
+              snapshot.forEach((doc) => {
+                  const data = doc.data();
+                  chatBox.innerHTML += `
+                      <div class="flex items-start gap-2.5 bg-[#1e293b] p-3 rounded-xl max-w-[80%]">
+                          <img src="${data.senderPhoto}" class="w-7 h-7 rounded-full object-cover">
+                          <div>
+                              <div class="text-[10px] text-sky-400 font-bold">${data.senderName}</div>
+                              <div class="text-white text-sm mt-0.5">${data.message}</div>
+                          </div>
+                      </div>
+                  `;
+              });
+              chatBox.scrollTop = chatBox.scrollHeight;
+          });
+      }
     </script>
 </body>
 </html>
-```

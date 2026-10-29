@@ -79,7 +79,7 @@
     <!-- Firebase SDK Scripts -->
     <script type="module">
       import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-      import { getAuth, signInWithPopup, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
+      import { getAuth, signInWithRedirect, getRedirectResult, GoogleAuthProvider, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
       import { getFirestore, doc, setDoc, getDoc, collection, addDoc, onSnapshot, serverTimestamp, query, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
       const firebaseConfig = {
@@ -101,6 +101,11 @@
       let activeChatRoomId = "";
       let unsubscribeChat = null;
       let base64Image = "";
+
+      // Hubi natiijada redirect-ka marka uu google soo celiyo user-ka
+      getRedirectResult(auth).catch((error) => {
+          console.error("Redirect Error: ", error);
+      });
 
       // Beddelista sawirka gallery-ga looga soo xulay Base64
       window.previewImage = function(event) {
@@ -134,17 +139,17 @@
           }
       });
 
-      // 1. Google Sign-In
+      // 1. Google Sign-In (Isticmaalaya Redirect oo ku fiican Mobile Browser)
       window.loginWithGoogle = async function() {
           const provider = new GoogleAuthProvider();
           try {
-              await signInWithPopup(auth, provider);
+              await signInWithRedirect(auth, provider);
           } catch (e) {
               console.error("Khalad Google Login ah: ", e);
           }
       };
 
-      // 2. Kaydinta Username-ka iyo Sawirka Profile-ka (Firestore Database iyadoo la adeegsanayo Base64)
+      // 2. Kaydinta Username-ka iyo Sawirka Profile-ka
       window.saveProfile = async function() {
           const username = document.getElementById("usernameInput").value.trim();
 
@@ -165,7 +170,6 @@
                   photoURL: base64Image
               };
 
-              // Ku keydi Firestore
               await setDoc(doc(db, "users", currentUser.uid), userData);
               await setDoc(doc(db, "usernames", username), { uid: currentUser.uid });
 

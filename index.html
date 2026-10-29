@@ -24,7 +24,7 @@
 </head>  
 <body class="text-[#e9edef] font-sans antialiased h-full w-full overflow-hidden select-none">  
 
-<!-- Auth Modal (Sign In / Sign Up) -->
+<!-- Auth Modal -->
 <div id="authModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
     <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-6 w-full max-w-sm shadow-2xl">
         <div class="flex justify-between items-center mb-4">
@@ -62,6 +62,16 @@
     </div>
 </div>
 
+<!-- Fullscreen Media Viewer Modal (Sawirka & Video markii la furo) -->
+<div id="mediaViewerModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-2">
+    <button id="closeMediaViewer" class="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+    </button>
+    <div id="mediaViewerContent" class="max-w-full max-h-full flex items-center justify-center">
+        <!-- Media content will load here -->
+    </div>
+</div>
+
 <!-- Chat Window Modal -->
 <div id="chatModal" class="fixed inset-0 bg-[#0f172a] z-40 hidden flex flex-col h-full w-full max-w-md mx-auto">
     <div class="bg-[#0f172a] p-3 flex items-center justify-between border-b border-[#1e293b]">
@@ -81,7 +91,7 @@
         <!-- Messages will load here -->
     </div>
 
-    <!-- Message Input Form with File Attachment Support -->
+    <!-- Message Input Form -->
     <form id="messageForm" class="p-3 bg-[#0f172a] border-t border-[#1e293b] flex items-center gap-2">
         <label for="mediaInput" class="cursor-pointer text-[#94a3b8] hover:text-white p-1" title="Soo hel sawir ama dukumiinti">
             <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
@@ -100,8 +110,6 @@
 
 <!-- App Container -->  
 <div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] overflow-hidden">  
-
-    <!-- Top Header -->  
     <header class="bg-[#0f172a] pt-3 px-4 pb-2 flex justify-between items-center shrink-0 border-b border-[#1e293b]">  
         <div class="flex items-center gap-2">  
             <div id="myHeaderAvatar" class="w-8 h-8 rounded-xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-lg shadow-md overflow-hidden bg-cover bg-center">  
@@ -109,92 +117,39 @@
             </div>  
             <h1 class="text-xl font-bold tracking-wide text-white">Som<span class="text-sky-400">App</span></h1>  
         </div>  
-          
         <div class="flex items-center gap-4 text-[#94a3b8]">  
-            <button class="hover:text-white transition-colors p-1" aria-label="Camera">  
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">  
-                    <path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17l-1.86-2H8.03L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 11c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/>  
-                </svg>  
-            </button>  
-            <button class="hover:text-white transition-colors p-1" aria-label="Search">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">  
-                    <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>  
-                </svg>  
-            </button>  
-            <button id="logoutBtn" class="hover:text-white transition-colors p-1" aria-label="More options" title="Ka bax akoonka">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">  
-                    <path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/>  
-                </svg>  
+            <button id="logoutBtn" class="hover:text-white transition-colors p-1" title="Ka bax akoonka">  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>  
             </button>  
         </div>  
     </header>  
 
-    <!-- Search Bar -->  
     <div class="px-3 py-2 bg-[#0f172a] shrink-0">  
         <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2 rounded-full text-[#94a3b8]">  
-            <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24">  
-                <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/>  
-            </svg>  
+            <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>  
             <input type="text" id="searchInput" placeholder="Raadi saaxiib (Username)..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">  
         </div>  
     </div>  
 
-    <!-- Filter Chips -->  
-    <div class="flex gap-2 px-3 py-2 overflow-x-auto no-scrollbar shrink-0 bg-[#0f172a] border-b border-[#1e293b]/50">  
-        <button class="bg-sky-500 text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform shadow-sm">Dhammaan</button>  
-        <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Aan la aqrin</button>  
-        <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Kuwa la jecel yahay</button>  
-        <button class="bg-[#1e293b] text-[#94a3b8] hover:text-white text-xs px-3.5 py-1.5 rounded-full font-medium whitespace-nowrap active:scale-95 transition-transform">Kooxaha</button>  
-    </div>  
+    <main id="chatsList" class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative min-h-0"></main>  
 
-    <!-- Scrollable Chats Area -->  
-    <main id="chatsList" class="flex-1 overflow-y-auto divide-y divide-[#1e293b]/50 no-scrollbar relative min-h-0">  
-        <!-- Dynamic & Search List Items will render here -->
-    </main>  
-
-    <!-- GUARANTEED VISIBLE FLEX BOTTOM NAVIGATION BAR -->  
     <nav class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1">  
         <button class="flex flex-col items-center justify-center flex-1 h-full text-white group">  
-            <div class="px-3.5 py-1 rounded-full bg-sky-500/20 text-sky-400 transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>  
-            </div>  
+            <div class="px-3.5 py-1 rounded-full bg-sky-500/20 text-sky-400"><svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg></div>  
             <span class="text-[11px] font-semibold mt-0.5 text-sky-400">Chats</span>  
         </button>  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>  
-            </div>  
-            <span class="text-[11px] font-medium mt-0.5">Wallet</span>  
-        </button>  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>  
-            </div>  
-            <span class="text-[11px] font-medium mt-0.5">Calls</span>  
-        </button>  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>  
-            </div>  
-            <span class="text-[11px] font-medium mt-0.5">Status</span>  
-        </button>  
-        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>  
-            </div>  
-            <span class="text-[11px] font-medium mt-0.5">Profile</span>  
-        </button>  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white"><span class="text-[11px] font-medium">Wallet</span></button>  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white"><span class="text-[11px] font-medium">Calls</span></button>  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white"><span class="text-[11px] font-medium">Status</span></button>  
+        <button class="flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white"><span class="text-[11px] font-medium">Profile</span></button>  
     </nav>  
-
 </div>
 
-<!-- Firebase SDK Integration -->
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
     import { getFirestore, doc, setDoc, getDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-    // Firebase Config
     const firebaseConfig = {
       apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
       authDomain: "somapp-61ebd.firebaseapp.com",
@@ -214,7 +169,6 @@
     let activeChatUser = null;
     let unsubscribeMessages = null;
 
-    // DOM Elements
     const authModal = document.getElementById('authModal');
     const authForm = document.getElementById('authForm');
     const modalTitle = document.getElementById('modalTitle');
@@ -233,8 +187,10 @@
     const messagesContainer = document.getElementById('messagesContainer');
     const logoutBtn = document.getElementById('logoutBtn');
     const mediaInput = document.getElementById('mediaInput');
+    const mediaViewerModal = document.getElementById('mediaViewerModal');
+    const mediaViewerContent = document.getElementById('mediaViewerContent');
+    const closeMediaViewer = document.getElementById('closeMediaViewer');
 
-    // Toggle Sign In / Sign Up Modal
     toggleAuthBtn.addEventListener('click', () => {
         isSignUp = !isSignUp;
         modalTitle.innerText = isSignUp ? "Sign Up (Diiwaangeli)" : "Soo Gal (Sign In)";
@@ -245,7 +201,6 @@
         authError.classList.add('hidden');
     });
 
-    // Image/File Convert to Base64
     function convertToBase64(file) {
         return new Promise((resolve, reject) => {
             const reader = new FileReader();
@@ -255,7 +210,6 @@
         });
     }
 
-    // Auth Form Submission
     authForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         authError.classList.add('hidden');
@@ -266,7 +220,6 @@
             if (isSignUp) {
                 const username = document.getElementById('authUsername').value.trim().toLowerCase();
                 const imageFile = document.getElementById('authProfilePic').files[0];
-
                 if (!username) throw new Error("Fadlan qor Username-kaaga");
 
                 const q = query(collection(db, "users"), where("username", "==", username));
@@ -274,27 +227,20 @@
                 if (!querySnap.empty) throw new Error("Username-kan waa la qaatay!");
 
                 let base64Pic = "";
-                if (imageFile) {
-                    base64Pic = await convertToBase64(imageFile);
-                }
+                if (imageFile) base64Pic = await convertToBase64(imageFile);
 
                 const userCred = await createUserWithEmailAndPassword(auth, email, password);
                 await setDoc(doc(db, "users", userCred.user.uid), {
-                    uid: userCred.user.uid,
-                    email: email,
-                    username: username,
-                    profilePic: base64Pic,
-                    createdAt: new Date()
+                    uid: userCred.user.uid, email, username, profilePic: base64Pic, createdAt: new Date()
                 });
-
                 await sendEmailVerification(userCred.user);
-                alert("Si guul leh ayaad u diiwaangashay! Fadlan hubi email-kaaga.");
+                alert("Si guul leh ayaad u diiwaangashay! Hubi email-kaaga.");
             } else {
                 await signInWithEmailAndPassword(auth, email, password);
             }
         } catch (err) {
             console.error(err);
-            authError.innerText = err.message || "Khalad lama filaan ah ayaa dhacay.";
+            authError.innerText = err.message || "Khalad ayaa dhacay.";
             authError.classList.remove('hidden');
         }
     });
@@ -321,10 +267,7 @@
 
     searchInput.addEventListener('input', async (e) => {
         const searchText = e.target.value.trim().toLowerCase();
-        if (!searchText) {
-            chatsList.innerHTML = "";
-            return;
-        }
+        if (!searchText) { chatsList.innerHTML = ""; return; }
 
         const q = query(collection(db, "users"), where("username", ">=", searchText), where("username", "<=", searchText + '\uf8ff'));
         const querySnap = await getDocs(q);
@@ -336,19 +279,11 @@
 
             const userItem = document.createElement('div');
             userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
-            
             const avatarHtml = userData.profilePic 
                 ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
                 : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
 
-            userItem.innerHTML = `
-                ${avatarHtml}
-                <div class="flex-1 min-w-0">
-                    <h2 class="text-white font-semibold text-base truncate">@${userData.username}</h2>
-                    <span class="text-xs text-[#94a3b8] truncate">Guji si aad fariin u dirto</span>
-                </div>
-            `;
-
+            userItem.innerHTML = `${avatarHtml}<div class="flex-1 min-w-0"><h2 class="text-white font-semibold text-base truncate">@${userData.username}</h2><span class="text-xs text-[#94a3b8] truncate">Guji si aad fariin u dirto</span></div>`;
             userItem.addEventListener('click', () => openChatWithUser(userData));
             chatsList.appendChild(userItem);
         });
@@ -358,7 +293,6 @@
         activeChatUser = targetUser;
         document.getElementById('chatUserName').innerText = `@${targetUser.username}`;
         const avatarEl = document.getElementById('chatUserAvatar');
-        
         if (targetUser.profilePic) {
             avatarEl.style.backgroundImage = `url(${targetUser.profilePic})`;
             avatarEl.innerText = "";
@@ -366,7 +300,6 @@
             avatarEl.style.backgroundImage = "";
             avatarEl.innerText = targetUser.username.charAt(0).toUpperCase();
         }
-
         chatModal.classList.remove('hidden');
         loadMessages();
     }
@@ -380,39 +313,25 @@
         return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
     }
 
-    // Send Message with Text or File/Media Support
     messageForm.addEventListener('submit', async (e) => {
         e.preventDefault();
         const text = messageInput.value.trim();
         const file = mediaInput.files[0];
-
         if (!text && !file) return;
         if (!activeChatUser || !currentUserData) return;
 
-        let fileData = null;
-        let fileType = null;
-        let fileName = null;
-
+        let fileData = null, fileType = null, fileName = null;
         if (file) {
             fileData = await convertToBase64(file);
             fileName = file.name;
-            if (file.type.startsWith('image/')) {
-                fileType = 'image';
-            } else if (file.type.startsWith('video/')) {
-                fileType = 'video';
-            } else {
-                fileType = 'document';
-            }
+            if (file.type.startsWith('image/')) fileType = 'image';
+            else if (file.type.startsWith('video/')) fileType = 'video';
+            else fileType = 'document';
         }
 
         const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
         await addDoc(collection(db, "chats", chatId, "messages"), {
-            senderId: currentUserData.uid,
-            text: text,
-            fileData: fileData,
-            fileType: fileType,
-            fileName: fileName,
-            createdAt: new Date()
+            senderId: currentUserData.uid, text, fileData, fileType, fileName, createdAt: new Date()
         });
 
         messageInput.value = "";
@@ -422,43 +341,57 @@
     function loadMessages() {
         if (!activeChatUser || !currentUserData) return;
         const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
-        
         const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
         
         if (unsubscribeMessages) unsubscribeMessages();
 
         unsubscribeMessages = onSnapshot(q, (snapshot) => {
             messagesContainer.innerHTML = "";
-            snapshot.forEach((doc) => {
-                const msg = doc.data();
+            snapshot.forEach((docSnap) => {
+                const msg = docSnap.data();
                 const isMe = msg.senderId === currentUserData.uid;
 
                 let contentHtml = "";
                 if (msg.fileType === 'image') {
-                    contentHtml = `<img src="${msg.fileData}" class="rounded-lg max-w-full h-auto mb-1 max-h-48 object-cover">`;
+                    contentHtml = `<img src="${msg.fileData}" class="rounded-lg max-w-full h-auto mb-1 max-h-48 object-cover cursor-pointer chat-media" data-type="image" data-src="${msg.fileData}">`;
                 } else if (msg.fileType === 'video') {
-                    contentHtml = `<video src="${msg.fileData}" controls class="rounded-lg max-w-full h-auto mb-1 max-h-48"></video>`;
+                    contentHtml = `<video src="${msg.fileData}" class="rounded-lg max-w-full h-auto mb-1 max-h-48 cursor-pointer chat-media" data-type="video" data-src="${msg.fileData}" controls></video>`;
                 } else if (msg.fileType === 'document') {
                     contentHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="flex items-center gap-2 text-sky-300 underline text-xs mb-1 bg-black/20 p-2 rounded">📄 ${msg.fileName}</a>`;
                 }
 
-                if (msg.text) {
-                    contentHtml += `<div>${msg.text}</div>`;
-                }
+                if (msg.text) contentHtml += `<div>${msg.text}</div>`;
 
                 const msgBubble = document.createElement('div');
                 msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'}`;
-                msgBubble.innerHTML = `
-                    <div class="max-w-[75%] px-3 py-2 rounded-2xl text-sm ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-sm">
-                        ${contentHtml}
-                    </div>
-                `;
+                msgBubble.innerHTML = `<div class="max-w-[75%] px-3 py-2 rounded-2xl text-sm ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-sm">${contentHtml}</div>`;
                 messagesContainer.appendChild(msgBubble);
             });
+
+            // Event listener si sawirka ama video-ga loo taabto oo loo weyneeyo (Full screen)
+            document.querySelectorAll('.chat-media').forEach(mediaEl => {
+                mediaEl.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const type = mediaEl.getAttribute('data-type');
+                    const src = mediaEl.getAttribute('data-src');
+                    
+                    if (type === 'image') {
+                        mediaViewerContent.innerHTML = `<img src="${src}" class="max-w-full max-h-[90vh] object-contain rounded-lg">`;
+                    } else if (type === 'video') {
+                        mediaViewerContent.innerHTML = `<video src="${src}" controls autoplay class="max-w-full max-h-[90vh] rounded-lg"></video>`;
+                    }
+                    mediaViewerModal.classList.remove('hidden');
+                });
+            });
+
             messagesContainer.scrollTop = messagesContainer.scrollHeight;
         });
     }
-</script>
 
+    closeMediaViewer.addEventListener('click', () => {
+        mediaViewerModal.classList.add('hidden');
+        mediaViewerContent.innerHTML = "";
+    });
+</script>
 </body>  
 </html>

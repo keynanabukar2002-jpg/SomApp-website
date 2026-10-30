@@ -109,6 +109,22 @@
     </div>
 </div>
 
+<!-- Search Users Modal (Marka la taabto badhanka cagaaran ee cusub) -->
+<div id="newChatModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-5 w-full max-w-md shadow-2xl flex flex-col max-h-[80vh]">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="text-white font-bold text-base">Bilow Fariin Cusub</h2>
+            <button id="closeNewChatModal" class="text-[#94a3b8] hover:text-white p-1">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </div>
+        <div class="mb-3">
+            <input type="text" id="searchNewUserInput" placeholder="Raadi saaxiib (Username)..." class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+        </div>
+        <div id="allUsersList" class="flex-1 overflow-y-auto space-y-1 divide-y divide-[#1e293b]/50"></div>
+    </div>
+</div>
+
 <!-- Chat Window Modal -->
 <div id="chatModal" class="fixed inset-0 bg-[#0f172a] z-40 hidden flex flex-col h-full w-full max-w-md mx-auto">
     <div class="bg-[#0f172a] p-3 flex items-center justify-between border-b border-[#1e293b]">
@@ -195,7 +211,7 @@
     <div id="searchSection" class="px-3 py-2 bg-[#0f172a] shrink-0">  
         <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2 rounded-full text-[#94a3b8]">  
             <svg class="w-4 h-4 fill-current shrink-0" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>  
-            <input type="text" id="searchInput" placeholder="Raadi saaxiib (Username)..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">  
+            <input type="text" id="searchInput" placeholder="Raadi chat..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">  
         </div>  
     </div>  
 
@@ -203,7 +219,7 @@
         <div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>
     </main>  
 
-    <!-- WhatsApp style Floating Action Button (FAB) -->
+    <!-- WhatsApp style Floating Action Button (FAB) to open all users modal -->
     <button id="fabBtn" class="absolute bottom-20 right-4 w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl shadow-2xl flex items-center justify-center z-20 active:scale-95 transition-transform" title="Bilow Fariin Cusub">
         <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
     </button>
@@ -287,6 +303,11 @@
     const closeMediaViewer = document.getElementById('closeMediaViewer');
     const fabBtn = document.getElementById('fabBtn');
     
+    const newChatModal = document.getElementById('newChatModal');
+    const closeNewChatModal = document.getElementById('closeNewChatModal');
+    const allUsersList = document.getElementById('allUsersList');
+    const searchNewUserInput = document.getElementById('searchNewUserInput');
+
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const logoutBtn = document.getElementById('logoutBtn');
@@ -328,9 +349,48 @@
         await signOut(auth);
     });
 
+    // Open New Chat Modal when FAB is clicked
     fabBtn.addEventListener('click', () => {
-        const searchInputEl = document.getElementById('searchInput');
-        if (searchInputEl) searchInputEl.focus();
+        newChatModal.classList.remove('hidden');
+        loadAllUsersForNewChat();
+    });
+
+    closeNewChatModal.addEventListener('click', () => {
+        newChatModal.classList.add('hidden');
+    });
+
+    async function loadAllUsersForNewChat(filter = '') {
+        const querySnap = await getDocs(collection(db, "users"));
+        allUsersList.innerHTML = "";
+        let found = false;
+
+        querySnap.forEach((docSnap) => {
+            const userData = docSnap.data();
+            if (currentUserData && userData.uid === currentUserData.uid) return;
+            if (filter && !userData.username.toLowerCase().includes(filter)) return;
+
+            found = true;
+            const item = document.createElement('div');
+            item.className = "flex items-center gap-3 px-3 py-2.5 hover:bg-[#1e293b] cursor-pointer rounded-xl";
+            const avatar = userData.profilePic 
+                ? `<div class="w-10 h-10 rounded-full bg-cover bg-center shrink-0" style="background-image: url('${userData.profilePic}')"></div>`
+                : `<div class="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-sm shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
+
+            item.innerHTML = `${avatar}<div class="text-white font-semibold text-sm">@${userData.username}</div>`;
+            item.addEventListener('click', () => {
+                newChatModal.classList.add('hidden');
+                openChatWithUser(userData);
+            });
+            allUsersList.appendChild(item);
+        });
+
+        if (!found) {
+            allUsersList.innerHTML = `<div class="p-4 text-center text-xs text-[#94a3b8]">Ma jiro saaxiib la helay.</div>`;
+        }
+    }
+
+    searchNewUserInput.addEventListener('input', (e) => {
+        loadAllUsersForNewChat(e.target.value.trim().toLowerCase());
     });
 
     async function makeCall(type) {
@@ -503,33 +563,54 @@
         });
     });
 
-    async function loadAllUsers(filterText = '') {
+    // Load only users with whom the current user has chatted
+    async function loadActiveChats(filterText = '') {
         const listEl = document.getElementById('chatsList');
-        if (!listEl) return;
-        
-        const querySnap = await getDocs(collection(db, "users"));
+        if (!listEl || !currentUserData) return;
+
+        const usersSnap = await getDocs(collection(db, "users"));
         listEl.innerHTML = "";
-        
-        let found = false;
-        querySnap.forEach((docSnap) => {
-            const userData = docSnap.data();
-            if (currentUserData && userData.uid === currentUserData.uid) return;
-            if (filterText && !userData.username.toLowerCase().includes(filterText)) return;
+        let activeChatsFound = false;
 
-            found = true;
-            const userItem = document.createElement('div');
-            userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
-            const avatarHtml = userData.profilePic 
-                ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
-                : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
+        for (const userDoc of usersSnap.docs) {
+            const userData = userDoc.data();
+            if (userData.uid === currentUserData.uid) continue;
+            if (filterText && !userData.username.toLowerCase().includes(filterText)) continue;
 
-            userItem.innerHTML = `${avatarHtml}<div class="flex-1 min-w-0"><h2 class="text-white font-semibold text-base truncate">@${userData.username}</h2><span class="text-xs text-[#94a3b8] truncate">Guji si aad fariin u dirto</span></div>`;
-            userItem.addEventListener('click', () => openChatWithUser(userData));
-            listEl.appendChild(userItem);
-        });
+            const chatId = getChatId(currentUserData.uid, userData.uid);
+            const msgSnap = await getDocs(collection(db, "chats", chatId, "messages"));
 
-        if (!found) {
-            listEl.innerHTML = `<div class="p-6 text-center text-[#94a3b8] text-sm">Ma jiro saaxiib la helay.</div>`;
+            if (!msgSnap.empty) {
+                activeChatsFound = true;
+                // Get last message
+                const messages = [];
+                msgSnap.forEach(m => messages.push(m.data()));
+                messages.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
+                const lastMsg = messages[0];
+                let lastText = lastMsg.text || (lastMsg.fileType === 'image' ? '📷 Sawir' : lastMsg.fileType === 'video' ? '🎥 Fiidiyow' : lastMsg.fileType === 'call' ? `📞 ${lastMsg.callInfo.type}` : '📄 Fayl');
+
+                const userItem = document.createElement('div');
+                userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
+                const avatarHtml = userData.profilePic 
+                    ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
+                    : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
+
+                userItem.innerHTML = `
+                    ${avatarHtml}
+                    <div class="flex-1 min-w-0">
+                        <div class="flex justify-between items-center mb-1">
+                            <h2 class="text-white font-semibold text-sm truncate">@${userData.username}</h2>
+                        </div>
+                        <p class="text-xs text-[#94a3b8] truncate">${lastText}</p>
+                    </div>
+                `;
+                userItem.addEventListener('click', () => openChatWithUser(userData));
+                listEl.appendChild(userItem);
+            }
+        }
+
+        if (!activeChatsFound) {
+            listEl.innerHTML = `<div class="p-8 text-center text-[#94a3b8] text-xs">Ma jiraan fariimo cusub. Guji badhanka cagaaran ee hoose si aad chat u bilowdo.</div>`;
         }
     }
 
@@ -538,7 +619,7 @@
             searchSection.classList.remove('hidden');
             fabBtn.classList.remove('hidden');
             mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
-            loadAllUsers();
+            loadActiveChats();
         } else {
             searchSection.classList.add('hidden');
             fabBtn.classList.add('hidden');
@@ -660,7 +741,7 @@
     document.addEventListener('input', async (e) => {
         if(e.target && e.target.id === 'searchInput') {
             const searchText = e.target.value.trim().toLowerCase();
-            loadAllUsers(searchText);
+            loadActiveChats(searchText);
         }
     });
 
@@ -682,6 +763,7 @@
     closeChatBtn.addEventListener('click', () => {
         chatModal.classList.add('hidden');
         if (unsubscribeMessages) unsubscribeMessages();
+        renderTabContent();
     });
 
     function getChatId(uid1, uid2) {

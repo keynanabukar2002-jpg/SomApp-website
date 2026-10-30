@@ -70,15 +70,34 @@
     <div id="mediaViewerContent" class="max-w-full max-h-full flex items-center justify-center"></div>
 </div>
 
-<!-- Call Screen Modal (Voice / Video Call Screen) -->
-<div id="callScreenModal" class="fixed inset-0 bg-[#0f172a] z-50 hidden flex flex-col justify-between items-center p-8">
-    <div class="flex flex-col items-center mt-12">
-        <div id="callUserAvatar" class="w-32 h-32 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-2xl flex items-center justify-center text-white text-4xl font-bold mb-6"></div>
-        <h2 id="callUserName" class="text-2xl font-bold text-white mb-2">@saaxiib</h2>
-        <p id="callTypeStatus" class="text-sm text-sky-400 font-semibold animate-pulse">Wicitaan Voice Call ah...</p>
+<!-- Incoming Call Modal (Markii lagu soo waco) -->
+<div id="incomingCallModal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col justify-between items-center p-8 animate-fade-in">
+    <div class="flex flex-col items-center mt-12 text-center">
+        <div id="incomingCallerAvatar" class="w-32 h-32 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-2xl flex items-center justify-center text-white text-4xl font-bold mb-6 animate-bounce"></div>
+        <h2 id="incomingCallerName" class="text-2xl font-bold text-white mb-2">@saaxiib</h2>
+        <p id="incomingCallType" class="text-sm text-sky-400 font-semibold animate-pulse">Wicitaan Soo Dhacaya...</p>
     </div>
 
-    <!-- Call Control Buttons -->
+    <!-- Accept / Reject Buttons -->
+    <div class="flex items-center gap-12 mb-12">
+        <button id="rejectCallBtn" class="w-16 h-16 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform">
+            <svg class="w-8 h-8 fill-current rotate-[135deg]" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </button>
+        <button id="acceptCallBtn" class="w-16 h-16 bg-emerald-500 hover:bg-emerald-400 text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform animate-pulse">
+            <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </button>
+    </div>
+</div>
+
+<!-- Active Call Screen Modal -->
+<div id="callScreenModal" class="fixed inset-0 bg-[#0f172a] z-50 hidden flex flex-col justify-between items-center p-8">
+    <div class="flex flex-col items-center mt-12 text-center">
+        <div id="callUserAvatar" class="w-32 h-32 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-2xl flex items-center justify-center text-white text-4xl font-bold mb-6"></div>
+        <h2 id="callUserName" class="text-2xl font-bold text-white mb-2">@saaxiib</h2>
+        <p id="callTypeStatus" class="text-sm text-sky-400 font-semibold animate-pulse">Wicitaan Waa Socdaa...</p>
+    </div>
+
+    <!-- Call Controls -->
     <div class="flex items-center gap-6 mb-12">
         <button id="toggleMuteBtn" class="w-14 h-14 bg-[#1e293b] hover:bg-[#334155] text-white rounded-full flex items-center justify-center shadow-lg">
             <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
@@ -106,7 +125,6 @@
             </div>
         </div>
 
-        <!-- Header Call Icon and Dropdown -->
         <div class="relative flex items-center gap-2">
             <button id="chatCallBtn" class="p-2 text-[#94a3b8] hover:text-white transition-colors" title="Wicitaan">
                 <svg class="w-6 h-6 fill-current text-sky-400" viewBox="0 0 24 24">
@@ -114,7 +132,6 @@
                 </svg>
             </button>
 
-            <!-- Call Dropdown Menu -->
             <div id="callMenu" class="hidden absolute right-0 top-11 w-40 bg-[#1e293b] border border-[#334155] rounded-xl shadow-2xl py-1 z-50">
                 <button id="startVoiceCallBtn" class="w-full text-left px-4 py-2 text-sm text-white hover:bg-[#0f172a] font-medium flex items-center gap-2.5">
                     <svg class="w-4 h-4 fill-current text-emerald-400" viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
@@ -229,7 +246,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
@@ -250,6 +267,7 @@
     let activeChatUser = null;
     let unsubscribeMessages = null;
     let currentTab = 'chats';
+    let currentCallData = null;
 
     const authModal = document.getElementById('authModal');
     const authForm = document.getElementById('authForm');
@@ -261,7 +279,6 @@
     const authError = document.getElementById('authError');
     const myHeaderAvatar = document.getElementById('myHeaderAvatar');
     const searchSection = document.getElementById('searchSection');
-    const chatsList = document.getElementById('chatsList');
     const mainContentArea = document.getElementById('mainContentArea');
     const chatModal = document.getElementById('chatModal');
     const closeChatBtn = document.getElementById('closeChatBtn');
@@ -288,6 +305,14 @@
     const callTypeStatus = document.getElementById('callTypeStatus');
     const endCallBtn = document.getElementById('endCallBtn');
 
+    // Incoming Call Elements
+    const incomingCallModal = document.getElementById('incomingCallModal');
+    const incomingCallerAvatar = document.getElementById('incomingCallerAvatar');
+    const incomingCallerName = document.getElementById('incomingCallerName');
+    const incomingCallType = document.getElementById('incomingCallType');
+    const acceptCallBtn = document.getElementById('acceptCallBtn');
+    const rejectCallBtn = document.getElementById('rejectCallBtn');
+
     menuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         dropdownMenu.classList.toggle('hidden');
@@ -308,36 +333,135 @@
         await signOut(auth);
     });
 
-    // Start Calls
-    startVoiceCallBtn.addEventListener('click', () => {
+    // Start Real-Time Call Function
+    async function makeCall(type) {
+        if (!activeChatUser || !currentUserData) return;
         callMenu.classList.add('hidden');
-        openCallScreen('Voice Call');
-    });
 
-    startVideoCallBtn.addEventListener('click', () => {
-        callMenu.classList.add('hidden');
-        openCallScreen('Video Call');
-    });
+        const callDocRef = doc(collection(db, "calls"));
+        currentCallData = {
+            id: callDocRef.id,
+            callerUid: currentUserData.uid,
+            callerUsername: currentUserData.username,
+            callerPic: currentUserData.profilePic || '',
+            receiverUid: activeChatUser.uid,
+            receiverUsername: activeChatUser.username,
+            receiverPic: activeChatUser.profilePic || '',
+            type: type, // 'Voice Call' ama 'Video Call'
+            status: 'ringing', // 'ringing', 'accepted', 'ended'
+            createdAt: new Date()
+        };
 
-    function openCallScreen(type) {
-        if (!activeChatUser) return;
-        callUserName.innerText = `@${activeChatUser.username}`;
-        callTypeStatus.innerText = `Wicitaan ${type} ah...`;
+        await setDoc(callDocRef, currentCallData);
+        openOutGoingCallScreen(type, activeChatUser);
+        listenToCallStatus(callDocRef.id);
+    }
+
+    startVoiceCallBtn.addEventListener('click', () => makeCall('Voice Call'));
+    startVideoCallBtn.addEventListener('click', () => makeCall('Video Call'));
+
+    function openOutGoingCallScreen(type, targetUser) {
+        callUserName.innerText = `@${targetUser.username}`;
+        callTypeStatus.innerText = `Wicitaan ${type} ah... (Ringing)`;
         
-        if (activeChatUser.profilePic) {
-            callUserAvatar.style.backgroundImage = `url(${activeChatUser.profilePic})`;
+        if (targetUser.profilePic) {
+            callUserAvatar.style.backgroundImage = `url(${targetUser.profilePic})`;
             callUserAvatar.innerText = "";
         } else {
             callUserAvatar.style.backgroundImage = "";
-            callUserAvatar.innerText = activeChatUser.username.charAt(0).toUpperCase();
+            callUserAvatar.innerText = targetUser.username.charAt(0).toUpperCase();
         }
         
         callScreenModal.classList.remove('hidden');
     }
 
-    endCallBtn.addEventListener('click', () => {
+    function listenToCallStatus(callId) {
+        onSnapshot(doc(db, "calls", callId), (docSnap) => {
+            if (docSnap.exists()) {
+                const data = docSnap.data();
+                if (data.status === 'accepted') {
+                    callTypeStatus.innerText = `Wicitaan ${data.type} ah waa socdaa...`;
+                } else if (data.status === 'ended') {
+                    callScreenModal.classList.add('hidden');
+                    incomingCallModal.classList.add('hidden');
+                    currentCallData = null;
+                }
+            } else {
+                callScreenModal.classList.add('hidden');
+                incomingCallModal.classList.add('hidden');
+                currentCallData = null;
+            }
+        });
+    }
+
+    // End Call
+    endCallBtn.addEventListener('click', async () => {
+        if (currentCallData && currentCallData.id) {
+            await updateDoc(doc(db, "calls", currentCallData.id), { status: 'ended' });
+        }
         callScreenModal.classList.add('hidden');
+        currentCallData = null;
     });
+
+    // Accept / Reject Incoming Calls
+    acceptCallBtn.addEventListener('click', async () => {
+        if (currentCallData && currentCallData.id) {
+            await updateDoc(doc(db, "calls", currentCallData.id), { status: 'accepted' });
+            incomingCallModal.classList.add('hidden');
+            
+            // Open active call screen for receiver
+            callUserName.innerText = `@${currentCallData.callerUsername}`;
+            callTypeStatus.innerText = `Wicitaan ${currentCallData.type} ah waa socdaa...`;
+            if (currentCallData.callerPic) {
+                callUserAvatar.style.backgroundImage = `url(${currentCallData.callerPic})`;
+                callUserAvatar.innerText = "";
+            } else {
+                callUserAvatar.style.backgroundImage = "";
+                callUserAvatar.innerText = currentCallData.callerUsername.charAt(0).toUpperCase();
+            }
+            callScreenModal.classList.remove('hidden');
+        }
+    });
+
+    rejectCallBtn.addEventListener('click', async () => {
+        if (currentCallData && currentCallData.id) {
+            await updateDoc(doc(db, "calls", currentCallData.id), { status: 'ended' });
+        }
+        incomingCallModal.classList.add('hidden');
+        currentCallData = null;
+    });
+
+    // Listen to Incoming Calls Realtime for Current User
+    function listenForIncomingCalls(userUid) {
+        const q = query(
+            collection(db, "calls"), 
+            where("receiverUid", "==", userUid), 
+            where("status", "==", "ringing")
+        );
+
+        onSnapshot(q, (snapshot) => {
+            snapshot.docChanges().forEach((change) => {
+                if (change.type === "added") {
+                    const call = change.doc.data();
+                    currentCallData = { id: change.doc.id, ...call };
+                    
+                    incomingCallerName.innerText = `@${call.callerUsername}`;
+                    incomingCallType.innerText = `Wicitaan ${call.type} ah...`;
+                    
+                    if (call.callerPic) {
+                        incomingCallerAvatar.style.backgroundImage = `url(${call.callerPic})`;
+                        incomingCallerAvatar.innerText = "";
+                    } else {
+                        incomingCallerAvatar.style.backgroundImage = "";
+                        incomingCallerAvatar.innerText = call.callerUsername.charAt(0).toUpperCase();
+                    }
+
+                    incomingCallModal.classList.remove('hidden');
+                    listenToCallStatus(change.doc.id);
+                }
+            });
+        });
+    }
 
     const navButtons = document.querySelectorAll('.nav-btn');
     navButtons.forEach(btn => {
@@ -364,7 +488,7 @@
         });
     });
 
-    function renderTabContent() {
+    async function renderTabContent() {
         if (currentTab === 'chats') {
             searchSection.classList.remove('hidden');
             mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
@@ -373,7 +497,38 @@
             mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">💰</div><h3 class="text-white font-bold text-lg mb-1">SomApp Wallet</h3><p class="text-xs">Waa la hirgelin doonaa hantidaada iyo lacag dirista dhowaan.</p></div>`;
         } else if (currentTab === 'calls') {
             searchSection.classList.add('hidden');
-            mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">📞</div><h3 class="text-white font-bold text-lg mb-1">Calls</h3><p class="text-xs">Ma jiraan wicitaano diiwaangashan hadda.</p></div>`;
+            
+            // Load Recent Calls List from Firestore
+            if (!currentUserData) return;
+            const qCalls = query(
+                collection(db, "calls"), 
+                where("receiverUid", "==", currentUserData.uid)
+            );
+            const callSnaps = await getDocs(qCalls);
+
+            if (callSnaps.empty) {
+                mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">📞</div><h3 class="text-white font-bold text-lg mb-1">Calls</h3><p class="text-xs">Ma jiraan wicitaano diiwaangashan hadda.</p></div>`;
+            } else {
+                let callItemsHtml = '';
+                callSnaps.forEach((docSnap) => {
+                    const c = docSnap.data();
+                    const avatar = c.callerPic 
+                        ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0" style="background-image: url('${c.callerPic}')"></div>`
+                        : `<div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-base">${c.callerUsername.charAt(0).toUpperCase()}</div>`;
+
+                    callItemsHtml += `
+                        <div class="flex items-center gap-3.5 px-4 py-3 border-b border-[#1e293b]/50">
+                            ${avatar}
+                            <div class="flex-1 min-w-0">
+                                <h2 class="text-white font-semibold text-sm">@${c.callerUsername}</h2>
+                                <p class="text-xs text-sky-400">${c.type} • <span class="text-emerald-400">${c.status}</span></p>
+                            </div>
+                        </div>
+                    `;
+                });
+                mainContentArea.innerHTML = `<div class="divide-y divide-[#1e293b]/50 flex-1">${callItemsHtml}</div>`;
+            }
+
         } else if (currentTab === 'status') {
             searchSection.classList.add('hidden');
             mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">⭕</div><h3 class="text-white font-bold text-lg mb-1">Status</h3><p class="text-xs">Ma jiraan Status cusub oo la daawaday.</p></div>`;
@@ -492,6 +647,7 @@
                 } else {
                     myHeaderAvatar.innerText = currentUserData.username.charAt(0).toUpperCase();
                 }
+                listenForIncomingCalls(user.uid);
             }
             authModal.classList.add('hidden');
             renderTabContent();

@@ -203,19 +203,17 @@
         <div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>
     </main>  
 
+    <!-- WhatsApp style Floating Action Button (FAB) -->
+    <button id="fabBtn" class="absolute bottom-20 right-4 w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl shadow-2xl flex items-center justify-center z-20 active:scale-95 transition-transform" title="Bilow Fariin Cusub">
+        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+    </button>
+
     <nav class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1 z-30">  
         <button data-tab="chats" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-sky-400 group">  
             <div class="px-3.5 py-1 rounded-full bg-sky-500/20 transition-colors">  
                 <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>  
             </div>  
             <span class="text-[11px] font-semibold mt-0.5">Chats</span>  
-        </button>  
-
-        <button data-tab="wallet" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>  
-            </div>  
-            <span class="text-[11px] font-medium mt-0.5">Wallet</span>  
         </button>  
 
         <button data-tab="calls" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
@@ -232,11 +230,11 @@
             <span class="text-[11px] font-medium mt-0.5">Status</span>  
         </button>  
 
-        <button data-tab="profile" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
+        <button data-tab="tools" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
             <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>  
+                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>  
             </div>  
-            <span class="text-[11px] font-medium mt-0.5">Profile</span>  
+            <span class="text-[11px] font-medium mt-0.5">Tools</span>  
         </button>  
     </nav>  
 </div>
@@ -287,12 +285,12 @@
     const mediaViewerModal = document.getElementById('mediaViewerModal');
     const mediaViewerContent = document.getElementById('mediaViewerContent');
     const closeMediaViewer = document.getElementById('closeMediaViewer');
+    const fabBtn = document.getElementById('fabBtn');
     
     const menuBtn = document.getElementById('menuBtn');
     const dropdownMenu = document.getElementById('dropdownMenu');
     const logoutBtn = document.getElementById('logoutBtn');
 
-    // Call elements
     const chatCallBtn = document.getElementById('chatCallBtn');
     const callMenu = document.getElementById('callMenu');
     const startVoiceCallBtn = document.getElementById('startVoiceCallBtn');
@@ -303,7 +301,6 @@
     const callTypeStatus = document.getElementById('callTypeStatus');
     const endCallBtn = document.getElementById('endCallBtn');
 
-    // Incoming Call Elements
     const incomingCallModal = document.getElementById('incomingCallModal');
     const incomingCallerAvatar = document.getElementById('incomingCallerAvatar');
     const incomingCallerName = document.getElementById('incomingCallerName');
@@ -331,7 +328,11 @@
         await signOut(auth);
     });
 
-    // Start Call & log to chat & calls database
+    fabBtn.addEventListener('click', () => {
+        const searchInputEl = document.getElementById('searchInput');
+        if (searchInputEl) searchInputEl.focus();
+    });
+
     async function makeCall(type) {
         if (!activeChatUser || !currentUserData) return;
         callMenu.classList.add('hidden');
@@ -345,8 +346,8 @@
             receiverUid: activeChatUser.uid,
             receiverUsername: activeChatUser.username,
             receiverPic: activeChatUser.profilePic || '',
-            type: type, // 'Voice call' ama 'Video call'
-            status: 'ringing', // 'ringing', 'accepted', 'ended', 'No answer'
+            type: type,
+            status: 'ringing',
             createdAt: new Date()
         };
 
@@ -376,8 +377,6 @@
     async function logCallToChat(type, statusText) {
         if (!activeChatUser || !currentUserData) return;
         const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
-        
-        // Add a call bubble inside chat messages
         await addDoc(collection(db, "chats", chatId, "messages"), {
             senderId: currentUserData.uid,
             text: "",
@@ -399,7 +398,6 @@
                     callScreenModal.classList.add('hidden');
                     incomingCallModal.classList.add('hidden');
                     if (isCaller && currentCallData && currentCallData.status === 'ringing') {
-                        // Log No Answer if it ended without being accepted
                         await logCallToChat(data.type, 'No answer');
                     }
                     currentCallData = null;
@@ -412,7 +410,6 @@
         });
     }
 
-    // End Call Button
     endCallBtn.addEventListener('click', async () => {
         if (currentCallData && currentCallData.id) {
             const statusMsg = currentCallData.status === 'accepted' ? 'Completed' : 'No answer';
@@ -423,7 +420,6 @@
         currentCallData = null;
     });
 
-    // Accept / Reject Incoming Calls
     acceptCallBtn.addEventListener('click', async () => {
         if (currentCallData && currentCallData.id) {
             await updateDoc(doc(db, "calls", currentCallData.id), { status: 'accepted' });
@@ -510,13 +506,16 @@
     async function renderTabContent() {
         if (currentTab === 'chats') {
             searchSection.classList.remove('hidden');
+            fabBtn.classList.remove('hidden');
             mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
-        } else if (currentTab === 'wallet') {
+        } else {
             searchSection.classList.add('hidden');
-            mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">💰</div><h3 class="text-white font-bold text-lg mb-1">SomApp Wallet</h3><p class="text-xs">Waa la hirgelin doonaa hantidaada iyo lacag dirista dhowaan.</p></div>`;
+            fabBtn.classList.add('hidden');
+        }
+
+        if (currentTab === 'wallet' || currentTab === 'tools') {
+            mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">⚡</div><h3 class="text-white font-bold text-lg mb-1">Qaybtan</h3><p class="text-xs">Waa la hirgelin doonaa dhowaan.</p></div>`;
         } else if (currentTab === 'calls') {
-            searchSection.classList.add('hidden');
-            
             if (!currentUserData) return;
             const qCalls = query(
                 collection(db, "calls"), 
@@ -547,57 +546,8 @@
                 });
                 mainContentArea.innerHTML = `<div class="divide-y divide-[#1e293b]/50 flex-1">${callItemsHtml}</div>`;
             }
-
         } else if (currentTab === 'status') {
-            searchSection.classList.add('hidden');
             mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">⭕</div><h3 class="text-white font-bold text-lg mb-1">Status</h3><p class="text-xs">Ma jiraan Status cusub oo la daawaday.</p></div>`;
-        } else if (currentTab === 'profile') {
-            searchSection.classList.add('hidden');
-            const pPic = currentUserData && currentUserData.profilePic ? `style="background-image: url('${currentUserData.profilePic}')"` : '';
-            const pInit = currentUserData ? currentUserData.username.charAt(0).toUpperCase() : 'S';
-            const pName = currentUserData ? '@' + currentUserData.username : 'User';
-            const pEmail = currentUserData ? currentUserData.email : '';
-            mainContentArea.innerHTML = `
-                <div class="p-6 flex flex-col items-center text-center">
-                    <div class="relative group cursor-pointer mb-4">
-                        <div id="profilePageAvatar" class="w-24 h-24 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-xl flex items-center justify-center text-white text-3xl font-bold" ${pPic}>${currentUserData && currentUserData.profilePic ? '' : pInit}</div>
-                        <label for="changeProfilePicInput" class="absolute bottom-0 right-0 bg-sky-500 hover:bg-sky-400 text-white p-2 rounded-full cursor-pointer shadow-lg">
-                            <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04c.39-.39.39-1.02 0-1.41l-2.34-2.34c-.39-.39-1.02-.39-1.41 0l-1.83 1.83 3.75 3.75 1.83-1.83z"/></svg>
-                        </label>
-                        <input type="file" id="changeProfilePicInput" accept="image/*" class="hidden">
-                    </div>
-                    <h2 class="text-white font-bold text-lg">${pName}</h2>
-                    <p class="text-xs text-[#94a3b8] mb-4">${pEmail}</p>
-                    <div class="w-full bg-[#1e293b] rounded-2xl p-4 text-left space-y-2">
-                        <div class="text-xs text-sky-400 font-semibold">Macluumaadka Akoonka</div>
-                        <div class="text-xs text-white">Status: <span class="text-emerald-400">Active & Verified</span></div>
-                    </div>
-                </div>
-            `;
-
-            const changePicInput = document.getElementById('changeProfilePicInput');
-            if(changePicInput) {
-                changePicInput.addEventListener('change', async (e) => {
-                    const file = e.target.files[0];
-                    if(!file || !currentUserData) return;
-                    try {
-                        const newBase64 = await convertToBase64(file);
-                        await updateDoc(doc(db, "users", currentUserData.uid), {
-                            profilePic: newBase64
-                        });
-                        currentUserData.profilePic = newBase64;
-                        
-                        myHeaderAvatar.style.backgroundImage = `url(${newBase64})`;
-                        myHeaderAvatar.innerText = "";
-                        
-                        renderTabContent();
-                        alert("Sawirka profile-ka si guul leh ayaa loo beddelay!");
-                    } catch(err) {
-                        console.error(err);
-                        alert("Cillad ayaa dhacday beddelka sawirka.");
-                    }
-                });
-            }
         }
     }
 
@@ -774,7 +724,6 @@
                 } else if (msg.fileType === 'document') {
                     contentHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="flex items-center gap-2 text-sky-300 underline text-sm mb-2 bg-black/30 p-2.5 rounded-xl">📄 ${msg.fileName}</a>`;
                 } else if (msg.fileType === 'call') {
-                    // Call log bubble inside chat matching user request
                     contentHtml = `
                         <div class="flex items-center gap-3 bg-black/30 p-3 rounded-xl my-1">
                             <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">

@@ -62,6 +62,31 @@
     </div>
 </div>
 
+<!-- Add Status Modal -->
+<div id="addStatusModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
+    <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-5 w-full max-w-sm shadow-2xl">
+        <div class="flex justify-between items-center mb-3">
+            <h2 class="text-white font-bold text-base">Ku dar Status Cusub</h2>
+            <button id="closeAddStatusModal" class="text-[#94a3b8] hover:text-white p-1">
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+            </button>
+        </div>
+        <form id="addStatusForm" class="space-y-3">
+            <div>
+                <label class="text-xs text-[#94a3b8] block mb-1">Qoraalka Status-ka (Fariin)</label>
+                <input type="text" id="statusTextInput" placeholder="Maxaa cusub maanta?..." class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
+            </div>
+            <div>
+                <label class="text-xs text-[#94a3b8] block mb-1">Sawirka Status-ka (Gallery)</label>
+                <input type="file" id="statusMediaInput" accept="image/*" class="w-full text-xs text-[#94a3b8] file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-sky-500 file:text-white file:font-semibold hover:file:bg-sky-400">
+            </div>
+            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2.5 rounded-xl shadow-lg text-sm transition-colors">
+                Gali Status-ka
+            </button>
+        </form>
+    </div>
+</div>
+
 <!-- TikTok / Stories Style Status Viewer Modal -->
 <div id="statusViewerModal" class="fixed inset-0 bg-black z-50 hidden flex flex-col justify-between items-center text-white">
     <!-- Progress Bars Top -->
@@ -83,11 +108,11 @@
 
     <!-- Content Area (TikTok Style Fullscreen) -->
     <div id="statusContentContainer" class="w-full h-full flex items-center justify-center relative bg-neutral-900 overflow-hidden">
-        <div id="statusMediaDisplay" class="w-full h-full flex items-center justify-center bg-cover bg-center"></div>
-        <div id="statusTextDisplay" class="absolute bottom-20 px-6 text-center text-xl font-bold drop-shadow-lg"></div>
+        <div id="statusMediaDisplay" class="w-full h-full bg-cover bg-center bg-no-repeat absolute inset-0"></div>
+        <div id="statusTextDisplay" class="absolute bottom-24 px-6 text-center text-xl font-bold drop-shadow-lg z-10"></div>
     </div>
 
-    <!-- Touch Navigation Zones (Tap Left/Right to change status) -->
+    <!-- Touch Navigation Zones -->
     <div id="statusPrevZone" class="absolute inset-y-0 left-0 w-1/3 z-10 cursor-pointer"></div>
     <div id="statusNextZone" class="absolute inset-y-0 right-0 w-1/3 z-10 cursor-pointer"></div>
 
@@ -322,7 +347,6 @@
     let currentTab = 'chats';
     let currentCallData = null;
 
-    // Status / TikTok state variables
     let currentStatusList = [];
     let currentStatusIndex = 0;
     let statusTimer = null;
@@ -349,7 +373,13 @@
     const closeMediaViewer = document.getElementById('closeMediaViewer');
     const fabBtn = document.getElementById('fabBtn');
     
-    // Status Viewer Elements
+    // Status Modals & Elements
+    const addStatusModal = document.getElementById('addStatusModal');
+    const closeAddStatusModal = document.getElementById('closeAddStatusModal');
+    const addStatusForm = document.getElementById('addStatusForm');
+    const statusTextInput = document.getElementById('statusTextInput');
+    const statusMediaInput = document.getElementById('statusMediaInput');
+
     const statusViewerModal = document.getElementById('statusViewerModal');
     const closeStatusViewer = document.getElementById('closeStatusViewer');
     const statusProgressBars = document.getElementById('statusProgressBars');
@@ -416,6 +446,10 @@
         newChatModal.classList.add('hidden');
     });
 
+    closeAddStatusModal.addEventListener('click', () => {
+        addStatusModal.classList.add('hidden');
+    });
+
     async function loadAllUsersForNewChat(filter = '') {
         const querySnap = await getDocs(collection(db, "users"));
         allUsersList.innerHTML = "";
@@ -450,7 +484,36 @@
         loadAllUsersForNewChat(e.target.value.trim().toLowerCase());
     });
 
-    // TikTok / Stories Style Status Player Logic
+    // Add Status Submission
+    addStatusForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const text = statusTextInput.value.trim();
+        const file = statusMediaInput.files[0];
+        if (!text && !file) return;
+        if (!currentUserData) return;
+
+        let mediaData = "";
+        if (file) {
+            mediaData = await convertToBase64(file);
+        }
+
+        await addDoc(collection(db, "statuses"), {
+            userId: currentUserData.uid,
+            username: currentUserData.username,
+            userPic: currentUserData.profilePic || "",
+            text: text,
+            mediaData: mediaData,
+            createdAt: new Date()
+        });
+
+        statusTextInput.value = "";
+        statusMediaInput.value = "";
+        addStatusModal.classList.add('hidden');
+        alert("Status-kaaga si guul leh ayaa loo diiwaangaliyay!");
+        renderTabContent();
+    });
+
+    // TikTok / Stories Style Status Viewer Logic
     function openTikTokStatusViewer(statuses, targetUser) {
         currentStatusList = statuses;
         currentStatusIndex = 0;
@@ -478,7 +541,6 @@
 
         const st = currentStatusList[currentStatusIndex];
 
-        // Render progress bars
         let barsHtml = '';
         for (let i = 0; i < currentStatusList.length; i++) {
             let bgClass = i < currentStatusIndex ? 'bg-white' : i === currentStatusIndex ? 'bg-sky-400 animate-pulse' : 'bg-white/30';
@@ -486,7 +548,6 @@
         }
         statusProgressBars.innerHTML = barsHtml;
 
-        // Render Media or Text
         if (st.mediaData) {
             statusMediaDisplay.style.backgroundImage = `url(${st.mediaData})`;
             statusMediaDisplay.classList.remove('hidden');
@@ -498,7 +559,6 @@
         statusTextDisplay.innerText = st.text || '';
         statusTime.innerText = "Hadda";
 
-        // Auto advance after 5 seconds like TikTok/Stories
         statusTimer = setTimeout(() => {
             currentStatusIndex++;
             renderCurrentStatus();
@@ -802,44 +862,64 @@
                 mainContentArea.innerHTML = `<div class="divide-y divide-[#1e293b]/50 flex-1">${callItemsHtml}</div>`;
             }
         } else if (currentTab === 'status') {
-            // Load users list to view their status TikTok style
-            const usersSnap = await getDocs(collection(db, "users"));
-            let statusHtml = `
+            mainContentArea.innerHTML = `
                 <div class="p-4">
-                    <div class="flex items-center gap-3 p-3 bg-[#1e293b]/50 rounded-2xl mb-4 cursor-pointer">
-                        <div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-lg">+</div>
+                    <div id="addStatusBtn" class="flex items-center gap-3 p-3.5 bg-[#1e293b]/80 rounded-2xl mb-4 cursor-pointer hover:bg-[#1e293b] transition-colors shadow-lg">
+                        <div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-xl shadow-md">+</div>
                         <div>
                             <h3 class="text-white font-semibold text-sm">Ku dar Status cusub</h3>
-                            <p class="text-xs text-[#94a3b8]">Riix si aad sawir u geliso</p>
+                            <p class="text-xs text-[#94a3b8]">Riix si aad sawir ama qoraal u geliso</p>
                         </div>
                     </div>
                     <h2 class="text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-3">Updates-ka Saaxiibada</h2>
                     <div id="statusUsersList" class="space-y-2"></div>
                 </div>
             `;
-            mainContentArea.innerHTML = statusHtml;
+
+            document.getElementById('addStatusBtn').addEventListener('click', () => {
+                addStatusModal.classList.remove('hidden');
+            });
+
+            // Load statuses from Firestore
+            const statusesSnap = await getDocs(collection(db, "statuses"));
+            const statusesByUser = {};
+            statusesSnap.forEach(docSnap => {
+                const s = docSnap.data();
+                if (!statusesByUser[s.userId]) {
+                    statusesByUser[s.userId] = {
+                        username: s.username,
+                        userPic: s.userPic,
+                        items: []
+                    };
+                }
+                statusesByUser[s.userId].items.push(s);
+            });
 
             const statusUsersListEl = document.getElementById('statusUsersList');
-            usersSnap.forEach(async (docSnap) => {
-                const uData = docSnap.data();
-                // Fetch mock status or user status
+            statusUsersListEl.innerHTML = "";
+            let foundStatuses = false;
+
+            for (const uid in statusesByUser) {
+                foundStatuses = true;
+                const userStatusObj = statusesByUser[uid];
                 const item = document.createElement('div');
                 item.className = "flex items-center gap-3 p-2.5 hover:bg-[#1e293b]/40 rounded-xl cursor-pointer transition-colors";
-                const avatar = uData.profilePic 
-                    ? `<div class="w-12 h-12 rounded-full bg-cover bg-center p-0.5 ring-2 ring-sky-400" style="background-image: url('${uData.profilePic}')"></div>`
-                    : `<div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-base ring-2 ring-sky-400">${uData.username.charAt(0).toUpperCase()}</div>`;
+                const avatar = userStatusObj.userPic 
+                    ? `<div class="w-12 h-12 rounded-full bg-cover bg-center p-0.5 ring-2 ring-sky-400" style="background-image: url('${userStatusObj.userPic}')"></div>`
+                    : `<div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-base ring-2 ring-sky-400">${userStatusObj.username.charAt(0).toUpperCase()}</div>`;
 
-                item.innerHTML = `${avatar}<div><h4 class="text-white font-semibold text-sm">@${uData.username}</h4><p class="text-xs text-[#94a3b8]">Guji si aad u daawato</p></div>`;
+                item.innerHTML = `${avatar}<div><h4 class="text-white font-semibold text-sm">@${userStatusObj.username}</h4><p class="text-xs text-[#94a3b8]">${userStatusObj.items.length} status oo cusub</p></div>`;
                 
                 item.addEventListener('click', () => {
-                    // Open TikTok viewer with sample status item
-                    openTikTokStatusViewer([
-                        { text: "Ku soo dhowow SomApp status-ka cusub! 🚀", mediaData: uData.profilePic || "" }
-                    ], uData);
+                    openTikTokStatusViewer(userStatusObj.items, { username: userStatusObj.username, profilePic: userStatusObj.userPic });
                 });
 
                 statusUsersListEl.appendChild(item);
-            });
+            }
+
+            if (!foundStatuses) {
+                statusUsersListEl.innerHTML = `<div class="p-4 text-center text-xs text-[#94a3b8]">Ma jiraan Status-yo hadda la soo galiyay.</div>`;
+            }
         }
     }
 

@@ -70,15 +70,14 @@
     <div id="mediaViewerContent" class="max-w-full max-h-full flex items-center justify-center"></div>
 </div>
 
-<!-- Incoming Call Modal (Markii lagu soo waco) -->
-<div id="incomingCallModal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col justify-between items-center p-8 animate-fade-in">
+<!-- Incoming Call Modal -->
+<div id="incomingCallModal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col justify-between items-center p-8">
     <div class="flex flex-col items-center mt-12 text-center">
         <div id="incomingCallerAvatar" class="w-32 h-32 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-2xl flex items-center justify-center text-white text-4xl font-bold mb-6 animate-bounce"></div>
         <h2 id="incomingCallerName" class="text-2xl font-bold text-white mb-2">@saaxiib</h2>
         <p id="incomingCallType" class="text-sm text-sky-400 font-semibold animate-pulse">Wicitaan Soo Dhacaya...</p>
     </div>
 
-    <!-- Accept / Reject Buttons -->
     <div class="flex items-center gap-12 mb-12">
         <button id="rejectCallBtn" class="w-16 h-16 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform">
             <svg class="w-8 h-8 fill-current rotate-[135deg]" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
@@ -97,7 +96,6 @@
         <p id="callTypeStatus" class="text-sm text-sky-400 font-semibold animate-pulse">Wicitaan Waa Socdaa...</p>
     </div>
 
-    <!-- Call Controls -->
     <div class="flex items-center gap-6 mb-12">
         <button id="toggleMuteBtn" class="w-14 h-14 bg-[#1e293b] hover:bg-[#334155] text-white rounded-full flex items-center justify-center shadow-lg">
             <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
@@ -246,7 +244,7 @@
 <script type="module">
     import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
     import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
     const firebaseConfig = {
       apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
@@ -333,7 +331,7 @@
         await signOut(auth);
     });
 
-    // Start Real-Time Call Function
+    // Start Call & log to chat & calls database
     async function makeCall(type) {
         if (!activeChatUser || !currentUserData) return;
         callMenu.classList.add('hidden');
@@ -347,18 +345,18 @@
             receiverUid: activeChatUser.uid,
             receiverUsername: activeChatUser.username,
             receiverPic: activeChatUser.profilePic || '',
-            type: type, // 'Voice Call' ama 'Video Call'
-            status: 'ringing', // 'ringing', 'accepted', 'ended'
+            type: type, // 'Voice call' ama 'Video call'
+            status: 'ringing', // 'ringing', 'accepted', 'ended', 'No answer'
             createdAt: new Date()
         };
 
         await setDoc(callDocRef, currentCallData);
         openOutGoingCallScreen(type, activeChatUser);
-        listenToCallStatus(callDocRef.id);
+        listenToCallStatus(callDocRef.id, true);
     }
 
-    startVoiceCallBtn.addEventListener('click', () => makeCall('Voice Call'));
-    startVideoCallBtn.addEventListener('click', () => makeCall('Video Call'));
+    startVoiceCallBtn.addEventListener('click', () => makeCall('Voice call'));
+    startVideoCallBtn.addEventListener('click', () => makeCall('Video call'));
 
     function openOutGoingCallScreen(type, targetUser) {
         callUserName.innerText = `@${targetUser.username}`;
@@ -375,8 +373,24 @@
         callScreenModal.classList.remove('hidden');
     }
 
-    function listenToCallStatus(callId) {
-        onSnapshot(doc(db, "calls", callId), (docSnap) => {
+    async function logCallToChat(type, statusText) {
+        if (!activeChatUser || !currentUserData) return;
+        const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
+        
+        // Add a call bubble inside chat messages
+        await addDoc(collection(db, "chats", chatId, "messages"), {
+            senderId: currentUserData.uid,
+            text: "",
+            fileData: null,
+            fileType: 'call',
+            fileName: null,
+            callInfo: { type: type, status: statusText },
+            createdAt: new Date()
+        });
+    }
+
+    function listenToCallStatus(callId, isCaller) {
+        onSnapshot(doc(db, "calls", callId), async (docSnap) => {
             if (docSnap.exists()) {
                 const data = docSnap.data();
                 if (data.status === 'accepted') {
@@ -384,6 +398,10 @@
                 } else if (data.status === 'ended') {
                     callScreenModal.classList.add('hidden');
                     incomingCallModal.classList.add('hidden');
+                    if (isCaller && currentCallData && currentCallData.status === 'ringing') {
+                        // Log No Answer if it ended without being accepted
+                        await logCallToChat(data.type, 'No answer');
+                    }
                     currentCallData = null;
                 }
             } else {
@@ -394,10 +412,12 @@
         });
     }
 
-    // End Call
+    // End Call Button
     endCallBtn.addEventListener('click', async () => {
         if (currentCallData && currentCallData.id) {
+            const statusMsg = currentCallData.status === 'accepted' ? 'Completed' : 'No answer';
             await updateDoc(doc(db, "calls", currentCallData.id), { status: 'ended' });
+            await logCallToChat(currentCallData.type, statusMsg);
         }
         callScreenModal.classList.add('hidden');
         currentCallData = null;
@@ -409,7 +429,6 @@
             await updateDoc(doc(db, "calls", currentCallData.id), { status: 'accepted' });
             incomingCallModal.classList.add('hidden');
             
-            // Open active call screen for receiver
             callUserName.innerText = `@${currentCallData.callerUsername}`;
             callTypeStatus.innerText = `Wicitaan ${currentCallData.type} ah waa socdaa...`;
             if (currentCallData.callerPic) {
@@ -426,12 +445,12 @@
     rejectCallBtn.addEventListener('click', async () => {
         if (currentCallData && currentCallData.id) {
             await updateDoc(doc(db, "calls", currentCallData.id), { status: 'ended' });
+            await logCallToChat(currentCallData.type, 'Declined / No answer');
         }
         incomingCallModal.classList.add('hidden');
         currentCallData = null;
     });
 
-    // Listen to Incoming Calls Realtime for Current User
     function listenForIncomingCalls(userUid) {
         const q = query(
             collection(db, "calls"), 
@@ -457,7 +476,7 @@
                     }
 
                     incomingCallModal.classList.remove('hidden');
-                    listenToCallStatus(change.doc.id);
+                    listenToCallStatus(change.doc.id, false);
                 }
             });
         });
@@ -498,7 +517,6 @@
         } else if (currentTab === 'calls') {
             searchSection.classList.add('hidden');
             
-            // Load Recent Calls List from Firestore
             if (!currentUserData) return;
             const qCalls = query(
                 collection(db, "calls"), 
@@ -513,7 +531,7 @@
                 callSnaps.forEach((docSnap) => {
                     const c = docSnap.data();
                     const avatar = c.callerPic 
-                        ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0" style="background-image: url('${c.callerPic}')"></div>`
+                        ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${c.callerPic}')"></div>`
                         : `<div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-base">${c.callerUsername.charAt(0).toUpperCase()}</div>`;
 
                     callItemsHtml += `
@@ -521,8 +539,9 @@
                             ${avatar}
                             <div class="flex-1 min-w-0">
                                 <h2 class="text-white font-semibold text-sm">@${c.callerUsername}</h2>
-                                <p class="text-xs text-sky-400">${c.type} • <span class="text-emerald-400">${c.status}</span></p>
+                                <p class="text-xs text-[#94a3b8]">${c.type} • <span class="${c.status === 'ended' ? 'text-red-400' : 'text-emerald-400'}">${c.status}</span></p>
                             </div>
+                            <svg class="w-5 h-5 fill-current text-sky-400" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
                         </div>
                     `;
                 });
@@ -754,9 +773,22 @@
                     contentHtml = `<video src="${msg.fileData}" class="rounded-xl w-64 h-auto mb-2 max-h-48 cursor-pointer chat-media shadow-md" data-type="video" data-src="${msg.fileData}" controls></video>`;
                 } else if (msg.fileType === 'document') {
                     contentHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="flex items-center gap-2 text-sky-300 underline text-sm mb-2 bg-black/30 p-2.5 rounded-xl">📄 ${msg.fileName}</a>`;
+                } else if (msg.fileType === 'call') {
+                    // Call log bubble inside chat matching user request
+                    contentHtml = `
+                        <div class="flex items-center gap-3 bg-black/30 p-3 rounded-xl my-1">
+                            <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
+                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+                            </div>
+                            <div>
+                                <h4 class="text-white font-semibold text-sm">${msg.callInfo.type}</h4>
+                                <p class="text-xs text-[#94a3b8]">${msg.callInfo.status}</p>
+                            </div>
+                        </div>
+                    `;
                 }
 
-                if (msg.text) contentHtml += `<div class="text-base leading-relaxed px-1">${msg.text}</div>`;
+                if (msg.text && msg.fileType !== 'call') contentHtml += `<div class="text-base leading-relaxed px-1">${msg.text}</div>`;
 
                 const msgBubble = document.createElement('div');
                 msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'} my-1`;

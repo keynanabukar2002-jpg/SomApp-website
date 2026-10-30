@@ -70,6 +70,28 @@
     <div id="mediaViewerContent" class="max-w-full max-h-full flex items-center justify-center"></div>
 </div>
 
+<!-- Call Screen Modal (Voice / Video Call Screen) -->
+<div id="callScreenModal" class="fixed inset-0 bg-[#0f172a] z-50 hidden flex flex-col justify-between items-center p-8">
+    <div class="flex flex-col items-center mt-12">
+        <div id="callUserAvatar" class="w-32 h-32 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-2xl flex items-center justify-center text-white text-4xl font-bold mb-6"></div>
+        <h2 id="callUserName" class="text-2xl font-bold text-white mb-2">@saaxiib</h2>
+        <p id="callTypeStatus" class="text-sm text-sky-400 font-semibold animate-pulse">Wicitaan Voice Call ah...</p>
+    </div>
+
+    <!-- Call Control Buttons -->
+    <div class="flex items-center gap-6 mb-12">
+        <button id="toggleMuteBtn" class="w-14 h-14 bg-[#1e293b] hover:bg-[#334155] text-white rounded-full flex items-center justify-center shadow-lg">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
+        </button>
+        <button id="endCallBtn" class="w-16 h-16 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform">
+            <svg class="w-8 h-8 fill-current rotate-[135deg]" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
+        </button>
+        <button id="toggleCamBtn" class="w-14 h-14 bg-[#1e293b] hover:bg-[#334155] text-white rounded-full flex items-center justify-center shadow-lg">
+            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+        </button>
+    </div>
+</div>
+
 <!-- Chat Window Modal -->
 <div id="chatModal" class="fixed inset-0 bg-[#0f172a] z-40 hidden flex flex-col h-full w-full max-w-md mx-auto">
     <div class="bg-[#0f172a] p-3 flex items-center justify-between border-b border-[#1e293b]">
@@ -81,6 +103,27 @@
             <div>
                 <h3 id="chatUserName" class="text-white font-semibold text-sm">Saaxiib</h3>
                 <span class="text-[10px] text-emerald-400 font-medium">Online</span>
+            </div>
+        </div>
+
+        <!-- Header Call Icon and Dropdown -->
+        <div class="relative flex items-center gap-2">
+            <button id="chatCallBtn" class="p-2 text-[#94a3b8] hover:text-white transition-colors" title="Wicitaan">
+                <svg class="w-6 h-6 fill-current text-sky-400" viewBox="0 0 24 24">
+                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
+                </svg>
+            </button>
+
+            <!-- Call Dropdown Menu -->
+            <div id="callMenu" class="hidden absolute right-0 top-11 w-40 bg-[#1e293b] border border-[#334155] rounded-xl shadow-2xl py-1 z-50">
+                <button id="startVoiceCallBtn" class="w-full text-left px-4 py-2 text-sm text-white hover:bg-[#0f172a] font-medium flex items-center gap-2.5">
+                    <svg class="w-4 h-4 fill-current text-emerald-400" viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
+                    Voice Call
+                </button>
+                <button id="startVideoCallBtn" class="w-full text-left px-4 py-2 text-sm text-white hover:bg-[#0f172a] font-medium flex items-center gap-2.5 border-t border-[#334155]/50">
+                    <svg class="w-4 h-4 fill-current text-sky-400" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
+                    Video Call
+                </button>
             </div>
         </div>
     </div>
@@ -234,18 +277,66 @@
     const dropdownMenu = document.getElementById('dropdownMenu');
     const logoutBtn = document.getElementById('logoutBtn');
 
+    // Call elements
+    const chatCallBtn = document.getElementById('chatCallBtn');
+    const callMenu = document.getElementById('callMenu');
+    const startVoiceCallBtn = document.getElementById('startVoiceCallBtn');
+    const startVideoCallBtn = document.getElementById('startVideoCallBtn');
+    const callScreenModal = document.getElementById('callScreenModal');
+    const callUserAvatar = document.getElementById('callUserAvatar');
+    const callUserName = document.getElementById('callUserName');
+    const callTypeStatus = document.getElementById('callTypeStatus');
+    const endCallBtn = document.getElementById('endCallBtn');
+
     menuBtn.addEventListener('click', (e) => {
         e.stopPropagation();
         dropdownMenu.classList.toggle('hidden');
     });
 
+    chatCallBtn.addEventListener('click', (e) => {
+        e.stopPropagation();
+        callMenu.classList.toggle('hidden');
+    });
+
     document.addEventListener('click', () => {
         dropdownMenu.classList.add('hidden');
+        callMenu.classList.add('hidden');
     });
 
     logoutBtn.addEventListener('click', async () => {
         dropdownMenu.classList.add('hidden');
         await signOut(auth);
+    });
+
+    // Start Calls
+    startVoiceCallBtn.addEventListener('click', () => {
+        callMenu.classList.add('hidden');
+        openCallScreen('Voice Call');
+    });
+
+    startVideoCallBtn.addEventListener('click', () => {
+        callMenu.classList.add('hidden');
+        openCallScreen('Video Call');
+    });
+
+    function openCallScreen(type) {
+        if (!activeChatUser) return;
+        callUserName.innerText = `@${activeChatUser.username}`;
+        callTypeStatus.innerText = `Wicitaan ${type} ah...`;
+        
+        if (activeChatUser.profilePic) {
+            callUserAvatar.style.backgroundImage = `url(${activeChatUser.profilePic})`;
+            callUserAvatar.innerText = "";
+        } else {
+            callUserAvatar.style.backgroundImage = "";
+            callUserAvatar.innerText = activeChatUser.username.charAt(0).toUpperCase();
+        }
+        
+        callScreenModal.classList.remove('hidden');
+    }
+
+    endCallBtn.addEventListener('click', () => {
+        callScreenModal.classList.add('hidden');
     });
 
     const navButtons = document.querySelectorAll('.nav-btn');
@@ -310,7 +401,6 @@
                 </div>
             `;
 
-            // Bind change profile picture event
             const changePicInput = document.getElementById('changeProfilePicInput');
             if(changePicInput) {
                 changePicInput.addEventListener('change', async (e) => {
@@ -323,7 +413,6 @@
                         });
                         currentUserData.profilePic = newBase64;
                         
-                        // Update header avatar too
                         myHeaderAvatar.style.backgroundImage = `url(${newBase64})`;
                         myHeaderAvatar.innerText = "";
                         

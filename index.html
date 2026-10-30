@@ -109,7 +109,7 @@
     </div>
 </div>
 
-<!-- Search Users Modal (Marka la taabto badhanka cagaaran ee cusub) -->
+<!-- Search Users Modal -->
 <div id="newChatModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
     <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-5 w-full max-w-md shadow-2xl flex flex-col max-h-[80vh]">
         <div class="flex justify-between items-center mb-3">
@@ -215,49 +215,50 @@
         </div>  
     </div>  
 
-    <main id="mainContentArea" class="flex-1 overflow-y-auto no-scrollbar relative min-h-0 flex flex-col">
+    <main id="mainContentArea" class="flex-1 overflow-y-auto no-scrollbar relative min-h-0 flex flex-col pb-6">
         <div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>
     </main>  
 
-    <!-- WhatsApp style Floating Action Button (FAB) -->
-    <button id="fabBtn" class="absolute bottom-20 right-4 w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl shadow-2xl flex items-center justify-center z-20 active:scale-95 transition-transform" title="Bilow Fariin Cusub">
+    <!-- WhatsApp style Floating Action Button (FAB) - Moved higher above enlarged navbar -->
+    <button id="fabBtn" class="absolute bottom-24 right-4 w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl shadow-2xl flex items-center justify-center z-20 active:scale-95 transition-transform" title="Bilow Fariin Cusub">
         <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
     </button>
 
-    <nav class="shrink-0 h-16 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-1 z-30">  
-        <button data-tab="chats" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-sky-400 group">  
-            <div class="px-3.5 py-1 rounded-full bg-sky-500/20 transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>  
+    <!-- ENLARGED NAVIGATION BAR -->
+    <nav class="shrink-0 h-20 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-2 z-30 shadow-2xl">  
+        <button data-tab="chats" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-sky-400 group py-1">  
+            <div class="px-4 py-1.5 rounded-2xl bg-sky-500/20 transition-all">  
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>  
             </div>  
-            <span class="text-[11px] font-semibold mt-0.5">Chats</span>  
+            <span class="text-xs font-bold mt-1 tracking-wide">Chats</span>  
         </button>  
 
-        <button data-tab="wallet" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>  
+        <button data-tab="wallet" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors py-1">  
+            <div class="px-4 py-1.5 rounded-2xl group-hover:bg-[#1e293b] transition-all">  
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>  
             </div>  
-            <span class="text-[11px] font-medium mt-0.5">Wallet</span>  
+            <span class="text-xs font-semibold mt-1 tracking-wide">Wallet</span>  
         </button>  
 
-        <button data-tab="calls" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>  
+        <button data-tab="calls" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors py-1">  
+            <div class="px-4 py-1.5 rounded-2xl group-hover:bg-[#1e293b] transition-all">  
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>  
             </div>  
-            <span class="text-[11px] font-medium mt-0.5">Calls</span>  
+            <span class="text-xs font-semibold mt-1 tracking-wide">Calls</span>  
         </button>  
 
-        <button data-tab="status" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>  
+        <button data-tab="status" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors py-1">  
+            <div class="px-4 py-1.5 rounded-2xl group-hover:bg-[#1e293b] transition-all">  
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>  
             </div>  
-            <span class="text-[11px] font-medium mt-0.5">Status</span>  
+            <span class="text-xs font-semibold mt-1 tracking-wide">Status</span>  
         </button>  
 
-        <button data-tab="profile" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors">  
-            <div class="px-3.5 py-1 rounded-full group-hover:bg-[#1e293b] transition-colors">  
-                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>  
+        <button data-tab="profile" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors py-1">  
+            <div class="px-4 py-1.5 rounded-2xl group-hover:bg-[#1e293b] transition-all">  
+                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>  
             </div>  
-            <span class="text-[11px] font-medium mt-0.5">Profile</span>  
+            <span class="text-xs font-semibold mt-1 tracking-wide">Profile</span>  
         </button>  
     </nav>  
 </div>
@@ -553,16 +554,16 @@
                 const div = b.querySelector('div');
                 div.classList.remove('bg-sky-500/20');
                 const span = b.querySelector('span');
-                span.classList.remove('font-semibold');
-                span.classList.add('font-medium');
+                span.classList.remove('font-bold');
+                span.classList.add('font-semibold');
             });
             btn.classList.remove('text-[#94a3b8]');
             btn.classList.add('text-sky-400');
             const activeDiv = btn.querySelector('div');
             activeDiv.classList.add('bg-sky-500/20');
             const activeSpan = btn.querySelector('span');
-            activeSpan.classList.remove('font-medium');
-            activeSpan.classList.add('font-semibold');
+            activeSpan.classList.remove('font-semibold');
+            activeSpan.classList.add('font-bold');
 
             currentTab = btn.getAttribute('data-tab');
             renderTabContent();

@@ -503,11 +503,42 @@
         });
     });
 
+    async function loadAllUsers(filterText = '') {
+        const listEl = document.getElementById('chatsList');
+        if (!listEl) return;
+        
+        const querySnap = await getDocs(collection(db, "users"));
+        listEl.innerHTML = "";
+        
+        let found = false;
+        querySnap.forEach((docSnap) => {
+            const userData = docSnap.data();
+            if (currentUserData && userData.uid === currentUserData.uid) return;
+            if (filterText && !userData.username.toLowerCase().includes(filterText)) return;
+
+            found = true;
+            const userItem = document.createElement('div');
+            userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
+            const avatarHtml = userData.profilePic 
+                ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
+                : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
+
+            userItem.innerHTML = `${avatarHtml}<div class="flex-1 min-w-0"><h2 class="text-white font-semibold text-base truncate">@${userData.username}</h2><span class="text-xs text-[#94a3b8] truncate">Guji si aad fariin u dirto</span></div>`;
+            userItem.addEventListener('click', () => openChatWithUser(userData));
+            listEl.appendChild(userItem);
+        });
+
+        if (!found) {
+            listEl.innerHTML = `<div class="p-6 text-center text-[#94a3b8] text-sm">Ma jiro saaxiib la helay.</div>`;
+        }
+    }
+
     async function renderTabContent() {
         if (currentTab === 'chats') {
             searchSection.classList.remove('hidden');
             fabBtn.classList.remove('hidden');
             mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
+            loadAllUsers();
         } else {
             searchSection.classList.add('hidden');
             fabBtn.classList.add('hidden');
@@ -629,28 +660,7 @@
     document.addEventListener('input', async (e) => {
         if(e.target && e.target.id === 'searchInput') {
             const searchText = e.target.value.trim().toLowerCase();
-            const listEl = document.getElementById('chatsList');
-            if (!listEl) return;
-            if (!searchText) { listEl.innerHTML = ""; return; }
-
-            const q = query(collection(db, "users"), where("username", ">=", searchText), where("username", "<=", searchText + '\uf8ff'));
-            const querySnap = await getDocs(q);
-
-            listEl.innerHTML = "";
-            querySnap.forEach((docSnap) => {
-                const userData = docSnap.data();
-                if (currentUserData && userData.uid === currentUserData.uid) return;
-
-                const userItem = document.createElement('div');
-                userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
-                const avatarHtml = userData.profilePic 
-                    ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
-                    : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
-
-                userItem.innerHTML = `${avatarHtml}<div class="flex-1 min-w-0"><h2 class="text-white font-semibold text-base truncate">@${userData.username}</h2><span class="text-xs text-[#94a3b8] truncate">Guji si aad fariin u dirto</span></div>`;
-                userItem.addEventListener('click', () => openChatWithUser(userData));
-                listEl.appendChild(userItem);
-            });
+            loadAllUsers(searchText);
         }
     });
 

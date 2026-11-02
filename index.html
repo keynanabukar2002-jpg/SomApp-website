@@ -1,1121 +1,187 @@
-<!DOCTYPE html>  
-<html lang="so">  
-<head>  
-    <meta charset="UTF-8">  
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">  
-    <title>SomApp - Messenger & Wallet</title>  
-    <script src="https://cdn.tailwindcss.com"></script>  
-    <style>  
-        html, body {  
-            height: 100%;  
-            margin: 0;  
-            padding: 0;  
-            overflow: hidden;  
-            background-color: #0b141a;  
-        }  
-        .no-scrollbar::-webkit-scrollbar {  
-            display: none;  
-        }  
-        .no-scrollbar {  
-            -ms-overflow-style: none;  
-            scrollbar-width: none;  
-        }  
-        /* WhatsApp Dark Doodle Pattern Background */
-        .chat-doodle-bg {
-            background-color: #0b141a;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill='%23ffffff' fill-opacity='0.03'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z'/%3E%3C/g%3E%3C/svg%3E");
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Polymarket Mobile Portfolio Dashboard</title>
+    <!-- Use Tailwind CSS CDN for easier integration -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'background': '#0F1117', // Dark Navy
+                        'card': '#1B1E2B',       // Slate/Charcoal for cards
+                        'primary': '#2F66F6',    // Bright Blue
+                        'secondary': '#1E2230',  // Muted/Secondary accent
+                        'mutedText': '#9CA3AF'   // Gray text
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar to match dark theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0F1117;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #1B1E2B;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #2A2A2A;
         }
     </style>
 </head>
-<body class="text-[#e9edef] font-sans antialiased h-full w-full overflow-hidden select-none">  
+<body class="bg-background text-white font-sans antialiased">
+    <!-- Main Mobile Container (Approximating mobile dimensions in viewport) -->
+    <div class="max-w-[420px] mx-auto min-h-screen bg-background border-x border-secondary relative pb-[70px]">
 
-<!-- Auth Modal -->
-<div id="authModal" class="fixed inset-0 bg-black/80 z-50 flex items-center justify-center p-4">
-    <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-6 w-full max-w-sm shadow-2xl">
-        <div class="flex justify-between items-center mb-4">
-            <h2 id="modalTitle" class="text-xl font-bold text-white">Soo Gal (Sign In)</h2>
-            <button id="toggleAuthBtn" class="text-xs text-sky-400 font-semibold hover:underline" type="button">Sameyso Akoon (Sign Up)</button>
-        </div>
-        
-        <form id="authForm" class="space-y-3">
-            <div id="usernameGroup" class="hidden">
-                <label class="text-xs text-[#94a3b8] block mb-1">Username-kaaga</label>
-                <input type="text" id="authUsername" placeholder="Tusaale: keynaan123" class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-            </div>
-
-            <div>
-                <label class="text-xs text-[#94a3b8] block mb-1">Email-kaaga</label>
-                <input type="email" id="authEmail" placeholder="example@mail.com" required class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-            </div>
-
-            <div>
-                <label class="text-xs text-[#94a3b8] block mb-1">Password-kaaga</label>
-                <input type="password" id="authPassword" placeholder="******" required class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-            </div>
-
-            <div id="profileImageGroup" class="hidden">
-                <label class="text-xs text-[#94a3b8] block mb-1">Sawirka Profile-ka (Gallery)</label>
-                <input type="file" id="authProfilePic" accept="image/*" class="w-full text-xs text-[#94a3b8] file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-sky-500 file:text-white file:font-semibold hover:file:bg-sky-400">
-            </div>
-
-            <p id="authError" class="text-red-400 text-xs hidden"></p>
-
-            <button type="submit" id="submitAuthBtn" class="w-full bg-sky-500 hover:bg-sky-400 text-white font-bold py-2.5 rounded-xl shadow-lg transition-colors mt-2 text-sm">
-                Soo Gal
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- Add Status Modal -->
-<div id="addStatusModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-5 w-full max-w-sm shadow-2xl">
-        <div class="flex justify-between items-center mb-3">
-            <h2 class="text-white font-bold text-base">Ku dar Status Cusub</h2>
-            <button id="closeAddStatusModal" class="text-[#94a3b8] hover:text-white p-1">
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            </button>
-        </div>
-        <form id="addStatusForm" class="space-y-3">
-            <div>
-                <label class="text-xs text-[#94a3b8] block mb-1">Qoraalka Status-ka (Fariin)</label>
-                <input type="text" id="statusTextInput" placeholder="Maxaa cusub maanta?..." class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-3 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-            </div>
-            <div>
-                <label class="text-xs text-[#94a3b8] block mb-1">Sawirka Status-ka (Gallery)</label>
-                <input type="file" id="statusMediaInput" accept="image/*" class="w-full text-xs text-[#94a3b8] file:mr-3 file:py-1.5 file:px-3 file:rounded-xl file:border-0 file:bg-sky-500 file:text-white file:font-semibold hover:file:bg-sky-400">
-            </div>
-            <button type="submit" class="w-full bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2.5 rounded-xl shadow-lg text-sm transition-colors">
-                Gali Status-ka
-            </button>
-        </form>
-    </div>
-</div>
-
-<!-- TikTok / Stories Style Status Viewer Modal -->
-<div id="statusViewerModal" class="fixed inset-0 bg-black z-50 hidden flex flex-col justify-between items-center text-white">
-    <div id="statusProgressBars" class="w-full flex gap-1.5 p-3 absolute top-0 z-20"></div>
-
-    <div class="absolute top-6 left-4 right-4 flex items-center justify-between z-20 px-2">
-        <div class="flex items-center gap-3">
-            <div id="statusUserAvatar" class="w-10 h-10 rounded-full bg-cover bg-center border border-white/30"></div>
-            <div>
-                <h4 id="statusUsername" class="font-bold text-sm">@username</h4>
-                <p id="statusTime" class="text-[10px] text-gray-300">Hadda</p>
-            </div>
-        </div>
-        <button id="closeStatusViewer" class="p-2 bg-black/40 rounded-full hover:bg-black/60">
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-        </button>
-    </div>
-
-    <div id="statusContentContainer" class="w-full h-full flex items-center justify-center relative bg-neutral-900 overflow-hidden">
-        <div id="statusMediaDisplay" class="w-full h-full bg-cover bg-center bg-no-repeat absolute inset-0"></div>
-        <div id="statusTextDisplay" class="absolute bottom-24 px-6 text-center text-xl font-bold drop-shadow-lg z-10"></div>
-    </div>
-
-    <div id="statusPrevZone" class="absolute inset-y-0 left-0 w-1/3 z-10 cursor-pointer"></div>
-    <div id="statusNextZone" class="absolute inset-y-0 right-0 w-1/3 z-10 cursor-pointer"></div>
-
-    <div class="absolute bottom-4 left-4 right-4 z-20 flex items-center gap-2">
-        <input type="text" placeholder="U jawaab Status-ka..." class="w-full bg-black/50 border border-white/20 rounded-full px-4 py-2.5 text-sm text-white placeholder-gray-400 backdrop-blur-md outline-none focus:border-sky-500">
-    </div>
-</div>
-
-<!-- Fullscreen Media Viewer Modal -->
-<div id="mediaViewerModal" class="fixed inset-0 bg-black/95 z-50 hidden flex flex-col items-center justify-center p-2">
-    <button id="closeMediaViewer" class="absolute top-4 right-4 text-white bg-white/10 hover:bg-white/20 p-2 rounded-full">
-        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-    </button>
-    <div id="mediaViewerContent" class="max-w-full max-h-full flex items-center justify-center"></div>
-</div>
-
-<!-- Incoming Call Modal -->
-<div id="incomingCallModal" class="fixed inset-0 bg-black/90 z-50 hidden flex flex-col justify-between items-center p-8">
-    <div class="flex flex-col items-center mt-12 text-center">
-        <div id="incomingCallerAvatar" class="w-32 h-32 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-2xl flex items-center justify-center text-white text-4xl font-bold mb-6 animate-bounce"></div>
-        <h2 id="incomingCallerName" class="text-2xl font-bold text-white mb-2">@saaxiib</h2>
-        <p id="incomingCallType" class="text-sm text-sky-400 font-semibold animate-pulse">Wicitaan Soo Dhacaya...</p>
-    </div>
-
-    <div class="flex items-center gap-12 mb-12">
-        <button id="rejectCallBtn" class="w-16 h-16 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform">
-            <svg class="w-8 h-8 fill-current rotate-[135deg]" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-        </button>
-        <button id="acceptCallBtn" class="w-16 h-16 bg-emerald-500 hover:bg-emerald-400 text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform animate-pulse">
-            <svg class="w-8 h-8 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-        </button>
-    </div>
-</div>
-
-<!-- Active Call Screen Modal -->
-<div id="callScreenModal" class="fixed inset-0 bg-[#0f172a] z-50 hidden flex flex-col justify-between items-center p-8">
-    <div class="flex flex-col items-center mt-12 text-center">
-        <div id="callUserAvatar" class="w-32 h-32 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 bg-cover bg-center shadow-2xl flex items-center justify-center text-white text-4xl font-bold mb-6"></div>
-        <h2 id="callUserName" class="text-2xl font-bold text-white mb-2">@saaxiib</h2>
-        <p id="callTypeStatus" class="text-sm text-sky-400 font-semibold animate-pulse">Wicitaan Waa Socdaa...</p>
-    </div>
-
-    <div class="flex items-center gap-6 mb-12">
-        <button id="toggleMuteBtn" class="w-14 h-14 bg-[#1e293b] hover:bg-[#334155] text-white rounded-full flex items-center justify-center shadow-lg">
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 14c1.66 0 3-1.34 3-3V5c0-1.66-1.34-3-3-3S9 3.34 9 5v6c0 1.66 1.34 3 3 3z"/><path d="M17 11c0 2.76-2.24 5-5 5s-5-2.24-5-5H5c0 3.53 2.61 6.43 6 6.92V21h2v-3.08c3.39-.49 6-3.39 6-6.92h-2z"/></svg>
-        </button>
-        <button id="endCallBtn" class="w-16 h-16 bg-red-600 hover:bg-red-500 text-white rounded-full flex items-center justify-center shadow-2xl active:scale-95 transition-transform">
-            <svg class="w-8 h-8 fill-current rotate-[135deg]" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-        </button>
-        <button id="toggleCamBtn" class="w-14 h-14 bg-[#1e293b] hover:bg-[#334155] text-white rounded-full flex items-center justify-center shadow-lg">
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-        </button>
-    </div>
-</div>
-
-<!-- Search Users Modal -->
-<div id="newChatModal" class="fixed inset-0 bg-black/80 z-50 hidden flex items-center justify-center p-4">
-    <div class="bg-[#0f172a] border border-[#1e293b] rounded-2xl p-5 w-full max-w-md shadow-2xl flex flex-col max-h-[80vh]">
-        <div class="flex justify-between items-center mb-3">
-            <h2 class="text-white font-bold text-base">Bilow Fariin Cusub</h2>
-            <button id="closeNewChatModal" class="text-[#94a3b8] hover:text-white p-1">
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-            </button>
-        </div>
-        <div class="mb-3">
-            <input type="text" id="searchNewUserInput" placeholder="Raadi saaxiib (Username)..." class="w-full bg-[#1e293b] border border-[#334155] rounded-xl px-4 py-2 text-sm text-white focus:outline-none focus:border-sky-500">
-        </div>
-        <div id="allUsersList" class="flex-1 overflow-y-auto space-y-1 divide-y divide-[#1e293b]/50"></div>
-    </div>
-</div>
-
-<!-- Chat Window Modal (Doodle Background Applied Here) -->
-<div id="chatModal" class="fixed inset-0 chat-doodle-bg z-40 hidden flex flex-col h-full w-full max-w-md mx-auto">
-    <div class="bg-[#0f172a] p-3 flex items-center justify-between border-b border-[#1e293b] shadow-md">
-        <div class="flex items-center gap-3">
-            <button id="closeChatBtn" class="text-[#94a3b8] hover:text-white">
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 11H7.83l5.59-5.59L12 4l-8 8 8 8 1.41-1.41L7.83 13H20v-2z"/></svg>
-            </button>
-            <div id="chatUserAvatar" class="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white overflow-hidden bg-cover bg-center"></div>
-            <div>
-                <h3 id="chatUserName" class="text-white font-semibold text-sm">Saaxiib</h3>
-                <span class="text-[10px] text-emerald-400 font-medium">Online</span>
-            </div>
-        </div>
-
-        <div class="relative flex items-center gap-2">
-            <button id="chatCallBtn" class="p-2 text-[#94a3b8] hover:text-white transition-colors" title="Wicitaan">
-                <svg class="w-6 h-6 fill-current text-sky-400" viewBox="0 0 24 24">
-                    <path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/>
-                </svg>
-            </button>
-
-            <div id="callMenu" class="hidden absolute right-0 top-11 w-40 bg-[#1e293b] border border-[#334155] rounded-xl shadow-2xl py-1 z-50">
-                <button id="startVoiceCallBtn" class="w-full text-left px-4 py-2 text-sm text-white hover:bg-[#0f172a] font-medium flex items-center gap-2.5">
-                    <svg class="w-4 h-4 fill-current text-emerald-400" viewBox="0 0 24 24"><path d="M20 15.5c-1.25 0-2.45-.2-3.57-.57-.35-.11-.74-.03-1.02.24l-2.2 2.2c-2.83-1.44-5.15-3.75-6.59-6.59l2.2-2.21c.28-.26.36-.65.25-1C8.7 6.45 8.5 5.25 8.5 4c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1 0 9.39 7.61 17 17 17 .55 0 1-.45 1-1v-3.5c0-.55-.45-1-1-1z"/></svg>
-                    Voice Call
+        <!-- 1. Header Navigation -->
+        <header class="flex items-center justify-between p-4 sticky top-0 bg-background z-10 border-b border-secondary">
+            <!-- Logo Section -->
+            <div class="flex items-center gap-2">
+                <button class="text-white hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
                 </button>
-                <button id="startVideoCallBtn" class="w-full text-left px-4 py-2 text-sm text-white hover:bg-[#0f172a] font-medium flex items-center gap-2.5 border-t border-[#334155]/50">
-                    <svg class="w-4 h-4 fill-current text-sky-400" viewBox="0 0 24 24"><path d="M17 10.5V7c0-.55-.45-1-1-1H4c-.55 0-1 .45-1 1v10c0 .55.45 1 1 1h12c.55 0 1-.45 1-1v-3.5l4 4v-11l-4 4z"/></svg>
-                    Video Call
-                </button>
-            </div>
-        </div>
-    </div>
-    
-    <div id="messagesContainer" class="flex-1 p-4 overflow-y-auto space-y-3 no-scrollbar bg-transparent"></div>
-
-    <form id="messageForm" class="p-3 bg-[#0f172a] border-t border-[#1e293b] flex items-center gap-2 shadow-lg">
-        <label for="mediaInput" class="cursor-pointer text-[#94a3b8] hover:text-white p-1" title="Soo hel sawir ama dukumiinti">
-            <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
-                <path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.76-2.24-5-5-5S5 2.24 5 5v12.5c0 3.87 3.13 7 7 7s7-3.13 7-7V6h-2.5z"/>
-            </svg>
-        </label>
-        <input type="file" id="mediaInput" accept="image/*,video/*,.pdf,.doc,.docx,.txt" class="hidden">
-        
-        <input type="text" id="messageInput" placeholder="Qor fariin ama soo dir fayl..." class="flex-1 bg-[#1e293b] border-none outline-none rounded-full px-4 py-2 text-sm text-white placeholder-[#64748b]">
-        
-        <button type="submit" class="w-10 h-10 bg-sky-500 hover:bg-sky-400 text-white rounded-full flex items-center justify-center shrink-0">
-            <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
-        </button>
-    </form>
-</div>
-
-<!-- App Container -->  
-<div class="flex flex-col h-full w-full max-w-md mx-auto bg-[#0f172a] overflow-hidden relative">  
-    <header class="bg-[#0f172a] pt-4 px-4 pb-3 flex justify-between items-center shrink-0 border-b border-[#1e293b] shadow-md">  
-        <div class="flex items-center gap-3">  
-            <div id="myHeaderAvatar" class="w-10 h-10 rounded-2xl bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-black text-white text-xl shadow-lg overflow-hidden bg-cover bg-center">  
-                S  
-            </div>  
-            <h1 class="text-2xl font-extrabold tracking-wide text-white">Som<span class="text-sky-400">App</span></h1>  
-        </div>  
-          
-        <div class="flex items-center gap-5 text-[#94a3b8] relative">  
-            <button class="hover:text-white transition-colors p-2 rounded-xl hover:bg-[#1e293b]" aria-label="Camera" title="Kaamirada">  
-                <svg class="w-7 h-7 fill-current" viewBox="0 0 24 24"><path d="M12 15c1.66 0 3-1.34 3-3s-1.34-3-3-3-3 1.34-3 3 1.34 3 3 3zm9-8h-3.17l-1.86-2H8.03L6.17 7H3c-1.1 0-2 .9-2 2v10c0 1.1.9 2 2 2h18c1.1 0 2-.9 2-2V9c0-1.1-.9-2-2-2zm-9 11c-2.76 0-5-2.24-5-5s2.24-5 5-5 5 2.24 5 5-2.24 5-5 5z"/></svg>  
-            </button>  
-            <button class="hover:text-white transition-colors p-2 rounded-xl hover:bg-[#1e293b]" aria-label="Search" title="Raadi">  
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>  
-            </button>  
-            
-            <button id="menuBtn" class="hover:text-white transition-colors p-2 rounded-xl hover:bg-[#1e293b] relative" aria-label="More options" title="Menu">  
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 8c1.1 0 2-.9 2-2s-.9-2-2-2-2 .9-2 2 .9 2 2 2zm0 2c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2zm0 6c-1.1 0-2 .9-2 2s.9 2 2 2 2-.9 2-2-.9-2-2-2z"/></svg>  
-            </button>  
-
-            <div id="dropdownMenu" class="hidden absolute right-0 top-12 w-40 bg-[#1e293b] border border-[#334155] rounded-xl shadow-2xl py-1 z-50">
-                <button id="logoutBtn" class="w-full text-left px-4 py-2.5 text-sm text-red-400 hover:bg-[#0f172a] font-medium flex items-center gap-2">
-                    <svg class="w-4 h-4 fill-current" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM4 5h8V3H4c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h8v-2H4V5z"/></svg>
-                    Logout
-                </button>
-            </div>
-        </div>  
-    </header>  
-
-    <div id="searchSection" class="px-3 py-2.5 bg-[#0f172a] shrink-0">  
-        <div class="flex items-center gap-3 bg-[#1e293b] px-4 py-2.5 rounded-2xl text-[#94a3b8]">  
-            <svg class="w-5 h-5 fill-current shrink-0" viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 14z"/></svg>  
-            <input type="text" id="searchInput" placeholder="Raadi chat..." class="bg-transparent border-none outline-none text-white text-sm w-full placeholder-[#64748b]">  
-        </div>  
-    </div>  
-
-    <main id="mainContentArea" class="flex-1 overflow-y-auto no-scrollbar relative min-h-0 flex flex-col pb-6">
-        <div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>
-    </main>  
-
-    <button id="fabBtn" class="absolute bottom-24 right-4 w-14 h-14 bg-emerald-500 hover:bg-emerald-400 text-white rounded-2xl shadow-2xl flex items-center justify-center z-20 active:scale-95 transition-transform" title="Bilow Fariin Cusub">
-        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-    </button>
-
-    <nav class="shrink-0 h-20 bg-[#0f172a] border-t border-[#1e293b] flex justify-around items-center w-full px-2 z-30 shadow-2xl">  
-        <button data-tab="chats" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-sky-400 group py-1">  
-            <div class="px-4 py-1.5 rounded-2xl bg-sky-500/20 transition-all">  
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-1.99.9-1.99 2L2 22l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2z"/></svg>  
-            </div>  
-            <span class="text-xs font-bold mt-1 tracking-wide">Chats</span>  
-        </button>  
-
-        <button data-tab="wallet" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors py-1">  
-            <div class="px-4 py-1.5 rounded-2xl group-hover:bg-[#1e293b] transition-all">  
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>  
-            </div>  
-            <span class="text-xs font-semibold mt-1 tracking-wide">Wallet</span>  
-        </button>  
-
-        <button data-tab="calls" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors py-1">  
-            <div class="px-4 py-1.5 rounded-2xl group-hover:bg-[#1e293b] transition-all">  
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>  
-            </div>  
-            <span class="text-xs font-semibold mt-1 tracking-wide">Calls</span>  
-        </button>  
-
-        <button data-tab="status" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors py-1">  
-            <div class="px-4 py-1.5 rounded-2xl group-hover:bg-[#1e293b] transition-all">  
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/></svg>  
-            </div>  
-            <span class="text-xs font-semibold mt-1 tracking-wide">Status</span>  
-        </button>  
-
-        <button data-tab="profile" class="nav-btn flex flex-col items-center justify-center flex-1 h-full text-[#94a3b8] hover:text-white group transition-colors py-1">  
-            <div class="px-4 py-1.5 rounded-2xl group-hover:bg-[#1e293b] transition-all">  
-                <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>  
-            </div>  
-            <span class="text-xs font-semibold mt-1 tracking-wide">Profile</span>  
-        </button>  
-    </nav>  
-</div>
-
-<script type="module">
-    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-    import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, onAuthStateChanged, signOut, sendEmailVerification } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-    import { getFirestore, doc, setDoc, getDoc, updateDoc, collection, query, where, getDocs, addDoc, onSnapshot, orderBy } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
-
-    const firebaseConfig = {
-      apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
-      authDomain: "somapp-61ebd.firebaseapp.com",
-      projectId: "somapp-61ebd",
-      storageBucket: "somapp-61ebd.firebasestorage.app",
-      messagingSenderId: "890890688001",
-      appId: "1:890890688001:web:9e0005896694fa465f5200",
-      measurementId: "G-NB6MX4GNCQ"
-    };
-
-    const app = initializeApp(firebaseConfig);
-    const auth = getAuth(app);
-    const db = getFirestore(app);
-
-    let currentUserData = null;
-    let isSignUp = false;
-    let activeChatUser = null;
-    let unsubscribeMessages = null;
-    let currentTab = 'chats';
-    let currentCallData = null;
-
-    let currentStatusList = [];
-    let currentStatusIndex = 0;
-    let statusTimer = null;
-
-    const authModal = document.getElementById('authModal');
-    const authForm = document.getElementById('authForm');
-    const modalTitle = document.getElementById('modalTitle');
-    const toggleAuthBtn = document.getElementById('toggleAuthBtn');
-    const usernameGroup = document.getElementById('usernameGroup');
-    const profileImageGroup = document.getElementById('profileImageGroup');
-    const submitAuthBtn = document.getElementById('submitAuthBtn');
-    const authError = document.getElementById('authError');
-    const myHeaderAvatar = document.getElementById('myHeaderAvatar');
-    const searchSection = document.getElementById('searchSection');
-    const mainContentArea = document.getElementById('mainContentArea');
-    const chatModal = document.getElementById('chatModal');
-    const closeChatBtn = document.getElementById('closeChatBtn');
-    const messageForm = document.getElementById('messageForm');
-    const messageInput = document.getElementById('messageInput');
-    const messagesContainer = document.getElementById('messagesContainer');
-    const mediaInput = document.getElementById('mediaInput');
-    const mediaViewerModal = document.getElementById('mediaViewerModal');
-    const mediaViewerContent = document.getElementById('mediaViewerContent');
-    const closeMediaViewer = document.getElementById('closeMediaViewer');
-    const fabBtn = document.getElementById('fabBtn');
-    
-    const addStatusModal = document.getElementById('addStatusModal');
-    const closeAddStatusModal = document.getElementById('closeAddStatusModal');
-    const addStatusForm = document.getElementById('addStatusForm');
-    const statusTextInput = document.getElementById('statusTextInput');
-    const statusMediaInput = document.getElementById('statusMediaInput');
-
-    const statusViewerModal = document.getElementById('statusViewerModal');
-    const closeStatusViewer = document.getElementById('closeStatusViewer');
-    const statusProgressBars = document.getElementById('statusProgressBars');
-    const statusUserAvatar = document.getElementById('statusUserAvatar');
-    const statusUsername = document.getElementById('statusUsername');
-    const statusTime = document.getElementById('statusTime');
-    const statusMediaDisplay = document.getElementById('statusMediaDisplay');
-    const statusTextDisplay = document.getElementById('statusTextDisplay');
-    const statusPrevZone = document.getElementById('statusPrevZone');
-    const statusNextZone = document.getElementById('statusNextZone');
-
-    const newChatModal = document.getElementById('newChatModal');
-    const closeNewChatModal = document.getElementById('closeNewChatModal');
-    const allUsersList = document.getElementById('allUsersList');
-    const searchNewUserInput = document.getElementById('searchNewUserInput');
-
-    const menuBtn = document.getElementById('menuBtn');
-    const dropdownMenu = document.getElementById('dropdownMenu');
-    const logoutBtn = document.getElementById('logoutBtn');
-
-    const chatCallBtn = document.getElementById('chatCallBtn');
-    const callMenu = document.getElementById('callMenu');
-    const startVoiceCallBtn = document.getElementById('startVoiceCallBtn');
-    const startVideoCallBtn = document.getElementById('startVideoCallBtn');
-    const callScreenModal = document.getElementById('callScreenModal');
-    const callUserAvatar = document.getElementById('callUserAvatar');
-    const callUserName = document.getElementById('callUserName');
-    const callTypeStatus = document.getElementById('callTypeStatus');
-    const endCallBtn = document.getElementById('endCallBtn');
-
-    const incomingCallModal = document.getElementById('incomingCallModal');
-    const incomingCallerAvatar = document.getElementById('incomingCallerAvatar');
-    const incomingCallerName = document.getElementById('incomingCallerName');
-    const incomingCallType = document.getElementById('incomingCallType');
-    const acceptCallBtn = document.getElementById('acceptCallBtn');
-    const rejectCallBtn = document.getElementById('rejectCallBtn');
-
-    menuBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        dropdownMenu.classList.toggle('hidden');
-    });
-
-    chatCallBtn.addEventListener('click', (e) => {
-        e.stopPropagation();
-        callMenu.classList.toggle('hidden');
-    });
-
-    document.addEventListener('click', () => {
-        dropdownMenu.classList.add('hidden');
-        callMenu.classList.add('hidden');
-    });
-
-    logoutBtn.addEventListener('click', async () => {
-        dropdownMenu.classList.add('hidden');
-        await signOut(auth);
-    });
-
-    fabBtn.addEventListener('click', () => {
-        newChatModal.classList.remove('hidden');
-        loadAllUsersForNewChat();
-    });
-
-    closeNewChatModal.addEventListener('click', () => {
-        newChatModal.classList.add('hidden');
-    });
-
-    closeAddStatusModal.addEventListener('click', () => {
-        addStatusModal.classList.add('hidden');
-    });
-
-    async function loadAllUsersForNewChat(filter = '') {
-        const querySnap = await getDocs(collection(db, "users"));
-        allUsersList.innerHTML = "";
-        let found = false;
-
-        querySnap.forEach((docSnap) => {
-            const userData = docSnap.data();
-            if (currentUserData && userData.uid === currentUserData.uid) return;
-            if (filter && !userData.username.toLowerCase().includes(filter)) return;
-
-            found = true;
-            const item = document.createElement('div');
-            item.className = "flex items-center gap-3 px-3 py-2.5 hover:bg-[#1e293b] cursor-pointer rounded-xl";
-            const avatar = userData.profilePic 
-                ? `<div class="w-10 h-10 rounded-full bg-cover bg-center shrink-0" style="background-image: url('${userData.profilePic}')"></div>`
-                : `<div class="w-10 h-10 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-sm shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
-
-            item.innerHTML = `${avatar}<div class="text-white font-semibold text-sm">@${userData.username}</div>`;
-            item.addEventListener('click', () => {
-                newChatModal.classList.add('hidden');
-                openChatWithUser(userData);
-            });
-            allUsersList.appendChild(item);
-        });
-
-        if (!found) {
-            allUsersList.innerHTML = `<div class="p-4 text-center text-xs text-[#94a3b8]">Ma jiro saaxiib la helay.</div>`;
-        }
-    }
-
-    searchNewUserInput.addEventListener('input', (e) => {
-        loadAllUsersForNewChat(e.target.value.trim().toLowerCase());
-    });
-
-    addStatusForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const text = statusTextInput.value.trim();
-        const file = statusMediaInput.files[0];
-        if (!text && !file) return;
-        if (!currentUserData) return;
-
-        let mediaData = "";
-        if (file) {
-            mediaData = await convertToBase64(file);
-        }
-
-        await addDoc(collection(db, "statuses"), {
-            userId: currentUserData.uid,
-            username: currentUserData.username,
-            userPic: currentUserData.profilePic || "",
-            text: text,
-            mediaData: mediaData,
-            createdAt: new Date()
-        });
-
-        statusTextInput.value = "";
-        statusMediaInput.value = "";
-        addStatusModal.classList.add('hidden');
-        alert("Status-kaaga si guul leh ayaa loo diiwaangaliyay!");
-        renderTabContent();
-    });
-
-    function openTikTokStatusViewer(statuses, targetUser) {
-        currentStatusList = statuses;
-        currentStatusIndex = 0;
-        
-        statusUsername.innerText = `@${targetUser.username}`;
-        if (targetUser.profilePic) {
-            statusUserAvatar.style.backgroundImage = `url(${targetUser.profilePic})`;
-            statusUserAvatar.innerText = "";
-        } else {
-            statusUserAvatar.style.backgroundImage = "";
-            statusUserAvatar.innerText = targetUser.username.charAt(0).toUpperCase();
-        }
-
-        statusViewerModal.classList.remove('hidden');
-        renderCurrentStatus();
-    }
-
-    function renderCurrentStatus() {
-        if (statusTimer) clearTimeout(statusTimer);
-
-        if (currentStatusIndex >= currentStatusList.length) {
-            closeTikTokStatusViewer();
-            return;
-        }
-
-        const st = currentStatusList[currentStatusIndex];
-
-        let barsHtml = '';
-        for (let i = 0; i < currentStatusList.length; i++) {
-            let bgClass = i < currentStatusIndex ? 'bg-white' : i === currentStatusIndex ? 'bg-sky-400 animate-pulse' : 'bg-white/30';
-            barsHtml += `<div class="flex-1 h-1 rounded-full ${bgClass} transition-all duration-300"></div>`;
-        }
-        statusProgressBars.innerHTML = barsHtml;
-
-        if (st.mediaData) {
-            statusMediaDisplay.style.backgroundImage = `url(${st.mediaData})`;
-            statusMediaDisplay.classList.remove('hidden');
-        } else {
-            statusMediaDisplay.style.backgroundImage = '';
-            statusMediaDisplay.classList.add('hidden');
-        }
-
-        statusTextDisplay.innerText = st.text || '';
-        statusTime.innerText = "Hadda";
-
-        statusTimer = setTimeout(() => {
-            currentStatusIndex++;
-            renderCurrentStatus();
-        }, 5000);
-    }
-
-    statusNextZone.addEventListener('click', () => {
-        currentStatusIndex++;
-        renderCurrentStatus();
-    });
-
-    statusPrevZone.addEventListener('click', () => {
-        if (currentStatusIndex > 0) {
-            currentStatusIndex--;
-            renderCurrentStatus();
-        }
-    });
-
-    function closeTikTokStatusViewer() {
-        if (statusTimer) clearTimeout(statusTimer);
-        statusViewerModal.classList.add('hidden');
-    }
-
-    closeStatusViewer.addEventListener('click', closeTikTokStatusViewer);
-
-    async function makeCall(type) {
-        if (!activeChatUser || !currentUserData) return;
-        callMenu.classList.add('hidden');
-
-        const callDocRef = doc(collection(db, "calls"));
-        currentCallData = {
-            id: callDocRef.id,
-            callerUid: currentUserData.uid,
-            callerUsername: currentUserData.username,
-            callerPic: currentUserData.profilePic || '',
-            receiverUid: activeChatUser.uid,
-            receiverUsername: activeChatUser.username,
-            receiverPic: activeChatUser.profilePic || '',
-            type: type,
-            status: 'ringing',
-            createdAt: new Date()
-        };
-
-        await setDoc(callDocRef, currentCallData);
-        openOutGoingCallScreen(type, activeChatUser);
-        listenToCallStatus(callDocRef.id, true);
-    }
-
-    startVoiceCallBtn.addEventListener('click', () => makeCall('Voice call'));
-    startVideoCallBtn.addEventListener('click', () => makeCall('Video call'));
-
-    function openOutGoingCallScreen(type, targetUser) {
-        callUserName.innerText = `@${targetUser.username}`;
-        callTypeStatus.innerText = `Wicitaan ${type} ah... (Ringing)`;
-        
-        if (targetUser.profilePic) {
-            callUserAvatar.style.backgroundImage = `url(${targetUser.profilePic})`;
-            callUserAvatar.innerText = "";
-        } else {
-            callUserAvatar.style.backgroundImage = "";
-            callUserAvatar.innerText = targetUser.username.charAt(0).toUpperCase();
-        }
-        
-        callScreenModal.classList.remove('hidden');
-    }
-
-    async function logCallToChat(type, statusText) {
-        if (!activeChatUser || !currentUserData) return;
-        const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
-        await addDoc(collection(db, "chats", chatId, "messages"), {
-            senderId: currentUserData.uid,
-            text: "",
-            fileData: null,
-            fileType: 'call',
-            fileName: null,
-            callInfo: { type: type, status: statusText },
-            createdAt: new Date()
-        });
-    }
-
-    function listenToCallStatus(callId, isCaller) {
-        onSnapshot(doc(db, "calls", callId), async (docSnap) => {
-            if (docSnap.exists()) {
-                const data = docSnap.data();
-                if (data.status === 'accepted') {
-                    callTypeStatus.innerText = `Wicitaan ${data.type} ah waa socdaa...`;
-                } else if (data.status === 'ended') {
-                    callScreenModal.classList.add('hidden');
-                    incomingCallModal.classList.add('hidden');
-                    if (isCaller && currentCallData && currentCallData.status === 'ringing') {
-                        await logCallToChat(data.type, 'No answer');
-                    }
-                    currentCallData = null;
-                }
-            } else {
-                callScreenModal.classList.add('hidden');
-                incomingCallModal.classList.add('hidden');
-                currentCallData = null;
-            }
-        });
-    }
-
-    endCallBtn.addEventListener('click', async () => {
-        if (currentCallData && currentCallData.id) {
-            const statusMsg = currentCallData.status === 'accepted' ? 'Completed' : 'No answer';
-            await updateDoc(doc(db, "calls", currentCallData.id), { status: 'ended' });
-            await logCallToChat(currentCallData.type, statusMsg);
-        }
-        callScreenModal.classList.add('hidden');
-        currentCallData = null;
-    });
-
-    acceptCallBtn.addEventListener('click', async () => {
-        if (currentCallData && currentCallData.id) {
-            await updateDoc(doc(db, "calls", currentCallData.id), { status: 'accepted' });
-            incomingCallModal.classList.add('hidden');
-            
-            callUserName.innerText = `@${currentCallData.callerUsername}`;
-            callTypeStatus.innerText = `Wicitaan ${currentCallData.type} ah waa socdaa...`;
-            if (currentCallData.callerPic) {
-                callUserAvatar.style.backgroundImage = `url(${currentCallData.callerPic})`;
-                callUserAvatar.innerText = "";
-            } else {
-                callUserAvatar.style.backgroundImage = "";
-                callUserAvatar.innerText = currentCallData.callerUsername.charAt(0).toUpperCase();
-            }
-            callScreenModal.classList.remove('hidden');
-        }
-    });
-
-    rejectCallBtn.addEventListener('click', async () => {
-        if (currentCallData && currentCallData.id) {
-            await updateDoc(doc(db, "calls", currentCallData.id), { status: 'ended' });
-            await logCallToChat(currentCallData.type, 'Declined / No answer');
-        }
-        incomingCallModal.classList.add('hidden');
-        currentCallData = null;
-    });
-
-    function listenForIncomingCalls(userUid) {
-        const q = query(
-            collection(db, "calls"), 
-            where("receiverUid", "==", userUid), 
-            where("status", "==", "ringing")
-        );
-
-        onSnapshot(q, (snapshot) => {
-            snapshot.docChanges().forEach((change) => {
-                if (change.type === "added") {
-                    const call = change.doc.data();
-                    currentCallData = { id: change.doc.id, ...call };
-                    
-                    incomingCallerName.innerText = `@${call.callerUsername}`;
-                    incomingCallType.innerText = `Wicitaan ${call.type} ah...`;
-                    
-                    if (call.callerPic) {
-                        incomingCallerAvatar.style.backgroundImage = `url(${call.callerPic})`;
-                        incomingCallerAvatar.innerText = "";
-                    } else {
-                        incomingCallerAvatar.style.backgroundImage = "";
-                        incomingCallerAvatar.innerText = call.callerUsername.charAt(0).toUpperCase();
-                    }
-
-                    incomingCallModal.classList.remove('hidden');
-                    listenToCallStatus(change.doc.id, false);
-                }
-            });
-        });
-    }
-
-    const navButtons = document.querySelectorAll('.nav-btn');
-    navButtons.forEach(btn => {
-        btn.addEventListener('click', () => {
-            navButtons.forEach(b => {
-                b.classList.remove('text-sky-400');
-                b.classList.add('text-[#94a3b8]');
-                const div = b.querySelector('div');
-                div.classList.remove('bg-sky-500/20');
-                const span = b.querySelector('span');
-                span.classList.remove('font-bold');
-                span.classList.add('font-semibold');
-            });
-            btn.classList.remove('text-[#94a3b8]');
-            btn.classList.add('text-sky-400');
-            const activeDiv = btn.querySelector('div');
-            activeDiv.classList.add('bg-sky-500/20');
-            const activeSpan = btn.querySelector('span');
-            activeSpan.classList.remove('font-semibold');
-            activeSpan.classList.add('font-bold');
-
-            currentTab = btn.getAttribute('data-tab');
-            renderTabContent();
-        });
-    });
-
-    async function loadActiveChats(filterText = '') {
-        const listEl = document.getElementById('chatsList');
-        if (!listEl || !currentUserData) return;
-
-        const usersSnap = await getDocs(collection(db, "users"));
-        listEl.innerHTML = "";
-        let activeChatsFound = false;
-
-        for (const userDoc of usersSnap.docs) {
-            const userData = userDoc.data();
-            if (userData.uid === currentUserData.uid) continue;
-            if (filterText && !userData.username.toLowerCase().includes(filterText)) continue;
-
-            const chatId = getChatId(currentUserData.uid, userData.uid);
-            const msgSnap = await getDocs(collection(db, "chats", chatId, "messages"));
-
-            if (!msgSnap.empty) {
-                activeChatsFound = true;
-                const messages = [];
-                msgSnap.forEach(m => messages.push(m.data()));
-                messages.sort((a, b) => b.createdAt.toMillis() - a.createdAt.toMillis());
-                const lastMsg = messages[0];
-                let lastText = lastMsg.text || (lastMsg.fileType === 'image' ? '📷 Sawir' : lastMsg.fileType === 'video' ? '🎥 Fiidiyow' : lastMsg.fileType === 'call' ? `📞 ${lastMsg.callInfo.type}` : '📄 Fayl');
-
-                const userItem = document.createElement('div');
-                userItem.className = "flex items-center gap-3.5 px-4 py-3 active:bg-[#1e293b]/60 cursor-pointer transition-colors border-b border-[#1e293b]/50";
-                const avatarHtml = userData.profilePic 
-                    ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${userData.profilePic}')"></div>`
-                    : `<div class="w-12 h-12 rounded-full bg-gradient-to-tr from-sky-500 to-blue-600 flex items-center justify-center font-bold text-white text-base shadow-md shrink-0">${userData.username.charAt(0).toUpperCase()}</div>`;
-
-                userItem.innerHTML = `
-                    ${avatarHtml}
-                    <div class="flex-1 min-w-0">
-                        <div class="flex justify-between items-center mb-1">
-                            <h2 class="text-white font-semibold text-sm truncate">@${userData.username}</h2>
-                        </div>
-                        <p class="text-xs text-[#94a3b8] truncate">${lastText}</p>
-                    </div>
-                `;
-                userItem.addEventListener('click', () => openChatWithUser(userData));
-                listEl.appendChild(userItem);
-            }
-        }
-
-        if (!activeChatsFound) {
-            listEl.innerHTML = `<div class="p-8 text-center text-[#94a3b8] text-xs">Ma jiraan fariimo cusub. Guji badhanka cagaaran ee hoose si aad chat u bilowdo.</div>`;
-        }
-    }
-
-    async function renderTabContent() {
-        if (currentTab === 'chats') {
-            searchSection.classList.remove('hidden');
-            fabBtn.classList.remove('hidden');
-            mainContentArea.innerHTML = `<div id="chatsList" class="divide-y divide-[#1e293b]/50 flex-1"></div>`;
-            loadActiveChats();
-        } else {
-            searchSection.classList.add('hidden');
-            fabBtn.classList.add('hidden');
-        }
-
-        if (currentTab === 'wallet') {
-            mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">💳</div><h3 class="text-white font-bold text-lg mb-1">Wallet</h3><p class="text-xs">Qaybta Wallet-ka waa la hirgelin doonaa dhowaan.</p></div>`;
-        } else if (currentTab === 'profile') {
-            mainContentArea.innerHTML = `
-                <div class="p-6 flex flex-col items-center justify-center h-full text-center">
-                    <div class="w-24 h-24 rounded-full bg-cover bg-center mb-4 shadow-2xl" style="background-image: url('${currentUserData && currentUserData.profilePic ? currentUserData.profilePic : ''}')">
-                        ${!currentUserData?.profilePic ? `<div class="w-full h-full flex items-center justify-center bg-sky-500 text-white text-3xl font-bold">${currentUserData?.username?.charAt(0).toUpperCase()}</div>` : ''}
-                    </div>
-                    <h3 class="text-white font-bold text-xl mb-1">@${currentUserData?.username}</h3>
-                    <p class="text-xs text-[#94a3b8] mb-6">${currentUserData?.email}</p>
-                    <button id="profileLogoutBtn" class="bg-red-600 hover:bg-red-500 text-white font-semibold px-6 py-2.5 rounded-xl text-sm shadow-lg">Logout</button>
+                <div class="flex items-center gap-1.5">
+                    <span class="text-primary font-bold text-xl">Poly</span>
+                    <span class="text-white font-bold text-xl">market</span>
                 </div>
-            `;
-            document.getElementById('profileLogoutBtn').addEventListener('click', async () => {
-                await signOut(auth);
-            });
-        } else if (currentTab === 'calls') {
-            if (!currentUserData) return;
-            const qCalls = query(
-                collection(db, "calls"), 
-                where("receiverUid", "==", currentUserData.uid)
-            );
-            const callSnaps = await getDocs(qCalls);
+            </div>
+            
+            <!-- Icon/Profile Section -->
+            <div class="flex items-center gap-3">
+                <button class="text-white hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9"></path></svg>
+                </button>
+                <button class="text-white hover:text-gray-300">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path></svg>
+                </button>
+                <!-- Profile Avatar Gradient Circle -->
+                <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FFA500] via-[#A020F0] to-[#00FF00]"></div>
+            </div>
+        </header>
 
-            if (callSnaps.empty) {
-                mainContentArea.innerHTML = `<div class="p-6 text-center text-[#94a3b8] flex flex-col items-center justify-center h-full"><div class="w-16 h-16 bg-sky-500/10 text-sky-400 rounded-2xl flex items-center justify-center mb-3 text-2xl">📞</div><h3 class="text-white font-bold text-lg mb-1">Calls</h3><p class="text-xs">Ma jiraan wicitaano diiwaangashan hadda.</p></div>`;
-            } else {
-                let callItemsHtml = '';
-                callSnaps.forEach((docSnap) => {
-                    const c = docSnap.data();
-                    const avatar = c.callerPic 
-                        ? `<div class="w-12 h-12 rounded-full bg-cover bg-center shrink-0 shadow-md" style="background-image: url('${c.callerPic}')"></div>`
-                        : `<div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-base">${c.callerUsername.charAt(0).toUpperCase()}</div>`;
+        <!-- 2. Category Sub-menu (Scrolling) -->
+        <nav class="flex items-center gap-2 overflow-x-auto p-4 py-3 border-b border-secondary no-scrollbar">
+            <a href="#" class="px-4 py-1.5 bg-secondary text-white rounded-full text-sm font-medium whitespace-nowrap hover:bg-[#2A2E3E]">All</a>
+            <a href="#" class="px-4 py-1.5 bg-primary text-white rounded-full text-sm font-medium whitespace-nowrap">Crypto</a>
+            <a href="#" class="px-4 py-1.5 bg-secondary text-white rounded-full text-sm font-medium whitespace-nowrap hover:bg-[#2A2E3E]">Politics</a>
+            <a href="#" class="px-4 py-1.5 bg-secondary text-white rounded-full text-sm font-medium whitespace-nowrap hover:bg-[#2A2E3E]">Econ</a>
+            <a href="#" class="px-4 py-1.5 bg-secondary text-white rounded-full text-sm font-medium whitespace-nowrap hover:bg-[#2A2E3E]">Culture</a>
+            <a href="#" class="px-4 py-1.5 bg-secondary text-white rounded-full text-sm font-medium whitespace-nowrap hover:bg-[#2A2E3E]">AI</a>
+        </nav>
 
-                    callItemsHtml += `
-                        <div class="flex items-center gap-3.5 px-4 py-3 border-b border-[#1e293b]/50">
-                            ${avatar}
-                            <div class="flex-1 min-w-0">
-                                <h2 class="text-white font-semibold text-sm">@${c.callerUsername}</h2>
-                                <p class="text-xs text-[#94a3b8]">${c.type} • <span class="${c.status === 'ended' ? 'text-red-400' : 'text-emerald-400'}">${c.status}</span></p>
-                            </div>
-                            <svg class="w-5 h-5 fill-current text-sky-400" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                        </div>
-                    `;
-                });
-                mainContentArea.innerHTML = `<div class="divide-y divide-[#1e293b]/50 flex-1">${callItemsHtml}</div>`;
-            }
-        } else if (currentTab === 'status') {
-            mainContentArea.innerHTML = `
-                <div class="p-4">
-                    <div id="addStatusBtn" class="flex items-center gap-3 p-3.5 bg-[#1e293b]/80 rounded-2xl mb-4 cursor-pointer hover:bg-[#1e293b] transition-colors shadow-lg">
-                        <div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-xl shadow-md">+</div>
-                        <div>
-                            <h3 class="text-white font-semibold text-sm">Ku dar Status cusub</h3>
-                            <p class="text-xs text-[#94a3b8]">Riix si aad sawir ama qoraal u geliso</p>
-                        </div>
-                    </div>
-                    <h2 class="text-xs font-bold text-[#94a3b8] uppercase tracking-wider mb-3">Updates-ka Saaxiibada</h2>
-                    <div id="statusUsersList" class="space-y-2"></div>
+        <!-- Main Content Area -->
+        <main class="p-4 space-y-6">
+            <!-- 3. Portfolio Balance Card -->
+            <section class="p-5 bg-card rounded-2xl border border-secondary">
+                <div class="flex items-center justify-between mb-2">
+                    <div class="text-mutedText text-sm">Portfolio</div>
+                    <div class="text-mutedText text-sm">Available to trade</div>
                 </div>
-            `;
+                <div class="flex items-end justify-between">
+                    <div class="text-4xl font-extrabold text-white leading-none">$0.04</div>
+                    <div class="text-xl font-bold text-white">$0.04</div>
+                </div>
+            </section>
 
-            document.getElementById('addStatusBtn').addEventListener('click', () => {
-                addStatusModal.classList.remove('hidden');
-            });
+            <!-- 4. Action Buttons -->
+            <section class="grid grid-cols-2 gap-3">
+                <button class="flex items-center justify-center gap-2 p-4 bg-primary text-white rounded-xl font-semibold hover:bg-[#407BFF] transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    Deposit
+                </button>
+                <button class="flex items-center justify-center gap-2 p-4 bg-secondary text-mutedText rounded-xl font-semibold hover:bg-[#2A2E3E] transition-colors">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M12 4v16m8-8H4"></path></svg>
+                    Withdraw
+                </button>
+            </section>
 
-            const statusesSnap = await getDocs(collection(db, "statuses"));
-            const statusesByUser = {};
-            statusesSnap.forEach(docSnap => {
-                const s = docSnap.data();
-                if (!statusesByUser[s.userId]) {
-                    statusesByUser[s.userId] = {
-                        username: s.username,
-                        userPic: s.userPic,
-                        items: []
-                    };
-                }
-                statusesByUser[s.userId].items.push(s);
-            });
-
-            const statusUsersListEl = document.getElementById('statusUsersList');
-            statusUsersListEl.innerHTML = "";
-            let foundStatuses = false;
-
-            for (const uid in statusesByUser) {
-                foundStatuses = true;
-                const userStatusObj = statusesByUser[uid];
-                const item = document.createElement('div');
-                item.className = "flex items-center gap-3 p-2.5 hover:bg-[#1e293b]/40 rounded-xl cursor-pointer transition-colors";
-                const avatar = userStatusObj.userPic 
-                    ? `<div class="w-12 h-12 rounded-full bg-cover bg-center p-0.5 ring-2 ring-sky-400" style="background-image: url('${userStatusObj.userPic}')"></div>`
-                    : `<div class="w-12 h-12 rounded-full bg-sky-500 flex items-center justify-center font-bold text-white text-base ring-2 ring-sky-400">${userStatusObj.username.charAt(0).toUpperCase()}</div>`;
-
-                item.innerHTML = `${avatar}<div><h4 class="text-white font-semibold text-sm">@${userStatusObj.username}</h4><p class="text-xs text-[#94a3b8]">${userStatusObj.items.length} status oo cusub</p></div>`;
+            <!-- 5. Profit/Loss Chart Card -->
+            <section class="p-4 bg-card rounded-2xl border border-secondary relative min-h-[160px]">
+                <div class="flex items-center justify-between mb-1">
+                    <div class="text-mutedText text-xs uppercase font-semibold">P/L</div>
+                    <div class="text-mutedText text-xs">Nov 2, 2026</div>
+                </div>
+                <div class="text-xl font-bold text-white mb-4">$0.00</div>
                 
-                item.addEventListener('click', () => {
-                    openTikTokStatusViewer(userStatusObj.items, { username: userStatusObj.username, profilePic: userStatusObj.userPic });
-                });
+                <!-- Approximated chart shape/gradient -->
+                <div class="w-full h-[60px] absolute bottom-4 left-0 px-4">
+                    <div class="w-full h-full rounded-md" style="background: linear-gradient(180deg, rgba(47, 102, 246, 0.2) 0%, rgba(47, 102, 246, 0) 100%);">
+                        <svg class="w-full h-full" viewBox="0 0 100 20" preserveAspectRatio="none">
+                            <path d="M0,10 C10,12 20,8 30,11 C40,14 50,5 60,8 C70,11 80,6 90,9 C100,12 110,10 120,10" stroke="#2F66F6" stroke-width="1.5" fill="none"></path>
+                        </svg>
+                    </div>
+                </div>
 
-                statusUsersListEl.appendChild(item);
-            }
+                <!-- Timeframe Filters -->
+                <div class="absolute bottom-4 left-4 right-4 flex items-center justify-between gap-1 text-xs text-mutedText z-[1]">
+                    <span class="px-2 py-0.5 bg-secondary rounded hover:text-white cursor-pointer">1D</span>
+                    <span class="px-2 py-0.5 bg-secondary rounded hover:text-white cursor-pointer">1W</span>
+                    <span class="px-2 py-0.5 bg-secondary rounded hover:text-white cursor-pointer">1M</span>
+                    <span class="px-2 py-0.5 bg-secondary rounded hover:text-white cursor-pointer">1Y</span>
+                    <span class="px-2 py-0.5 bg-secondary rounded hover:text-white cursor-pointer">ALL</span>
+                </div>
+            </section>
 
-            if (!foundStatuses) {
-                statusUsersListEl.innerHTML = `<div class="p-4 text-center text-xs text-[#94a3b8]">Ma jiraan Status-yo hadda la soo galiyay.</div>`;
-            }
+            <!-- 6. Positions Table Area -->
+            <section class="space-y-3">
+                <div class="flex items-center justify-between">
+                    <h2 class="text-lg font-bold text-white">Your Positions</h2>
+                    <button class="text-primary text-sm font-medium hover:text-[#407BFF]">View All</button>
+                </div>
+                
+                <div class="p-6 bg-card rounded-2xl border border-secondary text-center space-y-4">
+                    <svg class="w-16 h-16 mx-auto text-secondary" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"></path></svg>
+                    <div class="space-y-1">
+                        <div class="text-white font-semibold">No positions found</div>
+                        <div class="text-mutedText text-sm px-5">Your active trade positions will be displayed here. Start trading to populate this table.</div>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <!-- 7. Bottom Navigation Bar -->
+        <footer class="fixed bottom-0 left-0 w-full bg-background border-t border-secondary z-10 flex justify-center">
+            <div class="max-w-[420px] w-full flex items-center justify-around p-3 px-5 text-mutedText">
+                <button class="flex flex-col items-center gap-1 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"></path></svg>
+                    <span class="text-[10px]">Markets</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 text-primary">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path></svg>
+                    <span class="text-[10px]">Portfolio</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 hover:text-white">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M12 16v1m-6-6h.01M6 16h.01M18 16h.01M18 11h.01"></path></svg>
+                    <span class="text-[10px]">Leaderboard</span>
+                </button>
+                <button class="flex flex-col items-center gap-1 hover:text-white relative">
+                    <div class="w-8 h-8 rounded-full bg-gradient-to-tr from-[#FFA500] via-[#A020F0] to-[#00FF00]"></div>
+                    <span class="absolute top-0 right-0 w-2 h-2 bg-red-500 rounded-full"></span>
+                </button>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- Hidden class for no-scrollbar support in various browsers -->
+    <style>
+        .no-scrollbar::-webkit-scrollbar {
+            display: none;
         }
-    }
-
-    toggleAuthBtn.addEventListener('click', () => {
-        isSignUp = !isSignUp;
-        modalTitle.innerText = isSignUp ? "Sign Up (Diiwaangeli)" : "Soo Gal (Sign In)";
-        submitAuthBtn.innerText = isSignUp ? "Isdiiwaangeli" : "Soo Gal";
-        toggleAuthBtn.innerText = isSignUp ? "Hadaad leedahay akoon? Sign In" : "Sameyso Akoon (Sign Up)";
-        usernameGroup.classList.toggle('hidden', !isSignUp);
-        profileImageGroup.classList.toggle('hidden', !isSignUp);
-        authError.classList.add('hidden');
-    });
-
-    function convertToBase64(file) {
-        return new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result);
-            reader.onerror = err => reject(err);
-        });
-    }
-
-    authForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        authError.classList.add('hidden');
-        const email = document.getElementById('authEmail').value;
-        const password = document.getElementById('authPassword').value;
-
-        try {
-            if (isSignUp) {
-                const username = document.getElementById('authUsername').value.trim().toLowerCase();
-                const imageFile = document.getElementById('authProfilePic').files[0];
-                if (!username) throw new Error("Fadlan qor Username-kaaga");
-
-                const q = query(collection(db, "users"), where("username", "==", username));
-                const querySnap = await getDocs(q);
-                if (!querySnap.empty) throw new Error("Username-kan waa la qaatay!");
-
-                let base64Pic = "";
-                if (imageFile) base64Pic = await convertToBase64(imageFile);
-
-                const userCred = await createUserWithEmailAndPassword(auth, email, password);
-                await setDoc(doc(db, "users", userCred.user.uid), {
-                    uid: userCred.user.uid, email, username, profilePic: base64Pic, createdAt: new Date()
-                });
-                await sendEmailVerification(userCred.user);
-                alert("Si guul leh ayaad u diiwaangashay! Hubi email-kaaga.");
-            } else {
-                await signInWithEmailAndPassword(auth, email, password);
-            }
-        } catch (err) {
-            console.error(err);
-            authError.innerText = err.message || "Khalad ayaa dhacay.";
-            authError.classList.remove('hidden');
+        .no-scrollbar {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
         }
-    });
-
-    onAuthStateChanged(auth, async (user) => {
-        if (user) {
-            const userDoc = await getDoc(doc(db, "users", user.uid));
-            if (userDoc.exists()) {
-                currentUserData = userDoc.data();
-                if (currentUserData.profilePic) {
-                    myHeaderAvatar.style.backgroundImage = `url(${currentUserData.profilePic})`;
-                    myHeaderAvatar.innerText = "";
-                } else {
-                    myHeaderAvatar.innerText = currentUserData.username.charAt(0).toUpperCase();
-                }
-                listenForIncomingCalls(user.uid);
-            }
-            authModal.classList.add('hidden');
-            renderTabContent();
-        } else {
-            currentUserData = null;
-            authModal.classList.remove('hidden');
-        }
-    });
-
-    document.addEventListener('input', async (e) => {
-        if(e.target && e.target.id === 'searchInput') {
-            const searchText = e.target.value.trim().toLowerCase();
-            loadActiveChats(searchText);
-        }
-    });
-
-    function openChatWithUser(targetUser) {
-        activeChatUser = targetUser;
-        document.getElementById('chatUserName').innerText = `@${targetUser.username}`;
-        const avatarEl = document.getElementById('chatUserAvatar');
-        if (targetUser.profilePic) {
-            avatarEl.style.backgroundImage = `url(${targetUser.profilePic})`;
-            avatarEl.innerText = "";
-        } else {
-            avatarEl.style.backgroundImage = "";
-            avatarEl.innerText = targetUser.username.charAt(0).toUpperCase();
-        }
-        chatModal.classList.remove('hidden');
-        loadMessages();
-    }
-
-    closeChatBtn.addEventListener('click', () => {
-        chatModal.classList.add('hidden');
-        if (unsubscribeMessages) unsubscribeMessages();
-        renderTabContent();
-    });
-
-    function getChatId(uid1, uid2) {
-        return uid1 < uid2 ? `${uid1}_${uid2}` : `${uid2}_${uid1}`;
-    }
-
-    messageForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const text = messageInput.value.trim();
-        const file = mediaInput.files[0];
-        if (!text && !file) return;
-        if (!activeChatUser || !currentUserData) return;
-
-        let fileData = null, fileType = null, fileName = null;
-        if (file) {
-            fileData = await convertToBase64(file);
-            fileName = file.name;
-            if (file.type.startsWith('image/')) fileType = 'image';
-            else if (file.type.startsWith('video/')) fileType = 'video';
-            else fileType = 'document';
-        }
-
-        const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
-        await addDoc(collection(db, "chats", chatId, "messages"), {
-            senderId: currentUserData.uid, text, fileData, fileType, fileName, createdAt: new Date()
-        });
-
-        messageInput.value = "";
-        mediaInput.value = "";
-    });
-
-    function loadMessages() {
-        if (!activeChatUser || !currentUserData) return;
-        const chatId = getChatId(currentUserData.uid, activeChatUser.uid);
-        const q = query(collection(db, "chats", chatId, "messages"), orderBy("createdAt", "asc"));
-        
-        if (unsubscribeMessages) unsubscribeMessages();
-
-        unsubscribeMessages = onSnapshot(q, (snapshot) => {
-            messagesContainer.innerHTML = "";
-            snapshot.forEach((docSnap) => {
-                const msg = docSnap.data();
-                const isMe = msg.senderId === currentUserData.uid;
-
-                let contentHtml = "";
-                if (msg.fileType === 'image') {
-                    contentHtml = `<img src="${msg.fileData}" class="rounded-xl w-64 h-auto mb-2 max-h-60 object-cover cursor-pointer chat-media shadow-md" data-type="image" data-src="${msg.fileData}">`;
-                } else if (msg.fileType === 'video') {
-                    contentHtml = `<video src="${msg.fileData}" class="rounded-xl w-64 h-auto mb-2 max-h-48 cursor-pointer chat-media shadow-md" data-type="video" data-src="${msg.fileData}" controls></video>`;
-                } else if (msg.fileType === 'document') {
-                    contentHtml = `<a href="${msg.fileData}" download="${msg.fileName}" class="flex items-center gap-2 text-sky-300 underline text-sm mb-2 bg-black/30 p-2.5 rounded-xl">📄 ${msg.fileName}</a>`;
-                } else if (msg.fileType === 'call') {
-                    contentHtml = `
-                        <div class="flex items-center gap-3 bg-black/30 p-3 rounded-xl my-1">
-                            <div class="w-10 h-10 rounded-full bg-emerald-500/20 text-emerald-400 flex items-center justify-center shrink-0">
-                                <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24"><path d="M6.62 10.79c1.44 2.83 3.76 5.14 6.59 6.59l2.2-2.2c.27-.27.67-.36 1.02-.24 1.12.37 2.33.57 3.57.57.55 0 1 .45 1 1V20c0 .55-.45 1-1 1-9.39 0-17-7.61-17-17 0-.55.45-1 1-1h3.5c.55 0 1 .45 1 1 0 1.25.2 2.45.57 3.57.11.35.03.74-.25 1.02l-2.2 2.2z"/></svg>
-                            </div>
-                            <div>
-                                <h4 class="text-white font-semibold text-sm">${msg.callInfo.type}</h4>
-                                <p class="text-xs text-[#94a3b8]">${msg.callInfo.status}</p>
-                            </div>
-                        </div>
-                    `;
-                }
-
-                if (msg.text && msg.fileType !== 'call') contentHtml += `<div class="text-base leading-relaxed px-1">${msg.text}</div>`;
-
-                const msgBubble = document.createElement('div');
-                msgBubble.className = `flex ${isMe ? 'justify-end' : 'justify-start'} my-1`;
-                msgBubble.innerHTML = `<div class="max-w-[85%] px-3 py-2 rounded-2xl ${isMe ? 'bg-sky-500 text-white rounded-tr-none' : 'bg-[#1e293b] text-white rounded-tl-none'} shadow-md">${contentHtml}</div>`;
-                messagesContainer.appendChild(msgBubble);
-            });
-
-            document.querySelectorAll('.chat-media').forEach(mediaEl => {
-                mediaEl.addEventListener('click', (e) => {
-                    e.stopPropagation();
-                    const type = mediaEl.getAttribute('data-type');
-                    const src = mediaEl.getAttribute('data-src');
-                    
-                    if (type === 'image') {
-                        mediaViewerContent.innerHTML = `<img src="${src}" class="max-w-full max-h-[90vh] object-contain rounded-lg">`;
-                    } else if (type === 'video') {
-                        mediaViewerContent.innerHTML = `<video src="${src}" controls autoplay class="max-w-full max-h-[90vh] rounded-lg"></video>`;
-                    }
-                    mediaViewerModal.classList.remove('hidden');
-                });
-            });
-
-            messagesContainer.scrollTop = messagesContainer.scrollHeight;
-        });
-    }
-
-    closeMediaViewer.addEventListener('click', () => {
-        mediaViewerModal.classList.add('hidden');
-        mediaViewerContent.innerHTML = "";
-    });
-</script>
-</body>  
+    </style>
+</body>
 </html>

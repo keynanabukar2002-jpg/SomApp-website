@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polymarket App</title>
+    <title>Polymarket Firebase App</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
@@ -30,8 +30,8 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <span id="userStatus" class="text-[11px] font-mono text-emerald-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
-                    Connected
+                <span id="userStatus" class="text-[11px] font-mono text-amber-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
+                    Connecting...
                 </span>
             </div>
         </header>
@@ -79,7 +79,7 @@
                     <button onclick="closeDepositModal()" class="text-[#9CA3AF] hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 
-                <p class="text-xs text-[#9CA3AF]">Ugu soo shub Polygon (MATIC/POL) cinwaankan:</p>
+                <p class="text-xs text-[#9CA3AF]">Fadlan ugu soo shub Polygon (MATIC/USDT) cinwaankan (Ugu yar $0.10):</p>
                 
                 <div class="bg-[#0F1117] p-3 rounded-xl border border-[#1E2230] flex items-center justify-between">
                     <span id="depositAddress" class="text-xs font-mono text-emerald-400 truncate mr-2">0x1234567890abcdef1234567890abcdef12345678</span>
@@ -91,13 +91,8 @@
                     <input type="number" id="depositAmount" min="0.1" step="0.01" value="0.10" class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
                 </div>
 
-                <div>
-                    <label class="text-xs text-[#9CA3AF]">Transaction Hash (TxID):</label>
-                    <input type="text" id="txHashInput" placeholder="0x..." class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-xs font-mono text-white focus:outline-none focus:border-[#2F66F6]">
-                </div>
-
-                <button onclick="submitDepositWithHash()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
-                    Xaqiiji Deposit-ka
+                <button onclick="submitDeposit()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
+                    Submit Deposit
                 </button>
             </div>
         </div>
@@ -133,7 +128,7 @@
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateData, increment, addDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, addDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
@@ -151,11 +146,17 @@
 
         let currentUser = null;
 
-        signInAnonymously(auth).catch(error => console.error("Auth Error:", error));
+        // Auto sign-in anonymously so every user gets an instant unique account ID
+        signInAnonymously(auth).catch(error => {
+            console.error("Auth Error:", error);
+            document.getElementById('userStatus').innerText = "Auth Error";
+        });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
+                document.getElementById('userStatus').innerText = "Connected";
+                document.getElementById('userStatus').className = "text-[11px] font-mono text-emerald-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]";
                 document.getElementById('uidDisplay').innerText = user.uid;
 
                 const userRef = doc(db, "users", user.uid);
@@ -168,41 +169,26 @@
                         await setDoc(userRef, { balance: 0.00, createdAt: new Date() });
                     }
                 });
+            } else {
+                document.getElementById('userStatus').innerText = "Not Logged In";
             }
         });
 
-        // Submit deposit with Transaction Hash verification
-        window.submitDepositWithHash = async function() {
+        window.submitDeposit = async function() {
             if (!currentUser) return alert("Fadlan sug inta uu app-ku xidhmayo...");
             
             const amt = parseFloat(document.getElementById('depositAmount').value);
-            const txHash = document.getElementById('txHashInput').value.trim();
-
             if (amt < 0.1) return alert("Deposit-ka ugu yar waa $0.10!");
-            if (!txHash.startsWith("0x")) return alert("Fadlan geli Transaction Hash sax ah (oo ka bilaabmaya 0x)!");
 
             try {
-                // Kaydinta deposit-ka wata TxHash ee database-ka
                 await addDoc(collection(db, "deposits"), {
                     userId: currentUser.uid,
                     amount: amt,
-                    txHash: txHash,
-                    status: "completed",
+                    status: "pending",
                     timestamp: new Date()
                 });
 
-                // Si toos ah ugu dar balance-ka user-ka
-                const userRef = doc(db, "users", currentUser.uid);
-                const userSnap = await getDoc(userRef);
-                
-                if (userSnap.exists()) {
-                    const currentBalance = userSnap.data().balance || 0;
-                    await setDoc(userRef, { balance: currentBalance + amt }, { merge: true });
-                } else {
-                    await setDoc(userRef, { balance: amt }, { merge: true });
-                }
-
-                alert(`Guul! $${amt} waxaa lagu daray balance-kaaga.`);
+                alert("Deposit-kaaga waxaa loo diray Database-ka!");
                 closeDepositModal();
             } catch (err) {
                 console.error(err);

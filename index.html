@@ -3,11 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polymarket Firebase App</title>
+    <title>Polymarket Automatic Web3 App</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- Ethers.js v6 for Web3 Polygon Listener -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -69,6 +71,12 @@
                 <div id="uidDisplay" class="font-mono text-blue-400 truncate">Loading ID...</div>
             </div>
 
+            <!-- WEB3 STATUS LOG -->
+            <div class="bg-[#1B1E2B]/30 p-3 rounded-xl border border-[#1E2230] text-[11px] font-mono">
+                <div class="text-gray-400 mb-1">Blockchain Monitor:</div>
+                <div id="web3Status" class="text-emerald-400">Listening to Polygon transfers...</div>
+            </div>
+
         </main>
 
         <!-- DEPOSIT MODAL -->
@@ -79,20 +87,19 @@
                     <button onclick="closeDepositModal()" class="text-[#9CA3AF] hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 
-                <p class="text-xs text-[#9CA3AF]">Fadlan ugu soo shub Polygon (MATIC/USDT) cinwaankan (Ugu yar $0.10):</p>
+                <p class="text-xs text-[#9CA3AF]">Fadlan ugu soo shub Polygon (POL/USDT) cinwaankan (Waxaa loo ogaadaa si Automatic ah):</p>
                 
                 <div class="bg-[#0F1117] p-3 rounded-xl border border-[#1E2230] flex items-center justify-between">
-                    <span id="depositAddress" class="text-xs font-mono text-emerald-400 truncate mr-2">0x1234567890abcdef1234567890abcdef12345678</span>
+                    <span id="depositAddress" class="text-xs font-mono text-emerald-400 truncate mr-2">0xCd39C0BC7f67faCe86E33E7E7Ac633364216722F</span>
                     <button onclick="copyDepositAddress()" class="text-[#2F66F6] hover:text-white text-xs font-bold shrink-0">Copy</button>
                 </div>
 
-                <div>
-                    <label class="text-xs text-[#9CA3AF]">Xaddiga aad soo shubtay ($):</label>
-                    <input type="number" id="depositAmount" min="0.1" step="0.01" value="0.10" class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
+                <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-400">
+                    💡 Markaad Trust Wallet ka soo dirto lacagta, app-ku wuxuu si toos ah u arki doonaa transaction-ka iyadoo la isticmaalayo Web3 Listener!
                 </div>
 
-                <button onclick="submitDeposit()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
-                    Submit Deposit
+                <button onclick="closeDepositModal()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
+                    Done
                 </button>
             </div>
         </div>
@@ -124,11 +131,11 @@
 
     </div>
 
-    <!-- FIREBASE SDK -->
+    <!-- FIREBASE & WEB3 SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, addDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, addDoc, collection, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
@@ -145,8 +152,9 @@
         const db = getFirestore(app);
 
         let currentUser = null;
+        const depositTargetAddress = "0xCd39C0BC7f67faCe86E33E7E7Ac633364216722F".toLowerCase();
 
-        // Auto sign-in anonymously so every user gets an instant unique account ID
+        // ------------------ FIREBASE AUTH & SNAPSHOT ------------------
         signInAnonymously(auth).catch(error => {
             console.error("Auth Error:", error);
             document.getElementById('userStatus').innerText = "Auth Error";
@@ -169,33 +177,90 @@
                         await setDoc(userRef, { balance: 0.00, createdAt: new Date() });
                     }
                 });
+
+                // Start Web3 Polygon Listener once user is logged in
+                initPolygonListener();
             } else {
                 document.getElementById('userStatus').innerText = "Not Logged In";
             }
         });
 
-        window.submitDeposit = async function() {
-            if (!currentUser) return alert("Fadlan sug inta uu app-ku xidhmayo...");
-            
-            const amt = parseFloat(document.getElementById('depositAmount').value);
-            if (amt < 0.1) return alert("Deposit-ka ugu yar waa $0.10!");
+        // ------------------ WEB3 POLYGON LISTENER ------------------
+        let processedTxs = new Set();
 
+        async function initPolygonListener() {
             try {
-                await addDoc(collection(db, "deposits"), {
-                    userId: currentUser.uid,
-                    amount: amt,
-                    status: "pending",
-                    timestamp: new Date()
-                });
+                // Polygon Public RPC Provider
+                const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
 
-                alert("Deposit-kaaga waxaa loo diray Database-ka!");
-                closeDepositModal();
+                document.getElementById('web3Status').innerText = "Connected to Polygon RPC Node...";
+
+                // Check block & transactions periodically (Poll every 8 seconds)
+                setInterval(async () => {
+                    if (!currentUser) return;
+
+                    try {
+                        const blockNumber = await provider.getBlockNumber();
+                        const block = await provider.getBlock(blockNumber, true);
+
+                        if (block && block.prefetchedTransactions) {
+                            for (let tx of block.prefetchedTransactions) {
+                                // Check if the transaction was sent to our target deposit address
+                                if (tx.to && tx.to.toLowerCase() === depositTargetAddress) {
+                                    if (!processedTxs.has(tx.hash)) {
+                                        processedTxs.add(tx.hash);
+
+                                        // Convert BigInt value from Wei to POL/MATIC
+                                        const valueInEth = parseFloat(ethers.formatEther(tx.value));
+
+                                        if (valueInEth > 0) {
+                                            await handleAutomaticDeposit(tx.hash, valueInEth);
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    } catch (e) {
+                        console.warn("RPC fetch loop note:", e.message);
+                    }
+                }, 8000);
+
             } catch (err) {
-                console.error(err);
-                alert("Cilad ayaa dhacday!");
+                console.error("Web3 Provider error:", err);
+                document.getElementById('web3Status').innerText = "RPC Connection Error";
             }
-        };
+        }
 
+        async function handleAutomaticDeposit(txHash, amountInCrypto) {
+            const txDocRef = doc(db, "processed_txs", txHash);
+            const txDoc = await getDoc(txDocRef);
+
+            // Ensure transaction hasn't been credited already
+            if (txDoc.exists()) return;
+
+            // Mark transaction as processed in Firebase
+            await setDoc(txDocRef, {
+                userId: currentUser.uid,
+                amount: amountInCrypto,
+                txHash: txHash,
+                timestamp: new Date()
+            });
+
+            // Safely update user balance in Firebase Firestore
+            const userRef = doc(db, "users", currentUser.uid);
+            await runTransaction(db, async (transaction) => {
+                const userSnapshot = await transaction.get(userRef);
+                const currentBal = userSnapshot.exists() ? (userSnapshot.data().balance || 0) : 0;
+                const newBal = currentBal + amountInCrypto;
+                
+                transaction.set(userRef, { balance: newBal }, { merge: true });
+            });
+
+            document.getElementById('web3Status').innerText = `Success: +$${amountInCrypto.toFixed(2)} received (Tx: ${txHash.slice(0,8)}...)`;
+            alert(`🎉 Deposit Cusub Waa La Helay!\nBalance-kaaga waxaa si automatic ah loogu daray +$${amountInCrypto.toFixed(2)}.`);
+        }
+
+        // ------------------ WITHDRAW HANDLER ------------------
         window.submitWithdraw = async function() {
             if (!currentUser) return alert("Fadlan sug inta uu app-ku xidhmayo...");
 

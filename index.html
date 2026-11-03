@@ -8,8 +8,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Ethers.js CDN (Web3 Integration) -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -198,7 +196,6 @@
             }
         };
 
-        // REAL WEB3 WITHDRAW INTEGRATION (Ethers.js + Trust Wallet / MetaMask)
         window.submitWithdraw = async function() {
             if (!currentUser) return alert("Fadlan sug inta uu app-ku xidhmayo...");
 
@@ -209,52 +206,19 @@
             if (!addr || !addr.startsWith("0x")) return alert("Polygon address sax ah geli!");
 
             try {
-                // 1. Hubi in Wallet-ka (Trust Wallet ama MetaMask) uu rakiban yahay
-                if (typeof window.ethereum === 'undefined') {
-                    alert("Fadlan ku fur app-kan gudaha Trust Wallet DApp browser ama rakib MetaMask!");
-                    return;
-                }
-
-                // 2. Dalbo inuu user-ku xiro boorsadiisa
-                await window.ethereum.request({ method: 'eth_requestAccounts' });
-
-                // 3. Samee Provider iyo Signer adoo isticmaalaya ethers.js
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                const signer = provider.getSigner();
-
-                // 4. Hubi inuu ku jiro Polygon Network (Chain ID: 137)
-                const network = await provider.getNetwork();
-                if (network.chainId !== 137) {
-                    alert("Fadlan shabakaddaada ka beddel oo ka dhig Polygon Mainnet!");
-                    return;
-                }
-
-                // 5. Dirista Xawilaadda (Blockchain Transaction)
-                // Fiiro gaar ah: Qiimaha halkan ku qoran waa MATIC. Haddii aad rabto in la diro native MATIC:
-                const tx = await signer.sendTransaction({
-                    to: addr,
-                    value: ethers.utils.parseEther(amt.toString())
-                });
-
-                alert("Codsiga xawilaadda waxaa la diray! Fadlan xaqiiji boorsadaada...");
-
-                // 6. Kaydi sidoo kale codsiga database-ka si loo diiwaangeliyo
                 await addDoc(collection(db, "withdraws"), {
                     userId: currentUser.uid,
                     amount: amt,
                     address: addr,
-                    txHash: tx.hash,
-                    status: "completed",
+                    status: "pending",
                     timestamp: new Date()
                 });
 
-                await tx.wait();
-                alert(`Si guul leh ayay lacagtu ($${amt}) uga baxday oo loogu diray cinwaankaaga!`);
+                alert(`Codsigaaga Withdraw ($${amt}) waxaa loo diray Database-ka! Waa la hubin doonaa.`);
                 closeWithdrawModal();
-
             } catch (err) {
                 console.error(err);
-                alert("Waa la joojiyay ama khalad ayaa dhacay: " + (err.message || err));
+                alert("Cilad ayaa dhacday: " + err.message);
             }
         };
     </script>

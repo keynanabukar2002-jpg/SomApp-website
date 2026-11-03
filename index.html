@@ -8,12 +8,11 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Ethers.js v5 (Web3 Library) -->
+    <!-- Ethers.js v5 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
 </head>
 <body class="bg-[#0F1117] text-white font-sans flex justify-center items-center min-h-screen p-4">
 
-    <!-- Deposit Card Container -->
     <div class="w-full max-w-[400px] bg-[#1B1E2B] rounded-3xl p-6 border border-[#2A2E3F] shadow-2xl space-y-5">
         
         <!-- Header -->
@@ -24,11 +23,11 @@
             <span class="text-xs bg-[#2F66F6]/20 text-[#2F66F6] px-2.5 py-1 rounded-full font-semibold">Polygon Network</span>
         </div>
 
-        <!-- Wallet Connect Status -->
+        <!-- Wallet Connect -->
         <div class="bg-[#0F1117] p-3.5 rounded-2xl border border-[#2A2E3F] flex items-center justify-between">
             <div class="flex items-center gap-2.5">
                 <div class="w-8 h-8 rounded-full bg-[#1E2230] flex items-center justify-center">
-                    <i id="walletIcon" data-lucide="shield-alert" class="w-4 h-4 text-amber-400"></i>
+                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
                 </div>
                 <div>
                     <div class="text-xs text-[#9CA3AF]">Xaaladda Wallet-ka</div>
@@ -40,6 +39,12 @@
             </button>
         </div>
 
+        <!-- Receiver Input (Ku qor Wallet-kaaga dhabta ah) -->
+        <div class="space-y-2">
+            <label class="text-xs font-semibold text-[#9CA3AF]">Cinwaanka Lacagta loo dirayo (Deposit Address)</label>
+            <input id="receiverAddress" type="text" placeholder="0x..." class="w-full h-10 bg-[#0F1117] border border-[#2A2E3F] rounded-xl px-3 text-xs font-mono text-white focus:outline-none focus:border-[#2F66F6]">
+        </div>
+
         <!-- Amount Input -->
         <div class="space-y-2">
             <label class="text-xs font-semibold text-[#9CA3AF]">Gali Lacagta (USDC)</label>
@@ -47,13 +52,6 @@
                 <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] font-bold">$</span>
                 <input id="depositAmount" type="number" step="0.1" value="1.00" class="w-full h-12 bg-[#0F1117] border border-[#2A2E3F] rounded-xl pl-8 pr-4 text-sm font-bold text-white focus:outline-none focus:border-[#2F66F6]">
             </div>
-        </div>
-
-        <!-- Quick Amount Selectors -->
-        <div class="grid grid-cols-3 gap-2 text-xs font-bold">
-            <button onclick="setAmount(1)" class="py-2.5 rounded-xl bg-[#1E2230] border border-[#2A2E3F] text-white hover:border-[#2F66F6] transition">$1</button>
-            <button onclick="setAmount(10)" class="py-2.5 rounded-xl bg-[#1E2230] border border-[#2A2E3F] text-white hover:border-[#2F66F6] transition">$10</button>
-            <button onclick="setAmount(50)" class="py-2.5 rounded-xl bg-[#1E2230] border border-[#2A2E3F] text-white hover:border-[#2F66F6] transition">$50</button>
         </div>
 
         <!-- Action Button -->
@@ -66,110 +64,74 @@
     <script>
         lucide.createIcons();
 
-        // --- WEB3 CONSTANTS ---
-        // Cinwaanka Smart Contract-ka rasmiga ah ee Polygon USDC:
-        const USDC_CONTRACT_ADDRESS = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359"; // Polygon Native USDC
-        // Dhig halkan cinwaankaaga Crypto Wallet (Meesha lacagtu ku dhacayso):
-        const RECEIVER_WALLET = "0x0000000000000000000000000000000000000000"; // Badal kan!
-
-        // ERC-20 Minimal ABI (Lagu xariiriyo Transfer function-ka USDC)
+        const USDC_CONTRACT_ADDRESS = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359";
         const USDC_ABI = [
-            "function transfer(address to, uint256 amount) returns (bool)",
-            "function decimals() view returns (uint8)"
+            "function transfer(address to, uint256 amount) returns (bool)"
         ];
 
-        let provider;
-        let signer;
-        let userAddress;
+        let provider, signer, userAddress;
 
-        function setAmount(val) {
-            document.getElementById('depositAmount').value = val.toFixed(2);
-        }
-
-        // 1. XIRIIRINNA WALLET-KA (MetaMask / Trust Wallet)
         async function connectWallet() {
             if (typeof window.ethereum !== 'undefined') {
                 try {
                     provider = new ethers.providers.Web3Provider(window.ethereum);
                     await provider.send("eth_requestAccounts", []);
-                    
                     signer = provider.getSigner();
                     userAddress = await signer.getAddress();
 
-                    // Hubi in uu ku jiro Polygon Network (Chain ID: 137 / 0x89)
                     const network = await provider.getNetwork();
                     if (network.chainId !== 137) {
-                        try {
-                            await window.ethereum.request({
-                                method: 'wallet_switchEthereumChain',
-                                params: [{ chainId: '0x89' }], // Polygon Mainnet
-                            });
-                        } catch (switchError) {
-                            alert("Fadlan wallet-kaaga u bixi shabakadda Polygon (POS) Network!");
-                            return;
-                        }
+                        await window.ethereum.request({
+                            method: 'wallet_switchEthereumChain',
+                            params: [{ chainId: '0x89' }]
+                        });
                     }
 
-                    const shortAddr = userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4);
-                    document.getElementById('walletAddressText').innerText = shortAddr;
+                    document.getElementById('walletAddressText').innerText = userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4);
                     document.getElementById('connectWalletBtn').innerText = 'Waa Xiran yahay';
                     document.getElementById('connectWalletBtn').classList.replace('bg-[#2F66F6]', 'bg-emerald-600');
-                    
-                } catch (error) {
-                    console.error(error);
-                    alert("Cillad ayaa dhacday intii lagu guda jiray xiriirinta wallet-ka.");
+                } catch (e) {
+                    alert("Cillad ayaa ka dhacday xiriirinta wallet-ka.");
                 }
             } else {
-                alert("Fadlan fur App-ka MetaMask, Trust Wallet ama dhex ka isticmaal Web3 Browser!");
+                alert("Fadlan dhex ka fur MetaMask / Trust Wallet Browser!");
             }
         }
 
-        // 2. DIRISTA LACAGTA DHABTA AH (USDC TRANSACTION)
         async function executeCryptoDeposit() {
-            if (!signer || !userAddress) {
-                alert("Fadlan marka hore xiriiri wallet-kaaga!");
+            if (!signer) {
                 await connectWallet();
                 return;
             }
 
-            if (RECEIVER_WALLET === "0x0000000000000000000000000000000000000000") {
-                alert("Fadlan koodhka ku beddel RECEIVER_WALLET oo dhig cinwaankaaga wallet-ka dhabta ah!");
-                return;
-            }
-
+            const receiver = document.getElementById('receiverAddress').value.trim();
             const amountInput = document.getElementById('depositAmount').value;
-            if (!amountInput || amountInput <= 0) {
-                alert("Fadlan geli lacag sax ah!");
+
+            if (!receiver || !ethers.utils.isAddress(receiver)) {
+                alert("Fadlan geli Wallet Address dhab ah oo sax ah!");
                 return;
             }
 
-            const depositBtn = document.getElementById('depositBtn');
             try {
-                depositBtn.innerText = "Fadlan ku xaqiiji Wallet-kaaga...";
+                const depositBtn = document.getElementById('depositBtn');
+                depositBtn.innerText = "Fadlan ku xaqiiji Wallet-ka...";
                 depositBtn.disabled = true;
 
-                // Ku xiriir USDC Smart Contract
                 const usdcContract = new ethers.Contract(USDC_CONTRACT_ADDRESS, USDC_ABI, signer);
-                
-                // Native USDC ee Polygon waxay isticmaashaa 6 Decimals
-                const decimals = 6;
-                const parsedAmount = ethers.utils.parseUnits(amountInput.toString(), decimals);
+                const parsedAmount = ethers.utils.parseUnits(amountInput.toString(), 6);
 
-                // Furaaya Pop-up-ka dhabta ah ee Wallet-ka (MetaMask/TrustWallet)
-                const tx = await usdcContract.transfer(RECEIVER_WALLET, parsedAmount);
-                
-                depositBtn.innerText = "Xawilaaddu waa socotaa (Pending)...";
-                await tx.wait(); // Waad dhowrayaa inta Blockchain-ku ka xaqiijinayo (Block confirmation)
+                const tx = await usdcContract.transfer(receiver, parsedAmount);
+                depositBtn.innerText = "Xawilaaddu waa socotaa...";
+                await tx.wait();
 
-                alert(`Guul! Waxaad si dhab ah u soo shubatay $${amountInput} USDC.`);
+                alert(`✅ Guul! $${amountInput} USDC waa la soo diray.`);
                 depositBtn.innerText = "Ku Shub Hadda";
                 depositBtn.disabled = false;
-
             } catch (error) {
                 console.error(error);
-                alert("Xawilaaddii waa la kansalay ama cillad ayaa dhacday.");
-                depositBtn.innerText = "Ku Shub Hadda";
-                depositBtn.disabled = false;
+                alert("Xawilaadii waa la kansalay ama cillad ayaa dhacday.");
+                document.getElementById('depositBtn').innerText = "Ku Shub Hadda";
+                document.getElementById('depositBtn').disabled = false;
             }
         }
     </script>

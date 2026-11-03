@@ -3,12 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polymarket Automatic Web3 App</title>
+    <title>Polymarket Web3 DApp</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Ethers.js v6 for Web3 Polygon Listener -->
+    <!-- Ethers.js v6 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
@@ -32,7 +32,7 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <span id="userStatus" class="text-[11px] font-mono text-amber-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
+                <span id="walletStatus" class="text-[11px] font-mono text-amber-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
                     Connecting...
                 </span>
             </div>
@@ -44,8 +44,8 @@
             <!-- PORTFOLIO CARD -->
             <div class="bg-[#1B1E2B] p-4 rounded-[16px] border border-[#1E2230] flex justify-between items-baseline">
                 <div>
-                    <div class="text-xs text-[#9CA3AF] font-medium mb-0.5">Portfolio Balance</div>
-                    <div id="userBalance" class="text-3xl font-bold text-[#FFFFFF]">$0.00</div>
+                    <div class="text-xs text-[#9CA3AF] font-medium mb-0.5">Wallet Balance (POL)</div>
+                    <div id="walletBalance" class="text-3xl font-bold text-[#FFFFFF]">0.00 POL</div>
                 </div>
                 <div class="text-right">
                     <div class="text-xs text-[#9CA3AF] font-medium mb-0.5">Network</div>
@@ -65,16 +65,10 @@
                 </button>
             </div>
 
-            <!-- USER ID DISPLAY -->
+            <!-- WALLET ADDRESS DISPLAY -->
             <div class="bg-[#1B1E2B]/50 p-3 rounded-xl border border-[#1E2230] text-xs">
-                <div class="text-gray-400 mb-1">User Unique ID:</div>
-                <div id="uidDisplay" class="font-mono text-blue-400 truncate">Loading ID...</div>
-            </div>
-
-            <!-- WEB3 STATUS LOG -->
-            <div class="bg-[#1B1E2B]/30 p-3 rounded-xl border border-[#1E2230] text-[11px] font-mono">
-                <div class="text-gray-400 mb-1">Blockchain Monitor:</div>
-                <div id="web3Status" class="text-emerald-400">Listening to Polygon transfers...</div>
+                <div class="text-gray-400 mb-1">Connected Wallet Address:</div>
+                <div id="walletAddressDisplay" class="font-mono text-blue-400 truncate">Connecting to Trust Wallet...</div>
             </div>
 
         </main>
@@ -87,19 +81,15 @@
                     <button onclick="closeDepositModal()" class="text-[#9CA3AF] hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 
-                <p class="text-xs text-[#9CA3AF]">Fadlan ugu soo shub Polygon (POL/USDT) cinwaankan (Waxaa loo ogaadaa si Automatic ah):</p>
+                <p class="text-xs text-[#9CA3AF]">Ku shubashada ama ku shubka tooska ah ee boorsadaada:</p>
                 
                 <div class="bg-[#0F1117] p-3 rounded-xl border border-[#1E2230] flex items-center justify-between">
-                    <span id="depositAddress" class="text-xs font-mono text-emerald-400 truncate mr-2">0xCd39C0BC7f67faCe86E33E7E7Ac633364216722F</span>
-                    <button onclick="copyDepositAddress()" class="text-[#2F66F6] hover:text-white text-xs font-bold shrink-0">Copy</button>
-                </div>
-
-                <div class="p-3 bg-emerald-500/10 border border-emerald-500/20 rounded-xl text-xs text-emerald-400">
-                    💡 Markaad Trust Wallet ka soo dirto lacagta, app-ku wuxuu si toos ah u arki doonaa transaction-ka iyadoo la isticmaalayo Web3 Listener!
+                    <span id="myAddress" class="text-xs font-mono text-emerald-400 truncate mr-2">Loading...</span>
+                    <button onclick="copyMyAddress()" class="text-[#2F66F6] hover:text-white text-xs font-bold shrink-0">Copy</button>
                 </div>
 
                 <button onclick="closeDepositModal()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
-                    Done
+                    Xir
                 </button>
             </div>
         </div>
@@ -114,193 +104,106 @@
 
                 <div class="space-y-3">
                     <div>
-                        <label class="text-xs text-[#9CA3AF]">Lacagta (Ugu yar $0.10)</label>
-                        <input type="number" id="withdrawAmount" min="0.1" step="0.01" value="0.10" class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
+                        <label class="text-xs text-[#9CA3AF]">Xaddiga POL ee la dirayo</label>
+                        <input type="number" id="withdrawAmount" min="0.01" step="0.01" value="0.1" class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
                     </div>
                     <div>
-                        <label class="text-xs text-[#9CA3AF]">Polygon Wallet Address-kaaga</label>
-                        <input type="text" id="withdrawAddress" placeholder="0x..." class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-xs font-mono text-white focus:outline-none focus:border-[#2F66F6]">
+                        <label class="text-xs text-[#9CA3AF]">Cinwaanka Qaataha (Recipient Address)</label>
+                        <input type="text" id="recipientAddress" placeholder="0x..." class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-xs font-mono text-white focus:outline-none focus:border-[#2F66F6]">
                     </div>
                 </div>
 
-                <button onclick="submitWithdraw()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
-                    Dalbo Withdraw
+                <button onclick="sendTransaction()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
+                    Dir Lacagta (Send)
                 </button>
             </div>
         </div>
 
     </div>
 
-    <!-- FIREBASE & WEB3 SDK -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
-        import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, addDoc, collection, onSnapshot, runTransaction } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+    <!-- WEB3 CONNECTION SCRIPT -->
+    <script>
+        let provider, signer, userAddress;
 
-        const firebaseConfig = {
-          apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
-          authDomain: "somapp-61ebd.firebaseapp.com",
-          projectId: "somapp-61ebd",
-          storageBucket: "somapp-61ebd.firebasestorage.app",
-          messagingSenderId: "890890688001",
-          appId: "1:890890688001:web:9e0005896694fa465f5200",
-          measurementId: "G-NB6MX4GNCQ"
-        };
+        window.addEventListener('DOMContentLoaded', async () => {
+            if (window.ethereum) {
+                try {
+                    provider = new ethers.BrowserProvider(window.ethereum);
+                    
+                    // Dalbo ogolaansho inuu app-ku xiriro boorsada
+                    const accounts = await provider.send("eth_requestAccounts", []);
+                    userAddress = accounts[0];
+                    signer = await provider.getSigner();
 
-        const app = initializeApp(firebaseConfig);
-        const auth = getAuth(app);
-        const db = getFirestore(app);
+                    // Kusoo bandhig UI-ga
+                    document.getElementById('walletStatus').innerText = "Connected";
+                    document.getElementById('walletStatus').className = "text-[11px] font-mono text-emerald-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]";
+                    document.getElementById('walletAddressDisplay').innerText = userAddress;
+                    document.getElementById('myAddress').innerText = userAddress;
 
-        let currentUser = null;
-        const depositTargetAddress = "0xCd39C0BC7f67faCe86E33E7E7Ac633364216722F".toLowerCase();
+                    // Soo aqri balance-ka dhabta ah ee ku jira wallet-ka
+                    updateBalance();
 
-        // ------------------ FIREBASE AUTH & SNAPSHOT ------------------
-        signInAnonymously(auth).catch(error => {
-            console.error("Auth Error:", error);
-            document.getElementById('userStatus').innerText = "Auth Error";
-        });
-
-        onAuthStateChanged(auth, async (user) => {
-            if (user) {
-                currentUser = user;
-                document.getElementById('userStatus').innerText = "Connected";
-                document.getElementById('userStatus').className = "text-[11px] font-mono text-emerald-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]";
-                document.getElementById('uidDisplay').innerText = user.uid;
-
-                const userRef = doc(db, "users", user.uid);
-                
-                onSnapshot(userRef, async (snapshot) => {
-                    if (snapshot.exists()) {
-                        const data = snapshot.data();
-                        document.getElementById('userBalance').innerText = '$' + (data.balance || 0).toFixed(2);
-                    } else {
-                        await setDoc(userRef, { balance: 0.00, createdAt: new Date() });
-                    }
-                });
-
-                // Start Web3 Polygon Listener once user is logged in
-                initPolygonListener();
+                } catch (err) {
+                    console.error(err);
+                    document.getElementById('walletStatus').innerText = "Connection Failed";
+                }
             } else {
-                document.getElementById('userStatus').innerText = "Not Logged In";
+                document.getElementById('walletStatus').innerText = "No Web3 Wallet";
+                alert("Fadlan ka fur app-kan Trust Wallet DApp browser-ka dhexdiisa!");
             }
         });
 
-        // ------------------ WEB3 POLYGON LISTENER ------------------
-        let processedTxs = new Set();
-
-        async function initPolygonListener() {
+        async function updateBalance() {
             try {
-                // Polygon Public RPC Provider
-                const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
-
-                document.getElementById('web3Status').innerText = "Connected to Polygon RPC Node...";
-
-                // Check block & transactions periodically (Poll every 8 seconds)
-                setInterval(async () => {
-                    if (!currentUser) return;
-
-                    try {
-                        const blockNumber = await provider.getBlockNumber();
-                        const block = await provider.getBlock(blockNumber, true);
-
-                        if (block && block.prefetchedTransactions) {
-                            for (let tx of block.prefetchedTransactions) {
-                                // Check if the transaction was sent to our target deposit address
-                                if (tx.to && tx.to.toLowerCase() === depositTargetAddress) {
-                                    if (!processedTxs.has(tx.hash)) {
-                                        processedTxs.add(tx.hash);
-
-                                        // Convert BigInt value from Wei to POL/MATIC
-                                        const valueInEth = parseFloat(ethers.formatEther(tx.value));
-
-                                        if (valueInEth > 0) {
-                                            await handleAutomaticDeposit(tx.hash, valueInEth);
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    } catch (e) {
-                        console.warn("RPC fetch loop note:", e.message);
-                    }
-                }, 8000);
-
+                const balanceWei = await provider.getBalance(userAddress);
+                const balanceEth = ethers.formatEther(balanceWei);
+                document.getElementById('walletBalance').innerText = parseFloat(balanceEth).toFixed(4) + " POL";
             } catch (err) {
-                console.error("Web3 Provider error:", err);
-                document.getElementById('web3Status').innerText = "RPC Connection Error";
+                console.error("Balance error:", err);
             }
         }
 
-        async function handleAutomaticDeposit(txHash, amountInCrypto) {
-            const txDocRef = doc(db, "processed_txs", txHash);
-            const txDoc = await getDoc(txDocRef);
+        // Send / Withdraw Transaction to Blockchain
+        window.sendTransaction = async function() {
+            const amount = document.getElementById('withdrawAmount').value;
+            const recipient = document.getElementById('recipientAddress').value;
 
-            // Ensure transaction hasn't been credited already
-            if (txDoc.exists()) return;
-
-            // Mark transaction as processed in Firebase
-            await setDoc(txDocRef, {
-                userId: currentUser.uid,
-                amount: amountInCrypto,
-                txHash: txHash,
-                timestamp: new Date()
-            });
-
-            // Safely update user balance in Firebase Firestore
-            const userRef = doc(db, "users", currentUser.uid);
-            await runTransaction(db, async (transaction) => {
-                const userSnapshot = await transaction.get(userRef);
-                const currentBal = userSnapshot.exists() ? (userSnapshot.data().balance || 0) : 0;
-                const newBal = currentBal + amountInCrypto;
-                
-                transaction.set(userRef, { balance: newBal }, { merge: true });
-            });
-
-            document.getElementById('web3Status').innerText = `Success: +$${amountInCrypto.toFixed(2)} received (Tx: ${txHash.slice(0,8)}...)`;
-            alert(`🎉 Deposit Cusub Waa La Helay!\nBalance-kaaga waxaa si automatic ah loogu daray +$${amountInCrypto.toFixed(2)}.`);
-        }
-
-        // ------------------ WITHDRAW HANDLER ------------------
-        window.submitWithdraw = async function() {
-            if (!currentUser) return alert("Fadlan sug inta uu app-ku xidhmayo...");
-
-            const amt = parseFloat(document.getElementById('withdrawAmount').value);
-            const addr = document.getElementById('withdrawAddress').value;
-
-            if (amt < 0.1) return alert("Withdraw-ga ugu yar waa $0.10!");
-            if (!addr || !addr.startsWith("0x")) return alert("Polygon address sax ah geli!");
+            if (!amount || amount <= 0) return alert("Fadlan geli xaddiga saxda ah!");
+            if (!recipient || !recipient.startsWith("0x")) return alert("Fadlan geli cinwaan sax ah (0x...)!");
 
             try {
-                await addDoc(collection(db, "withdraws"), {
-                    userId: currentUser.uid,
-                    amount: amt,
-                    address: addr,
-                    status: "pending",
-                    timestamp: new Date()
+                const tx = await signer.sendTransaction({
+                    to: recipient,
+                    value: ethers.parseEther(amount)
                 });
 
-                alert(`Codsigaaga Withdraw ($${amt}) waxaa loo diray Database-ka! Waa la hubin doonaa.`);
+                alert("Transaction-kii waa la diray! Sug inta uu blockchain-ka xaqiijinayo...");
                 closeWithdrawModal();
+
+                // Sug inuu block-ku dhamaado si balance-ku u cusboonaado
+                await tx.wait();
+                alert("Transaction-ku wuu guulaystay!");
+                updateBalance();
+
             } catch (err) {
                 console.error(err);
-                alert("Cilad ayaa dhacday: " + err.message);
+                alert("Cilad ayaa dhacday: " + (err.reason || err.message));
             }
         };
-    </script>
 
-    <script>
+        // UI Modals & Copy
+        window.openDepositModal = function() { document.getElementById('depositModal').classList.remove('hidden'); }
+        window.closeDepositModal = function() { document.getElementById('depositModal').classList.add('hidden'); }
+        window.openWithdrawModal = function() { document.getElementById('withdrawModal').classList.remove('hidden'); }
+        window.closeWithdrawModal = function() { document.getElementById('withdrawModal').classList.add('hidden'); }
+
+        window.copyMyAddress = function() {
+            navigator.clipboard.writeText(userAddress);
+            alert("Cinwaankaaga waa la koobiyeey!");
+        };
+
         lucide.createIcons();
-
-        function openDepositModal() { document.getElementById('depositModal').classList.remove('hidden'); }
-        function closeDepositModal() { document.getElementById('depositModal').classList.add('hidden'); }
-        function openWithdrawModal() { document.getElementById('withdrawModal').classList.remove('hidden'); }
-        function closeWithdrawModal() { document.getElementById('withdrawModal').classList.add('hidden'); }
-
-        function copyDepositAddress() {
-            const addr = document.getElementById('depositAddress').innerText;
-            navigator.clipboard.writeText(addr);
-            alert("Cinwaanka waa la copiyeey!");
-        }
     </script>
 </body>
 </html>

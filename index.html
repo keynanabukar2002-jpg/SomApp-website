@@ -30,8 +30,8 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <span id="userStatus" class="text-[11px] font-mono text-gray-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
-                    Loading...
+                <span id="userStatus" class="text-[11px] font-mono text-emerald-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
+                    Connecting...
                 </span>
             </div>
         </header>
@@ -66,7 +66,7 @@
             <!-- USER ID DISPLAY -->
             <div class="bg-[#1B1E2B]/50 p-3 rounded-xl border border-[#1E2230] text-xs">
                 <div class="text-gray-400 mb-1">User Unique ID:</div>
-                <div id="uidDisplay" class="font-mono text-blue-400 truncate">Not Logged In</div>
+                <div id="uidDisplay" class="font-mono text-blue-400 truncate">Loading ID...</div>
             </div>
 
         </main>
@@ -124,64 +124,58 @@
 
     </div>
 
-    <!-- FIREBASE SDK (v9/v10 Modular via CDN) -->
+    <!-- FIREBASE SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
         import { getFirestore, doc, setDoc, getDoc, updateDoc, addDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
-        // ==========================================
-        // 1. HALKAN KU BEDDEL CONFIG-KAAGA FIREBASE
-        // ==========================================
+        // Xogtaada dhabta ah ee Firebase (somapp-61ebd)
         const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_PROJECT.firebaseapp.com",
-            projectId: "YOUR_PROJECT_ID",
-            storageBucket: "YOUR_PROJECT.appspot.com",
-            messagingSenderId: "YOUR_SENDER_ID",
-            appId: "YOUR_APP_ID"
+          apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
+          authDomain: "somapp-61ebd.firebaseapp.com",
+          projectId: "somapp-61ebd",
+          storageBucket: "somapp-61ebd.firebasestorage.app",
+          messagingSenderId: "890890688001",
+          appId: "1:890890688001:web:9e0005896694fa465f5200",
+          measurementId: "G-NB6MX4GNCQ"
         };
 
-        // Initialize Firebase
         const app = initializeApp(firebaseConfig);
         const auth = getAuth(app);
         const db = getFirestore(app);
 
         let currentUser = null;
 
-        // 2. Auto-Login / Anonymous User ID Generation
-        signInAnonymously(auth).catch(error => console.error("Firebase Auth Error:", error));
+        // Sign in anonymously so every visitor gets a unique account ID automatically
+        signInAnonymously(auth).catch(error => console.error("Auth Error:", error));
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
-                document.getElementById('userStatus').innerText = user.uid.substring(0, 6) + '...';
+                document.getElementById('userStatus').innerText = "Connected";
                 document.getElementById('uidDisplay').innerText = user.uid;
 
                 const userRef = doc(db, "users", user.uid);
                 
-                // Realtime Listener for Balance Update
-                onSnapshot(userRef, (snapshot) => {
+                onSnapshot(userRef, async (snapshot) => {
                     if (snapshot.exists()) {
                         const data = snapshot.data();
                         document.getElementById('userBalance').innerText = '$' + (data.balance || 0).toFixed(2);
                     } else {
-                        // Create initial profile if user is new
-                        setDoc(userRef, { balance: 0.00, createdAt: new Date() });
+                        await setDoc(userRef, { balance: 0.00, createdAt: new Date() });
                     }
                 });
             }
         });
 
-        // 3. Submit Deposit to Firestore
         window.submitDeposit = async function() {
-            if (!currentUser) return alert("Fadlan sug inta uu app-ku load-garaynayo...");
+            if (!currentUser) return alert("Fadlan sug inta uu app-ku xidhmayo...");
             
             const amt = parseFloat(document.getElementById('depositAmount').value);
             if (amt < 0.1) return alert("Deposit-ka ugu yar waa $0.10!");
 
             try {
-                // Deposit Record Database-ka loogu dirayo
                 await addDoc(collection(db, "deposits"), {
                     userId: currentUser.uid,
                     amount: amt,
@@ -189,7 +183,7 @@
                     timestamp: new Date()
                 });
 
-                alert("Deposit-kaaga waxaa loo diray Firebase Database! Admin-ka ayaa xaqiijin doona dhawaan.");
+                alert("Deposit-kaaga waxaa loo diray Database-ka!");
                 closeDepositModal();
             } catch (err) {
                 console.error(err);
@@ -197,9 +191,8 @@
             }
         };
 
-        // 4. Submit Withdraw to Firestore
         window.submitWithdraw = async function() {
-            if (!currentUser) return alert("Fadlan sug inta uu app-ku load-garaynayo...");
+            if (!currentUser) return alert("Fadlan sug inta uu app-ku xidhmayo...");
 
             const amt = parseFloat(document.getElementById('withdrawAmount').value);
             const addr = document.getElementById('withdrawAddress').value;
@@ -208,7 +201,6 @@
             if (!addr || !addr.startsWith("0x")) return alert("Polygon address sax ah geli!");
 
             try {
-                // Withdraw Request database-ka loo yeeleyo
                 await addDoc(collection(db, "withdraws"), {
                     userId: currentUser.uid,
                     amount: amt,

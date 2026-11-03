@@ -3,13 +3,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Polymarket Auto Deposit App</title>
+    <title>Polymarket Firebase App</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Ethers.js for Blockchain Transactions -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <style>
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -32,8 +30,8 @@
             </div>
             
             <div class="flex items-center gap-3">
-                <span id="userStatus" class="text-[11px] font-mono text-emerald-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
-                    Connected
+                <span id="userStatus" class="text-[11px] font-mono text-amber-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
+                    Connecting...
                 </span>
             </div>
         </header>
@@ -77,19 +75,24 @@
         <div id="depositModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
             <div class="bg-[#1B1E2B] w-full max-w-[340px] rounded-2xl p-5 border border-[#1E2230] space-y-4">
                 <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white">Auto Deposit (Polygon)</h3>
+                    <h3 class="font-bold text-sm text-white">Deposit (Polygon)</h3>
                     <button onclick="closeDepositModal()" class="text-[#9CA3AF] hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 
-                <p class="text-xs text-[#9CA3AF]">Geli xaddiga aad rabto inaad ku shubto (Ugu yar $0.10):</p>
+                <p class="text-xs text-[#9CA3AF]">Fadlan ugu soo shub Polygon (MATIC/USDT) cinwaankan (Ugu yar $0.10):</p>
                 
+                <div class="bg-[#0F1117] p-3 rounded-xl border border-[#1E2230] flex items-center justify-between">
+                    <span id="depositAddress" class="text-xs font-mono text-emerald-400 truncate mr-2">0x1234567890abcdef1234567890abcdef12345678</span>
+                    <button onclick="copyDepositAddress()" class="text-[#2F66F6] hover:text-white text-xs font-bold shrink-0">Copy</button>
+                </div>
+
                 <div>
-                    <label class="text-xs text-[#9CA3AF]">Xaddiga ($):</label>
+                    <label class="text-xs text-[#9CA3AF]">Xaddiga aad soo shubtay ($):</label>
                     <input type="number" id="depositAmount" min="0.1" step="0.01" value="0.10" class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
                 </div>
 
-                <button onclick="executeAutoDeposit()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
-                    Bixi oo Ku shub (MetaMask)
+                <button onclick="submitDeposit()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
+                    Submit Deposit
                 </button>
             </div>
         </div>
@@ -121,11 +124,11 @@
 
     </div>
 
-    <!-- FIREBASE & ETHERS SDK -->
+    <!-- FIREBASE SDK -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-app.js";
         import { getAuth, signInAnonymously, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-auth.js";
-        import { getFirestore, doc, setDoc, getDoc, updateDoc, increment, addDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
+        import { getFirestore, doc, setDoc, getDoc, updateDoc, addDoc, collection, onSnapshot } from "https://www.gstatic.com/firebasejs/10.8.0/firebase-firestore.js";
 
         const firebaseConfig = {
           apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
@@ -143,11 +146,17 @@
 
         let currentUser = null;
 
-        signInAnonymously(auth).catch(error => console.error("Auth Error:", error));
+        // Auto sign-in anonymously so every user gets an instant unique account ID
+        signInAnonymously(auth).catch(error => {
+            console.error("Auth Error:", error);
+            document.getElementById('userStatus').innerText = "Auth Error";
+        });
 
         onAuthStateChanged(auth, async (user) => {
             if (user) {
                 currentUser = user;
+                document.getElementById('userStatus').innerText = "Connected";
+                document.getElementById('userStatus').className = "text-[11px] font-mono text-emerald-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]";
                 document.getElementById('uidDisplay').innerText = user.uid;
 
                 const userRef = doc(db, "users", user.uid);
@@ -160,87 +169,30 @@
                         await setDoc(userRef, { balance: 0.00, createdAt: new Date() });
                     }
                 });
+            } else {
+                document.getElementById('userStatus').innerText = "Not Logged In";
             }
         });
 
-        // ==========================================
-        // OTOMAATIG DEPOSIT (BLOCKCHAIN + FIREBASE UPDATE)
-        // ==========================================
-        window.executeAutoDeposit = async function() {
+        window.submitDeposit = async function() {
             if (!currentUser) return alert("Fadlan sug inta uu app-ku xidhmayo...");
-
-            const amtInput = document.getElementById('depositAmount').value;
-            const amount = parseFloat(amtInput);
-
-            if (amount < 0.1) {
-                alert("Deposit-ka ugu yar waa $0.10!");
-                return;
-            }
-
-            if (!window.ethereum) {
-                alert("Fadlan ku rakib MetaMask ama Trust Wallet browser-kaaga!");
-                return;
-            }
+            
+            const amt = parseFloat(document.getElementById('depositAmount').value);
+            if (amt < 0.1) return alert("Deposit-ka ugu yar waa $0.10!");
 
             try {
-                // 1. Ku xidhida MetaMask & Polygon Network (Chain ID: 137)
-                const provider = new ethers.providers.Web3Provider(window.ethereum);
-                await provider.send("eth_requestAccounts", []);
-                const signer = provider.getSigner();
-                
-                const network = await provider.getNetwork();
-                if (network.chainId !== 137) {
-                    alert("Fadlan u beddel shabakaddaada Polygon Mainnet!");
-                    return;
-                }
-
-                // ==========================================
-                // HALKAN KUGU RIDI CINWAANKAAGA ADMIN-KA (0x...)
-                // ==========================================
-                const adminWalletAddress = "HalkanGeliCinwaankaagaAdmin"; 
-
-                if (adminWalletAddress === "HalkanGeliCinwaankaagaAdmin" || !adminWalletAddress.startsWith('0x')) {
-                    alert("Cilad: Fadlan koodhka geli cinwaankaaga saxda ah ee Admin-ka!");
-                    return;
-                }
-
-                // Qiimaha oo loo beddelayo MATIC (qiyaastii qiimaha token-ka)
-                const maticAmount = (amount / 0.65).toFixed(4).toString();
-
-                alert("Fadlan xaqiiji xawilaadda (Transaction) ee ka soo baxaysa MetaMask...");
-
-                // Dirista Lacagta Blockchain-ka
-                const tx = await signer.sendTransaction({
-                    to: adminWalletAddress,
-                    value: ethers.utils.parseEther(maticAmount)
-                });
-
-                alert("Transaction-kii waa la diray. Sug in yar ilaa la xaqiijinayo...");
-                
-                // Sugitaanka xaqiijinta Network-ka
-                await tx.wait();
-
-                // 2. MARKAY BLOCKCHAIN-KA XAQIIJISO, SI OTOMAATIG AH AYAA FIREBASE LOO BADALAYAA
-                const userRef = doc(db, "users", currentUser.uid);
-                await updateDoc(userRef, {
-                    balance: increment(amount)
-                });
-
-                // Kaydinta taariikhda deposit-ka
                 await addDoc(collection(db, "deposits"), {
                     userId: currentUser.uid,
-                    amount: amount,
-                    txHash: tx.hash,
-                    status: "completed",
+                    amount: amt,
+                    status: "pending",
                     timestamp: new Date()
                 });
 
-                alert(`Guul! $${amount} si otomaatig ah ayey ugu soo dhacday balance-kaaga!`);
+                alert("Deposit-kaaga waxaa loo diray Database-ka!");
                 closeDepositModal();
-
-            } catch (error) {
-                console.error(error);
-                alert("Wuu guuldarraystay deposit-kii ama waa la joojiyay.");
+            } catch (err) {
+                console.error(err);
+                alert("Cilad ayaa dhacday!");
             }
         };
 
@@ -278,6 +230,12 @@
         function closeDepositModal() { document.getElementById('depositModal').classList.add('hidden'); }
         function openWithdrawModal() { document.getElementById('withdrawModal').classList.remove('hidden'); }
         function closeWithdrawModal() { document.getElementById('withdrawModal').classList.add('hidden'); }
+
+        function copyDepositAddress() {
+            const addr = document.getElementById('depositAddress').innerText;
+            navigator.clipboard.writeText(addr);
+            alert("Cinwaanka waa la copiyeey!");
+        }
     </script>
 </body>
 </html>

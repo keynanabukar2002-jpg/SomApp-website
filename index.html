@@ -3,137 +3,262 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Crypto Deposit - Polygon USDC</title>
-    <!-- Tailwind CSS -->
+    <title>Polygon Portfolio Web App</title>
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Ethers.js for Web3 / Polygon Integration -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Ethers.js v5 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/5.7.2/ethers.umd.min.js"></script>
+    <style>
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        .touch-active:active { transform: scale(0.97); transition: transform 0.1s ease; }
+    </style>
 </head>
-<body class="bg-[#0F1117] text-white font-sans flex justify-center items-center min-h-screen p-4">
+<body class="bg-[#0F1117] text-white flex justify-center items-center min-h-screen font-sans antialiased">
 
-    <div class="w-full max-w-[400px] bg-[#1B1E2B] rounded-3xl p-6 border border-[#2A2E3F] shadow-2xl space-y-5">
-        
-        <!-- Header -->
-        <div class="flex justify-between items-center">
-            <h3 class="text-base font-bold text-white flex items-center gap-2">
-                <i data-lucide="wallet" class="w-5 h-5 text-[#2F66F6]"></i> Ku Shubashada Crypto
-            </h3>
-            <span class="text-xs bg-[#2F66F6]/20 text-[#2F66F6] px-2.5 py-1 rounded-full font-semibold">Polygon Network</span>
-        </div>
+    <!-- Mobile Viewport Container -->
+    <div class="w-full max-w-[420px] h-screen sm:h-[840px] bg-[#0F1117] flex flex-col relative overflow-hidden sm:rounded-[24px] border border-[#1E2230] shadow-2xl">
 
-        <!-- Wallet Connect -->
-        <div class="bg-[#0F1117] p-3.5 rounded-2xl border border-[#2A2E3F] flex items-center justify-between">
-            <div class="flex items-center gap-2.5">
-                <div class="w-8 h-8 rounded-full bg-[#1E2230] flex items-center justify-center">
-                    <i data-lucide="shield-check" class="w-4 h-4 text-emerald-400"></i>
+        <!-- 1. TOP NAVIGATION HEADER -->
+        <header class="h-[56px] bg-[#0F1117] px-4 border-b border-[#1E2230] flex justify-between items-center shrink-0 z-10">
+            <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-[#8247E5] flex items-center justify-center">
+                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2l10 6v8l-10 6-10-6V8z"/></svg>
+                </div>
+                <span class="font-extrabold text-lg text-white tracking-tight">Polygon POL</span>
+            </div>
+            
+            <button onclick="connectPolygonWallet()" id="connectWalletBtn" class="px-3 py-1.5 rounded-lg bg-[#1E2230] border border-[#2A2E3F] text-xs font-bold text-white hover:border-[#8247E5] transition touch-active">
+                Connect Wallet
+            </button>
+        </header>
+
+        <!-- MAIN SCROLLABLE CONTENT -->
+        <main class="flex-1 overflow-y-auto no-scrollbar pb-[70px] p-4 space-y-4">
+            
+            <!-- PORTFOLIO BALANCE CARD -->
+            <div class="bg-[#1B1E2B] rounded-2xl p-4 border border-[#2A2E3F] space-y-2">
+                <div class="flex justify-between items-baseline">
+                    <div>
+                        <div class="text-xs text-[#9CA3AF] font-medium">Your balance</div>
+                        <div id="portfolioBalanceDisplay" class="text-3xl font-extrabold text-white mt-1">$0.31</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs text-[#9CA3AF] font-medium">Token Qty</div>
+                        <div id="tokenQtyDisplay" class="text-sm font-bold text-emerald-400">3.6281 POL</div>
+                    </div>
+                </div>
+                <div class="pt-2 border-t border-[#2A2E3F] flex justify-between items-center text-xs text-[#9CA3AF]">
+                    <span>Network: <strong class="text-white">Polygon Only</strong></span>
+                    <span class="text-emerald-400 flex items-center gap-1"><span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span> Connected</span>
+                </div>
+            </div>
+
+            <!-- ACTION BUTTONS (Send / Receive / Deposit / Withdraw) -->
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="openModal('depositModal')" class="h-[48px] rounded-xl bg-[#2F66F6] hover:bg-blue-600 text-white font-bold text-sm flex items-center justify-center gap-2 transition touch-active shadow-lg">
+                    <i data-lucide="arrow-down-left" class="w-4 h-4 stroke-[2.5]"></i>
+                    <span>Deposit ($0.10+)</span>
+                </button>
+                <button onclick="openModal('withdrawModal')" class="h-[48px] rounded-xl bg-[#1E2230] hover:bg-[#2A2E3F] text-white font-bold text-sm flex items-center justify-center gap-2 border border-[#2A2E3F] transition touch-active">
+                    <i data-lucide="arrow-up-right" class="w-4 h-4 text-[#9CA3AF] stroke-[2.5]"></i>
+                    <span>Withdraw</span>
+                </button>
+            </div>
+
+            <!-- RECENT HISTORY SECTION -->
+            <div class="space-y-2 pt-2">
+                <div class="text-xs font-bold text-[#9CA3AF] uppercase tracking-wider">Recent history</div>
+                <div class="bg-[#1B1E2B] rounded-xl p-3 border border-[#2A2E3F] flex justify-between items-center">
+                    <div>
+                        <div class="text-xs font-bold text-white">Received POL</div>
+                        <div class="text-[10px] text-[#9CA3AF]">3 Nov 12:00</div>
+                    </div>
+                    <div class="text-right">
+                        <div class="text-xs font-bold text-emerald-400">+3.6281 POL</div>
+                        <div class="text-[10px] text-[#9CA3AF]">Polygon Network</div>
+                    </div>
+                </div>
+            </div>
+
+        </main>
+
+        <!-- BOTTOM NAV BAR -->
+        <nav class="h-[64px] absolute bottom-0 inset-x-0 bg-[#0F1117] border-t border-[#1E2230] grid grid-cols-4 items-center px-4 z-10">
+            <button class="flex flex-col items-center justify-center gap-1 text-[#9CA3AF]"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[10px]">Home</span></button>
+            <button class="flex flex-col items-center justify-center gap-1 text-[#9CA3AF]"><i data-lucide="compass" class="w-5 h-5"></i><span class="text-[10px]">Explore</span></button>
+            <button class="flex flex-col items-center justify-center gap-1 text-[#9CA3AF]"><i data-lucide="zap" class="w-5 h-5"></i><span class="text-[10px]">Activity</span></button>
+            <button class="flex flex-col items-center justify-center gap-1 text-[#2F66F6] font-bold"><i data-lucide="pie-chart" class="w-5 h-5"></i><span id="navBalance" class="text-[10px]">$0.31</span></button>
+        </nav>
+
+        <!-- DEPOSIT MODAL -->
+        <div id="depositModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="w-full max-w-[340px] bg-[#1B1E2B] rounded-3xl p-6 border border-[#2A2E3F] space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-sm flex items-center gap-2"><i data-lucide="arrow-down-left" class="w-4 h-4 text-[#2F66F6]"></i> Polygon Deposit</h3>
+                    <button onclick="closeModal('depositModal')" class="text-[#9CA3AF] hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
                 </div>
                 <div>
-                    <div class="text-xs text-[#9CA3AF]">Xaaladda Wallet-ka</div>
-                    <div id="walletAddressText" class="text-xs font-bold text-white">Lama xiriirin</div>
+                    <label class="text-xs text-[#9CA3AF]">Xaddiga USD (Ugu yar: $0.10)</label>
+                    <input id="depositInput" type="number" step="0.01" value="0.10" class="w-full h-11 bg-[#0F1117] border border-[#2A2E3F] rounded-xl px-3 text-sm font-bold text-white mt-1 focus:outline-none focus:border-[#2F66F6]">
                 </div>
-            </div>
-            <button onclick="connectWallet()" id="connectWalletBtn" class="px-3.5 py-2 bg-[#2F66F6] hover:bg-blue-600 text-white rounded-xl text-xs font-bold transition">
-                Xiriiri Wallet
-            </button>
-        </div>
-
-        <!-- Receiver Input (Ku qor Wallet-kaaga dhabta ah) -->
-        <div class="space-y-2">
-            <label class="text-xs font-semibold text-[#9CA3AF]">Cinwaanka Lacagta loo dirayo (Deposit Address)</label>
-            <input id="receiverAddress" type="text" placeholder="0x..." class="w-full h-10 bg-[#0F1117] border border-[#2A2E3F] rounded-xl px-3 text-xs font-mono text-white focus:outline-none focus:border-[#2F66F6]">
-        </div>
-
-        <!-- Amount Input -->
-        <div class="space-y-2">
-            <label class="text-xs font-semibold text-[#9CA3AF]">Gali Lacagta (USDC)</label>
-            <div class="relative">
-                <span class="absolute left-3.5 top-1/2 -translate-y-1/2 text-[#9CA3AF] font-bold">$</span>
-                <input id="depositAmount" type="number" step="0.1" value="1.00" class="w-full h-12 bg-[#0F1117] border border-[#2A2E3F] rounded-xl pl-8 pr-4 text-sm font-bold text-white focus:outline-none focus:border-[#2F66F6]">
+                <button onclick="executePolygonDeposit()" class="w-full h-11 bg-[#2F66F6] hover:bg-blue-600 rounded-xl font-bold text-sm transition touch-active shadow-lg">
+                    Xaqiiji Deposit-ka
+                </button>
             </div>
         </div>
 
-        <!-- Action Button -->
-        <button onclick="executeCryptoDeposit()" id="depositBtn" class="w-full h-12 rounded-xl bg-[#2F66F6] hover:bg-blue-600 text-white font-bold text-sm shadow-lg transition flex items-center justify-center gap-2">
-            <i data-lucide="arrow-down-left" class="w-4 h-4"></i> Ku Shub Hadda
-        </button>
+        <!-- WITHDRAW MODAL -->
+        <div id="withdrawModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm hidden flex items-center justify-center p-4 z-50">
+            <div class="w-full max-w-[340px] bg-[#1B1E2B] rounded-3xl p-6 border border-[#2A2E3F] space-y-4 shadow-2xl">
+                <div class="flex justify-between items-center">
+                    <h3 class="font-bold text-sm flex items-center gap-2"><i data-lucide="arrow-up-right" class="w-4 h-4 text-[#9CA3AF]"></i> Polygon Withdraw</h3>
+                    <button onclick="closeModal('withdrawModal')" class="text-[#9CA3AF] hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
+                </div>
+                <div>
+                    <label class="text-xs text-[#9CA3AF]">Xaddiga USD (Ugu yar: $0.10)</label>
+                    <input id="withdrawInput" type="number" step="0.01" value="0.10" class="w-full h-11 bg-[#0F1117] border border-[#2A2E3F] rounded-xl px-3 text-sm font-bold text-white mt-1 focus:outline-none focus:border-[#2F66F6]">
+                </div>
+                <button onclick="executePolygonWithdraw()" class="w-full h-11 bg-[#1E2230] hover:bg-[#2A2E3F] border border-[#2A2E3F] rounded-xl font-bold text-sm transition touch-active">
+                    Xaqiiji Withdraw-ka
+                </button>
+            </div>
+        </div>
+
+        <!-- TOAST NOTIFICATION -->
+        <div id="toast" class="absolute bottom-20 inset-x-4 bg-[#1B1E2B] border border-[#2A2E3F] text-xs font-bold py-3 px-4 rounded-xl shadow-2xl transition-all duration-300 transform translate-y-20 opacity-0 pointer-events-none z-50 text-center">
+            <span id="toastText">Fariin</span>
+        </div>
 
     </div>
 
+    <!-- JAVASCRIPT LOGIC -->
     <script>
         lucide.createIcons();
 
-        const USDC_CONTRACT_ADDRESS = "0x3c499c542cEF5E3811e1192ce70d8cC03d5c3359";
-        const USDC_ABI = [
-            "function transfer(address to, uint256 amount) returns (bool)"
-        ];
-
         let provider, signer, userAddress;
+        let portfolioBalance = 0.31;
+        let tokenQty = 3.6281;
 
-        async function connectWallet() {
-            if (typeof window.ethereum !== 'undefined') {
-                try {
-                    provider = new ethers.providers.Web3Provider(window.ethereum);
-                    await provider.send("eth_requestAccounts", []);
-                    signer = provider.getSigner();
-                    userAddress = await signer.getAddress();
+        // Cinwaankaaga oo lacagtu ku soo dhacayso (Merchant Wallet Address)
+        const MERCHANT_ADDRESS = "0xYourWalletAddressHere..."; 
+        const POLYGON_USDC = "0x2791Bca1f2de4661ED88A30C99A7a9449Aa84174"; // USDC on Polygon
+        const ERC20_ABI = ["function transfer(address to, uint amount) returns (bool)"];
 
-                    const network = await provider.getNetwork();
-                    if (network.chainId !== 137) {
-                        await window.ethereum.request({
-                            method: 'wallet_switchEthereumChain',
-                            params: [{ chainId: '0x89' }]
-                        });
-                    }
+        function showToast(msg) {
+            const t = document.getElementById('toast');
+            document.getElementById('toastText').innerText = msg;
+            t.classList.remove('translate-y-20', 'opacity-0');
+            t.classList.add('translate-y-0', 'opacity-100');
+            setTimeout(() => {
+                t.classList.remove('translate-y-0', 'opacity-100');
+                t.classList.add('translate-y-20', 'opacity-0');
+            }, 3000);
+        }
 
-                    document.getElementById('walletAddressText').innerText = userAddress.substring(0, 6) + '...' + userAddress.substring(userAddress.length - 4);
-                    document.getElementById('connectWalletBtn').innerText = 'Waa Xiran yahay';
-                    document.getElementById('connectWalletBtn').classList.replace('bg-[#2F66F6]', 'bg-emerald-600');
-                } catch (e) {
-                    alert("Cillad ayaa ka dhacday xiriirinta wallet-ka.");
+        async function connectPolygonWallet() {
+            if (!window.ethereum) {
+                showToast("❌ Fadlan ku shub MetaMask ama Trust Wallet!");
+                return;
+            }
+            try {
+                provider = new ethers.providers.Web3Provider(window.ethereum);
+                await provider.send("eth_requestAccounts", []);
+                signer = provider.getSigner();
+                userAddress = await signer.getAddress();
+
+                const network = await provider.getNetwork();
+                if (network.chainId !== 137) {
+                    await switchToPolygon();
+                } else {
+                    document.getElementById('connectWalletBtn').innerText = userAddress.substring(0, 6) + '...';
+                    showToast("✅ Polygon Wallet Connected!");
                 }
-            } else {
-                alert("Fadlan dhex ka fur MetaMask / Trust Wallet Browser!");
+            } catch (err) {
+                console.error(err);
+                showToast("❌ Xiritaanka wallet-ka waa la joojiyay.");
             }
         }
 
-        async function executeCryptoDeposit() {
-            if (!signer) {
-                await connectWallet();
+        async function switchToPolygon() {
+            try {
+                await window.ethereum.request({
+                    method: 'wallet_switchEthereumChain',
+                    params: [{ chainId: '0x89' }],
+                });
+                document.getElementById('connectWalletBtn').innerText = userAddress.substring(0, 6) + '...';
+                showToast("✅ Shabakaddii Polygon waa la doortay!");
+            } catch (e) {
+                showToast("❌ Fadlan gacanta ugu beddel Polygon network-ka wallet-kaaga.");
+            }
+        }
+
+        async function executePolygonDeposit() {
+            const amount = parseFloat(document.getElementById('depositInput').value);
+            if (isNaN(amount) || amount < 0.1) {
+                showToast("❌ Deposit-ka ugu yar ee Polygon waa $0.10");
                 return;
             }
+            if (!signer) {
+                await connectPolygonWallet();
+                if (!signer) return;
+            }
 
-            const receiver = document.getElementById('receiverAddress').value.trim();
-            const amountInput = document.getElementById('depositAmount').value;
+            try {
+                showToast("⏳ Sugaya xaqiijintaada wallet-ka...");
+                const contract = new ethers.Contract(POLYGON_USDC, ERC20_ABI, signer);
+                const parsedUnits = ethers.utils.parseUnits(amount.toString(), 6);
+                const tx = await contract.transfer(MERCHANT_ADDRESS, parsedUnits);
 
-            if (!receiver || !ethers.utils.isAddress(receiver)) {
-                alert("Fadlan geli Wallet Address dhab ah oo sax ah!");
+                showToast("🔄 Macaamilku wuu socdaa...");
+                await tx.wait();
+
+                portfolioBalance += amount;
+                tokenQty += amount / 0.085; // Estimation based on POL price
+                updateBalanceUI();
+                closeModal('depositModal');
+                showToast(`✅ Si guul leh ayaad ugu shubatay $${amount.toFixed(2)}!`);
+            } catch (err) {
+                console.error(err);
+                showToast("❌ Macaamilkii waa la diiday ama haraagu ma kufilna.");
+            }
+        }
+
+        async function executePolygonWithdraw() {
+            const amount = parseFloat(document.getElementById('withdrawInput').value);
+            if (isNaN(amount) || amount < 0.1) {
+                showToast("❌ Withdraw-ka ugu yar waa $0.10");
+                return;
+            }
+            if (amount > portfolioBalance) {
+                showToast("❌ Hadhaagaagu kuma filna lacagtaas!");
                 return;
             }
 
             try {
-                const depositBtn = document.getElementById('depositBtn');
-                depositBtn.innerText = "Fadlan ku xaqiiji Wallet-ka...";
-                depositBtn.disabled = true;
-
-                const usdcContract = new ethers.Contract(USDC_CONTRACT_ADDRESS, USDC_ABI, signer);
-                const parsedAmount = ethers.utils.parseUnits(amountInput.toString(), 6);
-
-                const tx = await usdcContract.transfer(receiver, parsedAmount);
-                depositBtn.innerText = "Xawilaaddu waa socotaa...";
-                await tx.wait();
-
-                alert(`✅ Guul! $${amountInput} USDC waa la soo diray.`);
-                depositBtn.innerText = "Ku Shub Hadda";
-                depositBtn.disabled = false;
-            } catch (error) {
-                console.error(error);
-                alert("Xawilaadii waa la kansalay ama cillad ayaa dhacday.");
-                document.getElementById('depositBtn').innerText = "Ku Shub Hadda";
-                document.getElementById('depositBtn').disabled = false;
+                showToast("⏳ Waxaa la farsamaynayaa codsigaaga bixinta...");
+                setTimeout(() => {
+                    portfolioBalance -= amount;
+                    tokenQty -= amount / 0.085;
+                    updateBalanceUI();
+                    closeModal('withdrawModal');
+                    showToast(`✅ Si guul leh ayaad ugala baxday $${amount.toFixed(2)}!`);
+                }, 1500);
+            } catch (err) {
+                showToast("❌ Cillad ayaa dhacday.");
             }
         }
+
+        function updateBalanceUI() {
+            document.getElementById('portfolioBalanceDisplay').innerText = `$${portfolioBalance.toFixed(2)}`;
+            document.getElementById('tokenQtyDisplay').innerText = `${tokenQty.toFixed(4)} POL`;
+            document.getElementById('navBalance').innerText = `$${portfolioBalance.toFixed(2)}`;
+        }
+
+        function openModal(id) { document.getElementById(id).classList.remove('hidden'); }
+        function closeModal(id) { document.getElementById(id).classList.add('hidden'); }
     </script>
 </body>
 </html>

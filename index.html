@@ -3,232 +3,101 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Micro-Wallet App (FaucetPay Style)</title>
-    <!-- Tailwind CSS CDN -->
+    <title>KNN MicroPay - Polymarket Style</title>
+    <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- Lucide Icons -->
     <script src="https://unpkg.com/lucide@latest"></script>
-    <!-- Ethers.js v6 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.7.0/ethers.umd.min.js"></script>
-    <!-- Firebase SDK (Modular) -->
-    <script type="module">
-        import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
-        import { getFirestore, doc, getDoc, setDoc, updateDoc, increment } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
-
-        // Ku beddel xogtaada Firebase-ka halkan
-        const firebaseConfig = {
-            apiKey: "YOUR_API_KEY",
-            authDomain: "YOUR_AUTH_DOMAIN",
-            projectId: "knn-markets",
-            storageBucket: "YOUR_STORAGE_BUCKET",
-            messagingSenderId: "YOUR_MESSAGING_SENDER_ID",
-            appId: "YOUR_APP_ID"
-        };
-
-        const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
-
-        // Waxaan u gudbineynaa window-ga si looga isticmaalo qeybaha kale ee script-ka
-        window.db = db;
-        window.firebaseTools = { doc, getDoc, setDoc, updateDoc, increment };
-    </script>
-    <style>
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-    </style>
 </head>
-<body class="bg-[#0F1117] text-white flex justify-center items-center min-h-screen font-sans antialiased select-none">
+<body class="bg-[#0F1117] text-white flex justify-center items-center min-h-screen font-sans antialiased">
 
     <!-- Mobile Viewport Container -->
     <div class="w-full max-w-[420px] h-screen sm:h-[840px] bg-[#0F1117] flex flex-col relative overflow-hidden sm:rounded-[16px] border border-[#1E2230]">
 
         <!-- HEADER -->
-        <header class="h-[56px] bg-[#0F1117] px-4 border-b border-[#1E2230] flex justify-between items-center shrink-0 z-10">
+        <header class="h-[56px] px-4 border-b border-[#1E2230] flex justify-between items-center shrink-0">
             <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-lg bg-[#2F66F6] flex items-center justify-center">
-                    <svg class="w-4 h-4 text-white" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
-                        <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                    </svg>
-                </div>
+                <div class="w-7 h-7 rounded-lg bg-[#2F66F6] flex items-center justify-center font-bold shadow-lg shadow-blue-500/30">K</div>
                 <span class="font-extrabold text-lg text-white tracking-tight">KNN MicroPay</span>
             </div>
-            
-            <div class="flex items-center gap-3">
-                <span id="walletStatus" class="text-[11px] font-mono text-amber-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
-                    Connecting...
-                </span>
+            <div id="userStatus" class="text-[11px] font-mono text-amber-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
+                Not Logged In
             </div>
         </header>
 
-        <!-- MAIN SCROLLABLE CONTENT -->
-        <main class="flex-1 overflow-y-auto no-scrollbar p-4 space-y-4 pb-[80px]">
+        <!-- MAIN CONTENT -->
+        <main class="flex-1 p-4 space-y-4 overflow-y-auto">
 
-            <!-- PORTFOLIO CARD (Firebase Balance) -->
-            <div class="bg-[#1B1E2B] p-4 rounded-[16px] border border-[#1E2230] flex justify-between items-baseline">
-                <div>
-                    <div class="text-xs text-[#9CA3AF] font-medium mb-0.5">App Internal Balance</div>
-                    <div id="internalBalance" class="text-3xl font-bold text-[#FFFFFF]">0.00 POL</div>
-                </div>
-                <div class="text-right">
-                    <div class="text-xs text-[#9CA3AF] font-medium mb-0.5">Wallet Type</div>
-                    <div class="text-xs font-bold text-emerald-400">Micro-Wallet</div>
-                </div>
-            </div>
-
-            <!-- ACTION BUTTONS -->
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="openDepositModal()" class="h-[50px] rounded-[8px] bg-[#2F66F6] text-white font-bold text-sm flex items-center justify-center gap-2 hover:bg-blue-600 transition">
-                    <i data-lucide="arrow-down-left" class="w-4 h-4 stroke-[2.5]"></i>
-                    <span>Deposit (On-Chain)</span>
-                </button>
-                <button onclick="openWithdrawModal()" class="h-[50px] rounded-[8px] bg-[#1E2230] text-white font-bold text-sm flex items-center justify-center gap-2 border border-[#1E2230] hover:bg-slate-800 transition">
-                    <i data-lucide="arrow-up-right" class="w-4 h-4 text-[#9CA3AF] stroke-[2.5]"></i>
-                    <span>Withdraw</span>
+            <!-- LOGIN / EMAIL INPUT SECTION -->
+            <div id="loginSection" class="bg-[#1B1E2B] p-5 rounded-2xl border border-[#1E2230] space-y-3 shadow-xl">
+                <h3 class="font-bold text-sm text-white">Geli Email-kaaga si aad u bilowdo:</h3>
+                <p class="text-xs text-gray-400">Nidaamku wuxuu kuu abuurayaa micro-wallet iyo cinwaan Polygon ah oo u gaar ah.</p>
+                <input type="email" id="userEmail" placeholder="tusaale@gmail.com" class="w-full bg-[#0F1117] border border-[#2E344A] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
+                <button onclick="loginAndGetWallet()" class="w-full h-11 bg-[#2F66F6] font-bold rounded-xl text-sm hover:bg-blue-600 transition shadow-lg shadow-blue-600/20">
+                    Hel Cinwaankaaga (Account)
                 </button>
             </div>
 
-            <!-- WALLET ADDRESS DISPLAY -->
-            <div class="bg-[#1B1E2B]/50 p-3 rounded-xl border border-[#1E2230] text-xs">
-                <div class="text-gray-400 mb-1">User Account / Address:</div>
-                <div id="walletAddressDisplay" class="font-mono text-blue-400 truncate">Connecting...</div>
+            <!-- WALLET DASHBOARD (Hidden by default) -->
+            <div id="walletDashboard" class="hidden space-y-4">
+                
+                <!-- PORTFOLIO CARD -->
+                <div class="bg-[#1B1E2B] p-5 rounded-2xl border border-[#1E2230] shadow-xl flex justify-between items-baseline relative overflow-hidden">
+                    <div class="absolute -right-6 -bottom-6 w-24 h-24 bg-blue-600/10 rounded-full blur-xl pointer-events-none"></div>
+                    <div>
+                        <div class="text-xs text-gray-400 font-medium mb-1 flex items-center gap-1.5">
+                            <i data-lucide="wallet" class="w-3.5 h-3.5 text-blue-500"></i> Internal Micro-Balance
+                        </div>
+                        <div id="internalBalance" class="text-3xl font-extrabold text-white tracking-tight">0.00 POL</div>
+                    </div>
+                    <div class="text-xs text-emerald-400 bg-emerald-500/10 px-2 py-0.5 rounded-md border border-emerald-500/20 font-bold">Polygon</div>
+                </div>
+
+                <!-- DEPOSIT ADDRESS CARD -->
+                <div class="bg-[#1B1E2B]/60 p-4 rounded-2xl border border-[#1E2230] space-y-2.5">
+                    <div class="text-xs text-gray-400 font-medium flex justify-between items-center">
+                        <span>Cinwaankaaga Gaarka ah (Deposit Address):</span>
+                        <span class="text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">FaucetPay Style</span>
+                    </div>
+                    <div id="depositAddress" class="font-mono text-blue-400 text-xs bg-[#0F1117] p-3 rounded-xl border border-[#2E344A] select-all break-all">...</div>
+                    <p class="text-[11px] text-gray-500">U soo dir lacag POL ama USDT cinwaankaan si loogu shubo balance-kaaga gudaha.</p>
+                </div>
+
             </div>
 
         </main>
-
-        <!-- DEPOSIT MODAL (Blockchain to App Balance) -->
-        <div id="depositModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-[#1B1E2B] w-full max-w-[340px] rounded-2xl p-5 border border-[#1E2230] space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white">Deposit via Blockchain</h3>
-                    <button onclick="closeDepositModal()" class="text-[#9CA3AF] hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-                
-                <p class="text-xs text-[#9CA3AF]">Ka soo dir lacag boorsadaada si loogu shubo app-ka:</p>
-                
-                <div class="space-y-2">
-                    <input type="number" id="depositAmount" placeholder="Tusaale: 1.0" class="w-full bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
-                    <button onclick="executeOnChainDeposit()" class="w-full h-11 bg-emerald-600 text-white font-bold rounded-lg text-sm hover:bg-emerald-500">
-                        Ku Shubo (Send to Admin/Contract)
-                    </button>
-                </div>
-
-                <button onclick="closeDepositModal()" class="w-full h-9 bg-[#1E2230] text-gray-300 font-bold rounded-lg text-xs">
-                    Xir
-                </button>
-            </div>
-        </div>
-
-        <!-- WITHDRAW MODAL (App Balance to Blockchain) -->
-        <div id="withdrawModal" class="fixed inset-0 bg-black/80 hidden flex items-center justify-center p-4 z-50">
-            <div class="bg-[#1B1E2B] w-full max-w-[340px] rounded-2xl p-5 border border-[#1E2230] space-y-4">
-                <div class="flex justify-between items-center">
-                    <h3 class="font-bold text-sm text-white">Withdraw (Micro-Wallet Payout)</h3>
-                    <button onclick="closeWithdrawModal()" class="text-[#9CA3AF] hover:text-white"><i data-lucide="x" class="w-5 h-5"></i></button>
-                </div>
-
-                <div class="space-y-3">
-                    <div>
-                        <label class="text-xs text-[#9CA3AF]">Xaddiga la kala baxayo</label>
-                        <input type="number" id="withdrawAmount" min="0.01" step="0.01" value="0.1" class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
-                    </div>
-                    <div>
-                        <label class="text-xs text-[#9CA3AF]">Cinwaanka Qaataha (Polygon Address)</label>
-                        <input type="text" id="recipientAddress" placeholder="0x..." class="w-full mt-1 bg-[#0F1117] border border-[#1E2230] rounded-lg p-2.5 text-xs font-mono text-white focus:outline-none focus:border-[#2F66F6]">
-                    </div>
-                </div>
-
-                <button onclick="requestWithdrawal()" class="w-full h-11 bg-[#2F66F6] text-white font-bold rounded-lg text-sm hover:bg-blue-600">
-                    Dalbo Lacag Bixinta (Withdraw)
-                </button>
-            </div>
-        </div>
-
     </div>
 
-    <!-- LOGIC SCRIPT -->
     <script>
-        let provider, signer, userAddress;
-        const ADMIN_WALLET = "0xCd39C0BC7f67faCe86E33E7E7Ac633364216722F"; // Cinwaankaaga Admin-ka
+        const BACKEND_URL = "http://localhost:3000"; // Markaad server-ka online saarto (tusaale Render ama Railway), halkaan ku beddel link-giisa
 
-        window.addEventListener('DOMContentLoaded', async () => {
-            if (window.ethereum) {
-                try {
-                    provider = new ethers.BrowserProvider(window.ethereum);
-                    const accounts = await provider.send("eth_requestAccounts", []);
-                    userAddress = accounts[0];
-                    signer = await provider.getSigner();
-
-                    document.getElementById('walletStatus').innerText = "Connected";
-                    document.getElementById('walletAddressDisplay').innerText = userAddress;
-
-                    // Halkan waxaad ka akhrisan kartaa Firebase Balance-ka user-kan
-                    loadUserBalanceFromFirebase(userAddress);
-
-                } catch (err) {
-                    console.error(err);
-                    document.getElementById('walletStatus').innerText = "Error";
-                }
-            } else {
-                alert("Fadlan ka fur Trust Wallet DApp browser-ka!");
-            }
-        });
-
-        async function loadUserBalanceFromFirebase(address) {
-            // Tusaale: Ka soo aqri Firebase doc-ka user-ka
-            // const docRef = window.firebaseTools.doc(window.db, "users", address);
-            // const docSnap = await window.firebaseTools.getDoc(docRef);
-            // if (docSnap.exists()) {
-            //     document.getElementById('internalBalance').innerText = docSnap.data().balance + " POL";
-            // } else {
-            //     await window.firebaseTools.setDoc(docRef, { balance: 0.0 });
-            // }
-            
-            // Tusaale ku meel gaar ah:
-            document.getElementById('internalBalance').innerText = "0.00 POL";
-        }
-
-        // DEPOSIT: User-ku wuxuu lacag ka soo dirayaa Trust Wallet oo u diraya Admin/System Address
-        window.executeOnChainDeposit = async function() {
-            const amt = document.getElementById('depositAmount').value;
-            if(!amt || amt <= 0) return alert("Geli xaddi sax ah!");
+        async function loginAndGetWallet() {
+            const email = document.getElementById('userEmail').value.trim();
+            if(!email) return alert("Fadlan geli email sax ah!");
 
             try {
-                const tx = await signer.sendTransaction({
-                    to: ADMIN_WALLET,
-                    value: ethers.parseEther(amt),
-                    data: "0x"
+                const res = await fetch(`${BACKEND_URL}/api/get-or-create-wallet`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email })
                 });
 
-                alert("Deposit-kii waa la diray! Sug inuu blockchain-ku xaqiijiyo...");
-                closeDepositModal();
-
-                await tx.wait();
-                alert("Deposit-ku wuu guulaystay! Balance-ka ayaa laguugu darayaa Firebase.");
-                
-                // Halkan ayaad ku kordhin lahayd Firebase balance-ka user-ka adigoo adeegsanaya updateDoc / increment
-
+                const data = await res.json();
+                if(data.success) {
+                    document.getElementById('loginSection').classList.add('hidden');
+                    document.getElementById('walletDashboard').classList.remove('hidden');
+                    document.getElementById('userStatus').innerText = email;
+                    document.getElementById('userStatus').className = "text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20";
+                    
+                    document.getElementById('depositAddress').innerText = data.depositAddress;
+                    document.getElementById('internalBalance').innerText = data.balance + " POL";
+                } else {
+                    alert("Cilad: " + data.error);
+                }
             } catch(err) {
-                alert("Cilad ayaa dhacday: " + err.message);
+                alert("Server-ka lama xiriiri karo: " + err.message);
             }
         }
-
-        // WITHDRAW: User-ku wuxuu dalbanayaa in lacag looga soo diro nidaamka ama waxaa maamulaya Admin-ka
-        window.requestWithdrawal = function() {
-            const amount = document.getElementById('withdrawAmount').value;
-            const recipient = document.getElementById('recipientAddress').value;
-
-            if(!amount || !recipient) return alert("Buuxi xogta oo dhan!");
-            
-            alert("Codsigaaga Withdraw-ga waa la diiwaan geliyay. Waa la hubin doonaa!");
-            closeWithdrawModal();
-        }
-
-        // Modals
-        window.openDepositModal = () => document.getElementById('depositModal').classList.remove('hidden');
-        window.closeDepositModal = () => document.getElementById('depositModal').classList.add('hidden');
-        window.openWithdrawModal = () => document.getElementById('withdrawModal').classList.remove('hidden');
-        window.closeWithdrawModal = () => document.getElementById('withdrawModal').classList.add('hidden');
-
         lucide.createIcons();
     </script>
 </body>

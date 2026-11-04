@@ -20,26 +20,16 @@
                 <div class="w-7 h-7 rounded-lg bg-[#2F66F6] flex items-center justify-center font-bold shadow-lg shadow-blue-500/30">K</div>
                 <span class="font-extrabold text-lg text-white tracking-tight">KNN MicroPay</span>
             </div>
-            <div id="userStatus" class="text-[11px] font-mono text-amber-400 bg-[#1B1E2B] px-2.5 py-1 rounded-full border border-[#1E2230]">
-                Not Logged In
+            <div id="userStatus" class="text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20">
+                Connected
             </div>
         </header>
 
         <!-- MAIN CONTENT -->
         <main class="flex-1 p-4 space-y-4 overflow-y-auto">
 
-            <!-- LOGIN / EMAIL INPUT SECTION -->
-            <div id="loginSection" class="bg-[#1B1E2B] p-5 rounded-2xl border border-[#1E2230] space-y-3 shadow-xl">
-                <h3 class="font-bold text-sm text-white">Geli Email-kaaga si aad u bilowdo:</h3>
-                <p class="text-xs text-gray-400">Nidaamku wuxuu kuu abuurayaa micro-wallet iyo cinwaan Polygon ah oo u gaar ah.</p>
-                <input type="email" id="userEmail" placeholder="tusaale@gmail.com" class="w-full bg-[#0F1117] border border-[#2E344A] rounded-xl p-3 text-sm text-white focus:outline-none focus:border-[#2F66F6]">
-                <button onclick="loginAndGetWallet()" class="w-full h-11 bg-[#2F66F6] font-bold rounded-xl text-sm hover:bg-blue-600 transition shadow-lg shadow-blue-600/20">
-                    Hel Cinwaankaaga (Account)
-                </button>
-            </div>
-
-            <!-- WALLET DASHBOARD (Hidden by default) -->
-            <div id="walletDashboard" class="hidden space-y-4">
+            <!-- WALLET DASHBOARD (Si toos ah u furan) -->
+            <div id="walletDashboard" class="space-y-4">
                 
                 <!-- PORTFOLIO CARD -->
                 <div class="bg-[#1B1E2B] p-5 rounded-2xl border border-[#1E2230] shadow-xl flex justify-between items-baseline relative overflow-hidden">
@@ -59,7 +49,7 @@
                         <span>Cinwaankaaga Gaarka ah (Deposit Address):</span>
                         <span class="text-[10px] text-blue-400 bg-blue-500/10 px-1.5 py-0.5 rounded">FaucetPay Style</span>
                     </div>
-                    <div id="depositAddress" class="font-mono text-blue-400 text-xs bg-[#0F1117] p-3 rounded-xl border border-[#2E344A] select-all break-all">...</div>
+                    <div id="depositAddress" class="font-mono text-blue-400 text-xs bg-[#0F1117] p-3 rounded-xl border border-[#2E344A] select-all break-all">Loading address...</div>
                     <p class="text-[11px] text-gray-500">U soo dir lacag POL ama USDT cinwaankaan si loogu shubo balance-kaaga gudaha.</p>
                 </div>
 
@@ -69,36 +59,36 @@
     </div>
 
     <script>
-        // Link-gaaga cusub ee Railway backend-ka
         const BACKEND_URL = "https://somapp-website-production.up.railway.app";
 
-        async function loginAndGetWallet() {
-            const email = document.getElementById('userEmail').value.trim();
-            if(!email) return alert("Fadlan geli email sax ah!");
+        // Auto Load Wallet marka bogga la furo
+        window.onload = async function() {
+            // Ka hel ama u abuur ID gaar ah browser-ka isticmaalaha
+            let guestEmail = localStorage.getItem('guest_user_id');
+            if (!guestEmail) {
+                guestEmail = "user_" + Math.random().toString(36).substring(2, 10) + "@knn.app";
+                localStorage.setItem('guest_user_id', guestEmail);
+            }
 
             try {
                 const res = await fetch(`${BACKEND_URL}/api/get-or-create-wallet`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ email })
+                    body: JSON.stringify({ email: guestEmail })
                 });
 
                 const data = await res.json();
                 if(data.success) {
-                    document.getElementById('loginSection').classList.add('hidden');
-                    document.getElementById('walletDashboard').classList.remove('hidden');
-                    document.getElementById('userStatus').innerText = email;
-                    document.getElementById('userStatus').className = "text-[11px] font-mono text-emerald-400 bg-emerald-500/10 px-2.5 py-1 rounded-full border border-emerald-500/20";
-                    
                     document.getElementById('depositAddress').innerText = data.depositAddress;
                     document.getElementById('internalBalance').innerText = data.balance + " POL";
                 } else {
-                    alert("Cilad: " + data.error);
+                    document.getElementById('depositAddress').innerText = "Cilad: " + data.error;
                 }
             } catch(err) {
-                alert("Server-ka lama xiriiri karo: " + err.message);
+                document.getElementById('depositAddress').innerText = "Server error: " + err.message;
             }
-        }
+        };
+
         lucide.createIcons();
     </script>
 </body>

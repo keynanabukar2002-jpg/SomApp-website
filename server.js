@@ -3,11 +3,7 @@ const { ethers } = require('ethers');
 const admin = require('firebase-admin');
 const cors = require('cors');
 
-const app = express();
-app.use(express.json());
-app.use(cors());
-
-// Ku xiridda Firebase adigoo isticmaalaya Environment Variables
+// Ku xiridda Firebase adoo isticmaalaya Environment Variables
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
@@ -17,39 +13,38 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+const app = express();
+app.use(express.json());
+app.use(cors());
 
-// Ku xiridda Polygon RPC
+// Polygon RPC Provider
 const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
 
-// API-ga lagu abuurayo ama lagu soo celinayo cinwaanka user-ka
 app.post('/api/get-or-create-wallet', async (req, res) => {
     try {
         const { email } = req.body;
-        if (!email) return res.status(400).json({ success: false, error: "Email waa qasab!" });
+        if (!email) return res.status(400).json({ success: false, error: "Email waa waajib" });
 
         const userRef = db.collection('users').doc(email);
-        const userSnap = await userRef.get();
+        const doc = await userRef.get();
 
-        if (userSnap.exists) {
-            const userData = userSnap.data();
+        if (doc.exists) {
+            const data = doc.data();
             return res.json({
                 success: true,
-                depositAddress: userData.depositAddress,
-                balance: userData.balance
+                depositAddress: data.depositAddress,
+                balance: data.balance || 0.0
             });
         } else {
             const newWallet = ethers.Wallet.createRandom();
-            
             const userData = {
                 email: email,
                 depositAddress: newWallet.address,
-                privateKey: newWallet.privateKey, 
+                privateKey: newWallet.privateKey,
                 balance: 0.0,
                 createdAt: new Date()
             };
-
             await userRef.set(userData);
-
             return res.json({
                 success: true,
                 depositAddress: newWallet.address,

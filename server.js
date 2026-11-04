@@ -7,17 +7,18 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Ku xiridda Firebase Admin SDK (Hubi in serviceAccountKey.json uu isla folder-ka ku jiro)
-const serviceAccount = require('./serviceAccountKey.json');
+// Isticmaalka Environment Variables ee Railway (Ma raadinayo fayl dibadda ah)
 admin.initializeApp({
-  credential: admin.credential.cert(serviceAccount)
+  credential: admin.credential.cert({
+    projectId: process.env.FIREBASE_PROJECT_ID,
+    clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+    privateKey: process.env.FIREBASE_PRIVATE_KEY ? process.env.FIREBASE_PRIVATE_KEY.replace(/\\n/g, '\n') : undefined
+  })
 });
-const db = admin.firestore();
 
-// Ku xiridda Polygon RPC
+const db = admin.firestore();
 const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
 
-// API-ga lagu abuurayo ama lagu soo celinayo cinwaanka user-ka
 app.post('/api/get-or-create-wallet', async (req, res) => {
     try {
         const { email } = req.body;
@@ -34,9 +35,7 @@ app.post('/api/get-or-create-wallet', async (req, res) => {
                 balance: userData.balance
             });
         } else {
-            // Abuurista cinwaan cusub oo Polygon ah oo u gaar ah user-ka (FaucetPay style)
             const newWallet = ethers.Wallet.createRandom();
-            
             const userData = {
                 email: email,
                 depositAddress: newWallet.address,
@@ -46,7 +45,6 @@ app.post('/api/get-or-create-wallet', async (req, res) => {
             };
 
             await userRef.set(userData);
-
             return res.json({
                 success: true,
                 depositAddress: newWallet.address,
@@ -61,5 +59,5 @@ app.post('/api/get-or-create-wallet', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server-kii micro-wallet wuxuu ka shaqeynayaa port ${PORT}`);
+    console.log(`Server wuxuu ka shaqeynayaa port ${PORT}`);
 });

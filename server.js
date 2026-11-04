@@ -7,7 +7,7 @@ const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Isticmaalka Environment Variables ee Railway (Ma raadinayo fayl dibadda ah)
+// Ku xiridda Firebase adigoo isticmaalaya Environment Variables
 admin.initializeApp({
   credential: admin.credential.cert({
     projectId: process.env.FIREBASE_PROJECT_ID,
@@ -17,8 +17,11 @@ admin.initializeApp({
 });
 
 const db = admin.firestore();
+
+// Ku xiridda Polygon RPC
 const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
 
+// API-ga lagu abuurayo ama lagu soo celinayo cinwaanka user-ka
 app.post('/api/get-or-create-wallet', async (req, res) => {
     try {
         const { email } = req.body;
@@ -36,6 +39,7 @@ app.post('/api/get-or-create-wallet', async (req, res) => {
             });
         } else {
             const newWallet = ethers.Wallet.createRandom();
+            
             const userData = {
                 email: email,
                 depositAddress: newWallet.address,
@@ -45,6 +49,7 @@ app.post('/api/get-or-create-wallet', async (req, res) => {
             };
 
             await userRef.set(userData);
+
             return res.json({
                 success: true,
                 depositAddress: newWallet.address,

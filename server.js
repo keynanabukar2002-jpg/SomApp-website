@@ -1,137 +1,134 @@
-Const express = require('express');
-Const { ethers } = require('ethers');
-Const admin = require('firebase-admin');
-Const cors = require('cors');
+const express = require('express');
+const { ethers } = require('ethers');
+const admin = require('firebase-admin');
+const cors = require('cors');
 
-Const app = express();
+const app = express();
 app.use(express.json());
 app.use(cors());
 
-Try {
-    Let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-    PrivateKey = privateKey.trim().replace(/^["']|["']$/g, '');
-    If (privateKey.includes('\\n')) {
-        PrivateKey = privateKey.replace(/\\n/g, '\n');
+try {
+    let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+    privateKey = privateKey.trim().replace(/^["']|["']$/g, '');
+    if (privateKey.includes('\\n')) {
+        privateKey = privateKey.replace(/\\n/g, '\n');
     }
 
-    If (privateKey) {
-        Admin.initializeApp({
-          Credential: admin.credential.cert({
-            ProjectId: process.env.FIREBASE_PROJECT_ID,
-            ClientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            PrivateKey: privateKey
+    if (privateKey) {
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: privateKey
           })
         });
-        Console.log("Firebase initialized successfully!");
+        console.log("Firebase initialized successfully!");
     }
 } catch (error) {
-    Console.error("Firebase Error:", error.message);
+    console.error("Firebase Error:", error.message);
 }
 
-Const db = admin.firestore();
-Const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
+const db = admin.firestore();
+const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 
-// API-ga Auth & Wallet Generation (Wuxuu aqoonsanayaa uid ama userId si uusan u qalmin)
+// API-ga Auth & Wallet Generation
 app.post('/api/auth-user', async (req, res) => {
-    Try {
-        // Waxaan u oggolaaneynaa inuu soo qaato uid, userId, ama email si dhib la'aan ah
-        Const email = req.body.email || "";
-        Const uid = req.body.uid || req.body.userId || "";
-        Const displayName = req.body.displayName || "User";
+    try {
+        const email = req.body.email || "";
+        const uid = req.body.uid || req.body.userId || "";
+        const displayName = req.body.displayName || "User";
 
-        If (!uid) {
-            Return res.status(400).json({ success: false, error: "Server Error: UID waa maqan yahay." });
+        if (!uid) {
+            return res.status(400).json({ success: false, error: "Server Error: UID waa maqan yahay." });
         }
 
-        // Haddii uusan email jirin, waxaan ka dhigaynaa mid ku meel gaar ah si uusan server-ku u crash-garayn
-        Const userEmail = email || `${uid}@knn-micropay.com`;
+        const userEmail = email || `${uid}@knn-micropay.com`;
+        const userRef = db.collection('users').doc(uid);
+        const doc = await userRef.get();
 
-        Const userRef = db.collection('users').doc(uid);
-        Const doc = await userRef.get();
+        let polygonAddress = "";
+        let internalUserId = "";
+        let userPrivateKey = "";
 
-        Let polygonAddress = "";
-        Let internalUserId = "";
-        Let userPrivateKey = "";
-
-        If (!doc.exists) {
-            Const newWallet = ethers.Wallet.createRandom();
-            InternalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
-            PolygonAddress = newWallet.address;
-            UserPrivateKey = newWallet.privateKey;
+        if (!doc.exists) {
+            const newWallet = ethers.Wallet.createRandom();
+            internalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
+            polygonAddress = newWallet.address;
+            userPrivateKey = newWallet.privateKey;
 
             await userRef.set({
-                Email: userEmail,
-                DisplayName: displayName,
-                InternalUserId: internalUserId,
-                PolygonAddress: polygonAddress,
-                PrivateKey: userPrivateKey,
-                CreatedAt: new Date()
+                email: userEmail,
+                displayName: displayName,
+                internalUserId: internalUserId,
+                polygonAddress: polygonAddress,
+                privateKey: userPrivateKey,
+                createdAt: new Date()
             });
         } else {
-            Const data = doc.data();
-            PolygonAddress = data.polygonAddress;
-            InternalUserId = data.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
-            UserPrivateKey = data.privateKey;
+            const data = doc.data();
+            polygonAddress = data.polygonAddress;
+            internalUserId = data.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
+            userPrivateKey = data.privateKey;
         }
 
-        Let balancePOL = "0.0000";
-        Try {
-            Const balanceWei = await provider.getBalance(polygonAddress);
-            BalancePOL = ethers.formatEther(balanceWei);
+        let balancePOL = "0.0000";
+        try {
+            const balanceWei = await provider.getBalance(polygonAddress);
+            balancePOL = ethers.formatEther(balanceWei);
         } catch (rpcErr) {
-            Console.warn("RPC Balance Warning:", rpcErr.message);
+            console.warn("RPC Balance Warning:", rpcErr.message);
         }
 
-        Return res.json({
-            Success: true,
-            UserId: internalUserId,
-            PolygonAddress: polygonAddress,
-            PrivateKey: userPrivateKey,
-            Balance: parseFloat(balancePOL).toFixed(4)
+        return res.json({
+            success: true,
+            userId: internalUserId,
+            polygonAddress: polygonAddress,
+            privateKey: userPrivateKey,
+            balance: parseFloat(balancePOL).toFixed(4)
         });
 
     } catch (err) {
-        Console.error("Auth Error:", err.message);
-        Return res.status(500).json({ success: false, error: "Cilad: " + err.message });
+        console.error("Auth Error:", err.message);
+        return res.status(500).json({ success: false, error: "Cilad: " + err.message });
     }
 });
 
 // API-ga Withdraw-ga
 app.post('/api/withdraw', async (req, res) => {
-    Try {
-        Const { uid, recipientAddress, amount } = req.body;
+    try {
+        const { uid, recipientAddress, amount } = req.body;
 
-        If (!uid || !recipientAddress || !amount || parseFloat(amount) <= 0) {
-            Return res.status(400).json({ success: false, error: "Fadlan buuxi xogta saxda ah." });
+        if (!uid || !recipientAddress || !amount || parseFloat(amount) <= 0) {
+            return res.status(400).json({ success: false, error: "Fadlan buuxi xogta saxda ah." });
         }
 
-        Const userDoc = await db.collection('users').doc(uid).get();
-        If (!userDoc.exists) {
-            Return res.status(404).json({ success: false, error: "User-kan lama helin." });
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (!userDoc.exists) {
+            return res.status(404).json({ success: false, error: "User-kan lama helin." });
         }
 
-        Const userData = userDoc.data();
-        Const userPrivateKey = userData.privateKey;
+        const userData = userDoc.data();
+        const userPrivateKey = userData.privateKey;
 
-        Const wallet = new ethers.Wallet(userPrivateKey, provider);
-        Const tx = await wallet.sendTransaction({
-            To: recipientAddress,
-            Value: ethers.parseEther(amount.toString())
+        const wallet = new ethers.Wallet(userPrivateKey, provider);
+        const tx = await wallet.sendTransaction({
+            to: recipientAddress,
+            value: ethers.parseEther(amount.toString())
         });
 
-        Return res.json({
-            Success: true,
-            Message: "Lacagtii si guul leh loogu diray Polygon Network!",
-            TxHash: tx.hash
+        return res.json({
+            success: true,
+            message: "Lacagtii si guul leh loogu diray Polygon Network!",
+            txHash: tx.hash
         });
 
     } catch (err) {
-        Console.error("Withdraw Error:", err.message);
-        Return res.status(500).json({ success: false, error: "Cilad Blockchain: " + err.message });
+        console.error("Withdraw Error:", err.message);
+        return res.status(500).json({ success: false, error: "Cilad Blockchain: " + err.message });
     }
 });
 
-Const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    Console.log(`Server is running on port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

@@ -9,12 +9,14 @@ app.use(cors());
 
 try {
     let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-    // Nadiifinta Private Key-ga si uu Node.js/OpenSSL u aqbalo
+    
+    // Nadiifinta ugu dambeysa ee Private Key-ga
     privateKey = privateKey.trim();
     if ((privateKey.startsWith('"') && privateKey.endsWith('"')) || (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
         privateKey = privateKey.slice(1, -1);
     }
-    privateKey = privateKey.replace(/\\n/g, '\n');
+    // Beddelida \n-ka qoran iyo midka caadiga ah
+    privateKey = privateKey.replace(/\\n/g, '\n').replace(/\r\n/g, '\n');
 
     if (privateKey) {
         admin.initializeApp({
@@ -25,6 +27,8 @@ try {
           })
         });
         console.log("Firebase initialized successfully!");
+    } else {
+        console.error("Firebase Private Key is missing!");
     }
 } catch (error) {
     console.error("Firebase Error:", error.message);
@@ -91,7 +95,7 @@ app.post('/api/auth-user', async (req, res) => {
 
     } catch (err) {
         console.error("Auth Error:", err.message);
-        return res.status(500).json({ success: false, error: "Cilad: " + err.message });
+        return res.status(500).json({ success: false, error: "Cilad Server: " + err.message });
     }
 });
 

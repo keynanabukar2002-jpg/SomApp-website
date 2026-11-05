@@ -150,7 +150,7 @@
             <button class="btn" onclick="copyAddress()">Copy Address</button>
         </div>
 
-        <!-- Private Key Section (Qeybta cusub ee Private Key-ga) -->
+        <!-- Private Key Section -->
         <div class="card" style="border: 1px solid #d97706;">
             <div class="card-title" style="color:#f59e0b; font-weight:bold;">Private Key-gaaga (Sir gaar ah)</div>
             <div class="address-box hidden" id="privateKeyBox" style="color: #fca5a5;">Loading...</div>
@@ -176,10 +176,15 @@
 </div>
 
 <script>
+    // Xogtaada saxda ah ee Firebase
     const firebaseConfig = {
-        apiKey: "YOUR_FIREBASE_API_KEY",
-        authDomain: "YOUR_FIREBASE_AUTH_DOMAIN",
-        projectId: "YOUR_FIREBASE_PROJECT_ID"
+      apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
+      authDomain: "somapp-61ebd.firebaseapp.com",
+      projectId: "somapp-61ebd",
+      storageBucket: "somapp-61ebd.firebasestorage.app",
+      messagingSenderId: "890890688001",
+      appId: "1:890890688001:web:b7063dda31b860785f5200",
+      measurementId: "G-XG4K89NNMM"
     };
     
     if (!firebase.apps.length) {
@@ -192,11 +197,11 @@
     let userPrivateKeyStr = "";
     let isKeyVisible = false;
 
+    // Isticmaalka signInWithRedirect si uusan taleefanku u xannibin
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
-            const result = await firebase.auth().signInWithPopup(provider);
-            await authenticateWithBackend(result.user);
+            await firebase.auth().signInWithRedirect(provider);
         } catch (err) {
             console.error("Login Error:", err);
             alert("Cilad ayaa ka dhacday: " + err.message);
@@ -239,9 +244,44 @@
         }
     }
 
+    // Hubinta natiijada marka uu user-ku ka soo laabto Google Redirect-ka
+    firebase.auth().getRedirectResult().then(async (result) => {
+        if (result.user) {
+            await authenticateWithBackend(result.user);
+        }
+    }).catch((error) => {
+        console.error("Redirect Error:", error);
+    });
+
+    // Hubinta xaaladda login-ka ee caadiga ah
     firebase.auth().onAuthStateChanged(async (user) => {
         if (user) {
-            await authenticateWithBackend(user);
+            // Halkaane waa laga hubiyaa haddii uu hore u soo galay
+            const response = await fetch(`${SERVER_URL}/api/auth-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: user.email,
+                    uid: user.uid,
+                    displayName: user.displayName
+                })
+            });
+            const data = await response.json();
+            if (data.success) {
+                currentUserUid = user.uid;
+                userPolygonAddress = data.polygonAddress;
+                userPrivateKeyStr = data.privateKey;
+
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('dashboardView').classList.remove('hidden');
+                document.getElementById('userStatus').innerText = "Connected";
+
+                document.getElementById('userIdDisplay').innerText = data.userId;
+                document.getElementById('userEmailDisplay').innerText = user.email;
+                document.getElementById('depositAddress').innerText = data.polygonAddress;
+                document.getElementById('privateKeyBox').innerText = data.privateKey;
+                document.getElementById('balanceDisplay').innerText = data.balance + " POL";
+            }
         }
     });
 
@@ -272,7 +312,7 @@
         const amount = document.getElementById('amountInput').value.trim();
 
         if (!recipient || !amount) {
-            alert("Fadlan buuxi xogta saxda ah!");
+            alert("Fadlan buuxi cinwaanka qaataha iyo xadiga lacagta!");
             return;
         }
 

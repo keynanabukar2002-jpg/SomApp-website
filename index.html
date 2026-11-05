@@ -1,0 +1,164 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>KNN MicroPay</title>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 24px;
+        }
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .status {
+            background: rgba(16, 185, 129, 0.2);
+            color: #10b981;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+        }
+        .card {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 16px;
+            border: 1px solid #1e293b;
+        }
+        .card-title {
+            color: #94a3b8;
+            font-size: 0.9rem;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .balance {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #f8fafc;
+        }
+        .address-box {
+            word-break: break-all;
+            background: #1e293b;
+            padding: 12px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #38bdf8;
+            font-size: 0.95rem;
+            margin: 10px 0;
+            border: 1px dashed #475569;
+        }
+        .btn-copy {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .btn-copy:hover {
+            background: #0369a1;
+        }
+        .footer-note {
+            font-size: 0.8rem;
+            color: #64748b;
+            margin-top: 12px;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <span style="background:#0284c7; color:white; padding:4px 8px; border-radius:6px;">K</span>
+            KNN MicroPay
+        </div>
+        <div class="status">Connected</div>
+    </div>
+
+    <!-- Balance Display -->
+    <div class="card">
+        <div class="card-title">
+            <span>Internal Micro-Balance</span>
+            <span style="color:#10b981;">Polygon</span>
+        </div>
+        <div class="balance" id="balanceDisplay">Loading...</div>
+    </div>
+
+    <!-- Deposit Address Display -->
+    <div class="card">
+        <div class="card-title">Cinwaankaaga Gaarka ah (Deposit Address):</div>
+        <div class="address-box" id="depositAddress">0x44a712fdbAF5Cbdbd2960D29d576b2e808B0D5A0</div>
+        <button class="btn-copy" onclick="copyAddress()">Copy Address</button>
+        <div class="footer-note">U soo dir lacag POL oo keliya cinwaankaan shabakadda Polygon Network.</div>
+    </div>
+</div>
+
+<script>
+    const FIXED_ADDRESS = "0x44a712fdbAF5Cbdbd2960D29d576b2e808B0D5A0";
+    const RAILWAY_URL = 'https://somapp-website-production.up.railway.app/api/get-or-create-wallet';
+
+    async function loadWalletBalance() {
+        document.getElementById('depositAddress').innerText = FIXED_ADDRESS;
+        
+        try {
+            // Waxaan ka codsaneynaa server-ka inuu keeno balance-ka cinwaankaan gaarka ah
+            const response = await fetch(RAILWAY_URL, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: "user_fixed_wallet@knn.app" })
+            });
+            
+            const data = await response.json();
+            // Si kasta oo ay ahaato, waxaan hubineynaa in cinwaanku noqdo kan saxda ah ee leh lacagta
+            document.getElementById('balanceDisplay').innerText = (data.balance !== undefined ? data.balance : "0.00") + " POL";
+        } catch (err) {
+            console.error(err);
+            document.getElementById('balanceDisplay').innerText = "0.00 POL";
+        }
+    }
+
+    function copyAddress() {
+        navigator.clipboard.writeText(FIXED_ADDRESS);
+        alert("Cinwaanka waa la koobiyeeyay:\n" + FIXED_ADDRESS);
+    }
+
+    // Markuu boggu furmo soo celi balance-ka
+    window.onload = loadWalletBalance;
+</script>
+
+</body>
+</html>

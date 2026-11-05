@@ -9,10 +9,12 @@ app.use(cors());
 
 try {
     let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-    privateKey = privateKey.trim().replace(/^["']|["']$/g, '');
-    if (privateKey.includes('\\n')) {
-        privateKey = privateKey.replace(/\\n/g, '\n');
+    // Nadiifinta Private Key-ga si uu Node.js/OpenSSL u aqbalo
+    privateKey = privateKey.trim();
+    if ((privateKey.startsWith('"') && privateKey.endsWith('"')) || (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
+        privateKey = privateKey.slice(1, -1);
     }
+    privateKey = privateKey.replace(/\\n/g, '\n');
 
     if (privateKey) {
         admin.initializeApp({

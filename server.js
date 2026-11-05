@@ -36,14 +36,15 @@ try {
     console.error("Firebase Warning:", error.message);
 }
 
-// Polygon RPC Provider oo xawaare sare leh
+// Polygon RPC Provider oo hufan
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 
-// Cinwaanka deposit-ka ee go'an
+// Cinwaankaaga sugan
 const FIXED_WALLET_ADDRESS = "0x44a712fdbAF5Cbdbd2960D29d576b2e808B0D5A0";
-const DEFAULT_TARGET_ADDRESS = "0xCd39C0BC7f67faCe86E33E7E7Ac633364216722F";
+// ⚠️ Halkan geli Private Key-ga cinwaankaaga (sii xaqiiji inaan qof kale la wadaagin)
+const FIXED_PRIVATE_KEY = process.env.FIXED_PRIVATE_KEY || "HADDII_AY JIRTO_HALKAN_GELI_PRIVATE_KEY";
 
-// 1. API-ga soo saara Balance-ka Polygon
+// API-ga lagu soo akhriyo Balance-ka
 app.post('/api/get-or-create-wallet', async (req, res) => {
     try {
         const balanceWei = await provider.getBalance(FIXED_WALLET_ADDRESS);
@@ -64,53 +65,40 @@ app.post('/api/get-or-create-wallet', async (req, res) => {
     }
 });
 
-// 2. API-ga Withdraw-ga (Habka 1aad: Automated Relay / Process Request)
+// API-ga cusub ee Withdraw (Bixinta lacagta)
 app.post('/api/withdraw', async (req, res) => {
     try {
-        const recipientAddress = req.body.recipientAddress || DEFAULT_TARGET_ADDRESS;
-        const amount = req.body.amount;
-
-        if (!amount || parseFloat(amount) <= 0) {
-            return res.status(400).json({ success: false, error: "Fadlan geli xadiq sax ah." });
+        const { recipientAddress, amount } = req.body;
+        
+        if (!recipientAddress || !amount) {
+            return res.status(400).json({ success: false, error: "Fadlan geli cinwaanka iyo xadiga lacagta." });
         }
 
-        // Qaybta Relay Server-ka: Haddii Private Key uu joogo waa laga bixiyaa, haddii kalena waxaa loo diwandegayaa codsi ahaan (Relay Queue)
-        const serverPrivateKey = process.env.FIXED_PRIVATE_KEY;
-
-        if (serverPrivateKey && serverPrivateKey.trim().length > 10) {
-            // Otomaatig u dir lacagta haddii Key-gii uu deegaanka ku jiro
-            const cleanKey = serverPrivateKey.trim();
-            const formattedKey = cleanKey.startsWith('0x') ? cleanKey : `0x${cleanKey}`;
-            const wallet = new ethers.Wallet(formattedKey, provider);
-            const tx = await wallet.sendTransaction({
-                to: recipientAddress,
-                value: ethers.parseEther(amount.toString())
-            });
-            return res.json({
-                success: true,
-                message: "Lacagtii waa la bixiyay!",
-                txHash: tx.hash
-            });
-        } else {
-            // Habka Otomaatigga ah ee aan lagugu xujeynayn Private Key
-            if (db) {
-                await db.collection('withdraw_requests').add({
-                    to: recipientAddress,
-                    amount: amount,
-                    status: 'PENDING_RELAY',
-                    createdAt: new Date()
-                });
-            }
-            return res.json({
-                success: true,
-                message: "Codsiga Withdraw-ga waa la helay oo waa la meel-mariyay!",
-                txHash: "RELAY-SUCCESS-" + Date.now()
-            });
+        if (FIXED_PRIVATE_KEY.includes("HADDII_AY") || !FIXED_PRIVATE_KEY) {
+            return res.status(500).json({ success: false, error: "Private key-ga server-ka laguma xirin." });
         }
+
+        // Abuur Wallet adoo isticmaalaya Private Key-gaaga oo ku xir Provider-ka Polygon
+        const wallet = new ethers.Wallet(FIXED_PRIVATE_KEY, provider);
+
+        // Beddel lacagta POL una beddel Wei (xaqiiqda blockchain-ka)
+        const amountWei = ethers.parseEther(amount.toString());
+
+        // Dir Transaction-ka
+        const tx = await wallet.sendTransaction({
+            to: recipientAddress,
+            value: amountWei
+        });
+
+        return res.json({
+            success: true,
+            message: "Lacagtii waa la diray!",
+            txHash: tx.hash
+        });
 
     } catch (err) {
         console.error("Withdraw Error:", err.message);
-        return res.status(500).json({ success: false, error: "Cilad: " + err.message });
+        return res.status(500).json({ success: false, error: err.message });
     }
 });
 

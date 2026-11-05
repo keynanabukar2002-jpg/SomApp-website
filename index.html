@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNN MicroPay - Withdraw</title>
+    <title>KNN MicroPay</title>
     <style>
         body {
             background-color: #0f172a;
@@ -115,7 +115,7 @@
         <div class="status">Connected</div>
     </div>
 
-    <!-- Balance Display -->
+    <!-- Balance -->
     <div class="card">
         <div class="card-title">
             <span>Internal Micro-Balance</span>
@@ -124,10 +124,10 @@
         <div class="balance" id="balanceDisplay">Loading...</div>
     </div>
 
-    <!-- Deposit Address Display -->
+    <!-- Deposit Address -->
     <div class="card">
         <div class="card-title">Cinwaankaaga Deposit-ka:</div>
-        <div class="address-box" id="depositAddress">Loading...</div>
+        <div class="address-box" id="depositAddress">0x44a712fdbAF5Cbdbd2960D29d576b2e808B0D5A0</div>
         <button class="btn" onclick="copyAddress()">Copy Address</button>
     </div>
 
@@ -136,7 +136,7 @@
         <div class="card-title" style="color:#38bdf8; font-weight:bold;">Withdraw POL (Bixi Lacag)</div>
         <div class="input-group">
             <label style="font-size:0.8rem; color:#94a3b8;">Cinwaanka Qaataha (Recipient Address):</label>
-            <input type="text" id="recipientInput" placeholder="0x...">
+            <input type="text" id="recipientInput" value="0xCd39C0BC7f67faCe86E33E7E7Ac633364216722F">
         </div>
         <div class="input-group">
             <label style="font-size:0.8rem; color:#94a3b8;">Xadiga POL (Amount):</label>
@@ -151,7 +151,6 @@
     const FIXED_ADDRESS = "0x44a712fdbAF5Cbdbd2960D29d576b2e808B0D5A0";
 
     async function loadWallet() {
-        document.getElementById('depositAddress').innerText = FIXED_ADDRESS;
         try {
             const response = await fetch(`${SERVER_URL}/api/get-or-create-wallet`, {
                 method: 'POST',
@@ -183,7 +182,6 @@
         if(!confirm(`Ma hubtaa inaad dirayso ${amount} POL oo aad u direyso ${recipient}?`)) return;
 
         try {
-            alert("Waa la dirayaa, fadlan sug...");
             const response = await fetch(`${SERVER_URL}/api/withdraw`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -192,10 +190,10 @@
 
             const data = await response.json();
             if (data.success) {
-                alert("Guul! Lacagtii waa la diray.\nTx Hash: " + data.txHash);
-                loadWallet(); // Dib u soo celi balance-ka cusub
+                alert("Guul! " + data.message + "\nID: " + data.txHash);
+                loadWallet();
             } else {
-                alert("Cilad ayaa dhacday: " + (data.error || "Waa la waayay jawaab"));
+                alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
             }
         } catch (err) {
             console.error(err);

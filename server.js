@@ -10,13 +10,20 @@ app.use(cors());
 try {
     let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
     
-    // Nadiifinta iyo toosinta Private Key-ga si uusan Node.js u diidin
+    // Nadiifinta dhammaystiran ee Private Key-ga
     privateKey = privateKey.trim();
     if ((privateKey.startsWith('"') && privateKey.endsWith('"')) || (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
         privateKey = privateKey.slice(1, -1);
     }
     
-    // Hubinta iyo soo celinta safafka saxda ah ee furaha
+    // Haddii uusan haysanin layn-jabin sax ah, aan u rogno layn sax ah
+    if (!privateKey.includes('\n') && privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
+        privateKey = privateKey
+            .replace('-----BEGIN PRIVATE KEY-----', '-----BEGIN PRIVATE KEY-----\n')
+            .replace('-----END PRIVATE KEY-----', '\n-----END PRIVATE KEY-----')
+            .replace(/ /g, '\n'); // Mararka qaar hal saf ayuu noqdaa
+    }
+    
     privateKey = privateKey.replace(/\\n/g, '\n').replace(/\r\n/g, '\n');
 
     if (privateKey) {

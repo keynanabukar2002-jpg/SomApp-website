@@ -1,65 +1,108 @@
 const express = require('express');
 const { ethers } = require('ethers');
+const admin = require('firebase-admin');
 const cors = require('cors');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-// Polygon RPC Provider
+try {
+    let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
+    privateKey = privateKey.trim().replace(/^["']|["']$/g, '');
+    if (privateKey.includes('\\n')) {
+        privateKey = privateKey.replace(/\\n/g, '\n');
+    }
+
+    if (privateKey) {
+        admin.initializeApp({
+          credential: admin.credential.cert({
+            projectId: process.env.FIREBASE_PROJECT_ID,
+            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
+            privateKey: privateKey
+          })
+        });
+        console.log("Firebase initialized successfully!");
+    }
+} catch (error) {
+    console.error("Firebase Error:", error.message);
+}
+
+const db = admin.firestore();
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 
-// Cinwaanka go'an ee App-ka (Deposit & Main Address)
-const APP_WALLET_ADDRESS = "0x44a712fdbAF5Cbdbd2960D29d576b2e808B0D5A0";
-const DEFAULT_TARGET_ADDRESS = "0xCd39C0BC7f67faCe86E33E7E7Ac633364216722F";
-
-// 1. API-ga Balance-ka ka akhrinaya cinwaanka app-ka
-app.post('/api/get-or-create-wallet', async (req, res) => {
+// API-ga Auth & Wallet Generation (Wuxuu soo celinayaa Address, User ID, iyo Private Key)
+app.post('/api/auth-user', async (req, res) => {
     try {
-        const balanceWei = await provider.getBalance(APP_WALLET_ADDRESS);
+        const { email, uid, displayName } = req.body;
+
+        if (!email || !uid) {
+            return res.status(400).json({ success: false, error: "Email ama UID waa maqan yahay." });
+        }
+
+        const userRef = db.collection('users').doc(uid);
+        const doc = await userRef.get();
+
+        let polygonAddress = "";
+        let internalUserId = "";
+        let userPrivateKey = "";
+
+        if (!doc.exists) {
+            const newWallet = ethers.Wallet.createRandom();
+            internalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
+            polygonAddress = newWallet.address;
+            userPrivateKey = newWallet.privateKey;
+
+            await userRef.set({
+                email: email,
+                displayName: displayName || "User",
+                internalUserId: internalUserId,
+                polygonAddress: polygonAddress,
+                privateKey: userPrivateKey,
+                createdAt: new Date()
+            });
+        } else {
+            const data = doc.data();
+            polygonAddress = data.polygonAddress;
+            internalUserId = data.internalUserId;
+            userPrivateKey = data.privateKey;
+        }
+
+        const balanceWei = await provider.getBalance(polygonAddress);
         const balancePOL = ethers.formatEther(balanceWei);
 
         return res.json({
             success: true,
-            depositAddress: APP_WALLET_ADDRESS,
+            userId: internalUserId,
+            polygonAddress: polygonAddress,
+            privateKey: userPrivateKey, // Halkan ayaan ku darnay si uu user-ku u arko
             balance: parseFloat(balancePOL).toFixed(4)
         });
+
     } catch (err) {
-        console.error("API Error:", err.message);
-        return res.json({
-            success: true,
-            depositAddress: APP_WALLET_ADDRESS,
-            balance: "0.00"
-        });
+        console.error("Auth Error:", err.message);
+        return res.status(500).json({ success: false, error: "Cilad: " + err.message });
     }
 });
 
-// 2. API-ga Withdraw-ga oo isticmaalaya Private Key-ga cusub
+// API-ga Withdraw-ga
 app.post('/api/withdraw', async (req, res) => {
     try {
-        const recipientAddress = req.body.recipientAddress || DEFAULT_TARGET_ADDRESS;
-        const amount = req.body.amount;
+        const { uid, recipientAddress, amount } = req.body;
 
-        if (!amount || parseFloat(amount) <= 0) {
-            return res.status(400).json({ success: false, error: "Fadlan geli xadiga saxda ah." });
+        if (!uid || !recipientAddress || !amount || parseFloat(amount) <= 0) {
+            return res.status(400).json({ success: false, error: "Fadlan buuxi xogta saxda ah." });
         }
 
-        const serverPrivateKey = process.env.FIXED_PRIVATE_KEY;
-
-        if (!serverPrivateKey || serverPrivateKey.trim().length < 10) {
-            return res.status(400).json({ 
-                success: false, 
-                error: "Private Key-ga server-ka ma jiro ama waa khaldan yahay." 
-            });
+        const userDoc = await db.collection('users').doc(uid).get();
+        if (!userDoc.exists) {
+            return res.status(404).json({ success: false, error: "User-kan lama helin." });
         }
 
-        // Qaabeynta furaha cusub
-        const cleanKey = serverPrivateKey.trim();
-        const formattedKey = cleanKey.startsWith('0x') ? cleanKey : `0x${cleanKey}`;
-        
-        const wallet = new ethers.Wallet(formattedKey, provider);
+        const userData = userDoc.data();
+        const userPrivateKey = userData.privateKey;
 
-        // U dirida lacagta cinwaanka qaataha
+        const wallet = new ethers.Wallet(userPrivateKey, provider);
         const tx = await wallet.sendTransaction({
             to: recipientAddress,
             value: ethers.parseEther(amount.toString())
@@ -67,13 +110,13 @@ app.post('/api/withdraw', async (req, res) => {
 
         return res.json({
             success: true,
-            message: "Lacagtii si guul leh ayaa loo diray!",
+            message: "Lacagtii si guul leh loogu diray Polygon Network!",
             txHash: tx.hash
         });
 
     } catch (err) {
         console.error("Withdraw Error:", err.message);
-        return res.status(500).json({ success: false, error: "Cilad: " + err.message });
+        return res.status(500).json({ success: false, error: "Cilad Blockchain: " + err.message });
     }
 });
 

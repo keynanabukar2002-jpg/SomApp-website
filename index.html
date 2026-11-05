@@ -114,11 +114,11 @@
             <span style="background:#0284c7; color:white; padding:4px 8px; border-radius:6px;">K</span>
             KNN MicroPay
         </div>
-        <div id="userStatus" style="font-size:0.8rem; color:#10b981;">Not Logged In</div>
+        <div id="userStatus" style="font-size:0.8rem; color:#10b981;">Checking...</div>
     </div>
 
     <!-- Login View -->
-    <div id="loginView" class="card" style="text-align: center; padding: 30px 16px;">
+    <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
         <h3 style="color: #f8fafc; margin-top:0;">Ku soo dhawoow KNN MicroPay</h3>
         <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Fadlan ku gal Gmail-kaaga si aad u hesho Wallet-kaaga gaarka ah.</p>
         <button class="btn btn-google" onclick="loginWithGoogle()">
@@ -176,7 +176,6 @@
 </div>
 
 <script>
-    // Xogtaada saxda ah ee Firebase
     const firebaseConfig = {
       apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
       authDomain: "somapp-61ebd.firebaseapp.com",
@@ -197,7 +196,6 @@
     let userPrivateKeyStr = "";
     let isKeyVisible = false;
 
-    // Isticmaalka signInWithRedirect si uusan taleefanku u xannibin
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         try {
@@ -210,6 +208,7 @@
 
     async function authenticateWithBackend(user) {
         try {
+            document.getElementById('userStatus').innerText = "Connecting server...";
             const response = await fetch(`${SERVER_URL}/api/auth-user`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -237,53 +236,37 @@
                 document.getElementById('balanceDisplay').innerText = data.balance + " POL";
             } else {
                 alert("Cilad Server: " + data.error);
+                document.getElementById('userStatus').innerText = "Error";
             }
         } catch (err) {
             console.error(err);
             alert("Cilad ayaa ka dhacday xiriirka Server-ka.");
+            document.getElementById('userStatus').innerText = "Offline";
         }
     }
 
-    // Hubinta natiijada marka uu user-ku ka soo laabto Google Redirect-ka
+    // Hal mar la wada hubiyo state-ka iyo redirect-ka si uusan u jahawareerin
     firebase.auth().getRedirectResult().then(async (result) => {
-        if (result.user) {
+        if (result && result.user) {
             await authenticateWithBackend(result.user);
+        } else {
+            initAuthListener();
         }
     }).catch((error) => {
         console.error("Redirect Error:", error);
+        initAuthListener();
     });
 
-    // Hubinta xaaladda login-ka ee caadiga ah
-    firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-            // Halkaane waa laga hubiyaa haddii uu hore u soo galay
-            const response = await fetch(`${SERVER_URL}/api/auth-user`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: user.email,
-                    uid: user.uid,
-                    displayName: user.displayName
-                })
-            });
-            const data = await response.json();
-            if (data.success) {
-                currentUserUid = user.uid;
-                userPolygonAddress = data.polygonAddress;
-                userPrivateKeyStr = data.privateKey;
-
-                document.getElementById('loginView').classList.add('hidden');
-                document.getElementById('dashboardView').classList.remove('hidden');
-                document.getElementById('userStatus').innerText = "Connected";
-
-                document.getElementById('userIdDisplay').innerText = data.userId;
-                document.getElementById('userEmailDisplay').innerText = user.email;
-                document.getElementById('depositAddress').innerText = data.polygonAddress;
-                document.getElementById('privateKeyBox').innerText = data.privateKey;
-                document.getElementById('balanceDisplay').innerText = data.balance + " POL";
+    function initAuthListener() {
+        firebase.auth().onAuthStateChanged(async (user) => {
+            if (user) {
+                await authenticateWithBackend(user);
+            } else {
+                document.getElementById('loginView').classList.remove('hidden');
+                document.getElementById('userStatus').innerText = "Not Logged In";
             }
-        }
-    });
+        });
+    }
 
     function copyAddress() {
         navigator.clipboard.writeText(userPolygonAddress);

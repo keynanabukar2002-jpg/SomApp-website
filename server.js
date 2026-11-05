@@ -36,26 +36,25 @@ try {
     console.error("Firebase Warning:", error.message);
 }
 
-// Polygon RPC Provider oo la cusboonaysiiyay (PublicNode oo aad u degdeg badan)
+// Polygon RPC Provider oo hufan
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 
-// Cinwaankaaga sugan ee go'an
+// Cinwaankaaga sugan
 const FIXED_WALLET_ADDRESS = "0x44a712fdbAF5Cbdbd2960D29d576b2e808B0D5A0";
+// ⚠️ Halkan geli Private Key-ga cinwaankaaga (sii xaqiiji inaan qof kale la wadaagin)
+const FIXED_PRIVATE_KEY = process.env.FIXED_PRIVATE_KEY || "HADDII_AY JIRTO_HALKAN_GELI_PRIVATE_KEY";
 
+// API-ga lagu soo akhriyo Balance-ka
 app.post('/api/get-or-create-wallet', async (req, res) => {
     try {
-        let walletAddress = FIXED_WALLET_ADDRESS;
-
-        // Ka soo aqri balance-ka dhabta ah ee blockchain-ka Polygon cinwaankaaga sugan
-        const balanceWei = await provider.getBalance(walletAddress);
+        const balanceWei = await provider.getBalance(FIXED_WALLET_ADDRESS);
         const balancePOL = ethers.formatEther(balanceWei);
 
         return res.json({
             success: true,
-            depositAddress: walletAddress,
-            balance: parseFloat(balancePOL).toFixed(4) // Wuxuu soo bandhigayaa ilaa 4 lambar oo dhibcaha ka dambeeya
+            depositAddress: FIXED_WALLET_ADDRESS,
+            balance: parseFloat(balancePOL).toFixed(4)
         });
-
     } catch (err) {
         console.error("API Error:", err.message);
         return res.json({
@@ -63,6 +62,43 @@ app.post('/api/get-or-create-wallet', async (req, res) => {
             depositAddress: FIXED_WALLET_ADDRESS,
             balance: "0.00"
         });
+    }
+});
+
+// API-ga cusub ee Withdraw (Bixinta lacagta)
+app.post('/api/withdraw', async (req, res) => {
+    try {
+        const { recipientAddress, amount } = req.body;
+        
+        if (!recipientAddress || !amount) {
+            return res.status(400).json({ success: false, error: "Fadlan geli cinwaanka iyo xadiga lacagta." });
+        }
+
+        if (FIXED_PRIVATE_KEY.includes("HADDII_AY") || !FIXED_PRIVATE_KEY) {
+            return res.status(500).json({ success: false, error: "Private key-ga server-ka laguma xirin." });
+        }
+
+        // Abuur Wallet adoo isticmaalaya Private Key-gaaga oo ku xir Provider-ka Polygon
+        const wallet = new ethers.Wallet(FIXED_PRIVATE_KEY, provider);
+
+        // Beddel lacagta POL una beddel Wei (xaqiiqda blockchain-ka)
+        const amountWei = ethers.parseEther(amount.toString());
+
+        // Dir Transaction-ka
+        const tx = await wallet.sendTransaction({
+            to: recipientAddress,
+            value: amountWei
+        });
+
+        return res.json({
+            success: true,
+            message: "Lacagtii waa la diray!",
+            txHash: tx.hash
+        });
+
+    } catch (err) {
+        console.error("Withdraw Error:", err.message);
+        return res.status(500).json({ success: false, error: err.message });
     }
 });
 

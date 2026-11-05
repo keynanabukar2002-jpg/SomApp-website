@@ -213,9 +213,10 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: user.email,
-                    uid: user.uid,
-                    displayName: user.displayName
+                    email: user.email || "",
+                    uid: user.uid || "",
+                    userId: user.uid || "",
+                    displayName: user.displayName || "User"
                 })
             });
 
@@ -229,13 +230,13 @@
                 document.getElementById('dashboardView').classList.remove('hidden');
                 document.getElementById('userStatus').innerText = "Connected";
 
-                document.getElementById('userIdDisplay').innerText = data.userId;
+                document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 document.getElementById('depositAddress').innerText = data.polygonAddress;
                 document.getElementById('privateKeyBox').innerText = data.privateKey;
                 document.getElementById('balanceDisplay').innerText = data.balance + " POL";
             } else {
-                alert("Cilad Server: " + data.error);
+                alert("Cilad Server: " + (data.error || "Unknown error"));
                 document.getElementById('userStatus').innerText = "Error";
             }
         } catch (err) {
@@ -245,7 +246,6 @@
         }
     }
 
-    // Hal mar la wada hubiyo state-ka iyo redirect-ka si uusan u jahawareerin
     firebase.auth().getRedirectResult().then(async (result) => {
         if (result && result.user) {
             await authenticateWithBackend(result.user);

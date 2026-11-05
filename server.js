@@ -3,10 +3,17 @@ const { ethers } = require('ethers');
 const admin = require('firebase-admin');
 const cors = require('cors');
 
-// Habka ugu sugan ee loo habeeyo Firebase Credentials
+// Robust Firebase Private Key cleaner
 try {
     let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-    privateKey = privateKey.replace(/^"|"$/g, '').replace(/\\n/g, '\n');
+    
+    // Trim quotes and whitespace
+    privateKey = privateKey.trim().replace(/^["']|["']$/g, '');
+    
+    // Convert literal \n to actual newlines
+    if (privateKey.includes('\\n')) {
+        privateKey = privateKey.replace(/\\n/g, '\n');
+    }
 
     admin.initializeApp({
       credential: admin.credential.cert({
@@ -15,6 +22,7 @@ try {
         privateKey: privateKey
       })
     });
+    console.log("Firebase initialized successfully!");
 } catch (error) {
     console.error("Firebase initialization error:", error.message);
 }
@@ -30,7 +38,7 @@ const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
 app.post('/api/get-or-create-wallet', async (req, res) => {
     try {
         const { email } = req.body;
-        if (!email) return res.status(400).json({ success: false, error: "Email waa waajib" });
+        if (!email) return res.status(400).json({ success: false, error: "Email is required" });
 
         const userRef = db.collection('users').doc(email);
         const doc = await userRef.get();
@@ -66,5 +74,5 @@ app.post('/api/get-or-create-wallet', async (req, res) => {
 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
-    console.log(`Server wuxuu ka shaqeynayaa port ${PORT}`);
+    console.log(`Server is running on port ${PORT}`);
 });

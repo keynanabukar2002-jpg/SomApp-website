@@ -114,11 +114,11 @@
             <span style="background:#0284c7; color:white; padding:4px 8px; border-radius:6px;">K</span>
             KNN MicroPay
         </div>
-        <div id="userStatus" style="font-size:0.8rem; color:#94a3b8;">Not Logged In</div>
+        <div id="userStatus" style="font-size:0.8rem; color:#94a3b8;">Loading...</div>
     </div>
 
-    <!-- Login View (Hadda waa muuqdaa markii hore) -->
-    <div id="loginView" class="card" style="text-align: center; padding: 30px 16px;">
+    <!-- Login View -->
+    <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
         <h3 style="color: #f8fafc; margin-top:0;">Ku soo dhawoow KNN MicroPay</h3>
         <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Fadlan ku gal Gmail-kaaga si aad u hesho Wallet-kaaga gaarka ah.</p>
         <button class="btn btn-google" onclick="loginWithGoogle()">
@@ -204,15 +204,11 @@
         } catch (err) {
             console.error("Login Error:", err);
             alert("Cilad ayaa ka dhacday: " + err.message);
-            document.getElementById('userStatus').innerText = "Error";
         }
     }
 
     async function authenticateWithBackend(user) {
-        if (!user || !user.uid || !user.email) {
-            console.warn("User data is incomplete, skipping backend auth.");
-            return;
-        }
+        if (!user || !user.uid) return;
 
         try {
             document.getElementById('userStatus').innerText = "Connecting server...";
@@ -220,7 +216,7 @@
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
-                    email: user.email,
+                    email: user.email || "",
                     uid: user.uid,
                     userId: user.uid,
                     displayName: user.displayName || "User"
@@ -254,30 +250,26 @@
         }
     }
 
-    // Hubinta redirect-ka marka uu user-ku ka soo laabto Google
+    // Hubinta redirect-ka marka uu user-ku soo laabto
     firebase.auth().getRedirectResult().then(async (result) => {
-        if (result && result.user && result.user.uid) {
+        if (result && result.user) {
             await authenticateWithBackend(result.user);
         } else {
-            initAuthListener();
+            // Haddii aysan jirin natiijo redirect ah, hubi xaaladda caadiga ah ee session-ka
+            firebase.auth().onAuthStateChanged(async (user) => {
+                if (user) {
+                    await authenticateWithBackend(user);
+                } else {
+                    document.getElementById('loginView').classList.remove('hidden');
+                    document.getElementById('userStatus').innerText = "Not Logged In";
+                }
+            });
         }
     }).catch((error) => {
         console.error("Redirect Error:", error);
-        initAuthListener();
+        document.getElementById('loginView').classList.remove('hidden');
+        document.getElementById('userStatus').innerText = "Login Required";
     });
-
-    function initAuthListener() {
-        firebase.auth().onAuthStateChanged(async (user) => {
-            if (user && user.uid && user.email) {
-                await authenticateWithBackend(user);
-            } else {
-                // Haddusan jirin user logged in ah, tus badhanka login-ka
-                document.getElementById('loginView').classList.remove('hidden');
-                document.getElementById('dashboardView').classList.add('hidden');
-                document.getElementById('userStatus').innerText = "Not Logged In";
-            }
-        });
-    }
 
     function copyAddress() {
         navigator.clipboard.writeText(userPolygonAddress);

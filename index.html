@@ -3,105 +3,25 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNN MicroPay - Web3 Wallet</title>
+    <title>KNN MicroPay - Web3 & EVC Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <style>
-        body {
-            background-color: #0f172a;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 20px;
-        }
-        .container {
-            width: 100%;
-            max-width: 450px;
-            background: #1e293b;
-            border-radius: 16px;
-            padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border: 1px solid #334155;
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .logo {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #38bdf8;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .card {
-            background: #0f172a;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid #1e293b;
-        }
-        .card-title {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .balance {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #f8fafc;
-        }
-        .address-box {
-            word-break: break-all;
-            background: #1e293b;
-            padding: 10px;
-            border-radius: 8px;
-            font-family: monospace;
-            color: #38bdf8;
-            font-size: 0.8rem;
-            margin: 8px 0;
-            border: 1px dashed #475569;
-        }
-        .btn {
-            background: #0284c7;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            width: 100%;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 8px;
-        }
+        body { background-color: #0f172a; color: #ffffff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
+        .container { width: 100%; max-width: 450px; background: #1e293b; border-radius: 16px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logo { font-weight: bold; font-size: 1.2rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        .card { background: #0f172a; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid #1e293b; }
+        .card-title { color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .balance { font-size: 1.8rem; font-weight: bold; color: #f8fafc; }
+        .address-box { word-break: break-all; background: #1e293b; padding: 10px; border-radius: 8px; font-family: monospace; color: #38bdf8; font-size: 0.8rem; margin: 8px 0; border: 1px dashed #475569; }
+        .btn { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 8px; }
         .btn:hover { background: #0369a1; }
-        .btn-google { background: #db4437; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-google:hover { background: #c23321; }
+        .btn-google { background: #db4437; }
         .btn-withdraw { background: #10b981; }
-        .btn-withdraw:hover { background: #059669; }
+        .btn-evc { background: #f59e0b; color: #0f172a; }
         .btn-logout { background: #ef4444; margin-top: 10px; }
-        .btn-logout:hover { background: #dc2626; }
-        .btn-warning { background: #d97706; font-size: 0.8rem; padding: 6px; }
-        .btn-warning:hover { background: #b45309; }
-        input {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: white;
-            margin-top: 6px;
-            box-sizing: border-box;
-        }
+        input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; margin-top: 6px; box-sizing: border-box; }
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
     </style>
@@ -121,9 +41,7 @@
     <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
         <h3 style="color: #f8fafc; margin-top:0;">Ku soo dhawoow KNN MicroPay</h3>
         <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Fadlan ku gal Gmail-kaaga si aad u hesho Wallet-kaaga gaarka ah.</p>
-        <button class="btn btn-google" onclick="loginWithGoogle()">
-            <span>Google Login-ka ku gal</span>
-        </button>
+        <button class="btn btn-google" onclick="loginWithGoogle()">Google Login-ka ku gal</button>
     </div>
 
     <!-- Dashboard View -->
@@ -143,32 +61,47 @@
             <div class="balance" id="balanceDisplay">0.0000 POL</div>
         </div>
 
-        <!-- Deposit Address -->
+        <!-- EVC Deposit -->
+        <div class="card" style="border: 1px solid #f59e0b;">
+            <div class="card-title" style="color:#f59e0b; font-weight:bold;">EVC Plus Deposit ($ USD -> POL)</div>
+            <div class="input-group">
+                <input type="text" id="evcPhoneDeposit" placeholder="Lambarka EVC (61xxxxxxx)">
+            </div>
+            <div class="input-group">
+                <input type="number" id="evcAmountDeposit" placeholder="Xadiga Doolarka ($USD)">
+            </div>
+            <button class="btn btn-evc" onclick="processEvcDeposit()">Ku shubo POL (EVC Plus)</button>
+        </div>
+
+        <!-- EVC Withdraw -->
+        <div class="card" style="border: 1px solid #10b981;">
+            <div class="card-title" style="color:#10b981; font-weight:bold;">EVC Plus Withdraw (POL -> $ USD)</div>
+            <div class="input-group">
+                <input type="text" id="evcPhoneWithdraw" placeholder="Lambarka EVC (61xxxxxxx)">
+            </div>
+            <div class="input-group">
+                <input type="number" step="0.0001" id="evcAmountWithdraw" placeholder="Xadiga POL">
+            </div>
+            <button class="btn btn-withdraw" onclick="processEvcWithdraw()">U badal EVC Plus</button>
+        </div>
+
+        <!-- Standard POL Withdraw -->
+        <div class="card">
+            <div class="card-title" style="color:#38bdf8; font-weight:bold;">Withdraw POL (Blockchain Address)</div>
+            <div class="input-group">
+                <input type="text" id="recipientInput" placeholder="0x...">
+            </div>
+            <div class="input-group">
+                <input type="number" step="0.0001" id="amountInput" placeholder="0.1 POL">
+            </div>
+            <button class="btn" onclick="sendWithdraw()">Withdraw POL</button>
+        </div>
+
+        <!-- Address & Key -->
         <div class="card">
             <div class="card-title">Cinwaankaaga Deposit-ka (Address):</div>
             <div class="address-box" id="depositAddress">Loading...</div>
             <button class="btn" onclick="copyAddress()">Copy Address</button>
-        </div>
-
-        <!-- Private Key Section -->
-        <div class="card" style="border: 1px solid #d97706;">
-            <div class="card-title" style="color:#f59e0b; font-weight:bold;">Private Key-gaaga (Sir gaar ah)</div>
-            <div class="address-box hidden" id="privateKeyBox" style="color: #fca5a5;">Loading...</div>
-            <button class="btn btn-warning" id="toggleKeyBtn" onclick="togglePrivateKey()">Muuji Private Key-ga</button>
-        </div>
-
-        <!-- Withdraw Section -->
-        <div class="card">
-            <div class="card-title" style="color:#38bdf8; font-weight:bold;">Withdraw POL (Bixi Lacag)</div>
-            <div class="input-group">
-                <label style="font-size:0.8rem; color:#94a3b8;">Cinwaanka Qaataha:</label>
-                <input type="text" id="recipientInput" placeholder="0x...">
-            </div>
-            <div class="input-group">
-                <label style="font-size:0.8rem; color:#94a3b8;">Xadiga POL:</label>
-                <input type="number" step="0.0001" id="amountInput" placeholder="0.1">
-            </div>
-            <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Now</button>
         </div>
 
         <button class="btn btn-logout" onclick="logoutUser()">Logout (Ka bax)</button>
@@ -185,153 +118,121 @@
       appId: "1:890890688001:web:b7063dda31b860785f5200",
       measurementId: "G-XG4K89NNMM"
     };
-    
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
     const SERVER_URL = 'https://somapp-website-production.up.railway.app';
     let currentUserUid = null;
     let userPolygonAddress = "";
-    let userPrivateKeyStr = "";
-    let isKeyVisible = false;
 
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({
-            prompt: 'select_account'
-        });
-
+        provider.setCustomParameters({ prompt: 'select_account' });
         try {
-            document.getElementById('userStatus').innerText = "Opening Google...";
             const result = await firebase.auth().signInWithPopup(provider);
-            if (result.user) {
-                await authenticateWithBackend(result.user);
-            }
+            if (result.user) await authenticateWithBackend(result.user);
         } catch (err) {
-            console.error("Login Error:", err);
-            alert("Cilad Login: " + err.message);
-            document.getElementById('userStatus').innerText = "Login Failed";
+            alert("Login Error: " + err.message);
         }
     }
 
     async function authenticateWithBackend(user) {
         if (!user || !user.uid) return;
-
         try {
-            document.getElementById('userStatus').innerText = "Connecting server...";
+            document.getElementById('userStatus').innerText = "Connecting...";
             const response = await fetch(`${SERVER_URL}/api/auth-user`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: user.email || "",
-                    uid: user.uid,
-                    userId: user.uid,
-                    displayName: user.displayName || "User"
-                })
+                body: JSON.stringify({ email: user.email, uid: user.uid, displayName: user.displayName })
             });
 
             const data = await response.json();
             if (data.success) {
                 currentUserUid = user.uid;
                 userPolygonAddress = data.polygonAddress;
-                userPrivateKeyStr = data.privateKey;
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
                 document.getElementById('userStatus').innerText = "Connected";
                 document.getElementById('userStatus').style.color = "#10b981";
 
-                document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
+                document.getElementById('userIdDisplay').innerText = data.userId;
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 document.getElementById('depositAddress').innerText = data.polygonAddress;
-                document.getElementById('privateKeyBox').innerText = data.privateKey;
                 document.getElementById('balanceDisplay').innerText = data.balance + " POL";
-            } else {
-                alert("Cilad Server: " + (data.error || "Unknown error"));
-                document.getElementById('userStatus').innerText = "Server Error";
             }
         } catch (err) {
-            console.error(err);
-            alert("Cilad ayaa ka dhacday xiriirka Server-ka.");
             document.getElementById('userStatus').innerText = "Offline";
         }
     }
 
-    // Hubinta xaaladda Auth-ka si toos ah markuu boggu furmo
     firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-            await authenticateWithBackend(user);
-        } else {
+        if (user) await authenticateWithBackend(user);
+        else {
             document.getElementById('loginView').classList.remove('hidden');
             document.getElementById('userStatus').innerText = "Not Logged In";
         }
     });
+
+    async function processEvcDeposit() {
+        const phone = document.getElementById('evcPhoneDeposit').value.trim();
+        const amountUsd = document.getElementById('evcAmountDeposit').value.trim();
+        if (!phone || !amountUsd) return alert("Buuxi xogta EVC Deposit!");
+
+        try {
+            const res = await fetch(`${SERVER_URL}/api/evc-deposit`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: currentUserUid, phoneNumber: phone, amountUsd })
+            });
+            const data = await res.json();
+            if (data.success) { alert(data.message); location.reload(); }
+            else alert("Cilad: " + data.error);
+        } catch (err) { alert("Cilad server-ka ah"); }
+    }
+
+    async function processEvcWithdraw() {
+        const phone = document.getElementById('evcPhoneWithdraw').value.trim();
+        const amountPol = document.getElementById('evcAmountWithdraw').value.trim();
+        if (!phone || !amountPol) return alert("Buuxi xogta EVC Withdraw!");
+
+        try {
+            const res = await fetch(`${SERVER_URL}/api/polygon-to-evc`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: currentUserUid, phoneNumber: phone, amountPol })
+            });
+            const data = await res.json();
+            if (data.success) { alert(data.message); location.reload(); }
+            else alert("Cilad: " + data.error);
+        } catch (err) { alert("Cilad server-ka ah"); }
+    }
+
+    async function sendWithdraw() {
+        const recipient = document.getElementById('recipientInput').value.trim();
+        const amount = document.getElementById('amountInput').value.trim();
+        if (!recipient || !amount) return alert("Buuxi xogta withdraw-ga!");
+
+        try {
+            const res = await fetch(`${SERVER_URL}/api/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: currentUserUid, recipientAddress: recipient, amount })
+            });
+            const data = await res.json();
+            if (data.success) { alert("Guul! Tx: " + data.txHash); location.reload(); }
+            else alert("Cilad: " + data.error);
+        } catch (err) { alert("Cilad server-ka ah"); }
+    }
 
     function copyAddress() {
         navigator.clipboard.writeText(userPolygonAddress);
         alert("Cinwaanka waa la koobiyeeyay!");
     }
 
-    function togglePrivateKey() {
-        const keyBox = document.getElementById('privateKeyBox');
-        const btn = document.getElementById('toggleKeyBtn');
-
-        if (!isKeyVisible) {
-            if(confirm("Digniin: Qofna ha tusin Private Key-gaaga. Ma hubtaa inaad rabto inaad soo bandhigto?")) {
-                keyBox.classList.remove('hidden');
-                btn.innerText = "Qari Private Key-ga";
-                isKeyVisible = true;
-            }
-        } else {
-            keyBox.classList.add('hidden');
-            btn.innerText = "Muuji Private Key-ga";
-            isKeyVisible = false;
-        }
-    }
-
-    async function sendWithdraw() {
-        const recipient = document.getElementById('recipientInput').value.trim();
-        const amount = document.getElementById('amountInput').value.trim();
-
-        if (!recipient || !amount) {
-            alert("Fadlan buuxi cinwaanka qaataha iyo xadiga lacagta!");
-            return;
-        }
-
-        if (!confirm(`Ma hubtaa inaad dirayso ${amount} POL?`)) return;
-
-        try {
-            const response = await fetch(`${SERVER_URL}/api/withdraw`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    uid: currentUserUid,
-                    recipientAddress: recipient,
-                    amount: amount
-                })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
-                location.reload();
-            } else {
-                alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
-            }
-        } catch (err) {
-            console.error(err);
-            alert("Cilad Server-ka ah ayaa dhacday.");
-        }
-    }
-
     function logoutUser() {
-        firebase.auth().signOut().then(() => {
-            localStorage.clear();
-            location.reload();
-        });
+        firebase.auth().signOut().then(() => { localStorage.clear(); location.reload(); });
     }
 </script>
-
 </body>
 </html>

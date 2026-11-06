@@ -198,6 +198,11 @@
 
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
+        // Waxay ku qasbeysaa Google inuu mar walba ku tuso daaqadda doorashada Account-ka
+        provider.setCustomParameters({
+            prompt: 'select_account'
+        });
+
         try {
             document.getElementById('userStatus').innerText = "Redirecting...";
             await firebase.auth().signInWithRedirect(provider);
@@ -255,7 +260,6 @@
         if (result && result.user) {
             await authenticateWithBackend(result.user);
         } else {
-            // Haddii aysan jirin natiijo redirect ah, hubi xaaladda caadiga ah ee session-ka
             firebase.auth().onAuthStateChanged(async (user) => {
                 if (user) {
                     await authenticateWithBackend(user);
@@ -330,6 +334,7 @@
 
     function logoutUser() {
         firebase.auth().signOut().then(() => {
+            localStorage.clear();
             location.reload();
         });
     }

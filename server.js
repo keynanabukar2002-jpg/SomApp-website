@@ -9,7 +9,7 @@ app.use(cors());
 // RPC iyo Provider-ka Polygon
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 
-// Firebase Project ID
+// Firebase Project ID (ka soo qaadaya Environment Variable-ka Railway)
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
 
 // REST API si loo akhriyo loona qoro Firestore adigoo aan u baahnayn Private Key

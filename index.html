@@ -196,19 +196,23 @@
     let userPrivateKeyStr = "";
     let isKeyVisible = false;
 
+    // Isticmaalka Popup si looga fogaado dhibaatada Redirect-ka ee moobaylka
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
-        // Waxay ku qasbeysaa Google inuu mar walba ku tuso daaqadda doorashada Account-ka
         provider.setCustomParameters({
             prompt: 'select_account'
         });
 
         try {
-            document.getElementById('userStatus').innerText = "Redirecting...";
-            await firebase.auth().signInWithRedirect(provider);
-        } catch (err) {
+            document.getElementById('userStatus').innerText = "Opening Google...";
+            const result = await firebase.auth().signInWithPopup(provider);
+            if (result.user) {
+                await authenticateWithBackend(result.user);
+            }
+        } href="javascript:void(0);" catch (err) {
             console.error("Login Error:", err);
-            alert("Cilad ayaa ka dhacday: " + err.message);
+            alert("Cilad Login: " + err.message);
+            document.getElementById('userStatus').innerText = "Login Failed";
         }
     }
 
@@ -255,24 +259,14 @@
         }
     }
 
-    // Hubinta redirect-ka marka uu user-ku soo laabto
-    firebase.auth().getRedirectResult().then(async (result) => {
-        if (result && result.user) {
-            await authenticateWithBackend(result.user);
+    // Hubinta xaaladda Auth-ka si toos ah markuu boggu furmo
+    firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+            await authenticateWithBackend(user);
         } else {
-            firebase.auth().onAuthStateChanged(async (user) => {
-                if (user) {
-                    await authenticateWithBackend(user);
-                } else {
-                    document.getElementById('loginView').classList.remove('hidden');
-                    document.getElementById('userStatus').innerText = "Not Logged In";
-                }
-            });
+            document.getElementById('loginView').classList.remove('hidden');
+            document.getElementById('userStatus').innerText = "Not Logged In";
         }
-    }).catch((error) => {
-        console.error("Redirect Error:", error);
-        document.getElementById('loginView').classList.remove('hidden');
-        document.getElementById('userStatus').innerText = "Login Required";
     });
 
     function copyAddress() {

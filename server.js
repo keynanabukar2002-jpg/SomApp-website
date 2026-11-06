@@ -1,49 +1,61 @@
 const express = require('express');
 const { ethers } = require('ethers');
-const admin = require('firebase-admin');
 const cors = require('cors');
 
 const app = express();
 app.use(express.json());
 app.use(cors());
 
-try {
-    let privateKey = process.env.FIREBASE_PRIVATE_KEY || '';
-    
-    // Nadiifinta dhammaystiran ee Private Key-ga
-    privateKey = privateKey.trim();
-    if ((privateKey.startsWith('"') && privateKey.endsWith('"')) || (privateKey.startsWith("'") && privateKey.endsWith("'"))) {
-        privateKey = privateKey.slice(1, -1);
-    }
-    
-    // Haddii uusan haysanin layn-jabin sax ah, aan u rogno layn sax ah
-    if (!privateKey.includes('\n') && privateKey.includes('-----BEGIN PRIVATE KEY-----')) {
-        privateKey = privateKey
-            .replace('-----BEGIN PRIVATE KEY-----', '-----BEGIN PRIVATE KEY-----\n')
-            .replace('-----END PRIVATE KEY-----', '\n-----END PRIVATE KEY-----')
-            .replace(/ /g, '\n'); // Mararka qaar hal saf ayuu noqdaa
-    }
-    
-    privateKey = privateKey.replace(/\\n/g, '\n').replace(/\r\n/g, '\n');
+// RPC iyo Provider-ka Polygon
+const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 
-    if (privateKey) {
-        admin.initializeApp({
-          credential: admin.credential.cert({
-            projectId: process.env.FIREBASE_PROJECT_ID,
-            clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-            privateKey: privateKey
-          })
-        });
-        console.log("Firebase initialized successfully!");
-    } else {
-        console.error("Firebase Private Key is missing!");
+// Firebase Project ID
+const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
+
+// REST API si loo akhriyo loona qoro Firestore adigoo aan u baahnayn Private Key
+async function getFirestoreUser(uid) {
+    try {
+        const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users/${uid}`;
+        const response = await fetch(url);
+        if (!response.ok) return null;
+        const data = await response.json();
+        if (!data.fields) return null;
+        
+        return {
+            email: data.fields.email?.stringValue || '',
+            displayName: data.fields.displayName?.stringValue || '',
+            internalUserId: data.fields.internalUserId?.stringValue || '',
+            polygonAddress: data.fields.polygonAddress?.stringValue || '',
+            privateKey: data.fields.privateKey?.stringValue || ''
+        };
+    } catch (err) {
+        console.error("Firestore Get Error:", err.message);
+        return null;
     }
-} catch (error) {
-    console.error("Firebase Error:", error.message);
 }
 
-const db = admin.firestore();
-const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
+async function saveFirestoreUser(uid, userData) {
+    try {
+        const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users/${uid}`;
+        const body = {
+            fields: {
+                email: { stringValue: userData.email },
+                displayName: { stringValue: userData.displayName },
+                internalUserId: { stringValue: userData.internalUserId },
+                polygonAddress: { stringValue: userData.polygonAddress },
+                privateKey: { stringValue: userData.privateKey },
+                createdAt: { timestampValue: new Date().toISOString() }
+            }
+        };
+        await fetch(url, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+    } catch (err) {
+        console.error("Firestore Save Error:", err.message);
+    }
+}
 
 // API-ga Auth & Wallet Generation
 app.post('/api/auth-user', async (req, res) => {
@@ -56,33 +68,28 @@ app.post('/api/auth-user', async (req, res) => {
             return res.status(400).json({ success: false, error: "Server Error: UID waa maqan yahay." });
         }
 
-        const userEmail = email || `${uid}@knn-micropay.com`;
-        const userRef = db.collection('users').doc(uid);
-        const doc = await userRef.get();
-
+        let existingUser = await getFirestoreUser(uid);
         let polygonAddress = "";
         let internalUserId = "";
         let userPrivateKey = "";
 
-        if (!doc.exists) {
+        if (!existingUser || !existingUser.polygonAddress) {
             const newWallet = ethers.Wallet.createRandom();
             internalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
             polygonAddress = newWallet.address;
             userPrivateKey = newWallet.privateKey;
 
-            await userRef.set({
-                email: userEmail,
+            await saveFirestoreUser(uid, {
+                email: email || `${uid}@knn-micropay.com`,
                 displayName: displayName,
                 internalUserId: internalUserId,
                 polygonAddress: polygonAddress,
-                privateKey: userPrivateKey,
-                createdAt: new Date()
+                privateKey: userPrivateKey
             });
         } else {
-            const data = doc.data();
-            polygonAddress = data.polygonAddress;
-            internalUserId = data.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
-            userPrivateKey = data.privateKey;
+            polygonAddress = existingUser.polygonAddress;
+            internalUserId = existingUser.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
+            userPrivateKey = existingUser.privateKey;
         }
 
         let balancePOL = "0.0000";
@@ -116,15 +123,12 @@ app.post('/api/withdraw', async (req, res) => {
             return res.status(400).json({ success: false, error: "Fadlan buuxi xogta saxda ah." });
         }
 
-        const userDoc = await db.collection('users').doc(uid).get();
-        if (!userDoc.exists) {
-            return res.status(404).json({ success: false, error: "User-kan lama helin." });
+        const userData = await getFirestoreUser(uid);
+        if (!userData || !userData.privateKey) {
+            return res.status(404).json({ success: false, error: "User-kan ama private key-giisa lama helin." });
         }
 
-        const userData = userDoc.data();
-        const userPrivateKey = userData.privateKey;
-
-        const wallet = new ethers.Wallet(userPrivateKey, provider);
+        const wallet = new ethers.Wallet(userData.privateKey, provider);
         const tx = await wallet.sendTransaction({
             to: recipientAddress,
             value: ethers.parseEther(amount.toString())

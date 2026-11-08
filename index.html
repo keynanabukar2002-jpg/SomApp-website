@@ -27,88 +27,21 @@
             box-shadow: 0 10px 25px rgba(0,0,0,0.5);
             border: 1px solid #334155;
         }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .logo {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #38bdf8;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-        .card {
-            background: #0f172a;
-            border-radius: 12px;
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid #1e293b;
-        }
-        .card-title {
-            color: #94a3b8;
-            font-size: 0.85rem;
-            margin-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-        }
-        .balance {
-            font-size: 1.6rem;
-            font-weight: bold;
-            color: #f8fafc;
-        }
-        .sub-balance {
-            font-size: 0.9rem;
-            color: #38bdf8;
-            margin-top: 4px;
-        }
-        .address-box {
-            word-break: break-all;
-            background: #1e293b;
-            padding: 10px;
-            border-radius: 8px;
-            font-family: monospace;
-            color: #38bdf8;
-            font-size: 0.8rem;
-            margin: 8px 0;
-            border: 1px dashed #475569;
-        }
-        .btn {
-            background: #0284c7;
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
-            width: 100%;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 8px;
-        }
+        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
+        .logo { font-weight: bold; font-size: 1.2rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
+        .card { background: #0f172a; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid #1e293b; }
+        .card-title { color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px; display: flex; justify-content: space-between; }
+        .balance { font-size: 1.6rem; font-weight: bold; color: #f8fafc; }
+        .sub-balance { font-size: 0.9rem; color: #38bdf8; margin-top: 4px; }
+        .address-box { word-break: break-all; background: #1e293b; padding: 10px; border-radius: 8px; font-family: monospace; color: #38bdf8; font-size: 0.8rem; margin: 8px 0; border: 1px dashed #475569; }
+        .btn { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 8px; }
         .btn:hover { background: #0369a1; }
         .btn-google { background: #db4437; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-google:hover { background: #c23321; }
         .btn-withdraw { background: #10b981; }
-        .btn-withdraw:hover { background: #059669; }
         .btn-swap { background: #8b5cf6; }
-        .btn-swap:hover { background: #7c3aed; }
         .btn-logout { background: #ef4444; margin-top: 10px; }
-        .btn-logout:hover { background: #dc2626; }
         .btn-warning { background: #d97706; font-size: 0.8rem; padding: 6px; }
-        .btn-warning:hover { background: #b45309; }
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background: #0f172a;
-            color: white;
-            margin-top: 6px;
-            box-sizing: border-box;
-        }
+        input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; margin-top: 6px; box-sizing: border-box; }
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
     </style>
@@ -127,10 +60,7 @@
     <!-- Login View -->
     <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
         <h3 style="color: #f8fafc; margin-top:0;">Ku soo dhawoow KNN MicroPay</h3>
-        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Fadlan ku gal Google si aad u maamusho Wallet-kaaga.</p>
-        <button class="btn btn-google" onclick="loginWithGoogle()">
-            <span>Google Login-ka ku gal</span>
-        </button>
+        <button class="btn btn-google" onclick="loginWithGoogle()">Google Login-ka ku gal</button>
     </div>
 
     <!-- Dashboard View -->
@@ -142,7 +72,6 @@
             </div>
         </div>
 
-        <!-- Balance & Dual Currency (POL & SOS) -->
         <div class="card">
             <div class="card-title">
                 <span>Hantidaada Guud (Balance)</span>
@@ -152,7 +81,7 @@
             <div class="sub-balance" id="sosBalanceDisplay">≈ 0 SOS</div>
         </div>
 
-        <!-- Internal Swap Section (SOS <-> POL) -->
+        <!-- Internal Swap Section -->
         <div class="card" style="border: 1px solid #8b5cf6;">
             <div class="card-title" style="color:#c084fc; font-weight:bold;">Is-dhaafsiga Gudaha (Internal Swap)</div>
             <div class="input-group">
@@ -164,7 +93,7 @@
             </div>
             <div class="input-group">
                 <label style="font-size:0.8rem; color:#94a3b8;" id="swapInputLabel">Cadadka SOS:</label>
-                <input type="number" id="swapAmountInput" placeholder="Tusaale: 55000" oninput="calculateSwap()">
+                <input type="number" id="swapAmountInput" placeholder="Tusaale: 3000" oninput="calculateSwap()">
             </div>
             <div style="font-size: 0.8rem; color: #38bdf8; margin-bottom: 8px;" id="swapResultDisplay">
                 Waxaad heli doontaa: 0 POL
@@ -181,14 +110,14 @@
 
         <!-- Private Key Section -->
         <div class="card" style="border: 1px solid #d97706;">
-            <div class="card-title" style="color:#f59e0b; font-weight:bold;">Private Key-gaaga (Sir gaar ah)</div>
+            <div class="card-title" style="color:#f59e0b; font-weight:bold;">Private Key-gaaga</div>
             <div class="address-box hidden" id="privateKeyBox" style="color: #fca5a5;">Loading...</div>
             <button class="btn btn-warning" id="toggleKeyBtn" onclick="togglePrivateKey()">Muuji Private Key-ga</button>
         </div>
 
         <!-- Withdraw Section -->
         <div class="card">
-            <div class="card-title" style="color:#10b981; font-weight:bold;">Withdraw POL (Bixi Lacag)</div>
+            <div class="card-title" style="color:#10b981; font-weight:bold;">Withdraw POL</div>
             <div class="input-group">
                 <label style="font-size:0.8rem; color:#94a3b8;">Cinwaanka Qaataha:</label>
                 <input type="text" id="recipientInput" placeholder="0x...">
@@ -200,7 +129,7 @@
             <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Now</button>
         </div>
 
-        <button class="btn btn-logout" onclick="logoutUser()">Logout (Ka bax)</button>
+        <button class="btn btn-logout" onclick="logoutUser()">Logout</button>
     </div>
 </div>
 
@@ -215,103 +144,71 @@
       measurementId: "G-XG4K89NNMM"
     };
     
-    if (!firebase.apps.length) {
-        firebase.initializeApp(firebaseConfig);
-    }
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
     const SERVER_URL = 'https://somapp-website-production.up.railway.app';
     let currentUserUid = null;
     let userPolygonAddress = "";
-    let userPrivateKeyStr = "";
-    let isKeyVisible = false;
-
-    // Qiimaha rasmiga ah ee Sarifka (Tusaale: 1 POL = 3,000 SOS - Adigu waad bedeli kartaa halkaan)
-    const EXCHANGE_RATE_SOS_PER_POL = 3000; 
+    let currentPolBalance = 0;
+    const EXCHANGE_RATE_SOS_PER_POL = 3000;
 
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
-
         try {
-            document.getElementById('userStatus').innerText = "Opening Google...";
             const result = await firebase.auth().signInWithPopup(provider);
-            if (result.user) {
-                await authenticateWithBackend(result.user);
-            }
+            if (result.user) await authenticateWithBackend(result.user);
         } catch (err) {
-            console.error("Login Error:", err);
             alert("Cilad Login: " + err.message);
-            document.getElementById('userStatus').innerText = "Login Failed";
         }
     }
 
     async function authenticateWithBackend(user) {
         if (!user || !user.uid) return;
-
         try {
-            document.getElementById('userStatus').innerText = "Connecting server...";
             const response = await fetch(`${SERVER_URL}/api/auth-user`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    email: user.email || "",
-                    uid: user.uid,
-                    userId: user.uid,
-                    displayName: user.displayName || "User"
-                })
+                body: JSON.stringify({ email: user.email, uid: user.uid, userId: user.uid, displayName: user.displayName })
             });
-
             const data = await response.json();
             if (data.success) {
                 currentUserUid = user.uid;
                 userPolygonAddress = data.polygonAddress;
-                userPrivateKeyStr = data.privateKey;
+                currentPolBalance = parseFloat(data.balance || 0);
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
                 document.getElementById('userStatus').innerText = "Connected";
                 document.getElementById('userStatus').style.color = "#10b981";
 
-                document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
+                document.getElementById('userIdDisplay').innerText = data.userId;
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 document.getElementById('depositAddress').innerText = data.polygonAddress;
                 document.getElementById('privateKeyBox').innerText = data.privateKey;
                 
-                const polBal = parseFloat(data.balance || 0);
-                document.getElementById('balanceDisplay').innerText = polBal.toFixed(4) + " POL";
-                
-                // Xisaabinta Shilin Soomaaliga (SOS)
-                const sosVal = polBal * EXCHANGE_RATE_SOS_PER_POL;
-                document.getElementById('sosBalanceDisplay').innerText = `≈ ${sosVal.toLocaleString()} SOS`;
-
-            } else {
-                alert("Cilad Server: " + (data.error || "Unknown error"));
-                document.getElementById('userStatus').innerText = "Server Error";
+                updateBalanceUI(currentPolBalance);
             }
         } catch (err) {
-            console.error(err);
-            alert("Cilad ayaa ka dhacday xiriirka Server-ka.");
-            document.getElementById('userStatus').innerText = "Offline";
+            alert("Cilad Server-ka ah.");
         }
     }
 
+    function updateBalanceUI(pol) {
+        currentPolBalance = pol;
+        document.getElementById('balanceDisplay').innerText = pol.toFixed(4) + " POL";
+        const sosVal = pol * EXCHANGE_RATE_SOS_PER_POL;
+        document.getElementById('sosBalanceDisplay').innerText = `≈ ${sosVal.toLocaleString()} SOS`;
+    }
+
     firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) {
-            await authenticateWithBackend(user);
-        } else {
-            document.getElementById('loginView').classList.remove('hidden');
-            document.getElementById('userStatus').innerText = "Not Logged In";
-        }
+        if (user) await authenticateWithBackend(user);
+        else document.getElementById('loginView').classList.remove('hidden');
     });
 
     function updateSwapLabels() {
         const type = document.getElementById('swapType').value;
-        const label = document.getElementById('swapInputLabel');
-        if (type === 'SOS_TO_POL') {
-            label.innerText = "Cadadka SOS:";
-        } else {
-            label.innerText = "Cadadka POL:";
-        }
+        document.getElementById('swapInputLabel').innerText = type === 'SOS_TO_POL' ? "Cadadka SOS:" : "Cadadka POL:";
         calculateSwap();
     }
 
@@ -321,23 +218,40 @@
         const resultDisplay = document.getElementById('swapResultDisplay');
 
         if (type === 'SOS_TO_POL') {
-            const polResult = val / EXCHANGE_RATE_SOS_PER_POL;
-            resultDisplay.innerText = `Waxaad heli doontaa: ${polResult.toFixed(4)} POL`;
+            resultDisplay.innerText = `Waxaad heli doontaa: ${(val / EXCHANGE_RATE_SOS_PER_POL).toFixed(4)} POL`;
         } else {
-            const sosResult = val * EXCHANGE_RATE_SOS_PER_POL;
-            resultDisplay.innerText = `Waxaad heli doontaa: ${sosResult.toLocaleString()} SOS`;
+            resultDisplay.innerText = `Waxaad heli doontaa: ${(val * EXCHANGE_RATE_SOS_PER_POL).toLocaleString()} SOS`;
         }
     }
 
-    function executeSwap() {
-        const val = parseFloat(document.getElementById('swapAmountInput').value);
-        if (!val || val <= 0) {
-            alert("Fadlan gali xadd sax ah oo lacag ah!");
+    async function executeSwap() {
+        const type = document.getElementById('swapType').value;
+        const amount = parseFloat(document.getElementById('swapAmountInput').value);
+
+        if (!amount || amount <= 0) {
+            alert("Fadlan gali xaddiga saxda ah!");
             return;
         }
-        alert("Swap-kii gudaha app-ka si guul leh bay ugu diiwaan gashay! (Internal Ledger Updated)");
-        document.getElementById('swapAmountInput').value = "";
-        calculateSwap();
+
+        try {
+            const response = await fetch(`${SERVER_URL}/api/swap`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: currentUserUid, swapType: type, amount: amount })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert(data.message);
+                updateBalanceUI(parseFloat(data.newBalance));
+                document.getElementById('swapAmountInput').value = "";
+                calculateSwap();
+            } else {
+                alert("Cilad: " + data.error);
+            }
+        } catch (err) {
+            alert("Cilad ayaa dhacday xiriirka server-ka.");
+        }
     }
 
     function copyAddress() {
@@ -348,28 +262,21 @@
     function togglePrivateKey() {
         const keyBox = document.getElementById('privateKeyBox');
         const btn = document.getElementById('toggleKeyBtn');
-
-        if (!isKeyVisible) {
-            if(confirm("Digniin: Qofna ha tusin Private Key-gaaga. Ma hubtaa inaad rabto inaad soo bandhigto?")) {
+        if (keyBox.classList.contains('hidden')) {
+            if (confirm("Digniin: Qofna ha tusin Private Key-gaaga!")) {
                 keyBox.classList.remove('hidden');
                 btn.innerText = "Qari Private Key-ga";
-                isKeyVisible = true;
             }
         } else {
             keyBox.classList.add('hidden');
             btn.innerText = "Muuji Private Key-ga";
-            isKeyVisible = false;
         }
     }
 
     async function sendWithdraw() {
         const recipient = document.getElementById('recipientInput').value.trim();
         const amount = document.getElementById('amountInput').value.trim();
-
-        if (!recipient || !amount) {
-            alert("Fadlan buuxi cinwaanka qaataha iyo xadiga lacagta!");
-            return;
-        }
+        if (!recipient || !amount) return alert("Fadlan buuxi meelaha bannaan!");
 
         if (!confirm(`Ma hubtaa inaad dirayso ${amount} POL?`)) return;
 
@@ -377,31 +284,22 @@
             const response = await fetch(`${SERVER_URL}/api/withdraw`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    uid: currentUserUid,
-                    recipientAddress: recipient,
-                    amount: amount
-                })
+                body: JSON.stringify({ uid: currentUserUid, recipientAddress: recipient, amount: amount })
             });
-
             const data = await response.json();
             if (data.success) {
-                alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
+                alert("Guul! " + data.message);
                 location.reload();
             } else {
-                alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
+                alert("Cilad: " + data.error);
             }
         } catch (err) {
-            console.error(err);
-            alert("Cilad Server-ka ah ayaa dhacday.");
+            alert("Cilad ayaa dhacday.");
         }
     }
 
     function logoutUser() {
-        firebase.auth().signOut().then(() => {
-            localStorage.clear();
-            location.reload();
-        });
+        firebase.auth().signOut().then(() => { localStorage.clear(); location.reload(); });
     }
 </script>
 

@@ -1,442 +1,176 @@
 <!DOCTYPE html>
-<html lang="so">
+<html lang="so" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNN MicroPay - Multi-Currency Wallet</title>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
-    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <style>
-        :root {
-            --bg-color: #0b0e14;
-            --card-bg: #151b22;
-            --accent-purple: #8247e5;
-            --accent-green: #10b981;
-            --accent-blue: #38bdf8;
-            --text-main: #f8fafc;
-            --text-muted: #94a3b8;
-            --border-color: #21262d;
+    <title>KNN MicroPay - Multi-Asset Wallet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: { 500: '#8b5cf6', 600: '#7c3aed' },
+                        darkBg: '#0b0f19',
+                        darkCard: '#111827',
+                        darkInput: '#1f2937'
+                    }
+                }
+            }
         }
-        body {
-            background-color: var(--bg-color);
-            color: var(--text-main);
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-            padding: 16px;
-        }
-        .container {
-            width: 100%;
-            max-width: 460px;
-            background: var(--card-bg);
-            border-radius: 20px;
-            padding: 24px;
-            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
-            border: 1px solid var(--border-color);
-        }
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-        }
-        .logo-area {
-            display: flex;
-            align-items: center;
-            gap: 10px;
-        }
-        .polygon-badge {
-            width: 36px;
-            height: 36px;
-            background: linear-gradient(135deg, #8247e5, #a855f7);
-            border-radius: 10px;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-weight: bold;
-            font-size: 1.1rem;
-            color: white;
-        }
-        .brand-name { font-weight: bold; font-size: 1.1rem; color: var(--text-main); }
-        .brand-sub { font-size: 0.75rem; color: var(--text-muted); }
-        
-        .assets-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 12px;
-            margin-bottom: 16px;
-        }
-        .asset-card {
-            background: #0d1117;
-            border-radius: 14px;
-            padding: 14px;
-            border: 1px solid var(--border-color);
-            position: relative;
-            overflow: hidden;
-        }
-        .asset-card.pol::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-purple); }
-        .asset-card.sos::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-green); }
-
-        .asset-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
-        .asset-value { font-size: 1.2rem; font-weight: bold; color: var(--text-main); }
-        .asset-symbol { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
-
-        .card {
-            background: #0d1117;
-            border-radius: 14px;
-            padding: 16px;
-            margin-bottom: 16px;
-            border: 1px solid var(--border-color);
-        }
-        .card-title { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
-        
-        .address-box {
-            word-break: break-all;
-            background: var(--card-bg);
-            padding: 8px 10px;
-            border-radius: 8px;
-            font-family: monospace;
-            color: var(--accent-blue);
-            font-size: 0.75rem;
-            margin: 6px 0;
-            border: 1px dashed #30363d;
-        }
-        
-        .btn {
-            background: var(--accent-purple);
-            color: white;
-            border: none;
-            padding: 10px 16px;
-            border-radius: 10px;
-            width: 100%;
-            font-weight: bold;
-            cursor: pointer;
-            transition: 0.2s;
-            margin-top: 6px;
-            font-size: 0.85rem;
-        }
-        .btn:hover { opacity: 0.9; }
-        .btn-google { background: #ea4335; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-withdraw { background: var(--accent-green); }
-        .btn-swap { background: linear-gradient(135deg, #8247e5, #6366f1); }
-        .btn-logout { background: #ef4444; margin-top: 10px; font-size: 0.8rem; padding: 8px; }
-        .btn-warning { background: #d97706; font-size: 0.75rem; padding: 4px; }
-
-        input, select {
-            width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #30363d;
-            background: var(--card-bg);
-            color: white;
-            margin-top: 4px;
-            box-sizing: border-box;
-            font-size: 0.85rem;
-        }
-        .input-group { margin-bottom: 10px; }
-        .hidden { display: none !important; }
-    </style>
+    </script>
 </head>
-<body>
+<body class="bg-darkBg text-gray-100 min-h-screen font-sans pb-12">
+    <div class="max-w-md mx-auto p-4 space-y-5">
+        
+        <!-- Header -->
+        <header class="flex justify-between items-center bg-darkCard p-4 rounded-2xl border border-gray-800 shadow-lg">
+            <div class="flex items-center space-x-3">
+                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center font-bold text-lg shadow-md shadow-brand-500/20">
+                    ⬡
+                </div>
+                <div>
+                    <h1 class="font-bold text-base leading-tight">KNN MicroPay</h1>
+                    <p class="text-xs text-gray-400">Multi-Asset Wallet</p>
+                </div>
+            </div>
+            <div class="text-right">
+                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> Online
+                </span>
+            </div>
+        </header>
 
-<div class="container">
-    <div class="header">
-        <div class="logo-area">
-            <div class="polygon-badge">⬡</div>
+        <!-- Profile / Info -->
+        <div class="bg-darkCard p-3 rounded-xl border border-gray-800/80 flex justify-between items-center text-xs">
             <div>
-                <div class="brand-name">KNN MicroPay</div>
-                <div class="brand-sub">Multi-Asset Wallet</div>
+                <span class="text-gray-400">ID:</span>
+                <span class="font-mono font-bold text-brand-500 ml-1">KNN-872257</span>
             </div>
-        </div>
-        <div id="userStatus" style="font-size:0.75rem; color:var(--text-muted);">Connecting...</div>
-    </div>
-
-    <!-- Login View -->
-    <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
-        <h3 style="color: var(--text-main); margin-top:0;">Ku soo dhawoow Wallet-ka</h3>
-        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Ku gal Google si aad u maamusho POL & SOS.</p>
-        <button class="btn btn-google" onclick="loginWithGoogle()">Google Login-ka ku gal</button>
-    </div>
-
-    <!-- Dashboard View -->
-    <div id="dashboardView" class="hidden">
-        <div class="card" style="padding: 10px 16px;">
-            <div class="card-title" style="margin-bottom:0;">
-              <span>ID: <strong id="userIdDisplay" style="color:var(--accent-blue);">--</strong></span>
-              <span id="userEmailDisplay" style="color:var(--text-muted); font-size:0.7rem;">--</span>
+            <div class="text-gray-300 font-mono">
+                abuukarcumar661@gmail.com
             </div>
         </div>
 
-        <!-- Dual Independent Balances -->
-        <div class="assets-grid">
-            <div class="asset-card pol">
-                <div class="asset-title">Polygon</div>
-                <div class="asset-value" id="polBalanceDisplay">0.00</div>
-                <div class="asset-symbol">POL</div>
+        <!-- Wallet Cards (POL & SOS) -->
+        <div class="grid grid-cols-2 gap-3">
+            <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 relative overflow-hidden">
+                <div class="w-1 h-8 bg-brand-500 absolute left-0 top-4 rounded-r-full"></div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">POLYGON</p>
+                <h2 id="polBalance" class="text-xl font-bold tracking-tight">0.0000 <span class="text-xs text-brand-500">POL</span></h2>
             </div>
-            <div class="asset-card sos">
-                <div class="asset-title">Shilin Soomaali</div>
-                <div class="asset-value" id="sosBalanceDisplay">0</div>
-                <div class="asset-symbol">SOS</div>
+            <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 relative overflow-hidden">
+                <div class="w-1 h-8 bg-emerald-500 absolute left-0 top-4 rounded-r-full"></div>
+                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">SHILIN SOOMAALI</p>
+                <h2 id="sosBalance" class="text-xl font-bold tracking-tight">0.00 <span class="text-xs text-emerald-400">SOS</span></h2>
             </div>
         </div>
 
-        <!-- Internal Swap Section -->
-        <div class="card" style="border-color: #8247e533;">
-            <div class="card-title" style="color:#c084fc; font-weight:bold;">Is-dhaafsiga (Internal Swap)</div>
-            <div class="input-group">
-                <label style="font-size:0.75rem; color:var(--text-muted);">Nooca Sarifka:</label>
-                <select id="swapType" onchange="updateSwapLabels()">
-                    <option value="SOS_TO_POL">Shilin Soomaali (SOS) ➔ Polygon (POL)</option>
-                    <option value="POL_TO_SOS">Polygon (POL) ➔ Shilin Soomaali (SOS)</option>
-                </select>
+        <!-- Deposit Address -->
+        <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 space-y-2">
+            <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Deposit Address (Polygon)</label>
+            <div class="flex items-center space-x-2 bg-darkInput p-2.5 rounded-xl border border-gray-700">
+                <input id="depositAddr" type="text" readonly value="0x0BB8317Fac7ABAAe79e213BF0eBE80d960d324a0" class="bg-transparent text-xs font-mono text-gray-300 w-full focus:outline-none">
+                <button onclick="copyAddr()" class="bg-brand-600 hover:bg-brand-500 text-xs px-3 py-1.5 rounded-lg font-medium transition">Copy</button>
             </div>
-            <div class="input-group">
-                <label style="font-size:0.75rem; color:var(--text-muted);" id="swapInputLabel">Cadadka SOS:</label>
-                <input type="number" id="swapAmountInput" placeholder="Tusaale: 1000" oninput="calculateSwap()">
-            </div>
-            <div style="font-size: 0.78rem; color: var(--accent-blue); margin-bottom: 6px;" id="swapResultDisplay">
-                Waxaad heli doontaa: 0 POL
-            </div>
-            <button class="btn btn-swap" onclick="executeSwap()">Ku Samee Swap Hadda</button>
-        </div>
-
-        <!-- Deposit Section (Polygon & SOS) -->
-        <div class="card">
-            <div class="card-title" style="font-weight:bold; color:var(--accent-blue);">Cinwaannada Deposit-ka</div>
-            <div style="font-size:0.75rem; color:var(--text-muted);">Polygon Deposit Address:</div>
-            <div class="address-box" id="depositAddressPOL">Loading...</div>
-            <button class="btn" style="padding:6px; font-size:0.75rem; margin-bottom:8px;" onclick="copyAddress('depositAddressPOL')">Copy Polygon Address</button>
-
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">Shilin Soomaali Deposit Account:</div>
-            <div class="address-box" id="depositAddressSOS">Loading...</div>
-            <button class="btn" style="padding:6px; font-size:0.75rem; background:#059669;" onclick="copyAddress('depositAddressSOS')">Copy SOS Account</button>
         </div>
 
         <!-- Private Key Section -->
-        <div class="card" style="border-color: #d9770633;">
-            <div class="card-title" style="color:#f59e0b; font-weight:bold;">Private Key-gaaga (Sir)</div>
-            <div class="address-box hidden" id="privateKeyBox" style="color: #fca5a5;">Loading...</div>
-            <button class="btn btn-warning" id="toggleKeyBtn" onclick="togglePrivateKey()">Muuji Private Key-ga</button>
+        <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 space-y-3">
+            <label class="text-xs font-semibold text-amber-500 uppercase tracking-wider">Private Key-gaaga (Sir)</label>
+            <div class="relative">
+                <input id="pkInput" type="password" readonly value="0x4fdf339637928ed3c0ac45aa37da66059dc717d6baa96ff3b63c6832e4f23eb7" class="w-full bg-darkInput border border-gray-700 rounded-xl p-3 text-xs font-mono text-gray-300 pr-10 focus:outline-none">
+            </div>
+            <button onclick="togglePK()" id="pkBtn" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-2.5 text-xs rounded-xl transition">
+                Muuji Private Key-ga
+            </button>
         </div>
 
-        <!-- Withdraw Sections -->
-        <div class="card">
-            <div class="card-title" style="color:var(--accent-green); font-weight:bold;">Withdraw POL & SOS</div>
-            
-            <!-- Withdraw POL -->
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Bixi Polygon (POL):</div>
-            <div class="input-group"><input type="text" id="polRecipient" placeholder="Polygon Address (0x...)"></div>
-            <div class="input-group"><input type="number" step="0.0001" id="polAmount" placeholder="Xadiga POL"></div>
-            <button class="btn btn-withdraw" style="margin-bottom:12px;" onclick="sendWithdrawPOL()">Withdraw POL</button>
-
-            <!-- Withdraw SOS -->
-            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Bixi Shilin Soomaali (SOS):</div>
-            <div class="input-group"><input type="text" id="sosRecipient" placeholder="Akownka SOS / Mobile Money"></div>
-            <div class="input-group"><input type="number" id="sosAmount" placeholder="Xadiga SOS"></div>
-            <button class="btn btn-withdraw" style="background:#0284c7;" onclick="sendWithdrawSOS()">Withdraw SOS</button>
+        <!-- Internal Swap -->
+        <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 space-y-3">
+            <h3 class="text-sm font-bold text-brand-500">Is-dhaafsiga (Internal Swap)</h3>
+            <div class="space-y-2">
+                <label class="text-xs text-gray-400">Nooca Sarifka:</label>
+                <select id="swapType" class="w-full bg-darkInput border border-gray-700 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none">
+                    <option value="SOS_POL">Shilin Soomaali (SOS) ➔ Polygon (POL)</option>
+                    <option value="POL_SOS">Polygon (POL) ➔ Shilin Soomaali (SOS)</option>
+                </select>
+            </div>
+            <div class="space-y-2">
+                <label class="text-xs text-gray-400">Cadadka:</label>
+                <input id="swapAmount" type="number" placeholder="Tusaale: 1000" class="w-full bg-darkInput border border-gray-700 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none">
+            </div>
+            <button onclick="executeSwap()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 text-xs rounded-xl shadow-lg shadow-brand-500/20 transition">
+                Ku Samee Swap Hadda
+            </button>
         </div>
 
-        <button class="btn btn-logout" onclick="logoutUser()">Logout (Ka bax)</button>
     </div>
-</div>
 
-<script>
-    const firebaseConfig = {
-      apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
-      authDomain: "somapp-61ebd.firebaseapp.com",
-      projectId: "somapp-61ebd",
-      storageBucket: "somapp-61ebd.firebasestorage.app",
-      messagingSenderId: "890890688001",
-      appId: "1:890890688001:web:b7063dda31b860785f5200",
-      measurementId: "G-XG4K89NNMM"
-    };
-    
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    <script>
+        // Beddel kan URL-ka Server-kaaga markaad deploy garayso (e.g. https://your-app.onrender.com)
+        const SERVER_URL = 'http://localhost:3000'; 
+        const targetAddress = "0x0BB8317Fac7ABAAe79e213BF0eBE80d960d324a0";
 
-    const SERVER_URL = 'https://somapp-website-production.up.railway.app';
-    let currentUserUid = null;
-
-    async function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
-        provider.setCustomParameters({ prompt: 'select_account' });
-        try {
-            const result = await firebase.auth().signInWithPopup(provider);
-            if (result.user) await authenticateWithBackend(result.user);
-        } catch (err) {
-            alert("Cilad Login: " + err.message);
-        }
-    }
-
-    async function authenticateWithBackend(user) {
-        if (!user || !user.uid) return;
-        try {
-            const response = await fetch(`${SERVER_URL}/api/auth-user`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: user.email, uid: user.uid, userId: user.uid, displayName: user.displayName })
-            });
-            const data = await response.json();
-            if (data.success) {
-                currentUserUid = user.uid;
-
-                document.getElementById('loginView').classList.add('hidden');
-                document.getElementById('dashboardView').classList.remove('hidden');
-                document.getElementById('userStatus').innerText = "Online";
-                document.getElementById('userStatus').style.color = "#10b981";
-
-                document.getElementById('userIdDisplay').innerText = data.userId;
-                document.getElementById('userEmailDisplay').innerText = user.email;
-                document.getElementById('depositAddressPOL').innerText = data.polygonAddress;
-                document.getElementById('depositAddressSOS').innerText = data.sosAddress || data.polygonAddress;
-                document.getElementById('privateKeyBox').innerText = data.privateKey;
-                
-                updateBalancesUI(parseFloat(data.polBalance), parseFloat(data.sosBalance));
+        async function fetchLiveBalance() {
+            try {
+                const res = await fetch(`${SERVER_URL}/api/balance/${targetAddress}`);
+                const data = await res.json();
+                if(data.success) {
+                    document.getElementById('polBalance').innerText = `${parseFloat(data.polBalance).toFixed(4)} POL`;
+                    document.getElementById('sosBalance').innerText = `${parseFloat(data.sosBalance).toFixed(2)} SOS`;
+                }
+            } catch (err) {
+                // Client-side fallback if server is offline
+                const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
+                const bal = await provider.getBalance(targetAddress);
+                const ethVal = parseFloat(ethers.formatEther(bal));
+                document.getElementById('polBalance').innerText = `${ethVal.toFixed(4)} POL`;
+                document.getElementById('sosBalance').innerText = `${(ethVal * 1500).toFixed(2)} SOS`;
             }
-        } catch (err) {
-            alert("Cilad xiriirka server-ka ah.");
-        }
-    }
-
-    function updateBalancesUI(pol, sos) {
-        document.getElementById('polBalanceDisplay').innerText = pol.toFixed(4);
-        document.getElementById('sosBalanceDisplay').innerText = sos.toLocaleString();
-    }
-
-    firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) await authenticateWithBackend(user);
-        else document.getElementById('loginView').classList.remove('hidden');
-    });
-
-    function updateSwapLabels() {
-        const type = document.getElementById('swapType').value;
-        document.getElementById('swapInputLabel').innerText = type === 'SOS_TO_POL' ? "Cadadka SOS:" : "Cadadka POL:";
-        calculateSwap();
-    }
-
-    function calculateSwap() {
-        const type = document.getElementById('swapType').value;
-        const val = parseFloat(document.getElementById('swapAmountInput').value) || 0;
-        const resultDisplay = document.getElementById('swapResultDisplay');
-
-        if (type === 'SOS_TO_POL') {
-            // 1000 SOS = 0.4537 POL -> 1 SOS = 0.4537 / 1000 POL
-            const polRes = val * (0.4537 / 1000);
-            resultDisplay.innerText = `Waxaad heli doontaa: ${polRes.toFixed(4)} POL`;
-        } else {
-            // 1 POL = (1000 / 0.4537) SOS
-            const sosRes = val * (1000 / 0.4537);
-            resultDisplay.innerText = `Waxaad heli doontaa: ${sosRes.toLocaleString()} SOS`;
-        }
-    }
-
-    async function executeSwap() {
-        const type = document.getElementById('swapType').value;
-        const amount = parseFloat(document.getElementById('swapAmountInput').value);
-
-        if (!amount || amount <= 0) {
-            alert("Fadlan gali xaddiga saxda ah!");
-            return;
         }
 
-        try {
-            const response = await fetch(`${SERVER_URL}/api/swap`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid: currentUserUid, swapType: type, amount: amount })
-            });
-
-            const data = await response.json();
-            if (data.success) {
-                alert(data.message);
-                updateBalancesUI(parseFloat(data.newPolBalance), parseFloat(data.newSosBalance));
-                document.getElementById('swapAmountInput').value = "";
-                calculateSwap();
+        function togglePK() {
+            const input = document.getElementById('pkInput');
+            const btn = document.getElementById('pkBtn');
+            if (input.type === 'password') {
+                input.type = 'text';
+                btn.innerText = 'Qari Private Key-ga';
             } else {
-                alert("Cilad: " + data.error);
+                input.type = 'password';
+                btn.innerText = 'Muuji Private Key-ga';
             }
-        } catch (err) {
-            alert("Cilad ayaa dhacday xiriirka server-ka.");
         }
-    }
 
-    function copyAddress(elementId) {
-        const text = document.getElementById(elementId).innerText;
-        navigator.clipboard.writeText(text);
-        alert("Cinwaanka waa la koobiyeeyay!");
-    }
+        function copyAddr() {
+            const input = document.getElementById('depositAddr');
+            navigator.clipboard.writeText(input.value);
+            alert('Cinwaanka waa la kopiyeeyay!');
+        }
 
-    function togglePrivateKey() {
-        const keyBox = document.getElementById('privateKeyBox');
-        const btn = document.getElementById('toggleKeyBtn');
-        if (keyBox.classList.contains('hidden')) {
-            if (confirm("Digniin: Qofna ha tusin Private Key-gaaga!")) {
-                keyBox.classList.remove('hidden');
-                btn.innerText = "Qari Private Key-ga";
+        async function executeSwap() {
+            const amount = document.getElementById('swapAmount').value;
+            const type = document.getElementById('swapType').value;
+            if(!amount || amount <= 0) return alert('Geli cadad sax ah!');
+
+            try {
+                const res = await fetch(`${SERVER_URL}/api/swap`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ address: targetAddress, amount, type })
+                });
+                const data = await res.json();
+                alert(data.message || 'Swap-ka waa lagu guuleystay!');
+                fetchLiveBalance();
+            } catch(e) {
+                alert('Khalad ayaa dhacay intii uu swap-ku socday.');
             }
-        } else {
-            keyBox.classList.add('hidden');
-            btn.innerText = "Muuji Private Key-ga";
         }
-    }
 
-    async function sendWithdrawPOL() {
-        const recipient = document.getElementById('polRecipient').value.trim();
-        const amount = document.getElementById('polAmount').value.trim();
-        if (!recipient || !amount) return alert("Fadlan buuxi meelaha bannaan ee POL!");
-
-        if (!confirm(`Ma hubtaa inaad dirayso ${amount} POL?`)) return;
-
-        try {
-            const response = await fetch(`${SERVER_URL}/api/withdraw-pol`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid: currentUserUid, recipientAddress: recipient, amount: amount })
-            });
-            const data = await response.json();
-            if (data.success) {
-                alert("Guul! " + data.message);
-                location.reload();
-            } else {
-                alert("Cilad: " + data.error);
-            }
-        } catch (err) {
-            alert("Cilad ayaa dhacday.");
-        }
-    }
-
-    async function sendWithdrawSOS() {
-        const recipient = document.getElementById('sosRecipient').value.trim();
-        const amount = document.getElementById('sosAmount').value.trim();
-        if (!recipient || !amount) return alert("Fadlan buuxi meelaha bannaan ee SOS!");
-
-        if (!confirm(`Ma hubtaa inaad la baxayso ${amount} SOS?`)) return;
-
-        try {
-            const response = await fetch(`${SERVER_URL}/api/withdraw-sos`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid: currentUserUid, recipientAccount: recipient, amount: amount })
-            });
-            const data = await response.json();
-            if (data.success) {
-                alert("Guul! " + data.message);
-                location.reload();
-            } else {
-                alert("Cilad: " + data.error);
-            }
-        } catch (err) {
-            alert("Cilad ayaa dhacday.");
-        }
-    }
-
-    function logoutUser() {
-        firebase.auth().signOut().then(() => { localStorage.clear(); location.reload(); });
-    }
-</script>
-
+        fetchLiveBalance();
+        setInterval(fetchLiveBalance, 15000); // Dib u cusboonaysii 15 ilbiriqsi kasta
+    </script>
 </body>
 </html>

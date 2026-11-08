@@ -3,46 +3,140 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNN MicroPay - Web3 & SOS Swap</title>
+    <title>KNN MicroPay - Multi-Currency Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <style>
+        :root {
+            --bg-color: #0b0e14;
+            --card-bg: #151b22;
+            --accent-purple: #8247e5;
+            --accent-green: #10b981;
+            --accent-blue: #38bdf8;
+            --text-main: #f8fafc;
+            --text-muted: #94a3b8;
+            --border-color: #21262d;
+        }
         body {
-            background-color: #0f172a;
-            color: #ffffff;
+            background-color: var(--bg-color);
+            color: var(--text-main);
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
             margin: 0;
-            padding: 20px;
+            padding: 16px;
         }
         .container {
             width: 100%;
-            max-width: 480px;
-            background: #1e293b;
-            border-radius: 16px;
+            max-width: 460px;
+            background: var(--card-bg);
+            border-radius: 20px;
             padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border: 1px solid #334155;
+            box-shadow: 0 12px 30px rgba(0,0,0,0.6);
+            border: 1px solid var(--border-color);
         }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-weight: bold; font-size: 1.2rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
-        .card { background: #0f172a; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid #1e293b; }
-        .card-title { color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px; display: flex; justify-content: space-between; }
-        .balance { font-size: 1.6rem; font-weight: bold; color: #f8fafc; }
-        .sub-balance { font-size: 0.9rem; color: #38bdf8; margin-top: 4px; }
-        .address-box { word-break: break-all; background: #1e293b; padding: 10px; border-radius: 8px; font-family: monospace; color: #38bdf8; font-size: 0.8rem; margin: 8px 0; border: 1px dashed #475569; }
-        .btn { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; transition: 0.2s; margin-top: 8px; }
-        .btn:hover { background: #0369a1; }
-        .btn-google { background: #db4437; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-withdraw { background: #10b981; }
-        .btn-swap { background: #8b5cf6; }
-        .btn-logout { background: #ef4444; margin-top: 10px; }
-        .btn-warning { background: #d97706; font-size: 0.8rem; padding: 6px; }
-        input, select { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; margin-top: 6px; box-sizing: border-box; }
-        .input-group { margin-bottom: 12px; }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo-area {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        .polygon-badge {
+            width: 36px;
+            height: 36px;
+            background: linear-gradient(135deg, #8247e5, #a855f7);
+            border-radius: 10px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
+            font-size: 1.1rem;
+            color: white;
+        }
+        .brand-name { font-weight: bold; font-size: 1.1rem; color: var(--text-main); }
+        .brand-sub { font-size: 0.75rem; color: var(--text-muted); }
+        
+        .assets-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 16px;
+        }
+        .asset-card {
+            background: #0d1117;
+            border-radius: 14px;
+            padding: 14px;
+            border: 1px solid var(--border-color);
+            position: relative;
+            overflow: hidden;
+        }
+        .asset-card.pol::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-purple); }
+        .asset-card.sos::after { content: ''; position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: var(--accent-green); }
+
+        .asset-title { font-size: 0.75rem; color: var(--text-muted); text-transform: uppercase; margin-bottom: 4px; }
+        .asset-value { font-size: 1.2rem; font-weight: bold; color: var(--text-main); }
+        .asset-symbol { font-size: 0.7rem; color: var(--text-muted); margin-top: 2px; }
+
+        .card {
+            background: #0d1117;
+            border-radius: 14px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid var(--border-color);
+        }
+        .card-title { color: var(--text-muted); font-size: 0.85rem; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        
+        .address-box {
+            word-break: break-all;
+            background: var(--card-bg);
+            padding: 8px 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: var(--accent-blue);
+            font-size: 0.75rem;
+            margin: 6px 0;
+            border: 1px dashed #30363d;
+        }
+        
+        .btn {
+            background: var(--accent-purple);
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 10px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 6px;
+            font-size: 0.85rem;
+        }
+        .btn:hover { opacity: 0.9; }
+        .btn-google { background: #ea4335; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-withdraw { background: var(--accent-green); }
+        .btn-swap { background: linear-gradient(135deg, #8247e5, #6366f1); }
+        .btn-logout { background: #ef4444; margin-top: 10px; font-size: 0.8rem; padding: 8px; }
+        .btn-warning { background: #d97706; font-size: 0.75rem; padding: 4px; }
+
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #30363d;
+            background: var(--card-bg);
+            color: white;
+            margin-top: 4px;
+            box-sizing: border-box;
+            font-size: 0.85rem;
+        }
+        .input-group { margin-bottom: 10px; }
         .hidden { display: none !important; }
     </style>
 </head>
@@ -50,86 +144,103 @@
 
 <div class="container">
     <div class="header">
-        <div class="logo">
-            <span style="background:#0284c7; color:white; padding:4px 8px; border-radius:6px;">K</span>
-            KNN MicroPay
+        <div class="logo-area">
+            <div class="polygon-badge">⬡</div>
+            <div>
+                <div class="brand-name">KNN MicroPay</div>
+                <div class="brand-sub">Multi-Asset Wallet</div>
+            </div>
         </div>
-        <div id="userStatus" style="font-size:0.8rem; color:#94a3b8;">Loading...</div>
+        <div id="userStatus" style="font-size:0.75rem; color:var(--text-muted);">Connecting...</div>
     </div>
 
     <!-- Login View -->
     <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
-        <h3 style="color: #f8fafc; margin-top:0;">Ku soo dhawoow KNN MicroPay</h3>
+        <h3 style="color: var(--text-main); margin-top:0;">Ku soo dhawoow Wallet-ka</h3>
+        <p style="color: var(--text-muted); font-size: 0.85rem; margin-bottom: 20px;">Ku gal Google si aad u maamusho POL & SOS.</p>
         <button class="btn btn-google" onclick="loginWithGoogle()">Google Login-ka ku gal</button>
     </div>
 
     <!-- Dashboard View -->
     <div id="dashboardView" class="hidden">
-        <div class="card">
-            <div class="card-title">
-              <span>User ID: <strong id="userIdDisplay" style="color:#38bdf8;">--</strong></span>
-              <span id="userEmailDisplay" style="color:#94a3b8; font-size:0.75rem;">--</span>
+        <div class="card" style="padding: 10px 16px;">
+            <div class="card-title" style="margin-bottom:0;">
+              <span>ID: <strong id="userIdDisplay" style="color:var(--accent-blue);">--</strong></span>
+              <span id="userEmailDisplay" style="color:var(--text-muted); font-size:0.7rem;">--</span>
             </div>
         </div>
 
-        <div class="card">
-            <div class="card-title">
-                <span>Hantidaada Guud (Balance)</span>
-                <span style="color:#10b981;">Polygon / SOS</span>
+        <!-- Dual Independent Balances -->
+        <div class="assets-grid">
+            <div class="asset-card pol">
+                <div class="asset-title">Polygon</div>
+                <div class="asset-value" id="polBalanceDisplay">0.00</div>
+                <div class="asset-symbol">POL</div>
             </div>
-            <div class="balance" id="balanceDisplay">0.0000 POL</div>
-            <div class="sub-balance" id="sosBalanceDisplay">≈ 0 SOS</div>
+            <div class="asset-card sos">
+                <div class="asset-title">Shilin Soomaali</div>
+                <div class="asset-value" id="sosBalanceDisplay">0</div>
+                <div class="asset-symbol">SOS</div>
+            </div>
         </div>
 
         <!-- Internal Swap Section -->
-        <div class="card" style="border: 1px solid #8b5cf6;">
-            <div class="card-title" style="color:#c084fc; font-weight:bold;">Is-dhaafsiga Gudaha (Internal Swap)</div>
+        <div class="card" style="border-color: #8247e533;">
+            <div class="card-title" style="color:#c084fc; font-weight:bold;">Is-dhaafsiga (Internal Swap)</div>
             <div class="input-group">
-                <label style="font-size:0.8rem; color:#94a3b8;">Nooca Sarifka:</label>
+                <label style="font-size:0.75rem; color:var(--text-muted);">Nooca Sarifka:</label>
                 <select id="swapType" onchange="updateSwapLabels()">
                     <option value="SOS_TO_POL">Shilin Soomaali (SOS) ➔ Polygon (POL)</option>
                     <option value="POL_TO_SOS">Polygon (POL) ➔ Shilin Soomaali (SOS)</option>
                 </select>
             </div>
             <div class="input-group">
-                <label style="font-size:0.8rem; color:#94a3b8;" id="swapInputLabel">Cadadka SOS:</label>
-                <input type="number" id="swapAmountInput" placeholder="Tusaale: 3000" oninput="calculateSwap()">
+                <label style="font-size:0.75rem; color:var(--text-muted);" id="swapInputLabel">Cadadka SOS:</label>
+                <input type="number" id="swapAmountInput" placeholder="Tusaale: 1000" oninput="calculateSwap()">
             </div>
-            <div style="font-size: 0.8rem; color: #38bdf8; margin-bottom: 8px;" id="swapResultDisplay">
+            <div style="font-size: 0.78rem; color: var(--accent-blue); margin-bottom: 6px;" id="swapResultDisplay">
                 Waxaad heli doontaa: 0 POL
             </div>
             <button class="btn btn-swap" onclick="executeSwap()">Ku Samee Swap Hadda</button>
         </div>
 
-        <!-- Deposit Address -->
+        <!-- Deposit Section (Polygon & SOS) -->
         <div class="card">
-            <div class="card-title">Cinwaankaaga Deposit-ka (Address):</div>
-            <div class="address-box" id="depositAddress">Loading...</div>
-            <button class="btn" onclick="copyAddress()">Copy Address</button>
+            <div class="card-title" style="font-weight:bold; color:var(--accent-blue);">Cinwaannada Deposit-ka</div>
+            <div style="font-size:0.75rem; color:var(--text-muted);">Polygon Deposit Address:</div>
+            <div class="address-box" id="depositAddressPOL">Loading...</div>
+            <button class="btn" style="padding:6px; font-size:0.75rem; margin-bottom:8px;" onclick="copyAddress('depositAddressPOL')">Copy Polygon Address</button>
+
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-top:6px;">Shilin Soomaali Deposit Account:</div>
+            <div class="address-box" id="depositAddressSOS">Loading...</div>
+            <button class="btn" style="padding:6px; font-size:0.75rem; background:#059669;" onclick="copyAddress('depositAddressSOS')">Copy SOS Account</button>
         </div>
 
         <!-- Private Key Section -->
-        <div class="card" style="border: 1px solid #d97706;">
-            <div class="card-title" style="color:#f59e0b; font-weight:bold;">Private Key-gaaga</div>
+        <div class="card" style="border-color: #d9770633;">
+            <div class="card-title" style="color:#f59e0b; font-weight:bold;">Private Key-gaaga (Sir)</div>
             <div class="address-box hidden" id="privateKeyBox" style="color: #fca5a5;">Loading...</div>
             <button class="btn btn-warning" id="toggleKeyBtn" onclick="togglePrivateKey()">Muuji Private Key-ga</button>
         </div>
 
-        <!-- Withdraw Section -->
+        <!-- Withdraw Sections -->
         <div class="card">
-            <div class="card-title" style="color:#10b981; font-weight:bold;">Withdraw POL</div>
-            <div class="input-group">
-                <label style="font-size:0.8rem; color:#94a3b8;">Cinwaanka Qaataha:</label>
-                <input type="text" id="recipientInput" placeholder="0x...">
-            </div>
-            <div class="input-group">
-                <label style="font-size:0.8rem; color:#94a3b8;">Xadiga POL:</label>
-                <input type="number" step="0.0001" id="amountInput" placeholder="0.1">
-            </div>
-            <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Now</button>
+            <div class="card-title" style="color:var(--accent-green); font-weight:bold;">Withdraw POL & SOS</div>
+            
+            <!-- Withdraw POL -->
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Bixi Polygon (POL):</div>
+            <div class="input-group"><input type="text" id="polRecipient" placeholder="Polygon Address (0x...)"></div>
+            <div class="input-group"><input type="number" step="0.0001" id="polAmount" placeholder="Xadiga POL"></div>
+            <button class="btn btn-withdraw" style="margin-bottom:12px;" onclick="sendWithdrawPOL()">Withdraw POL</button>
+
+            <!-- Withdraw SOS -->
+            <div style="font-size:0.75rem; color:var(--text-muted); margin-bottom:4px;">Bixi Shilin Soomaali (SOS):</div>
+            <div class="input-group"><input type="text" id="sosRecipient" placeholder="Akownka SOS / Mobile Money"></div>
+            <div class="input-group"><input type="number" id="sosAmount" placeholder="Xadiga SOS"></div>
+            <button class="btn btn-withdraw" style="background:#0284c7;" onclick="sendWithdrawSOS()">Withdraw SOS</button>
         </div>
 
-        <button class="btn btn-logout" onclick="logoutUser()">Logout</button>
+        <button class="btn btn-logout" onclick="logoutUser()">Logout (Ka bax)</button>
     </div>
 </div>
 
@@ -148,9 +259,6 @@
 
     const SERVER_URL = 'https://somapp-website-production.up.railway.app';
     let currentUserUid = null;
-    let userPolygonAddress = "";
-    let currentPolBalance = 0;
-    const EXCHANGE_RATE_SOS_PER_POL = 3000;
 
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
@@ -174,31 +282,28 @@
             const data = await response.json();
             if (data.success) {
                 currentUserUid = user.uid;
-                userPolygonAddress = data.polygonAddress;
-                currentPolBalance = parseFloat(data.balance || 0);
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
-                document.getElementById('userStatus').innerText = "Connected";
+                document.getElementById('userStatus').innerText = "Online";
                 document.getElementById('userStatus').style.color = "#10b981";
 
                 document.getElementById('userIdDisplay').innerText = data.userId;
                 document.getElementById('userEmailDisplay').innerText = user.email;
-                document.getElementById('depositAddress').innerText = data.polygonAddress;
+                document.getElementById('depositAddressPOL').innerText = data.polygonAddress;
+                document.getElementById('depositAddressSOS').innerText = data.sosAddress || data.polygonAddress;
                 document.getElementById('privateKeyBox').innerText = data.privateKey;
                 
-                updateBalanceUI(currentPolBalance);
+                updateBalancesUI(parseFloat(data.polBalance), parseFloat(data.sosBalance));
             }
         } catch (err) {
-            alert("Cilad Server-ka ah.");
+            alert("Cilad xiriirka server-ka ah.");
         }
     }
 
-    function updateBalanceUI(pol) {
-        currentPolBalance = pol;
-        document.getElementById('balanceDisplay').innerText = pol.toFixed(4) + " POL";
-        const sosVal = pol * EXCHANGE_RATE_SOS_PER_POL;
-        document.getElementById('sosBalanceDisplay').innerText = `≈ ${sosVal.toLocaleString()} SOS`;
+    function updateBalancesUI(pol, sos) {
+        document.getElementById('polBalanceDisplay').innerText = pol.toFixed(4);
+        document.getElementById('sosBalanceDisplay').innerText = sos.toLocaleString();
     }
 
     firebase.auth().onAuthStateChanged(async (user) => {
@@ -218,9 +323,13 @@
         const resultDisplay = document.getElementById('swapResultDisplay');
 
         if (type === 'SOS_TO_POL') {
-            resultDisplay.innerText = `Waxaad heli doontaa: ${(val / EXCHANGE_RATE_SOS_PER_POL).toFixed(4)} POL`;
+            // 1000 SOS = 0.4537 POL -> 1 SOS = 0.4537 / 1000 POL
+            const polRes = val * (0.4537 / 1000);
+            resultDisplay.innerText = `Waxaad heli doontaa: ${polRes.toFixed(4)} POL`;
         } else {
-            resultDisplay.innerText = `Waxaad heli doontaa: ${(val * EXCHANGE_RATE_SOS_PER_POL).toLocaleString()} SOS`;
+            // 1 POL = (1000 / 0.4537) SOS
+            const sosRes = val * (1000 / 0.4537);
+            resultDisplay.innerText = `Waxaad heli doontaa: ${sosRes.toLocaleString()} SOS`;
         }
     }
 
@@ -243,7 +352,7 @@
             const data = await response.json();
             if (data.success) {
                 alert(data.message);
-                updateBalanceUI(parseFloat(data.newBalance));
+                updateBalancesUI(parseFloat(data.newPolBalance), parseFloat(data.newSosBalance));
                 document.getElementById('swapAmountInput').value = "";
                 calculateSwap();
             } else {
@@ -254,8 +363,9 @@
         }
     }
 
-    function copyAddress() {
-        navigator.clipboard.writeText(userPolygonAddress);
+    function copyAddress(elementId) {
+        const text = document.getElementById(elementId).innerText;
+        navigator.clipboard.writeText(text);
         alert("Cinwaanka waa la koobiyeeyay!");
     }
 
@@ -273,18 +383,43 @@
         }
     }
 
-    async function sendWithdraw() {
-        const recipient = document.getElementById('recipientInput').value.trim();
-        const amount = document.getElementById('amountInput').value.trim();
-        if (!recipient || !amount) return alert("Fadlan buuxi meelaha bannaan!");
+    async function sendWithdrawPOL() {
+        const recipient = document.getElementById('polRecipient').value.trim();
+        const amount = document.getElementById('polAmount').value.trim();
+        if (!recipient || !amount) return alert("Fadlan buuxi meelaha bannaan ee POL!");
 
         if (!confirm(`Ma hubtaa inaad dirayso ${amount} POL?`)) return;
 
         try {
-            const response = await fetch(`${SERVER_URL}/api/withdraw`, {
+            const response = await fetch(`${SERVER_URL}/api/withdraw-pol`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ uid: currentUserUid, recipientAddress: recipient, amount: amount })
+            });
+            const data = await response.json();
+            if (data.success) {
+                alert("Guul! " + data.message);
+                location.reload();
+            } else {
+                alert("Cilad: " + data.error);
+            }
+        } catch (err) {
+            alert("Cilad ayaa dhacday.");
+        }
+    }
+
+    async function sendWithdrawSOS() {
+        const recipient = document.getElementById('sosRecipient').value.trim();
+        const amount = document.getElementById('sosAmount').value.trim();
+        if (!recipient || !amount) return alert("Fadlan buuxi meelaha bannaan ee SOS!");
+
+        if (!confirm(`Ma hubtaa inaad la baxayso ${amount} SOS?`)) return;
+
+        try {
+            const response = await fetch(`${SERVER_URL}/api/withdraw-sos`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ uid: currentUserUid, recipientAccount: recipient, amount: amount })
             });
             const data = await response.json();
             if (data.success) {

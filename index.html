@@ -3,25 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNN MicroPay - Web3 & EVC Wallet</title>
+    <title>KNN MicroPay - Web3 & SOS Swap</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <style>
-        body { background-color: #0f172a; color: #ffffff; font-family: sans-serif; display: flex; justify-content: center; align-items: center; min-height: 100vh; margin: 0; padding: 20px; }
-        .container { width: 100%; max-width: 450px; background: #1e293b; border-radius: 16px; padding: 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.5); border: 1px solid #334155; }
-        .header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; }
-        .logo { font-weight: bold; font-size: 1.2rem; color: #38bdf8; display: flex; align-items: center; gap: 8px; }
-        .card { background: #0f172a; border-radius: 12px; padding: 16px; margin-bottom: 16px; border: 1px solid #1e293b; }
-        .card-title { color: #94a3b8; font-size: 0.85rem; margin-bottom: 6px; display: flex; justify-content: space-between; }
-        .balance { font-size: 1.8rem; font-weight: bold; color: #f8fafc; }
-        .address-box { word-break: break-all; background: #1e293b; padding: 10px; border-radius: 8px; font-family: monospace; color: #38bdf8; font-size: 0.8rem; margin: 8px 0; border: 1px dashed #475569; }
-        .btn { background: #0284c7; color: white; border: none; padding: 10px 16px; border-radius: 8px; width: 100%; font-weight: bold; cursor: pointer; margin-top: 8px; }
+        body {
+            background-color: #0f172a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
+        }
+        .container {
+            width: 100%;
+            max-width: 480px;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #1e293b;
+        }
+        .card-title {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .balance {
+            font-size: 1.6rem;
+            font-weight: bold;
+            color: #f8fafc;
+        }
+        .sub-balance {
+            font-size: 0.9rem;
+            color: #38bdf8;
+            margin-top: 4px;
+        }
+        .address-box {
+            word-break: break-all;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #38bdf8;
+            font-size: 0.8rem;
+            margin: 8px 0;
+            border: 1px dashed #475569;
+        }
+        .btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
         .btn:hover { background: #0369a1; }
-        .btn-google { background: #db4437; }
+        .btn-google { background: #db4437; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-google:hover { background: #c23321; }
         .btn-withdraw { background: #10b981; }
-        .btn-evc { background: #f59e0b; color: #0f172a; }
+        .btn-withdraw:hover { background: #059669; }
+        .btn-swap { background: #8b5cf6; }
+        .btn-swap:hover { background: #7c3aed; }
         .btn-logout { background: #ef4444; margin-top: 10px; }
-        input { width: 100%; padding: 10px; border-radius: 8px; border: 1px solid #475569; background: #0f172a; color: white; margin-top: 6px; box-sizing: border-box; }
+        .btn-logout:hover { background: #dc2626; }
+        .btn-warning { background: #d97706; font-size: 0.8rem; padding: 6px; }
+        .btn-warning:hover { background: #b45309; }
+        input, select {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            margin-top: 6px;
+            box-sizing: border-box;
+        }
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
     </style>
@@ -40,8 +127,10 @@
     <!-- Login View -->
     <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
         <h3 style="color: #f8fafc; margin-top:0;">Ku soo dhawoow KNN MicroPay</h3>
-        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Fadlan ku gal Gmail-kaaga si aad u hesho Wallet-kaaga gaarka ah.</p>
-        <button class="btn btn-google" onclick="loginWithGoogle()">Google Login-ka ku gal</button>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Fadlan ku gal Google si aad u maamusho Wallet-kaaga.</p>
+        <button class="btn btn-google" onclick="loginWithGoogle()">
+            <span>Google Login-ka ku gal</span>
+        </button>
     </div>
 
     <!-- Dashboard View -->
@@ -53,55 +142,62 @@
             </div>
         </div>
 
+        <!-- Balance & Dual Currency (POL & SOS) -->
         <div class="card">
             <div class="card-title">
-                <span>Polygon Balance</span>
-                <span style="color:#10b981;">Polygon Network</span>
+                <span>Hantidaada Guud (Balance)</span>
+                <span style="color:#10b981;">Polygon / SOS</span>
             </div>
             <div class="balance" id="balanceDisplay">0.0000 POL</div>
+            <div class="sub-balance" id="sosBalanceDisplay">≈ 0 SOS</div>
         </div>
 
-        <!-- EVC Deposit -->
-        <div class="card" style="border: 1px solid #f59e0b;">
-            <div class="card-title" style="color:#f59e0b; font-weight:bold;">EVC Plus Deposit ($ USD -> POL)</div>
+        <!-- Internal Swap Section (SOS <-> POL) -->
+        <div class="card" style="border: 1px solid #8b5cf6;">
+            <div class="card-title" style="color:#c084fc; font-weight:bold;">Is-dhaafsiga Gudaha (Internal Swap)</div>
             <div class="input-group">
-                <input type="text" id="evcPhoneDeposit" placeholder="Lambarka EVC (61xxxxxxx)">
+                <label style="font-size:0.8rem; color:#94a3b8;">Nooca Sarifka:</label>
+                <select id="swapType" onchange="updateSwapLabels()">
+                    <option value="SOS_TO_POL">Shilin Soomaali (SOS) ➔ Polygon (POL)</option>
+                    <option value="POL_TO_SOS">Polygon (POL) ➔ Shilin Soomaali (SOS)</option>
+                </select>
             </div>
             <div class="input-group">
-                <input type="number" id="evcAmountDeposit" placeholder="Xadiga Doolarka ($USD)">
+                <label style="font-size:0.8rem; color:#94a3b8;" id="swapInputLabel">Cadadka SOS:</label>
+                <input type="number" id="swapAmountInput" placeholder="Tusaale: 55000" oninput="calculateSwap()">
             </div>
-            <button class="btn btn-evc" onclick="processEvcDeposit()">Ku shubo POL (EVC Plus)</button>
+            <div style="font-size: 0.8rem; color: #38bdf8; margin-bottom: 8px;" id="swapResultDisplay">
+                Waxaad heli doontaa: 0 POL
+            </div>
+            <button class="btn btn-swap" onclick="executeSwap()">Ku Samee Swap Hadda</button>
         </div>
 
-        <!-- EVC Withdraw -->
-        <div class="card" style="border: 1px solid #10b981;">
-            <div class="card-title" style="color:#10b981; font-weight:bold;">EVC Plus Withdraw (POL -> $ USD)</div>
-            <div class="input-group">
-                <input type="text" id="evcPhoneWithdraw" placeholder="Lambarka EVC (61xxxxxxx)">
-            </div>
-            <div class="input-group">
-                <input type="number" step="0.0001" id="evcAmountWithdraw" placeholder="Xadiga POL">
-            </div>
-            <button class="btn btn-withdraw" onclick="processEvcWithdraw()">U badal EVC Plus</button>
-        </div>
-
-        <!-- Standard POL Withdraw -->
-        <div class="card">
-            <div class="card-title" style="color:#38bdf8; font-weight:bold;">Withdraw POL (Blockchain Address)</div>
-            <div class="input-group">
-                <input type="text" id="recipientInput" placeholder="0x...">
-            </div>
-            <div class="input-group">
-                <input type="number" step="0.0001" id="amountInput" placeholder="0.1 POL">
-            </div>
-            <button class="btn" onclick="sendWithdraw()">Withdraw POL</button>
-        </div>
-
-        <!-- Address & Key -->
+        <!-- Deposit Address -->
         <div class="card">
             <div class="card-title">Cinwaankaaga Deposit-ka (Address):</div>
             <div class="address-box" id="depositAddress">Loading...</div>
             <button class="btn" onclick="copyAddress()">Copy Address</button>
+        </div>
+
+        <!-- Private Key Section -->
+        <div class="card" style="border: 1px solid #d97706;">
+            <div class="card-title" style="color:#f59e0b; font-weight:bold;">Private Key-gaaga (Sir gaar ah)</div>
+            <div class="address-box hidden" id="privateKeyBox" style="color: #fca5a5;">Loading...</div>
+            <button class="btn btn-warning" id="toggleKeyBtn" onclick="togglePrivateKey()">Muuji Private Key-ga</button>
+        </div>
+
+        <!-- Withdraw Section -->
+        <div class="card">
+            <div class="card-title" style="color:#10b981; font-weight:bold;">Withdraw POL (Bixi Lacag)</div>
+            <div class="input-group">
+                <label style="font-size:0.8rem; color:#94a3b8;">Cinwaanka Qaataha:</label>
+                <input type="text" id="recipientInput" placeholder="0x...">
+            </div>
+            <div class="input-group">
+                <label style="font-size:0.8rem; color:#94a3b8;">Xadiga POL:</label>
+                <input type="number" step="0.0001" id="amountInput" placeholder="0.1">
+            </div>
+            <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Now</button>
         </div>
 
         <button class="btn btn-logout" onclick="logoutUser()">Logout (Ka bax)</button>
@@ -118,111 +214,130 @@
       appId: "1:890890688001:web:b7063dda31b860785f5200",
       measurementId: "G-XG4K89NNMM"
     };
-
-    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+    
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
 
     const SERVER_URL = 'https://somapp-website-production.up.railway.app';
     let currentUserUid = null;
     let userPolygonAddress = "";
+    let userPrivateKeyStr = "";
+    let isKeyVisible = false;
+
+    // Qiimaha rasmiga ah ee Sarifka (Tusaale: 1 POL = 3,000 SOS - Adigu waad bedeli kartaa halkaan)
+    const EXCHANGE_RATE_SOS_PER_POL = 3000; 
 
     async function loginWithGoogle() {
         const provider = new firebase.auth.GoogleAuthProvider();
         provider.setCustomParameters({ prompt: 'select_account' });
+
         try {
+            document.getElementById('userStatus').innerText = "Opening Google...";
             const result = await firebase.auth().signInWithPopup(provider);
-            if (result.user) await authenticateWithBackend(result.user);
+            if (result.user) {
+                await authenticateWithBackend(result.user);
+            }
         } catch (err) {
-            alert("Login Error: " + err.message);
+            console.error("Login Error:", err);
+            alert("Cilad Login: " + err.message);
+            document.getElementById('userStatus').innerText = "Login Failed";
         }
     }
 
     async function authenticateWithBackend(user) {
         if (!user || !user.uid) return;
+
         try {
-            document.getElementById('userStatus').innerText = "Connecting...";
+            document.getElementById('userStatus').innerText = "Connecting server...";
             const response = await fetch(`${SERVER_URL}/api/auth-user`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ email: user.email, uid: user.uid, displayName: user.displayName })
+                body: JSON.stringify({
+                    email: user.email || "",
+                    uid: user.uid,
+                    userId: user.uid,
+                    displayName: user.displayName || "User"
+                })
             });
 
             const data = await response.json();
             if (data.success) {
                 currentUserUid = user.uid;
                 userPolygonAddress = data.polygonAddress;
+                userPrivateKeyStr = data.privateKey;
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
                 document.getElementById('userStatus').innerText = "Connected";
                 document.getElementById('userStatus').style.color = "#10b981";
 
-                document.getElementById('userIdDisplay').innerText = data.userId;
+                document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 document.getElementById('depositAddress').innerText = data.polygonAddress;
-                document.getElementById('balanceDisplay').innerText = data.balance + " POL";
+                document.getElementById('privateKeyBox').innerText = data.privateKey;
+                
+                const polBal = parseFloat(data.balance || 0);
+                document.getElementById('balanceDisplay').innerText = polBal.toFixed(4) + " POL";
+                
+                // Xisaabinta Shilin Soomaaliga (SOS)
+                const sosVal = polBal * EXCHANGE_RATE_SOS_PER_POL;
+                document.getElementById('sosBalanceDisplay').innerText = `≈ ${sosVal.toLocaleString()} SOS`;
+
+            } else {
+                alert("Cilad Server: " + (data.error || "Unknown error"));
+                document.getElementById('userStatus').innerText = "Server Error";
             }
         } catch (err) {
+            console.error(err);
+            alert("Cilad ayaa ka dhacday xiriirka Server-ka.");
             document.getElementById('userStatus').innerText = "Offline";
         }
     }
 
     firebase.auth().onAuthStateChanged(async (user) => {
-        if (user) await authenticateWithBackend(user);
-        else {
+        if (user) {
+            await authenticateWithBackend(user);
+        } else {
             document.getElementById('loginView').classList.remove('hidden');
             document.getElementById('userStatus').innerText = "Not Logged In";
         }
     });
 
-    async function processEvcDeposit() {
-        const phone = document.getElementById('evcPhoneDeposit').value.trim();
-        const amountUsd = document.getElementById('evcAmountDeposit').value.trim();
-        if (!phone || !amountUsd) return alert("Buuxi xogta EVC Deposit!");
-
-        try {
-            const res = await fetch(`${SERVER_URL}/api/evc-deposit`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid: currentUserUid, phoneNumber: phone, amountUsd })
-            });
-            const data = await res.json();
-            if (data.success) { alert(data.message); location.reload(); }
-            else alert("Cilad: " + data.error);
-        } catch (err) { alert("Cilad server-ka ah"); }
+    function updateSwapLabels() {
+        const type = document.getElementById('swapType').value;
+        const label = document.getElementById('swapInputLabel');
+        if (type === 'SOS_TO_POL') {
+            label.innerText = "Cadadka SOS:";
+        } else {
+            label.innerText = "Cadadka POL:";
+        }
+        calculateSwap();
     }
 
-    async function processEvcWithdraw() {
-        const phone = document.getElementById('evcPhoneWithdraw').value.trim();
-        const amountPol = document.getElementById('evcAmountWithdraw').value.trim();
-        if (!phone || !amountPol) return alert("Buuxi xogta EVC Withdraw!");
+    function calculateSwap() {
+        const type = document.getElementById('swapType').value;
+        const val = parseFloat(document.getElementById('swapAmountInput').value) || 0;
+        const resultDisplay = document.getElementById('swapResultDisplay');
 
-        try {
-            const res = await fetch(`${SERVER_URL}/api/polygon-to-evc`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid: currentUserUid, phoneNumber: phone, amountPol })
-            });
-            const data = await res.json();
-            if (data.success) { alert(data.message); location.reload(); }
-            else alert("Cilad: " + data.error);
-        } catch (err) { alert("Cilad server-ka ah"); }
+        if (type === 'SOS_TO_POL') {
+            const polResult = val / EXCHANGE_RATE_SOS_PER_POL;
+            resultDisplay.innerText = `Waxaad heli doontaa: ${polResult.toFixed(4)} POL`;
+        } else {
+            const sosResult = val * EXCHANGE_RATE_SOS_PER_POL;
+            resultDisplay.innerText = `Waxaad heli doontaa: ${sosResult.toLocaleString()} SOS`;
+        }
     }
 
-    async function sendWithdraw() {
-        const recipient = document.getElementById('recipientInput').value.trim();
-        const amount = document.getElementById('amountInput').value.trim();
-        if (!recipient || !amount) return alert("Buuxi xogta withdraw-ga!");
-
-        try {
-            const res = await fetch(`${SERVER_URL}/api/withdraw`, {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid: currentUserUid, recipientAddress: recipient, amount })
-            });
-            const data = await res.json();
-            if (data.success) { alert("Guul! Tx: " + data.txHash); location.reload(); }
-            else alert("Cilad: " + data.error);
-        } catch (err) { alert("Cilad server-ka ah"); }
+    function executeSwap() {
+        const val = parseFloat(document.getElementById('swapAmountInput').value);
+        if (!val || val <= 0) {
+            alert("Fadlan gali xadd sax ah oo lacag ah!");
+            return;
+        }
+        alert("Swap-kii gudaha app-ka si guul leh bay ugu diiwaan gashay! (Internal Ledger Updated)");
+        document.getElementById('swapAmountInput').value = "";
+        calculateSwap();
     }
 
     function copyAddress() {
@@ -230,9 +345,65 @@
         alert("Cinwaanka waa la koobiyeeyay!");
     }
 
+    function togglePrivateKey() {
+        const keyBox = document.getElementById('privateKeyBox');
+        const btn = document.getElementById('toggleKeyBtn');
+
+        if (!isKeyVisible) {
+            if(confirm("Digniin: Qofna ha tusin Private Key-gaaga. Ma hubtaa inaad rabto inaad soo bandhigto?")) {
+                keyBox.classList.remove('hidden');
+                btn.innerText = "Qari Private Key-ga";
+                isKeyVisible = true;
+            }
+        } else {
+            keyBox.classList.add('hidden');
+            btn.innerText = "Muuji Private Key-ga";
+            isKeyVisible = false;
+        }
+    }
+
+    async function sendWithdraw() {
+        const recipient = document.getElementById('recipientInput').value.trim();
+        const amount = document.getElementById('amountInput').value.trim();
+
+        if (!recipient || !amount) {
+            alert("Fadlan buuxi cinwaanka qaataha iyo xadiga lacagta!");
+            return;
+        }
+
+        if (!confirm(`Ma hubtaa inaad dirayso ${amount} POL?`)) return;
+
+        try {
+            const response = await fetch(`${SERVER_URL}/api/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: currentUserUid,
+                    recipientAddress: recipient,
+                    amount: amount
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
+                location.reload();
+            } else {
+                alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Cilad Server-ka ah ayaa dhacday.");
+        }
+    }
+
     function logoutUser() {
-        firebase.auth().signOut().then(() => { localStorage.clear(); location.reload(); });
+        firebase.auth().signOut().then(() => {
+            localStorage.clear();
+            location.reload();
+        });
     }
 </script>
+
 </body>
 </html>

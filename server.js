@@ -8,7 +8,7 @@ app.use(cors());
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
-const EXCHANGE_RATE_SOS_PER_POL = 3000; // Qiimaha sarifka
+const EXCHANGE_RATE_SOS_PER_POL = 3000;
 
 async function getFirestoreUser(uid) {
     try {
@@ -89,7 +89,19 @@ app.post('/api/auth-user', async (req, res) => {
             polygonAddress = existingUser.polygonAddress;
             internalUserId = existingUser.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
             userPrivateKey = existingUser.privateKey;
-            balancePOL = existingUser.balance;
+            
+            // Halkan: Si uu si toos ah uga soo akhrisanayo Balance-ka dhabta ah ee Blockchain-ka (Polygon RPC)
+            try {
+                const blockchainBalanceWei = await provider.getBalance(polygonAddress);
+                balancePOL = parseFloat(ethers.formatEther(blockchainBalanceWei));
+                
+                // Haddii uu blockchain-ka balance ka jiro, sidoo kale database-ka ayaan cusboonaysiinaynaa
+                existingUser.balance = balancePOL;
+                await saveFirestoreUser(uid, existingUser);
+            } catch (rpcErr) {
+                console.error("RPC Balance Fetch Error, fallback to DB:", rpcErr);
+                balancePOL = existingUser.balance;
+            }
         }
 
         return res.json({
@@ -119,14 +131,18 @@ app.post('/api/swap', async (req, res) => {
             return res.status(404).json({ success: false, error: "User-ka lama helin." });
         }
 
+        // Si loo hubiyo inuu balance-ka dhabta ah haysto kahor swap-ka
+        try {
+            const blockchainBalanceWei = await provider.getBalance(userData.polygonAddress);
+            userData.balance = parseFloat(ethers.formatEther(blockchainBalanceWei));
+        } catch (e) {}
+
         let currentBalance = userData.balance;
 
         if (swapType === 'SOS_TO_POL') {
-            // Qofku wuxuu bixinayaa SOS, wuxuu helayaa POL
             const polGained = numericAmount / EXCHANGE_RATE_SOS_PER_POL;
             currentBalance += polGained;
         } else if (swapType === 'POL_TO_SOS') {
-            // Qofku wuxuu bixinayaa POL, wuxuu helayaa SOS
             if (currentBalance < numericAmount) {
                 return res.status(400).json({ success: false, error: "Polygon balance-kaaga ku filma ma ahan!" });
             }

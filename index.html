@@ -1,178 +1,300 @@
 <!DOCTYPE html>
-<html lang="so" class="dark">
+<html lang="so">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>KNN MicroPay - Multi-Asset Wallet</title>
-    <!-- Tailwind CSS -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <!-- Ethers.js v6 -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/ethers/6.11.1/ethers.umd.min.js"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        brand: { 500: '#8b5cf6', 600: '#7c3aed' },
-                        darkBg: '#0b0f19',
-                        darkCard: '#111827',
-                        darkInput: '#1f2937'
-                    }
-                }
-            }
+    <title>KNN MicroPay - Smart Mining & Wallet</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <style>
+        body {
+            background-color: #0f172a;
+            color: #ffffff;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+            padding: 20px;
         }
-    </script>
+        .container {
+            width: 100%;
+            max-width: 450px;
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+            border: 1px solid #334155;
+        }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+        .logo {
+            font-weight: bold;
+            font-size: 1.2rem;
+            color: #38bdf8;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .card {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 1px solid #1e293b;
+        }
+        .card-title {
+            color: #94a3b8;
+            font-size: 0.85rem;
+            margin-bottom: 6px;
+            display: flex;
+            justify-content: space-between;
+        }
+        .balance {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #f8fafc;
+        }
+        .address-box {
+            word-break: break-all;
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 8px;
+            font-family: monospace;
+            color: #38bdf8;
+            font-size: 0.8rem;
+            margin: 8px 0;
+            border: 1px dashed #475569;
+        }
+        .btn {
+            background: #0284c7;
+            color: white;
+            border: none;
+            padding: 10px 16px;
+            border-radius: 8px;
+            width: 100%;
+            font-weight: bold;
+            cursor: pointer;
+            transition: 0.2s;
+            margin-top: 8px;
+        }
+        .btn:hover { background: #0369a1; }
+        .btn-google { background: #db4437; display: flex; justify-content: center; align-items: center; gap: 10px; }
+        .btn-google:hover { background: #c23321; }
+        .btn-withdraw { background: #10b981; }
+        .btn-withdraw:hover { background: #059669; }
+        .btn-logout { background: #ef4444; margin-top: 10px; }
+        .btn-logout:hover { background: #dc2626; }
+        input {
+            width: 100%;
+            padding: 10px;
+            border-radius: 8px;
+            border: 1px solid #475569;
+            background: #0f172a;
+            color: white;
+            margin-top: 6px;
+            box-sizing: border-box;
+        }
+        .input-group { margin-bottom: 12px; }
+        .hidden { display: none !important; }
+    </style>
 </head>
-<body class="bg-darkBg text-gray-100 min-h-screen font-sans pb-12">
-    <div class="max-w-md mx-auto p-4 space-y-5">
-        
-        <!-- Header -->
-        <header class="flex justify-between items-center bg-darkCard p-4 rounded-2xl border border-gray-800 shadow-lg">
-            <div class="flex items-center space-x-3">
-                <div class="w-10 h-10 bg-brand-600 rounded-xl flex items-center justify-center font-bold text-lg shadow-md shadow-brand-500/20">
-                    ⬡
-                </div>
-                <div>
-                    <h1 class="font-bold text-base leading-tight">KNN MicroPay</h1>
-                    <p class="text-xs text-gray-400">Multi-Asset Wallet</p>
-                </div>
-            </div>
-            <div class="text-right">
-                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                    <span class="w-1.5 h-1.5 rounded-full bg-emerald-400 mr-1.5 animate-pulse"></span> Online
-                </span>
-            </div>
-        </header>
+<body>
 
-        <!-- Profile / Info -->
-        <div class="bg-darkCard p-3 rounded-xl border border-gray-800/80 flex justify-between items-center text-xs">
-            <div>
-                <span class="text-gray-400">ID:</span>
-                <span class="font-mono font-bold text-brand-500 ml-1">KNN-872257</span>
-            </div>
-            <div class="text-gray-300 font-mono">
-                abuukarcumar661@gmail.com
+<div class="container">
+    <div class="header">
+        <div class="logo">
+            <span style="background:#0284c7; color:white; padding:4px 8px; border-radius:6px;">K</span>
+            KNN MicroPay
+        </div>
+        <div id="userStatus" style="font-size:0.8rem; color:#94a3b8;">Loading...</div>
+    </div>
+
+    <!-- Login View -->
+    <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
+        <h3 style="color: #f8fafc; margin-top:0;">Ku soo dhawoow KNN MicroPay</h3>
+        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Fadlan ku gal Gmail-kaaga si aad u aragto harraagaaga iyo Mining-kaaga.</p>
+        <button class="btn btn-google" onclick="loginWithGoogle()">
+            <span>Google Login-ka ku gal</span>
+        </button>
+    </div>
+
+    <!-- Dashboard View -->
+    <div id="dashboardView" class="hidden">
+        <div class="card">
+            <div class="card-title">
+              <span>User ID: <strong id="userIdDisplay" style="color:#38bdf8;">--</strong></span>
+              <span id="userEmailDisplay" style="color:#94a3b8; font-size:0.75rem;">--</span>
             </div>
         </div>
 
-        <!-- Wallet Cards (POL & SOS) -->
-        <div class="grid grid-cols-2 gap-3">
-            <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 relative overflow-hidden">
-                <div class="w-1 h-8 bg-brand-500 absolute left-0 top-4 rounded-r-full"></div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">POLYGON</p>
-                <h2 id="polBalance" class="text-xl font-bold tracking-tight">0.0000 <span class="text-xs text-brand-500">POL</span></h2>
+        <div class="card">
+            <div class="card-title">
+                <span>Harraaga Lacagta (Remaining Balance)</span>
+                <span style="color:#10b981;">10-Month Mining</span>
             </div>
-            <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 relative overflow-hidden">
-                <div class="w-1 h-8 bg-emerald-500 absolute left-0 top-4 rounded-r-full"></div>
-                <p class="text-xs font-semibold text-gray-400 uppercase tracking-wider mb-1">SHILIN SOOMAALI</p>
-                <h2 id="sosBalance" class="text-xl font-bold tracking-tight">0.00 <span class="text-xs text-emerald-400">SOS</span></h2>
-            </div>
+            <div class="balance" id="balanceDisplay">0.00 POL</div>
+            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 6px;">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#38bdf8;">0.00</strong> POL</p>
         </div>
 
         <!-- Deposit Address -->
-        <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 space-y-2">
-            <div class="flex justify-between items-center">
-                <label class="text-xs font-semibold text-gray-400 uppercase tracking-wider">Deposit Address (Polygon)</label>
-                <button onclick="fetchLiveBalance()" class="text-[10px] text-brand-500 hover:underline">Refresh Balance 🔄</button>
-            </div>
-            <div class="flex items-center space-x-2 bg-darkInput p-2.5 rounded-xl border border-gray-700">
-                <input id="depositAddr" type="text" readonly value="0x0BB8317Fac7ABAAe79e213BF0eBE80d960d324a0" class="bg-transparent text-xs font-mono text-gray-300 w-full focus:outline-none">
-                <button onclick="copyAddr()" class="bg-brand-600 hover:bg-brand-500 text-xs px-3 py-1.5 rounded-lg font-medium transition">Copy</button>
-            </div>
+        <div class="card">
+            <div class="card-title">Cinwaankaaga Deposit-ka (Address):</div>
+            <div class="address-box" id="depositAddress">Loading...</div>
+            <button class="btn" onclick="copyAddress()">Copy Address</button>
         </div>
 
-        <!-- Private Key Section -->
-        <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 space-y-3">
-            <label class="text-xs font-semibold text-amber-500 uppercase tracking-wider">Private Key-gaaga (Sir)</label>
-            <div class="relative">
-                <input id="pkInput" type="password" readonly value="0x4fdf339637928ed3c0ac45aa37da66059dc717d6baa96ff3b63c6832e4f23eb7" class="w-full bg-darkInput border border-gray-700 rounded-xl p-3 text-xs font-mono text-gray-300 pr-10 focus:outline-none">
+        <!-- Withdraw Section -->
+        <div class="card">
+            <div class="card-title" style="color:#38bdf8; font-weight:bold;">Kala bax Saamiga Maanta</div>
+            <div class="input-group">
+                <label style="font-size:0.8rem; color:#94a3b8;">Cinwaankaaga (MetaMask/Binance):</label>
+                <input type="text" id="recipientInput" placeholder="0x...">
             </div>
-            <button onclick="togglePK()" id="pkBtn" class="w-full bg-amber-600 hover:bg-amber-500 text-white font-medium py-2.5 text-xs rounded-xl transition">
-                Muuji Private Key-ga
-            </button>
+            <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Saamiga Maanta</button>
         </div>
 
-        <!-- Internal Swap -->
-        <div class="bg-darkCard p-4 rounded-2xl border border-gray-800 space-y-3">
-            <h3 class="text-sm font-bold text-brand-500">Is-dhaafsiga (Internal Swap)</h3>
-            <div class="space-y-2">
-                <label class="text-xs text-gray-400">Nooca Sarifka:</label>
-                <select id="swapType" class="w-full bg-darkInput border border-gray-700 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none">
-                    <option value="SOS_POL">Shilin Soomaali (SOS) ➔ Polygon (POL)</option>
-                    <option value="POL_SOS">Polygon (POL) ➔ Shilin Soomaali (SOS)</option>
-                </select>
-            </div>
-            <div class="space-y-2">
-                <label class="text-xs text-gray-400">Cadadka:</label>
-                <input id="swapAmount" type="number" placeholder="Tusaale: 1000" class="w-full bg-darkInput border border-gray-700 rounded-xl p-2.5 text-xs text-gray-200 focus:outline-none">
-            </div>
-            <button onclick="executeSwap()" class="w-full bg-brand-600 hover:bg-brand-500 text-white font-semibold py-3 text-xs rounded-xl shadow-lg shadow-brand-500/20 transition">
-                Ku Samee Swap Hadda
-            </button>
-        </div>
-
+        <button class="btn btn-logout" onclick="logoutUser()">Logout (Ka bax)</button>
     </div>
+</div>
 
-    <script>
-        const targetAddress = "0x0BB8317Fac7ABAAe79e213BF0eBE80d960d324a0";
+<script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
+      authDomain: "somapp-61ebd.firebaseapp.com",
+      projectId: "somapp-61ebd",
+      storageBucket: "somapp-61ebd.firebasestorage.app",
+      messagingSenderId: "890890688001",
+      appId: "1:890890688001:web:b7063dda31b860785f5200",
+      measurementId: "G-XG4K89NNMM"
+    };
+    
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
 
-        async function fetchLiveBalance() {
-            try {
-                document.getElementById('polBalance').innerHTML = `Checking...`;
-                
-                // Isticmaalka Polygon RPC-ga rasmiga ah iyada oo la adeegsanayo Ethers.js
-                const provider = new ethers.JsonRpcProvider("https://polygon-rpc.com");
-                const balanceWei = await provider.getBalance(targetAddress);
-                const balancePol = ethers.formatEther(balanceWei);
-                
-                const polNum = parseFloat(balancePol);
-                document.getElementById('polBalance').innerHTML = `${polNum.toFixed(4)} <span class="text-xs text-brand-500">POL</span>`;
-                
-                // Xisaabinta Shilin Soomaaliga (Tusaale ahaan 1 POL = 1500 SOS)
-                const sosVal = polNum * 1500;
-                document.getElementById('sosBalance').innerHTML = `${sosVal.toFixed(2)} <span class="text-xs text-emerald-400">SOS</span>`;
-                
-            } catch (error) {
-                console.error("Waa la waayay xogta:", error);
-                document.getElementById('polBalance').innerHTML = `0.0000 <span class="text-xs text-brand-500">POL</span>`;
+    const SERVER_URL = 'https://somapp-website-production.up.railway.app';
+    let currentUserUid = null;
+    let userPolygonAddress = "";
+
+    async function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+
+        try {
+            document.getElementById('userStatus').innerText = "Opening Google...";
+            const result = await firebase.auth().signInWithPopup(provider);
+            if (result.user) {
+                await authenticateWithBackend(result.user);
             }
+        } catch (err) {
+            console.error("Login Error:", err);
+            alert("Cilad Login: " + err.message);
+            document.getElementById('userStatus').innerText = "Login Failed";
         }
+    }
 
-        function togglePK() {
-            const input = document.getElementById('pkInput');
-            const btn = document.getElementById('pkBtn');
-            if (input.type === 'password') {
-                input.type = 'text';
-                btn.innerText = 'Qari Private Key-ga';
+    async function authenticateWithBackend(user) {
+        if (!user || !user.uid) return;
+
+        try {
+            document.getElementById('userStatus').innerText = "Connecting server...";
+            const response = await fetch(`${SERVER_URL}/api/auth-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: user.email || "",
+                    uid: user.uid,
+                    userId: user.uid,
+                    displayName: user.displayName || "User"
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                currentUserUid = user.uid;
+                userPolygonAddress = data.polygonAddress;
+
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('dashboardView').classList.remove('hidden');
+                document.getElementById('userStatus').innerText = "Connected";
+                document.getElementById('userStatus').style.color = "#10b981";
+
+                document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
+                document.getElementById('userEmailDisplay').innerText = user.email;
+                document.getElementById('depositAddress').innerText = data.polygonAddress;
+                document.getElementById('balanceDisplay').innerText = data.balance + " POL";
+                document.getElementById('dailyLimitDisplay').innerText = data.dailyLimit;
             } else {
-                input.type = 'password';
-                btn.innerText = 'Muuji Private Key-ga';
+                alert("Cilad Server: " + (data.error || "Unknown error"));
+                document.getElementById('userStatus').innerText = "Server Error";
             }
+        } catch (err) {
+            console.error(err);
+            alert("Cilad ayaa ka dhacday xiriirka Server-ka.");
+            document.getElementById('userStatus').innerText = "Offline";
+        }
+    }
+
+    firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+            await authenticateWithBackend(user);
+        } else {
+            document.getElementById('loginView').classList.remove('hidden');
+            document.getElementById('userStatus').innerText = "Not Logged In";
+        }
+    });
+
+    function copyAddress() {
+        navigator.clipboard.writeText(userPolygonAddress);
+        alert("Cinwaanka waa la koobiyeeyay!");
+    }
+
+    async function sendWithdraw() {
+        const recipient = document.getElementById('recipientInput').value.trim();
+
+        if (!recipient) {
+            alert("Fadlan geli cinwaankaaga qaataha!");
+            return;
         }
 
-        function copyAddr() {
-            const input = document.getElementById('depositAddr');
-            navigator.clipboard.writeText(input.value);
-            alert('Cinwaanka waa la kopiyeeyay!');
-        }
+        if (!confirm("Ma hubtaa inaad la baxayso saamigaaga maanta?")) return;
 
-        function executeSwap() {
-            const amount = document.getElementById('swapAmount').value;
-            if(!amount || amount <= 0) {
-                alert('Fadlan geli cadad sax ah!');
-                return;
+        try {
+            const response = await fetch(`${SERVER_URL}/api/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: currentUserUid,
+                    recipientAddress: recipient
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
+                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL";
+            } else {
+                alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
             }
-            alert('Codkaaga swap-ka waa la diiwaangeliyay!');
+        } catch (err) {
+            console.error(err);
+            alert("Cilad Server-ka ah ayaa dhacday.");
         }
+    }
 
-        // Markuu page-ku furmo isla markaaba soo jiido balance-ka
-        window.onload = function() {
-            fetchLiveBalance();
-        };
+    function logoutUser() {
+        firebase.auth().signOut().then(() => {
+            localStorage.clear();
+            location.reload();
+        });
+    }
+</script>
 
-        // Dib u cusboonaysi 20 ilbiriqsi kasta
-        setInterval(fetchLiveBalance, 20000);
-    </script>
 </body>
 </html>

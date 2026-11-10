@@ -23,23 +23,24 @@
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            padding: 16px;
+            padding: 0;
         }
-        .container {
+        /* App Frame - Screen-ka App-ka Mobile-ka */
+        .app-frame {
             width: 100%;
             max-width: 420px;
+            height: 100vh;
+            max-height: 850px;
             background: rgba(18, 4, 3, 0.85);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
-            border-radius: 28px;
-            padding: 16px 20px 80px 20px; /* Meel hoose ayaa loo bannaynayaa Bottom Nav-ka */
-            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.08);
-            position: relative;
-            min-height: 650px;
             display: flex;
             flex-direction: column;
-            justify-content: space-between;
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.7);
+            border-left: 1px solid rgba(255, 255, 255, 0.08);
+            border-right: 1px solid rgba(255, 255, 255, 0.08);
+            position: relative;
+            overflow: hidden;
         }
 
         /* Top Navigation Bar */
@@ -47,33 +48,43 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 12px;
+            padding: 16px 20px;
+            background: rgba(18, 4, 3, 0.95);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+            z-index: 10;
         }
         .logo {
             font-weight: 700;
-            font-size: 1.15rem;
+            font-size: 1.1rem;
             color: #ffffff;
             display: flex;
             align-items: center;
             gap: 8px;
+            letter-spacing: -0.5px;
         }
         .logo-badge {
             background: linear-gradient(135deg, #880C0E, #ff4d4d);
             color: white;
-            padding: 5px 9px;
+            padding: 4px 8px;
             border-radius: 8px;
             font-size: 0.9rem;
             box-shadow: 0 4px 12px rgba(136, 12, 14, 0.4);
         }
         .status-pill {
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             padding: 4px 10px;
             border-radius: 20px;
             background: rgba(255, 255, 255, 0.08);
             color: #cbd5e1;
             font-weight: 500;
+        }
+
+        /* Main Content Area (Waa meesha bogaggu isku beddelayaan) */
+        .content-body {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            padding-bottom: 90px; /* Si uusan ugu darin bottom nav-ka hoose */
         }
 
         /* Bottom Navigation Bar */
@@ -82,14 +93,15 @@
             bottom: 0;
             left: 0;
             width: 100%;
+            height: 75px;
             background: rgba(18, 4, 3, 0.95);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-around;
-            padding: 12px 10px;
-            border-bottom-left-radius: 28px;
-            border-bottom-right-radius: 28px;
+            align-items: center;
+            z-index: 100;
+            padding-bottom: 10px;
         }
         .nav-item {
             background: none;
@@ -97,39 +109,39 @@
             color: #94a3b8;
             font-size: 0.75rem;
             font-weight: 600;
-            cursor: pointer;
             display: flex;
             flex-direction: column;
             align-items: center;
             gap: 4px;
-            transition: 0.2s;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            flex: 1;
         }
         .nav-item svg {
             width: 22px;
             height: 22px;
             fill: currentColor;
+            transition: 0.2s;
         }
         .nav-item.active {
             color: #ff4d4d;
         }
-        .nav-item:hover {
-            color: #ffffff;
+        .nav-item.active svg {
+            fill: #ff4d4d;
+            transform: scale(1.1);
         }
 
-        /* Content Sections */
-        .app-section { display: none; }
-        .app-section.active-section { display: block; }
-
+        /* Cards & UI Elements */
         .card {
             background: rgba(255, 255, 255, 0.03);
             border-radius: 16px;
             padding: 16px;
-            margin-bottom: 14px;
+            margin-bottom: 16px;
             border: 1px solid rgba(255, 255, 255, 0.06);
         }
         .card-title {
             color: #94a3b8;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             font-weight: 600;
             text-transform: uppercase;
             letter-spacing: 0.5px;
@@ -168,7 +180,7 @@
             border-radius: 12px;
             width: 100%;
             font-weight: 600;
-            font-size: 0.95rem;
+            font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s ease;
             box-shadow: 0 4px 15px rgba(136, 12, 14, 0.3);
@@ -178,10 +190,9 @@
             gap: 8px;
             margin-top: 8px;
         }
-        .btn:hover { transform: translateY(-1px); }
         .btn-google { background: #ffffff; color: #1e293b; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); }
-        .btn-withdraw { background: linear-gradient(135deg, #059669, #10b981); }
-        .btn-scan { background: linear-gradient(135deg, #7c3aed, #8b5cf6); }
+        .btn-withdraw { background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .btn-scan { background: linear-gradient(135deg, #7c3aed, #8b5cf6); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
         .btn-logout { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); box-shadow: none; margin-top: 10px; }
         
         input {
@@ -203,7 +214,7 @@
 </head>
 <body>
 
-<div class="container">
+<div class="app-frame">
     <!-- TOP NAVIGATION BAR -->
     <div class="top-nav">
         <div class="logo">
@@ -213,88 +224,93 @@
         <div id="userStatus" class="status-pill">Loading...</div>
     </div>
 
-    <!-- MAIN BODY CONTENT -->
-    <div style="flex-grow: 1;">
+    <!-- CONTENT BODY (PAGES) -->
+    <div class="content-body">
+
         <!-- Login View -->
-        <div id="loginView" class="card hidden" style="text-align: center; padding: 32px 16px; margin-top: 40px;">
+        <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 40px;">
             <h3 style="color: #ffffff; margin-bottom: 8px; font-size: 1.3rem;">Ku soo dhawoow</h3>
-            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px;">Nidaamka Smart Mining-ka iyo Maamulka Maaliyadda.</p>
+            <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
             <button class="btn btn-google" onclick="loginWithGoogle()">
                 <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
                 <span>Google Login-ka ku gal</span>
             </button>
         </div>
 
-        <!-- Dashboard View (Sections oo Bottom Nav-ka laga beddelayo) -->
-        <div id="dashboardView" class="hidden">
-            
-            <!-- SECTION 1: HOME / WALLET -->
-            <div id="sectionHome" class="app-section active-section">
-                <div class="card">
-                    <div style="font-size: 0.8rem; color: #cbd5e1; display:flex; justify-content:space-between;">
-                      <span>ID: <strong id="userIdDisplay" style="color:#ffffff;">--</strong></span>
-                      <span id="userEmailDisplay" style="color:#94a3b8; font-size:0.75rem;">--</span>
-                    </div>
+        <!-- Dashboard / Home Tab -->
+        <div id="tabHome" class="tab-content hidden">
+            <div class="card">
+                <div class="card-title">
+                    <span>Harraaga Lacagta</span>
+                    <span style="color:#10b981; font-weight:700;">● Mining Active</span>
                 </div>
-
-                <div class="card">
-                    <div class="card-title">
-                        <span>Harraaga Lacagta</span>
-                        <span style="color:#10b981; font-weight:700;">● Mining Active</span>
-                    </div>
-                    <div>
-                        <div class="balance" id="balanceDisplay">0.00 POL</div>
-                        <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#ff4d4d;">0.00</strong> POL</div>
-                    </div>
-                </div>
-
-                <div class="card">
-                    <div class="card-title">Cinwaankaaga Deposit-ka</div>
-                    <div class="address-box" id="depositAddress">Loading...</div>
-                    <button class="btn" style="background: rgba(255,255,255,0.08); box-shadow:none; font-size:0.85rem;" onclick="copyAddress()">Copy Address</button>
-                </div>
+                <div class="balance" id="balanceDisplay">0.00 POL</div>
+                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#ff4d4d;">0.00</strong> POL</div>
             </div>
 
-            <!-- SECTION 2: SCAN QR / CASH PAPER -->
-            <div id="sectionScan" class="app-section">
-                <div class="card">
-                    <div class="card-title" style="color:#a78bfa;">Scan Cash Paper / Voucher</div>
-                    <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 10px;">Ku scan waraaqda lacagta caddaanka ah si ay toos ugu gasho nidaamka.</p>
-                    <button class="btn btn-scan" onclick="startScanner()">Furo Camera-ha (Scan)</button>
-                    <div id="reader" class="hidden"></div>
-                </div>
+            <div class="card">
+                <div class="card-title">Macluumaadkaaga</div>
+                <div style="font-size: 0.85rem; color: #cbd5e1; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#38bdf8;">--</strong></div>
+                <div style="font-size: 0.8rem; color: #94a3b8;" id="userEmailDisplay">--</div>
+            </div>
+        </div>
+
+        <!-- Scan / Voucher Tab -->
+        <div id="tabScan" class="tab-content hidden">
+            <div class="card">
+                <div class="card-title" style="color:#a78bfa;">Scan Cash Paper / Voucher</div>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 12px;">Ku eeg kaamerada QR code-ka ku yaal waraaqda lacagta si aad u geliso nidaamka.</p>
+                <button class="btn btn-scan" onclick="startScanner()">Furo Camera-ha (Scan)</button>
+                <div id="reader" class="hidden"></div>
+            </div>
+        </div>
+
+        <!-- Wallet & Withdraw Tab -->
+        <div id="tabWallet" class="tab-content hidden">
+            <div class="card">
+                <div class="card-title">Cinwaankaaga Deposit-ka</div>
+                <div class="address-box" id="depositAddress">Loading...</div>
+                <button class="btn" style="background: rgba(255,255,255,0.08); box-shadow:none;" onclick="copyAddress()">Copy Address</button>
             </div>
 
-            <!-- SECTION 3: WITHDRAW -->
-            <div id="sectionWithdraw" class="app-section">
-                <div class="card">
-                    <div class="card-title" style="color:#38bdf8;">Kala bax Saamiga Maanta</div>
-                    <div class="input-group">
-                        <label style="font-size:0.75rem; color:#94a3b8;">Cinwaankaaga (MetaMask/Binance):</label>
-                        <input type="text" id="recipientInput" placeholder="0x...">
-                    </div>
-                    <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Saamiga Maanta</button>
+            <div class="card">
+                <div class="card-title" style="color:#38bdf8;">Kala bax Saamiga Maanta</div>
+                <div class="input-group">
+                    <label style="font-size:0.75rem; color:#94a3b8;">Cinwaankaaga (MetaMask/Binance):</label>
+                    <input type="text" id="recipientInput" placeholder="0x...">
                 </div>
+                <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Saamiga Maanta</button>
+            </div>
+        </div>
 
+        <!-- Settings / Profile Tab -->
+        <div id="tabSettings" class="tab-content hidden">
+            <div class="card" style="text-align: center; padding: 24px;">
+                <h3 style="color: #fff; margin-bottom: 8px; font-size: 1.1rem;">Xisaabtaada</h3>
+                <p style="font-size: 0.8rem; color: #94a3b8; margin-bottom: 20px;">Halkan waxaad ka maamuli kartaa baxsashada ama xogtaada.</p>
                 <button class="btn btn-logout" onclick="logoutUser()">Logout (Ka bax)</button>
             </div>
-
         </div>
+
     </div>
 
     <!-- BOTTOM NAVIGATION BAR -->
     <div id="bottomNav" class="bottom-nav hidden">
-        <button class="nav-item active" onclick="switchTab('Home', this)">
+        <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
-            <span>Home</span>
+            Home
         </button>
-        <button class="nav-item" onclick="switchTab('Scan', this)">
-            <svg viewBox="0 0 24 24"><path d="M4 4h4v2H6v2H4V4m16 0v4h-2V6h-2V4h4M4 16h2v2h2v2H4v-4m16 4v-4h-2v2h-2v2h4M8 8h8v8H8V8z"/></svg>
-            <span>Scan QR</span>
+        <button class="nav-item" onclick="switchTab('tabScan', this)">
+            <svg viewBox="0 0 24 24"><path d="M4 4h3v2H6v1H4V4m13 0h3v3h-2V6h-1V4M4 17h2v1h1v2H4v-3m16 0v3h-3v-2h1v-1h2M6 8h12v8H6V8z"/></svg>
+            Scan
         </button>
-        <button class="nav-item" onclick="switchTab('Withdraw', this)">
-            <svg viewBox="0 0 24 24"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-            <span>Withdraw</span>
+        <button class="nav-item" onclick="switchTab('tabWallet', this)">
+            <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            Wallet
+        </button>
+        <button class="nav-item" onclick="switchTab('tabSettings', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            Profile
         </button>
     </div>
 </div>
@@ -318,18 +334,12 @@
     let currentUserUid = null;
     let userPolygonAddress = "";
 
-    // Switch Tabs function for Bottom Navigation
-    function switchTab(tabName, element) {
-        document.querySelectorAll('.app-section').forEach(sec => sec.classList.remove('active-section'));
-        document.querySelectorAll('.nav-item').forEach(nav => nav.classList.remove('active'));
+    // Kala beddelashada Tabs-ka marka la taabto Bottom Nav-ka
+    function switchTab(tabId, element) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById(tabId).classList.remove('hidden');
 
-        if (tabName === 'Home') {
-            document.getElementById('sectionHome').classList.add('active-section');
-        } else if (tabName === 'Scan') {
-            document.getElementById('sectionScan').classList.add('active-section');
-        } else if (tabName === 'Withdraw') {
-            document.getElementById('sectionWithdraw').classList.add('active-section');
-        }
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
     }
 
@@ -372,9 +382,9 @@
                 userPolygonAddress = data.polygonAddress;
 
                 document.getElementById('loginView').classList.add('hidden');
-                document.getElementById('dashboardView').classList.remove('hidden');
-                document.getElementById('bottomNav').classList.remove('hidden'); // Soo bandhigista Bottom Nav-ka
-                
+                document.getElementById('bottomNav').classList.remove('hidden');
+                switchTab('tabHome', document.querySelector('.nav-item')); // Tus Home tab marka la galo
+
                 document.getElementById('userStatus').innerText = "Connected";
                 document.getElementById('userStatus').style.background = "rgba(16, 185, 129, 0.2)";
                 document.getElementById('userStatus').style.color = "#34d399";
@@ -401,6 +411,7 @@
         } else {
             document.getElementById('loginView').classList.remove('hidden');
             document.getElementById('bottomNav').classList.add('hidden');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
             document.getElementById('userStatus').innerText = "Not Logged In";
         }
     });

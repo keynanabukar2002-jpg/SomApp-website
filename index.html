@@ -6,110 +6,166 @@
     <title>KNN MicroPay - Smart Mining & Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
-    <!-- HTML5 QR Code Library oo loogu talagalay in lagu scan-gareeyo Waraaqaha Lacagta / QR-ka -->
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
     <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Plus Jakarta Sans', sans-serif;
+        }
         body {
-            /* Background-ka cusub ee Gradient-ka ah */
-            background: linear-gradient(to top left, #120403, #4D0707, #880C0E);
+            background: linear-gradient(135deg, #120403 0%, #4D0707 50%, #880C0E 100%);
             background-attachment: fixed;
-            color: #ffffff;
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            color: #f8fafc;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100vh;
-            margin: 0;
-            padding: 20px;
+            padding: 16px;
         }
         .container {
             width: 100%;
-            max-width: 450px;
-            background: rgba(30, 41, 59, 0.85);
-            backdrop-filter: blur(10px);
-            border-radius: 16px;
+            max-width: 420px;
+            background: rgba(18, 4, 3, 0.75);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border-radius: 24px;
             padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.6);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
         .header {
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.06);
         }
         .logo {
-            font-weight: bold;
-            font-size: 1.2rem;
-            color: #38bdf8;
+            font-weight: 700;
+            font-size: 1.25rem;
+            color: #ffffff;
             display: flex;
             align-items: center;
-            gap: 8px;
+            gap: 10px;
+            letter-spacing: -0.5px;
+        }
+        .logo-badge {
+            background: linear-gradient(135deg, #880C0E, #ff4d4d);
+            color: white;
+            padding: 6px 10px;
+            border-radius: 10px;
+            font-size: 1rem;
+            box-shadow: 0 4px 12px rgba(136, 12, 14, 0.4);
+        }
+        .status-pill {
+            font-size: 0.75rem;
+            padding: 4px 10px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            font-weight: 500;
         }
         .card {
-            background: rgba(15, 23, 42, 0.7);
-            border-radius: 12px;
-            padding: 16px;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 16px;
+            padding: 18px;
             margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.06);
+            transition: all 0.3s ease;
+        }
+        .card:hover {
+            border-color: rgba(255, 77, 77, 0.3);
+            background: rgba(255, 255, 255, 0.05);
         }
         .card-title {
             color: #94a3b8;
-            font-size: 0.85rem;
-            margin-bottom: 6px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
             display: flex;
             justify-content: space-between;
+            align-items: center;
+        }
+        .balance-box {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
         }
         .balance {
-            font-size: 1.8rem;
-            font-weight: bold;
-            color: #f8fafc;
+            font-size: 2.2rem;
+            font-weight: 700;
+            color: #ffffff;
+            letter-spacing: -1px;
+        }
+        .balance-sub {
+            font-size: 0.8rem;
+            color: #cbd5e1;
         }
         .address-box {
             word-break: break-all;
-            background: #0f172a;
-            padding: 10px;
-            border-radius: 8px;
+            background: rgba(0, 0, 0, 0.3);
+            padding: 12px;
+            border-radius: 10px;
             font-family: monospace;
             color: #38bdf8;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             margin: 8px 0;
-            border: 1px dashed #475569;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .btn {
-            background: #0284c7;
+            background: linear-gradient(135deg, #880C0E, #b91c1c);
             color: white;
             border: none;
-            padding: 10px 16px;
-            border-radius: 8px;
+            padding: 12px 16px;
+            border-radius: 12px;
             width: 100%;
-            font-weight: bold;
+            font-weight: 600;
+            font-size: 0.95rem;
             cursor: pointer;
-            transition: 0.2s;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(136, 12, 14, 0.3);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 8px;
             margin-top: 8px;
         }
-        .btn:hover { background: #0369a1; }
-        .btn-google { background: #db4437; display: flex; justify-content: center; align-items: center; gap: 10px; }
-        .btn-google:hover { background: #c23321; }
-        .btn-withdraw { background: #10b981; }
-        .btn-withdraw:hover { background: #059669; }
-        .btn-scan { background: #8b5cf6; }
-        .btn-scan:hover { background: #7c3aed; }
-        .btn-logout { background: #ef4444; margin-top: 10px; }
-        .btn-logout:hover { background: #dc2626; }
+        .btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 6px 20px rgba(185, 28, 28, 0.5);
+        }
+        .btn:active { transform: translateY(1px); }
+        .btn-google { background: #ffffff; color: #1e293b; box-shadow: 0 4px 15px rgba(255, 255, 255, 0.2); }
+        .btn-google:hover { background: #f1f5f9; box-shadow: 0 6px 20px rgba(255, 255, 255, 0.3); }
+        .btn-withdraw { background: linear-gradient(135deg, #059669, #10b981); box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
+        .btn-withdraw:hover { box-shadow: 0 6px 20px rgba(16, 185, 129, 0.5); }
+        .btn-scan { background: linear-gradient(135deg, #7c3aed, #8b5cf6); box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
+        .btn-scan:hover { box-shadow: 0 6px 20px rgba(139, 92, 246, 0.5); }
+        .btn-logout { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 1px solid rgba(239, 68, 68, 0.3); box-shadow: none; margin-top: 16px; }
+        .btn-logout:hover { background: rgba(239, 68, 68, 0.25); box-shadow: none; }
         input {
             width: 100%;
-            padding: 10px;
-            border-radius: 8px;
-            border: 1px solid #475569;
-            background: #0f172a;
+            padding: 12px;
+            border-radius: 10px;
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            background: rgba(0, 0, 0, 0.25);
             color: white;
+            font-size: 0.9rem;
             margin-top: 6px;
-            box-sizing: border-box;
+            outline: none;
+            transition: border-color 0.2s;
         }
+        input:focus { border-color: #ff4d4d; }
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
-        #reader { width: 100%; border-radius: 8px; overflow: hidden; margin-top: 10px; }
+        #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 12px; border: 1px solid rgba(255, 255, 255, 0.1); }
+        .user-meta { display: flex; justify-content: space-between; align-items: center; font-size: 0.8rem; color: #cbd5e1; }
     </style>
 </head>
 <body>
@@ -117,17 +173,18 @@
 <div class="container">
     <div class="header">
         <div class="logo">
-            <span style="background:#0284c7; color:white; padding:4px 8px; border-radius:6px;">K</span>
+            <span class="logo-badge">K</span>
             KNN MicroPay
         </div>
-        <div id="userStatus" style="font-size:0.8rem; color:#94a3b8;">Loading...</div>
+        <div id="userStatus" class="status-pill">Loading...</div>
     </div>
 
     <!-- Login View -->
-    <div id="loginView" class="card hidden" style="text-align: center; padding: 30px 16px;">
-        <h3 style="color: #f8fafc; margin-top:0;">Ku soo dhawoow KNN MicroPay</h3>
-        <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 20px;">Fadlan ku gal Gmail-kaaga si aad u aragto harraagaaga iyo Mining-kaaga.</p>
+    <div id="loginView" class="card hidden" style="text-align: center; padding: 32px 16px;">
+        <h3 style="color: #ffffff; margin-bottom: 8px; font-size: 1.3rem;">Ku soo dhawoow</h3>
+        <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px;">Nidaamka Smart Mining-ka iyo Maamulka Maaliyadda.</p>
         <button class="btn btn-google" onclick="loginWithGoogle()">
+            <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
             <span>Google Login-ka ku gal</span>
         </button>
     </div>
@@ -135,40 +192,42 @@
     <!-- Dashboard View -->
     <div id="dashboardView" class="hidden">
         <div class="card">
-            <div class="card-title">
-              <span>User ID: <strong id="userIdDisplay" style="color:#38bdf8;">--</strong></span>
-              <span id="userEmailDisplay" style="color:#94a3b8; font-size:0.75rem;">--</span>
+            <div class="user-meta">
+              <span>ID: <strong id="userIdDisplay" style="color:#ffffff;">--</strong></span>
+              <span id="userEmailDisplay" style="color:#cbd5e1; font-size:0.75rem;">--</span>
             </div>
         </div>
 
         <div class="card">
             <div class="card-title">
-                <span>Harraaga Lacagta (Remaining Balance)</span>
-                <span style="color:#10b981;">10-Month Mining</span>
+                <span>Harraaga Lacagta</span>
+                <span style="color:#10b981; font-weight:700;">● Mining Active</span>
             </div>
-            <div class="balance" id="balanceDisplay">0.00 POL</div>
-            <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 6px;">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#38bdf8;">0.00</strong> POL</p>
+            <div class="balance-box">
+                <div class="balance" id="balanceDisplay">0.00 POL</div>
+                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#ff4d4d;">0.00</strong> POL</div>
+            </div>
         </div>
 
         <!-- Cash Paper / QR Scan Section -->
         <div class="card">
-            <div class="card-title" style="color:#a78bfa; font-weight:bold;">Scan Cash Paper / Voucher QR</div>
+            <div class="card-title" style="color:#a78bfa;">Scan Cash Paper / Voucher</div>
             <button class="btn btn-scan" onclick="startScanner()">Furo Camera-ha (Scan)</button>
             <div id="reader" class="hidden"></div>
         </div>
 
         <!-- Deposit Address -->
         <div class="card">
-            <div class="card-title">Cinwaankaaga Deposit-ka:</div>
+            <div class="card-title">Cinwaankaaga Deposit-ka</div>
             <div class="address-box" id="depositAddress">Loading...</div>
-            <button class="btn" onclick="copyAddress()">Copy Address</button>
+            <button class="btn" style="background: rgba(255,255,255,0.08); box-shadow:none;" onclick="copyAddress()">Copy Address</button>
         </div>
 
         <!-- Withdraw Section -->
         <div class="card">
-            <div class="card-title" style="color:#38bdf8; font-weight:bold;">Kala bax Saamiga Maanta</div>
+            <div class="card-title" style="color:#38bdf8;">Kala bax Saamiga Maanta</div>
             <div class="input-group">
-                <label style="font-size:0.8rem; color:#94a3b8;">Cinwaankaaga (MetaMask/Binance):</label>
+                <label style="font-size:0.75rem; color:#94a3b8;">Cinwaankaaga (MetaMask/Binance):</label>
                 <input type="text" id="recipientInput" placeholder="0x...">
             </div>
             <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Saamiga Maanta</button>
@@ -218,7 +277,7 @@
         if (!user || !user.uid) return;
 
         try {
-            document.getElementById('userStatus').innerText = "Connecting server...";
+            document.getElementById('userStatus').innerText = "Connecting...";
             const response = await fetch(`${SERVER_URL}/api/auth-user`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -238,7 +297,8 @@
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('dashboardView').classList.remove('hidden');
                 document.getElementById('userStatus').innerText = "Connected";
-                document.getElementById('userStatus').style.color = "#10b981";
+                document.getElementById('userStatus').style.background = "rgba(16, 185, 129, 0.2)";
+                document.getElementById('userStatus').style.color = "#34d399";
 
                 document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
                 document.getElementById('userEmailDisplay').innerText = user.email;
@@ -247,7 +307,7 @@
                 document.getElementById('dailyLimitDisplay').innerText = data.dailyLimit;
             } else {
                 alert("Cilad Server: " + (data.error || "Unknown error"));
-                document.getElementById('userStatus').innerText = "Server Error";
+                document.getElementById('userStatus').innerText = "Error";
             }
         } catch (err) {
             console.error(err);
@@ -270,7 +330,6 @@
         alert("Cinwaanka waa la koobiyeeyay!");
     }
 
-    // QR Code Scanner-ka loogu talagalay Cash Paper / Voucher
     function startScanner() {
         const readerDiv = document.getElementById('reader');
         readerDiv.classList.remove('hidden');
@@ -283,11 +342,8 @@
                 alert("Waa la helay Code-kii: " + decodedText);
                 html5QrCode.stop();
                 readerDiv.classList.add('hidden');
-                // Halkan ayaad ku dari kartaa codka u diraya server-ka si uu u xaqiijiyo waraaqda lacagta
             },
-            (errorMessage) => {
-                // Scanning errors waxaa laga tagi karaa inta uu camera-ha raadinayo
-            }
+            (errorMessage) => {}
         ).catch(err => {
             alert("Cilad Camera-ha ah: " + err);
         });

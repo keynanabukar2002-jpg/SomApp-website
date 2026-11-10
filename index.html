@@ -43,21 +43,20 @@
             overflow: hidden;
         }
 
-        /* Top Navigation Bar - CADDAAN (WHITE) */
+        /* Top Navigation Bar - MADOW (DARK) */
         .top-nav {
             display: flex;
             justify-content: space-between;
             align-items: center;
             padding: 16px 20px;
-            background: #ffffff;
-            border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+            background: rgba(18, 4, 3, 0.95);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.08);
             z-index: 10;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
         }
         .logo {
             font-weight: 700;
             font-size: 1.1rem;
-            color: #1e293b;
+            color: #ffffff;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -69,16 +68,16 @@
             padding: 4px 8px;
             border-radius: 8px;
             font-size: 0.9rem;
-            box-shadow: 0 4px 12px rgba(136, 12, 14, 0.3);
+            box-shadow: 0 4px 12px rgba(136, 12, 14, 0.4);
         }
         .status-pill {
             font-size: 0.7rem;
             padding: 4px 10px;
             border-radius: 20px;
-            background: #f1f5f9;
-            color: #475569;
-            font-weight: 600;
-            border: 1px solid #cbd5e1;
+            background: rgba(255, 255, 255, 0.08);
+            color: #cbd5e1;
+            font-weight: 500;
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
         /* Main Content Area */
@@ -89,16 +88,16 @@
             padding-bottom: 90px;
         }
 
-        /* Bottom Navigation Bar - CADDAAN (WHITE) */
+        /* Bottom Navigation Bar - MADOW (DARK) */
         .bottom-nav {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 75px;
-            background: #ffffff;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-            border-top: 1px solid rgba(0, 0, 0, 0.08);
+            background: rgba(18, 4, 3, 0.95);
+            backdrop-filter: blur(20px);
+            border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -108,7 +107,7 @@
         .nav-item {
             background: none;
             border: none;
-            color: #64748b;
+            color: #94a3b8;
             font-size: 0.75rem;
             font-weight: 600;
             display: flex;
@@ -126,10 +125,10 @@
             transition: 0.2s;
         }
         .nav-item.active {
-            color: #880C0E;
+            color: #ff4d4d;
         }
         .nav-item.active svg {
-            fill: #880C0E;
+            fill: #ff4d4d;
             transform: scale(1.1);
         }
 
@@ -217,7 +216,7 @@
 <body>
 
 <div class="app-frame">
-    <!-- TOP NAVIGATION BAR (CADDAAN) -->
+    <!-- TOP NAVIGATION BAR (MADOW) -->
     <div class="top-nav">
         <div class="logo">
             <span class="logo-badge">K</span>
@@ -296,7 +295,7 @@
 
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (CADDAAN) -->
+    <!-- BOTTOM NAVIGATION BAR (MADOW) -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -387,8 +386,8 @@
                 switchTab('tabHome', document.querySelector('.nav-item'));
 
                 document.getElementById('userStatus').innerText = "Connected";
-                document.getElementById('userStatus').style.background = "#dcfce7";
-                document.getElementById('userStatus').style.color = "#15803d";
+                document.getElementById('userStatus').style.background = "rgba(16, 185, 129, 0.2)";
+                document.getElementById('userStatus').style.color = "#34d399";
 
                 document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
                 document.getElementById('userEmailDisplay').innerText = user.email;

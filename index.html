@@ -24,6 +24,7 @@
             align-items: center;
             min-height: 100vh;
             padding: 0;
+            overflow: hidden; /* Ka ilaali body-ga inuu scroll-galiyo */
         }
         /* App Frame - Screen-ka App-ka Mobile-ka */
         .app-frame {
@@ -31,7 +32,7 @@
             max-width: 420px;
             height: 100vh;
             max-height: 850px;
-            background: rgba(18, 4, 3, 0.85);
+            background: rgba(18, 4, 3, 0.90);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             display: flex;
@@ -43,15 +44,20 @@
             overflow: hidden;
         }
 
-        /* Top Navigation Bar - MADOW (DARK) */
+        /* Top Navigation Bar - Fadhiya oo aan dhaqaaqayn */
         .top-nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding: 16px 20px;
-            background: rgba(18, 4, 3, 0.95);
+            padding: 0 20px;
+            background: rgba(18, 4, 3, 0.98);
             border-bottom: 1px solid rgba(255, 255, 255, 0.08);
-            z-index: 10;
+            z-index: 100;
         }
         .logo {
             font-weight: 700;
@@ -80,22 +86,27 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Main Content Area */
+        /* Main Content Area - Waa kan keliya ee scroll-ka qaadaya */
         .content-body {
             flex: 1;
+            margin-top: 65px;   /* Meesha uu top nav ka bilaabmo */
+            margin-bottom: 75px; /* Meesha uu bottom nav ku dhammaado */
             overflow-y: auto;
             padding: 20px;
-            padding-bottom: 90px;
+            scrollbar-width: none; /* Ka qari scrollbar-ka browser-ka */
+        }
+        .content-body::-webkit-scrollbar {
+            display: none;
         }
 
-        /* Bottom Navigation Bar - MADOW (DARK) */
+        /* Bottom Navigation Bar - Fadhiya oo aan dhaqaaqayn */
         .bottom-nav {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
             height: 75px;
-            background: rgba(18, 4, 3, 0.95);
+            background: rgba(18, 4, 3, 0.98);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
@@ -216,7 +227,7 @@
 <body>
 
 <div class="app-frame">
-    <!-- TOP NAVIGATION BAR (MADOW) -->
+    <!-- TOP NAVIGATION BAR (Fadhiya oo aan dhaqaaqayn) -->
     <div class="top-nav">
         <div class="logo">
             <span class="logo-badge">K</span>
@@ -225,11 +236,11 @@
         <div id="userStatus" class="status-pill">Loading...</div>
     </div>
 
-    <!-- CONTENT BODY -->
+    <!-- CONTENT BODY (Waa kan keliya ee scroll-ka qaadaya) -->
     <div class="content-body">
 
         <!-- Login View -->
-        <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 40px;">
+        <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 20px;">
             <h3 style="color: #ffffff; margin-bottom: 8px; font-size: 1.3rem;">Ku soo dhawoow</h3>
             <p style="color: #94a3b8; font-size: 0.85rem; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
             <button class="btn btn-google" onclick="loginWithGoogle()">
@@ -295,7 +306,7 @@
 
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (MADOW) -->
+    <!-- BOTTOM NAVIGATION BAR (Fadhiya oo aan dhaqaaqayn) -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>

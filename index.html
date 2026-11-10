@@ -6,9 +6,13 @@
     <title>KNN MicroPay - Smart Mining & Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <!-- HTML5 QR Code Library oo loogu talagalay in lagu scan-gareeyo Waraaqaha Lacagta / QR-ka -->
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <style>
         body {
-            background-color: #0f172a;
+            /* Background-ka cusub ee Gradient-ka ah */
+            background: linear-gradient(to top left, #120403, #4D0707, #880C0E);
+            background-attachment: fixed;
             color: #ffffff;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             display: flex;
@@ -21,11 +25,12 @@
         .container {
             width: 100%;
             max-width: 450px;
-            background: #1e293b;
+            background: rgba(30, 41, 59, 0.85);
+            backdrop-filter: blur(10px);
             border-radius: 16px;
             padding: 24px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
-            border: 1px solid #334155;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.6);
+            border: 1px solid rgba(255, 255, 255, 0.1);
         }
         .header {
             display: flex;
@@ -42,11 +47,11 @@
             gap: 8px;
         }
         .card {
-            background: #0f172a;
+            background: rgba(15, 23, 42, 0.7);
             border-radius: 12px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 1px solid #1e293b;
+            border: 1px solid rgba(255, 255, 255, 0.05);
         }
         .card-title {
             color: #94a3b8;
@@ -62,7 +67,7 @@
         }
         .address-box {
             word-break: break-all;
-            background: #1e293b;
+            background: #0f172a;
             padding: 10px;
             border-radius: 8px;
             font-family: monospace;
@@ -88,6 +93,8 @@
         .btn-google:hover { background: #c23321; }
         .btn-withdraw { background: #10b981; }
         .btn-withdraw:hover { background: #059669; }
+        .btn-scan { background: #8b5cf6; }
+        .btn-scan:hover { background: #7c3aed; }
         .btn-logout { background: #ef4444; margin-top: 10px; }
         .btn-logout:hover { background: #dc2626; }
         input {
@@ -102,6 +109,7 @@
         }
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
+        #reader { width: 100%; border-radius: 8px; overflow: hidden; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -142,9 +150,16 @@
             <p style="font-size: 0.75rem; color: #94a3b8; margin-top: 6px;">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#38bdf8;">0.00</strong> POL</p>
         </div>
 
+        <!-- Cash Paper / QR Scan Section -->
+        <div class="card">
+            <div class="card-title" style="color:#a78bfa; font-weight:bold;">Scan Cash Paper / Voucher QR</div>
+            <button class="btn btn-scan" onclick="startScanner()">Furo Camera-ha (Scan)</button>
+            <div id="reader" class="hidden"></div>
+        </div>
+
         <!-- Deposit Address -->
         <div class="card">
-            <div class="card-title">Cinwaankaaga Deposit-ka (Address):</div>
+            <div class="card-title">Cinwaankaaga Deposit-ka:</div>
             <div class="address-box" id="depositAddress">Loading...</div>
             <button class="btn" onclick="copyAddress()">Copy Address</button>
         </div>
@@ -253,6 +268,29 @@
     function copyAddress() {
         navigator.clipboard.writeText(userPolygonAddress);
         alert("Cinwaanka waa la koobiyeeyay!");
+    }
+
+    // QR Code Scanner-ka loogu talagalay Cash Paper / Voucher
+    function startScanner() {
+        const readerDiv = document.getElementById('reader');
+        readerDiv.classList.remove('hidden');
+        
+        const html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            async (decodedText) => {
+                alert("Waa la helay Code-kii: " + decodedText);
+                html5QrCode.stop();
+                readerDiv.classList.add('hidden');
+                // Halkan ayaad ku dari kartaa codka u diraya server-ka si uu u xaqiijiyo waraaqda lacagta
+            },
+            (errorMessage) => {
+                // Scanning errors waxaa laga tagi karaa inta uu camera-ha raadinayo
+            }
+        ).catch(err => {
+            alert("Cilad Camera-ha ah: " + err);
+        });
     }
 
     async function sendWithdraw() {

@@ -2,7 +2,7 @@
 <html lang="so">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
     <title>KNN MicroPay - Smart Mining & Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -24,7 +24,7 @@
             align-items: center;
             min-height: 100vh;
             padding: 0;
-            overflow: hidden; /* Ka ilaali body-ga inuu scroll-galiyo */
+            overflow: hidden;
         }
         /* App Frame - Screen-ka App-ka Mobile-ka */
         .app-frame {
@@ -44,7 +44,7 @@
             overflow: hidden;
         }
 
-        /* Top Navigation Bar - Fadhiya oo aan dhaqaaqayn */
+        /* Top Navigation Bar - Fadhiya */
         .top-nav {
             position: absolute;
             top: 0;
@@ -86,34 +86,35 @@
             border: 1px solid rgba(255, 255, 255, 0.1);
         }
 
-        /* Main Content Area - Waa kan keliya ee scroll-ka qaadaya */
+        /* Main Content Area */
         .content-body {
             flex: 1;
-            margin-top: 65px;   /* Meesha uu top nav ka bilaabmo */
-            margin-bottom: 75px; /* Meesha uu bottom nav ku dhammaado */
+            margin-top: 65px;
+            margin-bottom: 95px; /* Margin ku filan si uusan bar-ka hoose u daboolin content-ka */
             overflow-y: auto;
             padding: 20px;
-            scrollbar-width: none; /* Ka qari scrollbar-ka browser-ka */
+            scrollbar-width: none;
         }
         .content-body::-webkit-scrollbar {
             display: none;
         }
 
-        /* Bottom Navigation Bar - Fadhiya oo aan dhaqaaqayn */
+        /* Bottom Navigation Bar - Looxan si uusan taleefanku u qarin */
         .bottom-nav {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 75px;
+            height: 90px;
             background: rgba(18, 4, 3, 0.98);
             backdrop-filter: blur(20px);
             border-top: 1px solid rgba(255, 255, 255, 0.08);
             display: flex;
             justify-content: space-around;
-            align-items: center;
+            align-items: flex-start;
             z-index: 100;
-            padding-bottom: 10px;
+            padding-top: 12px;
+            padding-bottom: calc(20px + env(safe-area-inset-bottom));
         }
         .nav-item {
             background: none;
@@ -227,7 +228,7 @@
 <body>
 
 <div class="app-frame">
-    <!-- TOP NAVIGATION BAR (Fadhiya oo aan dhaqaaqayn) -->
+    <!-- TOP NAVIGATION BAR -->
     <div class="top-nav">
         <div class="logo">
             <span class="logo-badge">K</span>
@@ -236,7 +237,7 @@
         <div id="userStatus" class="status-pill">Loading...</div>
     </div>
 
-    <!-- CONTENT BODY (Waa kan keliya ee scroll-ka qaadaya) -->
+    <!-- CONTENT BODY -->
     <div class="content-body">
 
         <!-- Login View -->
@@ -306,7 +307,7 @@
 
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (Fadhiya oo aan dhaqaaqayn) -->
+    <!-- BOTTOM NAVIGATION BAR -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>

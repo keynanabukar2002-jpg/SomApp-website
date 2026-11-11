@@ -16,8 +16,8 @@
             font-family: 'Plus Jakarta Sans', sans-serif;
         }
         body {
-            /* Background-ka oo lagu badalay midabka #6BB5FF oo leh gradient qoto dheer */
-            background: linear-gradient(135deg, #0284c7 0%, #38bdf8 50%, #6BB5FF 100%);
+            /* Background-ka oo lagu badalay midabka #3396FF oo leh gradient qoto dheer */
+            background: linear-gradient(135deg, #1a73e8 0%, #3396FF 50%, #66b2ff 100%);
             background-attachment: fixed;
             color: #0f172a;
             display: flex;
@@ -32,12 +32,12 @@
             width: 100%;
             max-width: 420px;
             height: 100dvh;
-            background: rgba(255, 255, 255, 0.85);
+            background: rgba(255, 255, 255, 0.88);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             display: flex;
             flex-direction: column;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.2);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
             position: relative;
             overflow: hidden;
         }
@@ -68,13 +68,13 @@
             letter-spacing: -0.5px;
         }
         .logo-badge {
-            background: #6BB5FF;
-            color: #0f172a;
+            background: #3396FF;
+            color: #ffffff;
             padding: 4px 8px;
             border-radius: 8px;
             font-size: 0.9rem;
             font-weight: bold;
-            box-shadow: 0 4px 12px rgba(107, 181, 255, 0.4);
+            box-shadow: 0 4px 12px rgba(51, 150, 255, 0.4);
         }
         .status-pill {
             font-size: 0.7rem;
@@ -140,23 +140,24 @@
             transition: 0.2s;
         }
         .nav-item.active {
-            color: #0284c7;
+            color: #3396FF;
         }
         .nav-item.active span {
-            color: #0284c7;
+            color: #3396FF;
+            font-weight: 700;
         }
         .nav-item.active svg {
-            fill: #0284c7;
+            fill: #3396FF;
             transform: scale(1.1);
         }
 
         /* Cards & UI Elements */
         .card {
-            background: rgba(255, 255, 255, 0.7);
+            background: rgba(255, 255, 255, 0.75);
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 1px solid rgba(255, 255, 255, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.9);
             box-shadow: 0 4px 15px rgba(0,0,0,0.03);
         }
         .card-title {
@@ -187,13 +188,14 @@
             padding: 12px;
             border-radius: 10px;
             font-family: monospace;
-            color: #0284c7;
+            color: #3396FF;
+            font-weight: 600;
             font-size: 0.75rem;
             margin: 8px 0;
             border: 1px solid #cbd5e1;
         }
         .btn {
-            background: #0284c7;
+            background: #3396FF;
             color: white;
             border: none;
             padding: 12px 16px;
@@ -203,13 +205,14 @@
             font-size: 0.9rem;
             cursor: pointer;
             transition: all 0.2s ease;
-            box-shadow: 0 4px 15px rgba(2, 132, 199, 0.3);
+            box-shadow: 0 4px 15px rgba(51, 150, 255, 0.35);
             display: flex;
             justify-content: center;
             align-items: center;
             gap: 8px;
             margin-top: 8px;
         }
+        .btn:hover { background: #2682eb; }
         .btn-google { background: #ffffff; color: #1e293b; border: 1px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
         .btn-withdraw { background: #10b981; box-shadow: 0 4px 15px rgba(16, 185, 129, 0.3); }
         .btn-scan { background: #8b5cf6; box-shadow: 0 4px 15px rgba(139, 92, 246, 0.3); }
@@ -226,7 +229,7 @@
             margin-top: 6px;
             outline: none;
         }
-        input:focus { border-color: #0284c7; }
+        input:focus { border-color: #3396FF; }
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
         #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 12px; border: 1px solid #cbd5e1; }
@@ -265,12 +268,12 @@
                     <span style="color:#059669; font-weight:700;">● Mining Active</span>
                 </div>
                 <div class="balance" id="balanceDisplay">0.00 POL</div>
-                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#0284c7;">0.00</strong> POL</div>
+                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#3396FF;">0.00</strong> POL</div>
             </div>
 
             <div class="card">
                 <div class="card-title">Macluumaadkaaga</div>
-                <div style="font-size: 0.85rem; color: #334155; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#0284c7;">--</strong></div>
+                <div style="font-size: 0.85rem; color: #334155; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#3396FF;">--</strong></div>
                 <div style="font-size: 0.8rem; color: #64748b;" id="userEmailDisplay">--</div>
             </div>
         </div>
@@ -294,7 +297,7 @@
             </div>
 
             <div class="card">
-                <div class="card-title" style="color:#0284c7;">Kala bax Saamiga Maanta</div>
+                <div class="card-title" style="color:#3396FF;">Kala bax Saamiga Maanta</div>
                 <div class="input-group">
                     <label style="font-size:0.75rem; color: #64748b;">Cinwaankaaga (MetaMask/Binance):</label>
                     <input type="text" id="recipientInput" placeholder="0x...">

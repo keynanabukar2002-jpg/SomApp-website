@@ -378,7 +378,7 @@
         }
         .back-back-btn:hover { background: #451a03; }
 
-        /* Reader Content - RTL sax ah oo nambarku ku dhamaanayo aayadda gadaasheeda */
+        /* Reader Content */
         .reader-content {
             background: transparent;
             padding: 4px 6px;
@@ -747,6 +747,7 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
+        // Bismilaah waxay ka muuqataa kore (marna laguma celiyo gudaha aayadda 1aad)
         if (currentAyahPage === 1 && activeSurahNum !== 9) {
             html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
         }
@@ -754,8 +755,9 @@
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
             
-            if (activeSurahNum !== 1 && ayah.numberInSurah === 1 && text.startsWith("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")) {
-                text = text.replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "").trim();
+            // Haddii ay tahay aayadda 1aad ee suurad kasta (marka laga reebo Al-Fatihah iyo At-Tawbah), ka sifee Bismilaah si aysan laba jeer u soo bixin
+            if (activeSurahNum !== 1 && activeSurahNum !== 9 && ayah.numberInSurah === 1) {
+                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "").trim();
             }
 
             if (activeSurahNum === 1 && ayah.numberInSurah === 1) {
@@ -763,7 +765,6 @@
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
-            // Nambarka aayadda waxaa la geliyay isla marka ay aayaddu dhammaato (RTL order sax ah)
             html += `<span class="ayah-container"><span class="ayah-text">${text}</span><span class="ayah-number">${arabicNum}</span></span> `;
         });
 

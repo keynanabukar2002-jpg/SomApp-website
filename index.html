@@ -329,11 +329,11 @@
             font-weight: 800;
         }
         
-        /* Classic Ornate Mushaf Page Container - Dhammaanteed hal bog oo taagan (No Scroll) */
+        /* Classic Ornate Mushaf Page Container with Scroll Support */
         .mushaf-page {
             background: #fffdf9;
             margin: 6px;
-            padding: 8px 10px;
+            padding: 10px;
             border: 3px solid #b45309;
             outline: 2px solid #fde047;
             outline-offset: -5px;
@@ -343,7 +343,6 @@
             display: flex;
             flex-direction: column;
             justify-content: space-between;
-            overflow: hidden;
         }
 
         .mushaf-header-banner {
@@ -354,6 +353,7 @@
             margin-bottom: 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
+            flex-shrink: 0;
         }
         .mushaf-header-title {
             font-family: 'Amiri', serif;
@@ -378,46 +378,53 @@
         }
         .back-back-btn:hover { background: #451a03; }
 
-        /* Reader Content - Si ay ugu ekaadaan ugu badnaan 8 aayadood oo aan marnaba u baahnayn scroll */
+        /* Reader Content - Wuxuu leeyahay scroll dabacsan oo aayadaha 8-da ah qaadaya */
         .reader-content {
             background: transparent;
-            padding: 0 2px;
+            padding: 4px 6px;
             text-align: right;
-            line-height: 2.1;
-            font-size: 1.05rem;
+            line-height: 2.5;
+            font-size: 1.2rem;
             color: #1c1917;
             font-family: 'Amiri', serif;
             width: 100%;
             word-spacing: 1px;
             flex: 1;
-            overflow: hidden;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #d97706 #fbf9f1;
         }
+        .reader-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .reader-content::-webkit-scrollbar-thumb {
+            background-color: #d97706;
+            border-radius: 4px;
+        }
+
         .bismillah {
             text-align: center;
-            font-size: 1.15rem;
+            font-size: 1.25rem;
             color: #9a3412;
-            margin-bottom: 6px;
+            margin-bottom: 8px;
             font-family: 'Amiri', serif;
             font-weight: bold;
             letter-spacing: 1px;
             border-bottom: 1px dashed #d97706;
-            padding-bottom: 4px;
+            padding-bottom: 6px;
         }
         .ayah-number {
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 22px;
-            height: 22px;
+            width: 24px;
+            height: 24px;
             background: radial-gradient(circle, #fef08a 0%, #fde047 70%, #ca8a04 100%);
             border: 1px solid #854d0e;
             border-radius: 50%;
-            font-size: 0.6rem;
+            font-size: 0.65rem;
             color: #451a03;
-            margin: 0 2px;
+            margin: 0 3px;
             font-family: 'Amiri', serif;
             box-shadow: 0 1px 2px rgba(0,0,0,0.15);
         }
@@ -427,9 +434,10 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 4px;
+            padding-top: 6px;
             border-top: 2px solid #fde047;
             background: #fffdf9;
+            flex-shrink: 0;
         }
     </style>
 </head>
@@ -512,7 +520,7 @@
                 <div class="surah-list" id="surahList"></div>
             </div>
 
-            <!-- Bogga Akhriska Suurada -->
+            <!-- Bogga Akhriska Suurada oo leh Scroll u gaar ah 8-da aayadood -->
             <div id="quranReaderContainer" class="hidden" style="width: 100%;">
                 <div class="mushaf-page">
                     <div class="mushaf-header-banner">
@@ -522,7 +530,6 @@
                     <div class="reader-content" id="readerContent">
                         Loading...
                     </div>
-                    <!-- Badhamada Bogagga Aayadaha oo ku kooban ilaa 8 aayadood bog walba iyadoon scroll loo baahnayn -->
                     <div class="surah-pagination" id="surahPaginationBar" style="display:none;">
                         <button class="page-btn" id="prevAyahPageBtn" onclick="changeAyahPage(-1)">← Bogga Hore</button>
                         <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 1</span>
@@ -640,7 +647,7 @@
 
     let currentAyahsData = [];
     let currentAyahPage = 1;
-    const ayahsPerPage = 8; // Hadda bog walba wuxuu xambaarsan yahay ugu badnaan 8 aayadood oo aan marnaba u baahnayn scroll
+    const ayahsPerPage = 8; // Bog walba wuxuu xambaarsan yahay 8 aayadood oo leh scroll yar haddii loo baahdo
     let activeSurahNum = 1;
     let activeSurahName = "";
 

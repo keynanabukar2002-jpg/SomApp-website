@@ -749,15 +749,17 @@
 
         // Bismilaah waxay ka muuqataa oo keliya cinwaan ahaan bogga koowaad (marka laga reebo At-Tawbah / 9)
         if (currentAyahPage === 1 && activeSurahNum !== 9) {
-            html += `<div class="bismillah-header">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+            html += `<div class="bismillah-header">بِسْمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ</div>`;
         }
 
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
             
-            // Ka saar Bismilaaha ku jirta bilowga aayadda koowaad ee API-ga si aysan u labalaabmin
+            // Ka saar Bismilaaha ku dhex jirta bilowga aayadda koowaad ee API-ga (iyadoon loo eegin qaabka farta la isugu keenay)
             if (activeSurahNum !== 1 && activeSurahNum !== 9 && ayah.numberInSurah === 1) {
-                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "").trim();
+                text = text.replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
+                           .replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
+                           .trim();
             }
 
             if (activeSurahNum === 1 && ayah.numberInSurah === 1) {

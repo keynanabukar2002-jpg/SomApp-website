@@ -57,6 +57,7 @@
             border-bottom: 2px solid rgba(51, 150, 255, 0.2);
             z-index: 100;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
         }
         .logo {
             font-weight: 800;
@@ -90,10 +91,11 @@
         .content-body {
             flex: 1;
             margin-top: 65px;
-            margin-bottom: 95px;
+            margin-bottom: 85px;
             overflow-y: auto;
             padding: 20px;
             scrollbar-width: none;
+            transition: margin-top 0.3s ease;
         }
         .content-body::-webkit-scrollbar {
             display: none;
@@ -266,7 +268,7 @@
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: 450px;
+            max-height: calc(100dvh - 160px);
             overflow-y: auto;
             padding-right: 4px;
         }
@@ -306,7 +308,7 @@
             line-height: 2.4;
             font-size: 1.25rem;
             color: #0f172a;
-            max-height: 400px;
+            max-height: calc(100dvh - 180px);
             overflow-y: auto;
             font-family: 'Traditional Arabic', 'Amiri', serif;
         }
@@ -323,7 +325,7 @@
 
 <div class="app-frame">
     <!-- TOP NAVIGATION BAR -->
-    <div class="top-nav">
+    <div class="top-nav" id="topNav">
         <div class="logo">
             <span class="logo-badge">K</span>
             KNN MicroPay
@@ -332,7 +334,7 @@
     </div>
 
     <!-- CONTENT BODY -->
-    <div class="content-body">
+    <div class="content-body" id="contentBody">
 
         <!-- Login View -->
         <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 20px;">
@@ -386,10 +388,10 @@
             </div>
         </div>
 
-        <!-- Qur'aan Tab (114 Suuradood & Reader) -->
+        <!-- Qur'aan Tab (Full Screen) -->
         <div id="tabQuran" class="tab-content hidden">
             <!-- Liiska 114-ka Suuradood -->
-            <div id="quranListContainer" class="card">
+            <div id="quranListContainer" class="card" style="margin-bottom: 0;">
                 <div class="card-title" style="color:#0369a1; font-weight:800;">📖 114-ka Suuradood ee Qur'aanka</div>
                 <p style="font-size: 0.8rem; color: #475569; margin-bottom: 10px;">Dooro suurada aad rabto inaad akhriso:</p>
                 <div class="surah-list" id="surahList">
@@ -398,7 +400,7 @@
             </div>
 
             <!-- Bogga Akhriska Suurada (Reader) -->
-            <div id="quranReaderContainer" class="card hidden">
+            <div id="quranReaderContainer" class="card hidden" style="margin-bottom: 0;">
                 <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
                     <span id="readerTitle" style="color:#0369a1; font-weight:800;">Suurada</span>
                     <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin:0;" onclick="backToSurahList()">← Dib u laabo</button>
@@ -514,7 +516,6 @@
         });
     };
 
-    // Funsankan wuxuu ka soo jiidnayaa aayadaha Carabi ahaan API-ga rasmiga ah
     async function openSurahReader(surahNum, surahName) {
         document.getElementById('quranListContainer').classList.add('hidden');
         document.getElementById('quranReaderContainer').classList.remove('hidden');
@@ -531,13 +532,11 @@
                 const ayahs = data.data.ayahs;
                 let html = "";
                 
-                // Suuradaha intooda badan waxaa ka horeeya Bismillah (marka laga reebo At-Tawbah)
                 if (surahNum !== 9) {
                     html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
                 }
 
                 ayahs.forEach(ayah => {
-                    // Ka saar Bismillah-da hordhaca ah suuradda Al-Baqarah ama kuwa kale haddii ay ku jirto hal aayad ahaan si aysan u laban-laabmin, ama soo bandhig si toos ah
                     let text = ayah.text;
                     if(surahNum === 1 && ayah.numberInSurah === 1) {
                         text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ <br> الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ...";
@@ -566,6 +565,18 @@
 
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
+
+        // Halkan waxaa lagu qarinayaa ama lagu soo celinayaa top-nav si uu tab-ka Quraanku u noqdo Full Screen
+        const topNav = document.getElementById('topNav');
+        const contentBody = document.getElementById('contentBody');
+
+        if (tabId === 'tabQuran') {
+            topNav.classList.add('hidden');
+            contentBody.style.marginTop = '10px';
+        } else {
+            topNav.classList.remove('hidden');
+            contentBody.style.marginTop = '65px';
+        }
     }
 
     async function loginWithGoogle() {

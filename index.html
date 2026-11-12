@@ -32,7 +32,7 @@
             width: 100%;
             max-width: 420px;
             height: 100dvh;
-            background: #fbf9f1; /* Midabka waraaqaha Quraanka ee soo jiidashada leh */
+            background: #fbf9f1;
             display: flex;
             flex-direction: column;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
@@ -91,7 +91,7 @@
             margin-top: 65px;
             margin-bottom: 85px;
             overflow-y: auto;
-            padding: 15px;
+            padding: 10px 0;
             scrollbar-width: none;
             transition: margin-top 0.3s ease;
         }
@@ -259,65 +259,59 @@
             border: 1px solid #3396FF;
         }
 
-        /* Quran Classic List & Reader styles */
+        /* Quran Full Width & Classic Styles */
         .surah-list {
             display: flex;
             flex-direction: column;
-            gap: 8px;
-            max-height: calc(100dvh - 130px);
-            overflow-y: auto;
-            padding-right: 4px;
+            gap: 4px;
+            width: 100%;
         }
         .surah-row {
             background: #ffffff;
-            padding: 10px 14px;
-            border-radius: 8px;
-            border: 1px solid #e2dcc5;
+            padding: 12px 16px;
+            border-bottom: 1px solid #eef0db;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: 0.2s;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
+            width: 100%;
         }
         .surah-row:hover {
             background: #fdf8e2;
-            border-color: #3396FF;
         }
         .surah-info-left {
             display: flex;
             align-items: center;
             gap: 12px;
-            font-size: 0.85rem;
-            color: #64748b;
+            font-size: 0.8rem;
+            color: #713f12;
             font-weight: 800;
         }
         .surah-name-arabic {
             font-family: 'Amiri', serif;
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #1e293b;
             font-weight: 700;
         }
         .reader-header {
             text-align: center;
-            padding: 12px;
+            padding: 10px 15px;
             background: #fdf8e2;
             border-bottom: 2px solid #e2dcc5;
-            border-radius: 12px 12px 0 0;
-            margin: -16px -16px 15px -16px;
+            position: sticky;
+            top: 0;
+            z-index: 10;
         }
         .reader-content {
-            background: #ffffff;
-            padding: 15px;
-            border-radius: 12px;
-            border: 2px solid #e2dcc5;
+            background: #fbf9f1;
+            padding: 20px 16px;
             text-align: right;
-            line-height: 2.6;
-            font-size: 1.35rem;
+            line-height: 2.8;
+            font-size: 1.4rem;
             color: #1a1a1a;
-            max-height: calc(100dvh - 160px);
-            overflow-y: auto;
             font-family: 'Amiri', serif;
+            width: 100%;
         }
         .bismillah {
             text-align: center;
@@ -326,13 +320,14 @@
             margin-bottom: 20px;
             font-family: 'Amiri', serif;
             font-weight: bold;
+            width: 100%;
         }
         .ayah-number {
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 28px;
-            height: 28px;
+            width: 30px;
+            height: 30px;
             background: #fef08a;
             border: 1px solid #ca8a04;
             border-radius: 50%;
@@ -359,7 +354,7 @@
     <div class="content-body" id="contentBody">
 
         <!-- Login View -->
-        <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 20px;">
+        <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 20px; margin-left: 15px; margin-right: 15px;">
             <h3 style="color: #0f172a; margin-bottom: 8px; font-size: 1.4rem; font-weight: 800;">Ku soo dhawoow</h3>
             <p style="color: #334155; font-size: 0.9rem; font-weight: 800; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
             <button class="btn btn-google" onclick="loginWithGoogle()">
@@ -369,7 +364,7 @@
         </div>
 
         <!-- Dashboard / Home Tab -->
-        <div id="tabHome" class="tab-content hidden">
+        <div id="tabHome" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card">
                 <div class="card-title">
                     <span>Harraaga Lacagta</span>
@@ -387,7 +382,7 @@
         </div>
 
         <!-- Chat Tab -->
-        <div id="tabChat" class="tab-content hidden">
+        <div id="tabChat" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card">
                 <div class="card-title" style="color:#16a34a; font-weight:800;">💬 Bulshada / Chat-ka Guud</div>
                 <div class="chat-box" id="chatContainer">
@@ -401,7 +396,7 @@
         </div>
 
         <!-- Scan / Voucher Tab -->
-        <div id="tabScan" class="tab-content hidden">
+        <div id="tabScan" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card">
                 <div class="card-title" style="color:#7c3aed; font-weight:800;">Scan Cash Paper / Voucher</div>
                 <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 12px;">Ku eeg kaamerada QR code-ka ku yaal waraaqda lacagta si aad u geliso nidaamka.</p>
@@ -410,21 +405,21 @@
             </div>
         </div>
 
-        <!-- Qur'aan Tab (Classic List & Full Screen Reader) -->
+        <!-- Qur'aan Tab (Full Screen & Full Width) -->
         <div id="tabQuran" class="tab-content hidden">
-            <!-- Liiska 114-ka Suuradood (Classic Style) -->
-            <div id="quranListContainer" class="card" style="margin-bottom: 0; border: none; padding: 10px; background: transparent; box-shadow: none;">
+            <!-- Liiska 114-ka Suuradood -->
+            <div id="quranListContainer" style="width: 100%;">
                 <div class="surah-list" id="surahList">
                     <!-- JavaScript ayaa ku soo buuxin doona liiska -->
                 </div>
             </div>
 
             <!-- Bogga Akhriska Suurada -->
-            <div id="quranReaderContainer" class="card hidden" style="margin-bottom: 0;">
+            <div id="quranReaderContainer" class="hidden" style="width: 100%;">
                 <div class="reader-header">
                     <div style="display:flex; justify-content:space-between; align-items:center;">
                         <span id="readerTitle" style="color:#854d0e; font-size:1.1rem; font-weight:800;">Suurada</span>
-                        <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin:0; background:#854d0e;" onclick="backToSurahList()">← Dib u laabo</button>
+                        <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin:0; background:#854d0e; box-shadow:none;" onclick="backToSurahList()">← Dib u laabo</button>
                     </div>
                 </div>
                 <div class="reader-content" id="readerContent">
@@ -434,7 +429,7 @@
         </div>
 
         <!-- Wallet & Withdraw Tab -->
-        <div id="tabWallet" class="tab-content hidden">
+        <div id="tabWallet" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card">
                 <div class="card-title">Cinwaankaaga Deposit-ka</div>
                 <div class="address-box" id="depositAddress">Loading...</div>
@@ -452,7 +447,7 @@
         </div>
 
         <!-- Settings / Profile Tab -->
-        <div id="tabSettings" class="tab-content hidden">
+        <div id="tabSettings" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card" style="text-align: center; padding: 24px;">
                 <h3 style="color: #0f172a; margin-bottom: 8px; font-size: 1.2rem; font-weight: 800;">Xisaabtaada</h3>
                 <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 20px;">Halkan waxaad ka maamuli kartaa baxsashada ama xogtaada.</p>
@@ -511,7 +506,6 @@
     let userPolygonAddress = "";
     let userDisplayName = "User";
 
-    // Liiska 114-ka suuradood iyo magacyadooda Carabi-ga ah ee saxda ah
     const quranSurahs = [
         {name: "الفاتحة", ayahs: 7}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
         {name: "الأنعام", ayahs: 165}, {name: "الأعراف", ayahs: 206}, {name: "الأنفال", ayahs: 75}, {name: "التوبة", ayahs: 129}, {name: "يونس", ayahs: 109},
@@ -572,18 +566,23 @@
                 const ayahs = data.data.ayahs;
                 let html = "";
                 
-                if (surahNum !== 9 && surahNum !== 1) {
+                // Soo bandhig Bismillah haddii aysan ahayn At-Tawbah (Suurad 9)
+                if (surahNum !== 9) {
                     html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
                 }
 
                 ayahs.forEach(ayah => {
                     let text = ayah.text;
-                    // Haddii ay tahay Al-Faatixah
-                    if(surahNum === 1) {
-                        if(ayah.numberInSurah === 1) {
-                            text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ <br> الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
-                        }
+                    
+                    // Ka saar Bismillah-da ku jirta bilowga aayadda koowaad haddii ay API-du soo celiso (si aysan u laban-laabmin)
+                    if (surahNum !== 1 && ayah.numberInSurah === 1 && text.startsWith("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ")) {
+                        text = text.replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "").trim();
                     }
+
+                    if (surahNum === 1 && ayah.numberInSurah === 1) {
+                        text = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
+                    }
+
                     html += `${text} <span class="ayah-number">${ayah.numberInSurah}</span> `;
                 });
 
@@ -614,10 +613,12 @@
 
         if (tabId === 'tabQuran') {
             topNav.classList.add('hidden');
-            contentBody.style.marginTop = '10px';
+            contentBody.style.marginTop = '0px';
+            contentBody.style.padding = '0';
         } else {
             topNav.classList.remove('hidden');
             contentBody.style.marginTop = '65px';
+            contentBody.style.padding = '10px 0';
         }
     }
 

@@ -7,7 +7,7 @@
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
     <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
             box-sizing: border-box;
@@ -32,9 +32,7 @@
             width: 100%;
             max-width: 420px;
             height: 100dvh;
-            background: rgba(255, 255, 255, 0.92);
-            backdrop-filter: blur(16px);
-            -webkit-backdrop-filter: blur(16px);
+            background: #fbf9f1; /* Midabka waraaqaha Quraanka ee soo jiidashada leh */
             display: flex;
             flex-direction: column;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
@@ -93,7 +91,7 @@
             margin-top: 65px;
             margin-bottom: 85px;
             overflow-y: auto;
-            padding: 20px;
+            padding: 15px;
             scrollbar-width: none;
             transition: margin-top 0.3s ease;
         }
@@ -156,9 +154,9 @@
 
         /* Cards & UI Elements */
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffffff;
             border-radius: 16px;
-            padding: 18px;
+            padding: 16px;
             margin-bottom: 16px;
             border: 2px solid rgba(51, 150, 255, 0.3);
             box-shadow: 0 6px 20px rgba(51, 150, 255, 0.12);
@@ -220,8 +218,6 @@
         .btn-google { background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
         .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
         .btn-scan { background: #7c3aed; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); }
-        .btn-quran { background: #0284c7; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); }
-        .btn-chat { background: #25d366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }
         .btn-logout { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: none; margin-top: 10px; font-weight: 800; }
         
         input {
@@ -263,61 +259,87 @@
             border: 1px solid #3396FF;
         }
 
-        /* Quran List & Reader styles */
+        /* Quran Classic List & Reader styles */
         .surah-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: calc(100dvh - 160px);
+            max-height: calc(100dvh - 130px);
             overflow-y: auto;
             padding-right: 4px;
         }
-        .surah-item {
-            background: #f8fafc;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
+        .surah-row {
+            background: #ffffff;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border: 1px solid #e2dcc5;
             cursor: pointer;
             display: flex;
             justify-content: space-between;
             align-items: center;
             transition: 0.2s;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.02);
         }
-        .surah-item:hover {
-            background: #e0f2fe;
+        .surah-row:hover {
+            background: #fdf8e2;
             border-color: #3396FF;
         }
-        .surah-title {
-            font-size: 0.9rem;
-            color: #0f172a;
+        .surah-info-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 0.85rem;
+            color: #64748b;
             font-weight: 800;
         }
-        .surah-number {
-            background: #3396FF;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
+        .surah-name-arabic {
+            font-family: 'Amiri', serif;
+            font-size: 1.4rem;
+            color: #1e293b;
+            font-weight: 700;
+        }
+        .reader-header {
+            text-align: center;
+            padding: 12px;
+            background: #fdf8e2;
+            border-bottom: 2px solid #e2dcc5;
+            border-radius: 12px 12px 0 0;
+            margin: -16px -16px 15px -16px;
         }
         .reader-content {
             background: #ffffff;
-            padding: 16px;
+            padding: 15px;
             border-radius: 12px;
-            border: 2px solid #3396FF;
+            border: 2px solid #e2dcc5;
             text-align: right;
-            line-height: 2.4;
-            font-size: 1.25rem;
-            color: #0f172a;
-            max-height: calc(100dvh - 180px);
+            line-height: 2.6;
+            font-size: 1.35rem;
+            color: #1a1a1a;
+            max-height: calc(100dvh - 160px);
             overflow-y: auto;
-            font-family: 'Traditional Arabic', 'Amiri', serif;
+            font-family: 'Amiri', serif;
         }
         .bismillah {
             text-align: center;
-            font-size: 1.2rem;
-            color: #0284c7;
-            margin-bottom: 15px;
+            font-size: 1.4rem;
+            color: #854d0e;
+            margin-bottom: 20px;
+            font-family: 'Amiri', serif;
             font-weight: bold;
+        }
+        .ayah-number {
+            display: inline-flex;
+            justify-content: center;
+            align-items: center;
+            width: 28px;
+            height: 28px;
+            background: #fef08a;
+            border: 1px solid #ca8a04;
+            border-radius: 50%;
+            font-size: 0.85rem;
+            color: #713f12;
+            margin: 0 4px;
+            font-family: 'Plus Jakarta Sans', sans-serif;
         }
     </style>
 </head>
@@ -388,22 +410,22 @@
             </div>
         </div>
 
-        <!-- Qur'aan Tab (Full Screen) -->
+        <!-- Qur'aan Tab (Classic List & Full Screen Reader) -->
         <div id="tabQuran" class="tab-content hidden">
-            <!-- Liiska 114-ka Suuradood -->
-            <div id="quranListContainer" class="card" style="margin-bottom: 0;">
-                <div class="card-title" style="color:#0369a1; font-weight:800;">📖 114-ka Suuradood ee Qur'aanka</div>
-                <p style="font-size: 0.8rem; color: #475569; margin-bottom: 10px;">Dooro suurada aad rabto inaad akhriso:</p>
+            <!-- Liiska 114-ka Suuradood (Classic Style) -->
+            <div id="quranListContainer" class="card" style="margin-bottom: 0; border: none; padding: 10px; background: transparent; box-shadow: none;">
                 <div class="surah-list" id="surahList">
-                    <!-- JavaScript ayaa ku soo buuxin doona 114-ka suuradood -->
+                    <!-- JavaScript ayaa ku soo buuxin doona liiska -->
                 </div>
             </div>
 
-            <!-- Bogga Akhriska Suurada (Reader) -->
+            <!-- Bogga Akhriska Suurada -->
             <div id="quranReaderContainer" class="card hidden" style="margin-bottom: 0;">
-                <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-                    <span id="readerTitle" style="color:#0369a1; font-weight:800;">Suurada</span>
-                    <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin:0;" onclick="backToSurahList()">← Dib u laabo</button>
+                <div class="reader-header">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span id="readerTitle" style="color:#854d0e; font-size:1.1rem; font-weight:800;">Suurada</span>
+                        <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin:0; background:#854d0e;" onclick="backToSurahList()">← Dib u laabo</button>
+                    </div>
                 </div>
                 <div class="reader-content" id="readerContent">
                     Loading...
@@ -489,19 +511,31 @@
     let userPolygonAddress = "";
     let userDisplayName = "User";
 
+    // Liiska 114-ka suuradood iyo magacyadooda Carabi-ga ah ee saxda ah
     const quranSurahs = [
-        "Al-Faatixah", "Al-Baqarah", "Aali Imraan", "An-Nisaa", "Al-Ma'idah", "Al-An'aam", "Al-A'raaf", "Al-Anfaal", "At-Tawbah", "Yuunus",
-        "Huud", "Yuusuf", "Ar-Ra'd", "Ibraahiim", "Al-Hijr", "An-Nahl", "Al-Israa", "Al-Kahf", "Maryam", "Ṭaa Haa",
-        "Al-Anbiyaa", "Al-Hajj", "Al-Mu'minuun", "An-Nuur", "Al-Furqaan", "Ash-Shu'araa", "An-Naml", "Al-Qasas", "Al-Ankabuut", "Ar-Ruum",
-        "Luqman", "As-Sajdah", "Al-Ahzaab", "Saba'", "Faatir", "Yaasiin", "As-Saafaat", "Swaad", "Az-Zumar", "Ghaafir",
-        "Fussilat", "Ash-Shuura", "Az-Zukhruf", "Ad-Dukhaan", "Al-Jaathiyah", "Al-Ahqaaf", "Maxamed", "Al-Fatx", "Al-Xujuraat", "Qaaf",
-        "Ad-Dhaariyaat", "At-Tuur", "An-Najm", "Al-Qamar", "Ar-Raxmaan", "Al-Waaqi'ah", "Al-Xadiid", "Al-Mujaadilah", "Al-Hashr", "Al-Mumtaxanah",
-        "As-Swaf", "Al-Jumu'ah", "Al-Munaafiquun", "At-Taghaabun", "At-Talaaq", "At-Taxriim", "Al-Mulk", "Al-Qalam", "Al-Xaaqah", "Al-Macarij",
-        "Nuux", "Al-Jinn", "Al-Muzzammil", "Al-Muddathtir", "Al-Qiyaamah", "Al-Insaan", "Al-Mursalaat", "An-Naba'", "An-Naazi'aat", "'Abasa",
-        "At-Takwiir", "Al-Infitaar", "Al-Mutaffifiin", "Al-Inshiqaaq", "Al-Buruuj", "At-Taariq", "Al-A'laa", "Al-Ghaashiyah", "Al-Fajr", "Al-Balad",
-        "Ash-Shams", "Al-Layl", "Ad-Duxaa", "Ash-Sharx", "At-Tiin", "Al-Calaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-'Aadiyaat",
-        "Al-Qaari'ah", "At-Takaathur", "Al-'Asr", "Al-Humazah", "Al-Fiil", "Quraysh", "Al-Maa'uun", "Al-Kawthar", "Al-Kaafiruun", "An-Nasr",
-        "Al-Masad", "Al-Ikhlaas", "Al-Falaq", "An-Naas"
+        {name: "الفاتحة", ayahs: 7}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
+        {name: "الأنعام", ayahs: 165}, {name: "الأعراف", ayahs: 206}, {name: "الأنفال", ayahs: 75}, {name: "التوبة", ayahs: 129}, {name: "يونس", ayahs: 109},
+        {name: "هود", ayahs: 123}, {name: "يوسف", ayahs: 111}, {name: "الرعد", ayahs: 43}, {name: "إبراهيم", ayahs: 52}, {name: "الحجر", ayahs: 99},
+        {name: "النحل", ayahs: 128}, {name: "الإسراء", ayahs: 111}, {name: "الكهف", ayahs: 110}, {name: "مريم", ayahs: 98}, {name: "طه", ayahs: 135},
+        {name: "الأنبياء", ayahs: 112}, {name: "الحج", ayahs: 78}, {name: "المؤمنون", ayahs: 118}, {name: "النور", ayahs: 64}, {name: "الفرقان", ayahs: 77},
+        {name: "الشعراء", ayahs: 227}, {name: "النمل", ayahs: 93}, {name: "القصص", ayahs: 88}, {name: "العنكبوت", ayahs: 69}, {name: "الروم", ayahs: 60},
+        {name: "لقمان", ayahs: 34}, {name: "السجدة", ayahs: 30}, {name: "الأحزاب", ayahs: 73}, {name: "سبأ", ayahs: 54}, {name: "فاطر", ayahs: 45},
+        {name: "يس", ayahs: 83}, {name: "الصافات", ayahs: 182}, {name: "ص", ayahs: 88}, {name: "الزمر", ayahs: 75}, {name: "غافر", ayahs: 85},
+        {name: "فصلت", ayahs: 54}, {name: "الشورى", ayahs: 53}, {name: "الزخرف", ayahs: 89}, {name: "الدخان", ayahs: 59}, {name: "الجاثية", ayahs: 37},
+        {name: "الأحقاف", ayahs: 35}, {name: "محمد", ayahs: 38}, {name: "الفتح", ayahs: 29}, {name: "الحجرات", ayahs: 18}, {name: "ق", ayahs: 45},
+        {name: "الذاريات", ayahs: 60}, {name: "الطور", ayahs: 49}, {name: "النجم", ayahs: 62}, {name: "القمر", ayahs: 55}, {name: "الرحمن", ayahs: 78},
+        {name: "واقعة", ayahs: 96}, {name: "الحديد", ayahs: 29}, {name: "المجادلة", ayahs: 22}, {name: "الحشر", ayahs: 24}, {name: "الممتحنة", ayahs: 13},
+        {name: "الصف", ayahs: 14}, {name: "الجمعة", ayahs: 11}, {name: "المنافقون", ayahs: 11}, {name: "التغابن", ayahs: 18}, {name: "الطلاق", ayahs: 12},
+        {name: "التحريم", ayahs: 12}, {name: "الملك", ayahs: 30}, {name: "القلم", ayahs: 52}, {name: "الحاقة", ayahs: 52}, {name: "المعارج", ayahs: 44},
+        {name: "نوح", ayahs: 28}, {name: "الجن", ayahs: 28}, {name: "المزمل", ayahs: 20}, {name: "المسثر", ayahs: 56}, {name: "القيامة", ayahs: 40},
+        {name: "الإنسان", ayahs: 31}, {name: "المرسلات", ayahs: 50}, {name: "النبأ", ayahs: 40}, {name: "النازعات", ayahs: 46}, {name: "عبس", ayahs: 42},
+        {name: "التكوير", ayahs: 29}, {name: "الإنفطار", ayahs: 19}, {name: "المطففين", ayahs: 36}, {name: "الإنشقاق", ayahs: 25}, {name: "البروج", ayahs: 22},
+        {name: "الطارق", ayahs: 17}, {name: "الأعلى", ayahs: 19}, {name: "الغاشية", ayahs: 26}, {name: "الفجر", ayahs: 30}, {name: "البلد", ayahs: 20},
+        {name: "الشمس", ayahs: 15}, {name: "الليل", ayahs: 21}, {name: "الضحى", ayahs: 11}, {name: "الشرح", ayahs: 8}, {name: "التين", ayahs: 8},
+        {name: "العلق", ayahs: 19}, {name: "القدر", ayahs: 5}, {name: "البينة", ayahs: 8}, {name: "الزلزلة", ayahs: 8}, {name: "العاديات", ayahs: 11},
+        {name: "القارعة", ayahs: 11}, {name: "التكاثر", ayahs: 8}, {name: "العصر", ayahs: 3}, {name: "الهمزة", ayahs: 9}, {name: "الفيل", ayahs: 5},
+        {name: "قريش", ayahs: 4}, {name: "الماعون", ayahs: 7}, {name: "الكوثر", ayahs: 3}, {name: "الكافرون", ayahs: 6}, {name: "النصر", ayahs: 3},
+        {name: "المسد", ayahs: 5}, {name: "الإخلاص", ayahs: 4}, {name: "الفلق", ayahs: 5}, {name: "الناس", ayahs: 6}
     ];
 
     window.onload = function() {
@@ -509,9 +543,15 @@
         listEl.innerHTML = "";
         quranSurahs.forEach((surah, index) => {
             const item = document.createElement('div');
-            item.className = 'surah-item';
-            item.innerHTML = `<span class="surah-title">${index + 1}. Suurat ${surah}</span> <span class="surah-number">Akhriso</span>`;
-            item.onclick = () => openSurahReader(index + 1, surah);
+            item.className = 'surah-row';
+            item.innerHTML = `
+                <div class="surah-info-left">
+                    <span>${index + 1}</span>
+                    <span>آياتها ${surah.ayahs}</span>
+                </div>
+                <div class="surah-name-arabic">سُورَةُ ${surah.name}</div>
+            `;
+            item.onclick = () => openSurahReader(index + 1, surah.name);
             listEl.appendChild(item);
         });
     };
@@ -519,7 +559,7 @@
     async function openSurahReader(surahNum, surahName) {
         document.getElementById('quranListContainer').classList.add('hidden');
         document.getElementById('quranReaderContainer').classList.remove('hidden');
-        document.getElementById('readerTitle').innerText = `Suurat ${surahName} (${surahNum})`;
+        document.getElementById('readerTitle').innerText = `سُورَةُ ${surahName}`;
         
         const readerContent = document.getElementById('readerContent');
         readerContent.innerHTML = "Aayadaha waa la soo dejinayaa...";
@@ -532,16 +572,19 @@
                 const ayahs = data.data.ayahs;
                 let html = "";
                 
-                if (surahNum !== 9) {
+                if (surahNum !== 9 && surahNum !== 1) {
                     html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
                 }
 
                 ayahs.forEach(ayah => {
                     let text = ayah.text;
-                    if(surahNum === 1 && ayah.numberInSurah === 1) {
-                        text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ <br> الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ...";
+                    // Haddii ay tahay Al-Faatixah
+                    if(surahNum === 1) {
+                        if(ayah.numberInSurah === 1) {
+                            text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ <br> الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
+                        }
                     }
-                    html += `${text} ﴿${ayah.numberInSurah}﴾ `;
+                    html += `${text} <span class="ayah-number">${ayah.numberInSurah}</span> `;
                 });
 
                 readerContent.innerHTML = html;
@@ -566,7 +609,6 @@
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
 
-        // Halkan waxaa lagu qarinayaa ama lagu soo celinayaa top-nav si uu tab-ka Quraanku u noqdo Full Screen
         const topNav = document.getElementById('topNav');
         const contentBody = document.getElementById('contentBody');
 

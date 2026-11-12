@@ -381,8 +381,8 @@
             background: transparent;
             padding: 5px 10px;
             text-align: right;
-            line-height: 3.2;
-            font-size: 1.45rem;
+            line-height: 2.8;
+            font-size: 1.35rem;
             color: #1c1917;
             font-family: 'Amiri', serif;
             width: 100%;
@@ -392,27 +392,27 @@
         }
         .bismillah {
             text-align: center;
-            font-size: 1.55rem;
+            font-size: 1.45rem;
             color: #9a3412;
-            margin-bottom: 20px;
+            margin-bottom: 15px;
             font-family: 'Amiri', serif;
             font-weight: bold;
             letter-spacing: 1px;
             border-bottom: 1px dashed #d97706;
-            padding-bottom: 12px;
+            padding-bottom: 10px;
         }
         .ayah-number {
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 30px;
-            height: 30px;
+            width: 28px;
+            height: 28px;
             background: radial-gradient(circle, #fef08a 0%, #fde047 70%, #ca8a04 100%);
             border: 1.5px solid #854d0e;
             border-radius: 50%;
-            font-size: 0.8rem;
+            font-size: 0.75rem;
             color: #451a03;
-            margin: 0 5px;
+            margin: 0 4px;
             font-family: 'Plus Jakarta Sans', sans-serif;
             box-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
@@ -508,7 +508,7 @@
                 <div class="surah-list" id="surahList"></div>
             </div>
 
-            <!-- Bogga Akhriska Suurada (oo leh Ayah-by-Ayah / Page-by-Page suurtagal ah) -->
+            <!-- Bogga Akhriska Suurada -->
             <div id="quranReaderContainer" class="hidden" style="width: 100%;">
                 <div class="mushaf-page">
                     <div class="mushaf-header-banner">
@@ -518,10 +518,10 @@
                     <div class="reader-content" id="readerContent">
                         Loading...
                     </div>
-                    <!-- Badhamada Bogagga Aayadaha Suurada (Sida Suuratul Baqarah oo loo qaybiyay bogag) -->
+                    <!-- Badhamada Bogagga Aayadaha (Hadda Suuratul Baqarah waxay leedahay ku dhawaad 50 bog oo qiyaastii 6 aayadood ah) -->
                     <div class="surah-pagination" id="surahPaginationBar" style="display:none;">
                         <button class="page-btn" id="prevAyahPageBtn" onclick="changeAyahPage(-1)">← Bogga Hore</button>
-                        <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 1</span>
+                        <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 50</span>
                         <button class="page-btn" id="nextAyahPageBtn" onclick="changeAyahPage(1)">Bogga Xiga →</button>
                     </div>
                 </div>
@@ -637,7 +637,7 @@
 
     let currentAyahsData = [];
     let currentAyahPage = 1;
-    const ayahsPerPage = 35; // Tirada aayadaha bog kasta ku dhex jira suurada dheer
+    const ayahsPerPage = 6; // Qiyaastii 6 aayadood bog kasta = ~48 bog oo Suuratul Baqarah ah
     let activeSurahNum = 1;
     let activeSurahName = "";
 
@@ -720,7 +720,6 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
-        // Bismillah waxaa la soo bandhigayaa kaliya bogga koowaad haddii aysan ahayn At-Tawbah (9) ama Al-Faatixah (1)
         if (currentAyahPage === 1 && activeSurahNum !== 9) {
             html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
         }
@@ -741,7 +740,6 @@
 
         readerContent.innerHTML = html;
 
-        // Maamulidda bar-ka bogagga aayadaha (haddii suuraddu ay ka badan tahay hal bog)
         const paginationBar = document.getElementById('surahPaginationBar');
         if (totalAyahPages > 1) {
             paginationBar.style.display = 'flex';
@@ -752,7 +750,6 @@
             paginationBar.style.display = 'none';
         }
 
-        // Kor u qaad meesha la akhrisanayo marka bogga la beddelo
         readerContent.scrollTop = 0;
     }
 

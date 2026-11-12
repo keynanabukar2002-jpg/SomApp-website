@@ -755,7 +755,7 @@
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
             
-            // Suuradaha oo dhan (oo ay ku jirto Al-Fatihah): ka sifee Bismilaaha haddii ay ku jirto bilowga aayadda 1aad ee API-ga
+            // Ka sifee Bismilaaha haddii ay ku jirto bilowga aayadda 1aad ee API-ga si aysan u labalaabmin
             if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
                 text = text.replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")

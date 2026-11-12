@@ -747,7 +747,7 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
-        // Bismilaah waxaa la muujiyaa oo keliya bogga koowaad haddii aysan ahayn Al-Fatihah (1) ama At-Tawbah (9)
+        // Bismilaah waxay ka muuqataa oo keliya kor marka ay aysan ahayn Al-Fatihah (1) ama At-Tawbah (9)
         if (currentAyahPage === 1 && activeSurahNum !== 1 && activeSurahNum !== 9) {
             html += `<div class="bismillah-header">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ</div>`;
         }
@@ -755,16 +755,16 @@
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
             
-            // Si buuxda uga sifee Bismilaaha ku dhex jirta bilowga aayadda koowaad ee API-ga
+            // Suuradaha kale: ka saar Bismilaaha ku jirta bilowga aayadda koowaad
             if (activeSurahNum !== 1 && activeSurahNum !== 9 && ayah.numberInSurah === 1) {
                 text = text.replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
                            .trim();
             }
 
-            // Suuradda Al-Fatihah (1): Aayadda 1aad waa Alxamdu, Bismilaahna waxay ku jirta kor cinwaan ahaan (ama API-ga ayay ku jirtaa)
+            // Suuradda Al-Fatihah (1): Bismilaahda waa aayadda koowaad, sidaas darteed halkan si sax ah ayay u soo bixi doontaa hal jeer oo keliya
             if (activeSurahNum === 1 && ayah.numberInSurah === 1) {
-                text = "ٱلۡحَمۡدُ لِلَّهِ رَبِّ ٱلۡعَٰلَمِينَ";
+                text = "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ";
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
@@ -955,7 +955,7 @@
             const data = await response.json();
             if (data.success) {
                 alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
-                document.getElementById('balanceDivider').innerText = data.newBalance + " POL";
+                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL";
             } else {
                 alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
             }

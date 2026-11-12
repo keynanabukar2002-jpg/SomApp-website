@@ -747,7 +747,6 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
-        // Bismilaah waxay ka muuqataa kore (marna laguma celiyo gudaha aayadda 1aad)
         if (currentAyahPage === 1 && activeSurahNum !== 9) {
             html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
         }
@@ -755,7 +754,6 @@
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
             
-            // Haddii ay tahay aayadda 1aad ee suurad kasta (marka laga reebo Al-Fatihah iyo At-Tawbah), ka sifee Bismilaah si aysan laba jeer u soo bixin
             if (activeSurahNum !== 1 && activeSurahNum !== 9 && ayah.numberInSurah === 1) {
                 text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "").trim();
             }

@@ -32,7 +32,7 @@
             width: 100%;
             max-width: 420px;
             height: 100dvh;
-            background: rgba(255, 255, 255, 0.92);
+            background: rgba(255, 255, 255, 0.95);
             backdrop-filter: blur(16px);
             -webkit-backdrop-filter: blur(16px);
             display: flex;
@@ -93,7 +93,7 @@
             margin-top: 65px;
             margin-bottom: 85px;
             overflow-y: auto;
-            padding: 20px;
+            padding: 15px;
             scrollbar-width: none;
             transition: margin-top 0.3s ease;
         }
@@ -101,7 +101,7 @@
             display: none;
         }
 
-        /* Bottom Navigation Bar */
+        /* Bottom Navigation Bar - Sida uu u codsaday waa mid taagan oo la ilaaliyay */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -156,9 +156,9 @@
 
         /* Cards & UI Elements */
         .card {
-            background: rgba(255, 255, 255, 0.95);
+            background: #ffffff;
             border-radius: 16px;
-            padding: 18px;
+            padding: 16px;
             margin-bottom: 16px;
             border: 2px solid rgba(51, 150, 255, 0.3);
             box-shadow: 0 6px 20px rgba(51, 150, 255, 0.12);
@@ -220,8 +220,6 @@
         .btn-google { background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
         .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
         .btn-scan { background: #7c3aed; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); }
-        .btn-quran { background: #0284c7; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); }
-        .btn-chat { background: #25d366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }
         .btn-logout { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: none; margin-top: 10px; font-weight: 800; }
         
         input {
@@ -263,61 +261,85 @@
             border: 1px solid #3396FF;
         }
 
-        /* Quran List & Reader styles */
+        /* Quran List & Reader styles (Qaabka sawirada aad soo dirtay) */
         .surah-list {
             display: flex;
             flex-direction: column;
             gap: 8px;
-            max-height: calc(100dvh - 160px);
-            overflow-y: auto;
-            padding-right: 4px;
         }
-        .surah-item {
-            background: #f8fafc;
-            padding: 12px 16px;
-            border-radius: 10px;
-            border: 1px solid #cbd5e1;
+        .surah-row {
+            background: #fffdf9;
+            padding: 10px 14px;
+            border-radius: 8px;
+            border-bottom: 1px solid #e2e8f0;
             cursor: pointer;
             display: flex;
-            justify-content: space-between;
             align-items: center;
+            justify-content: space-between;
             transition: 0.2s;
         }
-        .surah-item:hover {
-            background: #e0f2fe;
-            border-color: #3396FF;
+        .surah-row:hover {
+            background: #f1f5f9;
         }
-        .surah-title {
-            font-size: 0.9rem;
-            color: #0f172a;
+        .surah-info-left {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            font-size: 0.75rem;
+            color: #64748b;
+            min-width: 50px;
             font-weight: 800;
         }
-        .surah-number {
-            background: #3396FF;
-            color: white;
-            padding: 2px 8px;
-            border-radius: 6px;
-            font-size: 0.75rem;
+        .surah-info-left span {
+            font-size: 0.7rem;
+            color: #0284c7;
+        }
+        .surah-name-arabic {
+            font-family: 'Traditional Arabic', 'Amiri', serif;
+            font-size: 1.4rem;
+            color: #0f172a;
+            font-weight: bold;
+            text-align: right;
+        }
+        .surah-number-right {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #334155;
+            min-width: 25px;
+            text-align: left;
+        }
+        .reader-header {
+            background: #fdfbf7;
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 10px;
+            text-align: center;
+            font-family: 'Traditional Arabic', 'Amiri', serif;
+            font-size: 1.5rem;
+            color: #854d0e;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
         .reader-content {
-            background: #ffffff;
+            background: #fffdf9;
             padding: 16px;
             border-radius: 12px;
-            border: 2px solid #3396FF;
+            border: 1px solid #cbd5e1;
             text-align: right;
-            line-height: 2.4;
-            font-size: 1.25rem;
+            line-height: 2.6;
+            font-size: 1.35rem;
             color: #0f172a;
-            max-height: calc(100dvh - 180px);
+            max-height: calc(100dvh - 240px);
             overflow-y: auto;
             font-family: 'Traditional Arabic', 'Amiri', serif;
         }
         .bismillah {
             text-align: center;
-            font-size: 1.2rem;
-            color: #0284c7;
+            font-size: 1.3rem;
+            color: #854d0e;
             margin-bottom: 15px;
             font-weight: bold;
+            font-family: 'Traditional Arabic', 'Amiri', serif;
         }
     </style>
 </head>
@@ -388,26 +410,23 @@
             </div>
         </div>
 
-        <!-- Qur'aan Tab (Full Screen) -->
+        <!-- Qur'aan Tab (Qaabka Suuradaha ee sawirka) -->
         <div id="tabQuran" class="tab-content hidden">
             <!-- Liiska 114-ka Suuradood -->
-            <div id="quranListContainer" class="card" style="margin-bottom: 0;">
-                <div class="card-title" style="color:#0369a1; font-weight:800;">📖 114-ka Suuradood ee Qur'aanka</div>
-                <p style="font-size: 0.8rem; color: #475569; margin-bottom: 10px;">Dooro suurada aad rabto inaad akhriso:</p>
+            <div id="quranListContainer" style="padding-bottom: 20px;">
+                <div style="font-size: 0.85rem; color: #1e293b; font-weight: 800; margin-bottom: 10px; text-transform: uppercase;">📖 114-ka Suuradood ee Qur'aanka</div>
                 <div class="surah-list" id="surahList">
-                    <!-- JavaScript ayaa ku soo buuxin doona 114-ka suuradood -->
+                    <!-- JavaScript ayaa ku soo buuxin doona -->
                 </div>
             </div>
 
-            <!-- Bogga Akhriska Suurada (Reader) -->
-            <div id="quranReaderContainer" class="card hidden" style="margin-bottom: 0;">
-                <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
-                    <span id="readerTitle" style="color:#0369a1; font-weight:800;">Suurada</span>
-                    <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin:0;" onclick="backToSurahList()">← Dib u laabo</button>
-                </div>
+            <!-- Bogga Akhriska Suurada -->
+            <div id="quranReaderContainer" class="hidden">
+                <div class="reader-header" id="readerTitle">Suurada</div>
                 <div class="reader-content" id="readerContent">
                     Loading...
                 </div>
+                <button class="btn" style="margin-top: 12px;" onclick="backToSurahList()">← Ku noqo Liiska Suuradaha</button>
             </div>
         </div>
 
@@ -440,7 +459,7 @@
 
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR -->
+    <!-- BOTTOM NAVIGATION BAR (Waa la ilaaliyay oo waa taagan yahay) -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -490,18 +509,120 @@
     let userDisplayName = "User";
 
     const quranSurahs = [
-        "Al-Faatixah", "Al-Baqarah", "Aali Imraan", "An-Nisaa", "Al-Ma'idah", "Al-An'aam", "Al-A'raaf", "Al-Anfaal", "At-Tawbah", "Yuunus",
-        "Huud", "Yuusuf", "Ar-Ra'd", "Ibraahiim", "Al-Hijr", "An-Nahl", "Al-Israa", "Al-Kahf", "Maryam", "Ṭaa Haa",
-        "Al-Anbiyaa", "Al-Hajj", "Al-Mu'minuun", "An-Nuur", "Al-Furqaan", "Ash-Shu'araa", "An-Naml", "Al-Qasas", "Al-Ankabuut", "Ar-Ruum",
-        "Luqman", "As-Sajdah", "Al-Ahzaab", "Saba'", "Faatir", "Yaasiin", "As-Saafaat", "Swaad", "Az-Zumar", "Ghaafir",
-        "Fussilat", "Ash-Shuura", "Az-Zukhruf", "Ad-Dukhaan", "Al-Jaathiyah", "Al-Ahqaaf", "Maxamed", "Al-Fatx", "Al-Xujuraat", "Qaaf",
-        "Ad-Dhaariyaat", "At-Tuur", "An-Najm", "Al-Qamar", "Ar-Raxmaan", "Al-Waaqi'ah", "Al-Xadiid", "Al-Mujaadilah", "Al-Hashr", "Al-Mumtaxanah",
-        "As-Swaf", "Al-Jumu'ah", "Al-Munaafiquun", "At-Taghaabun", "At-Talaaq", "At-Taxriim", "Al-Mulk", "Al-Qalam", "Al-Xaaqah", "Al-Macarij",
-        "Nuux", "Al-Jinn", "Al-Muzzammil", "Al-Muddathtir", "Al-Qiyaamah", "Al-Insaan", "Al-Mursalaat", "An-Naba'", "An-Naazi'aat", "'Abasa",
-        "At-Takwiir", "Al-Infitaar", "Al-Mutaffifiin", "Al-Inshiqaaq", "Al-Buruuj", "At-Taariq", "Al-A'laa", "Al-Ghaashiyah", "Al-Fajr", "Al-Balad",
-        "Ash-Shams", "Al-Layl", "Ad-Duxaa", "Ash-Sharx", "At-Tiin", "Al-Calaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-'Aadiyaat",
-        "Al-Qaari'ah", "At-Takaathur", "Al-'Asr", "Al-Humazah", "Al-Fiil", "Quraysh", "Al-Maa'uun", "Al-Kawthar", "Al-Kaafiruun", "An-Nasr",
-        "Al-Masad", "Al-Ikhlaas", "Al-Falaq", "An-Naas"
+        { name: "الفَاتِحَة", trans: "Al-Faatixah", ayahs: 7 },
+        { name: "البَقَرَة", trans: "Al-Baqarah", ayahs: 286 },
+        { name: "آلِ عِمْرَان", trans: "Aali Imraan", ayahs: 200 },
+        { name: "النِّسَاء", trans: "An-Nisaa", ayahs: 176 },
+        { name: "المَائِدَة", trans: "Al-Ma'idah", ayahs: 120 },
+        { name: "الأَنْعَام", trans: "Al-An'aam", ayahs: 165 },
+        { name: "الأَعْرَاف", trans: "Al-A'raaf", ayahs: 206 },
+        { name: "الأَنْفَال", trans: "Al-Anfaal", ayahs: 75 },
+        { name: "التَوْبَة", trans: "At-Tawbah", ayahs: 129 },
+        { name: "يُونُس", trans: "Yuunus", ayahs: 109 },
+        { name: "هُود", trans: "Huud", ayahs: 123 },
+        { name: "يُوسُف", trans: "Yuusuf", ayahs: 111 },
+        { name: "الرَّعْد", trans: "Ar-Ra'd", ayahs: 43 },
+        { name: "إِبْرَاهِيم", trans: "Ibraahiim", ayahs: 52 },
+        { name: "الحِجْر", trans: "Al-Hijr", ayahs: 99 },
+        { name: "النَّحْل", trans: "An-Nahl", ayahs: 128 },
+        { name: "الإِسْرَاء", trans: "Al-Israa", ayahs: 111 },
+        { name: "الكَهْف", trans: "Al-Kahf", ayahs: 110 },
+        { name: "مَرْيَم", trans: "Maryam", ayahs: 98 },
+        { name: "طَه", trans: "Ṭaa Haa", ayahs: 135 },
+        { name: "الأَنْبِيَاء", trans: "Al-Anbiyaa", ayahs: 112 },
+        { name: "الحَجّ", trans: "Al-Hajj", ayahs: 78 },
+        { name: "المُؤْمِنُون", trans: "Al-Mu'minuun", ayahs: 118 },
+        { name: "النُّور", trans: "An-Nuur", ayahs: 64 },
+        { name: "الفُرْقَان", trans: "Al-Furqaan", ayahs: 77 },
+        { name: "الشُّعَرَاء", trans: "Ash-Shu'araa", ayahs: 227 },
+        { name: "النَّمْل", trans: "An-Naml", ayahs: 93 },
+        { name: "القَصَص", trans: "Al-Qasas", ayahs: 88 },
+        { name: "العَنْكَبُوت", trans: "Al-Ankabuut", ayahs: 69 },
+        { name: "الرُّوم", trans: "Ar-Ruum", ayahs: 60 },
+        { name: "لُقْمَان", trans: "Luqman", ayahs: 34 },
+        { name: "السَّجْدَة", trans: "As-Sajdah", ayahs: 30 },
+        { name: "الأَحْزَاب", trans: "Al-Ahzaab", ayahs: 73 },
+        { name: "سَبَأ", trans: "Saba'", ayahs: 54 },
+        { name: "فَاطِر", trans: "Faatir", ayahs: 45 },
+        { name: "يَاسِين", trans: "Yaasiin", ayahs: 83 },
+        { name: "الصَّافَّات", trans: "As-Saafaat",-ayahs: 182 },
+        { name: "ص", trans: "Swaad", ayahs: 88 },
+        { name: "الزُّمَر", trans: "Az-Zumar", ayahs: 75 },
+        { name: "غَافِر", trans: "Ghaafir", ayahs: 85 },
+        { name: "فُصِّلَت", trans: "Fussilat", ayahs: 54 },
+        { name: "الشُّورَى", trans: "Ash-Shuura", ayahs: 53 },
+        { name: "الزُّخْرُف", trans: "Az-Zukhruf", ayahs: 89 },
+        { name: "الدُّخَان", trans: "Ad-Dukhaan", ayahs: 59 },
+        { name: "الجَاثِيَة", trans: "Al-Jaathiyah", ayahs: 37 },
+        { name: "الأَحْقَاف", trans: "Al-Ahqaaf", ayahs: 35 },
+        { name: "مَحَمَّد", trans: "Maxamed", ayahs: 38 },
+        { name: "الفَتْح", trans: "Al-Fatx", ayahs: 29 },
+        { name: "الحُجُرَات", trans: "Al-Xujuraat", ayahs: 18 },
+        { name: "ق", trans: "Qaaf", ayahs: 45 },
+        { name: "الذَّارِيَات", trans: "Ad-Dhaariyaat", ayahs: 60 },
+        { name: "الطُّور", trans: "At-Tuur", ayahs: 49 },
+        { name: "النَّجْم", trans: "An-Najm", ayahs: 62 },
+        { name: "القَمَر", trans: "Al-Qamar", ayahs: 55 },
+        { name: "الرَّحْمَٰن", trans: "Ar-Raxmaan", ayahs: 78 },
+        { name: "الوَاقِعَة", trans: "Al-Waaqi'ah", ayahs: 96 },
+        { name: "الحَدِيد", trans: "Al-Xadiid", ayahs: 29 },
+        { name: "المُجَادِلَة", trans: "Al-Mujaadilah", ayahs: 22 },
+        { name: "الحَشْر", trans: "Al-Hashr", ayahs: 24 },
+        { name: "المُمْتَحَنَة", trans: "Al-Mumtaxanah", ayahs: 13 },
+        { name: "الصَّفّ", trans: "As-Swaf", ayahs: 14 },
+        { name: "الجُمُعَة", trans: "Al-Jumu'ah", ayahs: 11 },
+        { name: "المُنَافِقُون", trans: "Al-Munaafiquun", ayahs: 11 },
+        { name: "التَّغَابُن", trans: "At-Taghaabun", ayahs: 18 },
+        { name: "الطَّلَاق", trans: "At-Talaaq", ayahs: 12 },
+        { name: "التَّحْرِيم", trans: "At-Taxriim", ayahs: 12 },
+        { name: "المُلْك", trans: "Al-Mulk", ayahs: 30 },
+        { name: "القَلَم", trans: "Al-Qalam", ayahs: 52 },
+        { name: "الحَاقَّة", trans: "Al-Xaaqah", ayahs: 52 },
+        { name: "المَعَارِج", trans: "Al-Macarij", ayahs: 44 },
+        { name: "نُوح", trans: "Nuux", ayahs: 28 },
+        { name: "الجِنّ", trans: "Al-Jinn", ayahs: 28 },
+        { name: "المُزَّمِّل", trans: "Al-Muzzammil", ayahs: 20 },
+        { name: "المُدَّثِّر", trans: "Al-Muddathtir", ayahs: 56 },
+        { name: "القِيَامَة", trans: "Al-Qiyaamah", ayahs: 40 },
+        { name: "الإِنْسَان", trans: "Al-Insaan", ayahs: 31 },
+        { name: "المُرْسَلَات", trans: "Al-Mursalaat", ayahs: 50 },
+        { name: "النَّبَأ", trans: "An-Naba'", ayahs: 40 },
+        { name: "النَّازِعَات", trans: "An-Naazi'aat", ayahs: 46 },
+        { name: "عَبَسَ", trans: "'Abasa", ayahs: 42 },
+        { name: "التَّكْوِير", trans: "At-Takwiir", ayahs: 29 },
+        { name: "الانفِطَار", trans: "Al-Infitaar", ayahs: 19 },
+        { name: "المُطَفَّفِين", trans: "Al-Mutaffifiin", ayahs: 36 },
+        { name: "الانشِقَاق", trans: "Al-Inshiqaaq", ayahs: 25 },
+        { name: "البُرُوج", trans: "Al-Buruuj", ayahs: 22 },
+        { name: "الطَّارِق", trans: "At-Taariq", ayahs: 17 },
+        { name: "الأَعْلَى", trans: "Al-A'laa", ayahs: 19 },
+        { name: "الغَاشِيَة", trans: "Al-Ghaashiyah", ayahs: 26 },
+        { name: "الفَجْر", trans: "Al-Fajr", ayahs: 30 },
+        { name: "البَلَد", trans: "Al-Balad", ayahs: 20 },
+        { name: "الشَّمْس", trans: "Ash-Shams", ayahs: 15 },
+        { name: "اللَّيْل", trans: "Al-Layl", ayahs: 21 },
+        { name: "الضُّحَى", trans: "Ad-Duxaa", ayahs: 11 },
+        { name: "الشَّرْح", trans: "Ash-Sharx", ayahs: 8 },
+        { name: "التِّين", trans: "At-Tiin", ayahs: 8 },
+        { name: "العَلَق", trans: "Al-Calaq", ayahs: 19 },
+        { name: "القَدْر", trans: "Al-Qadr", ayahs: 5 },
+        { name: "البَيِّنَة", trans: "Al-Bayyinah", ayahs: 8 },
+        { name: "الزَّلْزَلَة", trans: "Az-Zalzalah", ayahs: 8 },
+        { name: "العَادِيَات", trans: "Al-'Aadiyaat", ayahs: 11 },
+        { name: "القَارِعَة", trans: "Al-Qaari'ah", ayahs: 11 },
+        { name: "التَّكَاثُر", trans: "At-Takaathur", ayahs: 8 },
+        { name: "العَصْر", trans: "Al-'Asr", ayahs: 3 },
+        { name: "الهُمَزَة", trans: "Al-Humazah", ayahs: 9 },
+        { name: "الفِيل", trans: "Al-Fiil", ayahs: 5 },
+        { name: "قُرَيْش", trans: "Quraysh", ayahs: 4 },
+        { name: "المَاعُون", trans: "Al-Maa'uun", ayahs: 7 },
+        { name: "الكَوْثَر", trans: "Al-Kawthar", ayahs: 3 },
+        { name: "الكَافِرُون", trans: "Al-Kaafiruun", ayahs: 6 },
+        { name: "النَّصْر", trans: "An-Nasr", ayahs: 3 },
+        { name: "المَسَد", trans: "Al-Masad", ayahs: 5 },
+        { name: "الإِخْلَاص", trans: "Al-Ikhlaas", ayahs: 4 },
+        { name: "الفَلَق", trans: "Al-Falaq", ayahs: 5 },
+        { name: "النَّاس", trans: "An-Naas", ayahs: 6 }
     ];
 
     window.onload = function() {
@@ -509,9 +630,16 @@
         listEl.innerHTML = "";
         quranSurahs.forEach((surah, index) => {
             const item = document.createElement('div');
-            item.className = 'surah-item';
-            item.innerHTML = `<span class="surah-title">${index + 1}. Suurat ${surah}</span> <span class="surah-number">Akhriso</span>`;
-            item.onclick = () => openSurahReader(index + 1, surah);
+            item.className = 'surah-row';
+            item.innerHTML = `
+                <div class="surah-number-right">${index + 1}</div>
+                <div class="surah-name-arabic">${surah.name}</div>
+                <div class="surah-info-left">
+                    <span>aayadaha</span>
+                    <strong>${surah.ayahs || 10}</strong>
+                </div>
+            `;
+            item.onclick = () => openSurahReader(index + 1, surah.name);
             listEl.appendChild(item);
         });
     };
@@ -519,7 +647,7 @@
     async function openSurahReader(surahNum, surahName) {
         document.getElementById('quranListContainer').classList.add('hidden');
         document.getElementById('quranReaderContainer').classList.remove('hidden');
-        document.getElementById('readerTitle').innerText = `Suurat ${surahName} (${surahNum})`;
+        document.getElementById('readerTitle').innerText = surahName;
         
         const readerContent = document.getElementById('readerContent');
         readerContent.innerHTML = "Aayadaha waa la soo dejinayaa...";
@@ -565,18 +693,6 @@
 
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
-
-        // Halkan waxaa lagu qarinayaa ama lagu soo celinayaa top-nav si uu tab-ka Quraanku u noqdo Full Screen
-        const topNav = document.getElementById('topNav');
-        const contentBody = document.getElementById('contentBody');
-
-        if (tabId === 'tabQuran') {
-            topNav.classList.add('hidden');
-            contentBody.style.marginTop = '10px';
-        } else {
-            topNav.classList.remove('hidden');
-            contentBody.style.marginTop = '65px';
-        }
     }
 
     async function loginWithGoogle() {

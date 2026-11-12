@@ -99,7 +99,7 @@
             display: none;
         }
 
-        /* Bottom Navigation Bar (Hadda waa 5 badhan) */
+        /* Bottom Navigation Bar (6 Badhan) */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -119,24 +119,24 @@
             background: none;
             border: none;
             color: #64748b;
-            font-size: 0.75rem;
+            font-size: 0.7rem;
             font-weight: 800;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 3px;
+            gap: 2px;
             cursor: pointer;
             transition: all 0.2s ease;
             flex: 1;
         }
         .nav-item span {
             color: #334155;
-            font-size: 0.7rem;
+            font-size: 0.65rem;
             font-weight: 800;
         }
         .nav-item svg {
-            width: 22px;
-            height: 22px;
+            width: 20px;
+            height: 20px;
             fill: currentColor;
             transition: 0.2s;
         }
@@ -219,6 +219,7 @@
         .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
         .btn-scan { background: #7c3aed; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); }
         .btn-quran { background: #0284c7; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); }
+        .btn-chat { background: #25d366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); } /* WhatsApp green style */
         .btn-logout { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: none; margin-top: 10px; font-weight: 800; }
         
         input {
@@ -237,6 +238,28 @@
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
         #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 12px; border: 2px solid #3396FF; }
+
+        /* Chat styles */
+        .chat-box {
+            background: #f8fafc;
+            border-radius: 12px;
+            padding: 12px;
+            height: 300px;
+            overflow-y: auto;
+            border: 2px solid #cbd5e1;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chat-message {
+            background: #e0f2fe;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: #0f172a;
+            border: 1px solid #3396FF;
+        }
     </style>
 </head>
 <body>
@@ -292,12 +315,26 @@
             </div>
         </div>
 
-        <!-- Qur'aan Tab (BOGGII CUSBAA EE QUR'AANKA) -->
+        <!-- Qur'aan Tab -->
         <div id="tabQuran" class="tab-content hidden">
             <div class="card" style="text-align: center; padding: 24px;">
                 <h3 style="color: #0369a1; margin-bottom: 12px; font-size: 1.3rem; font-weight: 800;">📖 Al-Qur'aan Al-Kareem</h3>
                 <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 16px;">Ku soo dhawoow qaybta akhrinta iyo dhageysiga Qur'aanka kariimka ah.</p>
                 <button class="btn btn-quran" onclick="alert('Qaybta Qur\'aanka waa la soo kordhinayaa halkan!')">Furo Suuradaha Qur'aanka</button>
+            </div>
+        </div>
+
+        <!-- Chat Tab (BOGGII WADA-SHEEKAYSIGA) -->
+        <div id="tabChat" class="tab-content hidden">
+            <div class="card">
+                <div class="card-title" style="color:#16a34a; font-weight:800;">💬 Bulshada / Chat-ka Guud</div>
+                <div class="chat-box" id="chatContainer">
+                    <div class="chat-message"><strong>Nidaamka:</strong> Ku soo dhowaada KNN Chat-ka. Halkaan waxaad fikradaha ugala wadaagi kartaan dadka kale.</div>
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <input type="text" id="chatInput" placeholder="Qor fariintaada...">
+                </div>
+                <button class="btn btn-chat" onclick="sendChatMessage()">Dir Fariinta</button>
             </div>
         </div>
 
@@ -330,7 +367,7 @@
 
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (5 Badhan: Home, Scan, Qur'aan, Wallet, Profile) -->
+    <!-- BOTTOM NAVIGATION BAR (6 Badhan: Home, Scan, Qur'aan, Chat, Wallet, Profile) -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -340,11 +377,15 @@
             <svg viewBox="0 0 24 24"><path d="M4 4h3v2H6v1H4V4m13 0h3v3h-2V6h-1V4M4 17h2v1h1v2H4v-3m16 0v3h-3v-2h1v-1h2M6 8h12v8H6V8z"/></svg>
             <span>Scan</span>
         </button>
-
-        <!-- BADHANKA CUSUB EE QUR'AANKA -->
         <button class="nav-item" onclick="switchTab('tabQuran', this)">
             <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5-1.17 0-2.39.15-3.5.5D2 5.6v14.3c0 .25.25.5.5.5.1 0 .15-.05.25-.05C4.1 19.8 5.8 19.5 7.5 19.5c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V5.5c-.3-.2-.7-.4-1-.5zm-1 12.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v10.5z"/></svg>
             <span>Qur'aan</span>
+        </button>
+
+        <!-- BADHANKA CUSUB EE CHAT-KA -->
+        <button class="nav-item" onclick="switchTab('tabChat', this)">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            <span>Chat</span>
         </button>
 
         <button class="nav-item" onclick="switchTab('tabWallet', this)">
@@ -376,6 +417,7 @@
     const SERVER_URL = 'https://somapp-website-production.up.railway.app';
     let currentUserUid = null;
     let userPolygonAddress = "";
+    let userDisplayName = "User";
 
     function switchTab(tabId, element) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
@@ -422,6 +464,7 @@
             if (data.success) {
                 currentUserUid = user.uid;
                 userPolygonAddress = data.polygonAddress;
+                userDisplayName = user.displayName || "User";
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('bottomNav').classList.remove('hidden');
@@ -461,6 +504,20 @@
     function copyAddress() {
         navigator.clipboard.writeText(userPolygonAddress);
         alert("Cinwaanka waa la koobiyeeyay!");
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if(!text) return;
+
+        const chatContainer = document.getElementById('chatContainer');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message';
+        msgDiv.innerHTML = `<strong>${userDisplayName}:</strong> ${text}`;
+        chatContainer.appendChild(msgDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        input.value = '';
     }
 
     function startScanner() {

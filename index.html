@@ -747,24 +747,19 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
-        // Bismilaah waxay ka muuqataa oo keliya kor marka ay aysan ahayn Al-Fatihah (1) ama At-Tawbah (9)
-        if (currentAyahPage === 1 && activeSurahNum !== 1 && activeSurahNum !== 9) {
+        // Bismilaah waxay ka muuqataa kore bogga koowaad ee dhammaan suuradaha (marka laga reebo At-Tawbah / 9)
+        if (currentAyahPage === 1 && activeSurahNum !== 9) {
             html += `<div class="bismillah-header">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ</div>`;
         }
 
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
             
-            // Suuradaha kale: ka saar Bismilaaha ku jirta bilowga aayadda koowaad
-            if (activeSurahNum !== 1 && activeSurahNum !== 9 && ayah.numberInSurah === 1) {
+            // Suuradaha oo dhan (oo ay ku jirto Al-Fatihah): ka sifee Bismilaaha haddii ay ku jirto bilowga aayadda 1aad ee API-ga
+            if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
                 text = text.replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
                            .trim();
-            }
-
-            // Suuradda Al-Fatihah (1): Bismilaahda waa aayadda koowaad, sidaas darteed halkan si sax ah ayay u soo bixi doontaa hal jeer oo keliya
-            if (activeSurahNum === 1 && ayah.numberInSurah === 1) {
-                text = "بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ";
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);

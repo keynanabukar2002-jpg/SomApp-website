@@ -329,92 +329,97 @@
             font-weight: 800;
         }
         
-        /* Classic Ornate Mushaf Page Container */
+        /* Classic Ornate Mushaf Page Container - Dhammaanteed hal bog oo taagan (No Scroll) */
         .mushaf-page {
             background: #fffdf9;
-            margin: 10px;
-            padding: 15px;
-            border: 4px solid #b45309;
+            margin: 6px;
+            padding: 8px 10px;
+            border: 3px solid #b45309;
             outline: 2px solid #fde047;
-            outline-offset: -8px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            outline-offset: -5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
             position: relative;
-            min-height: calc(100dvh - 120px);
+            height: calc(100dvh - 85px);
             display: flex;
             flex-direction: column;
+            justify-content: space-between;
+            overflow: hidden;
         }
 
         .mushaf-header-banner {
             text-align: center;
             background: linear-gradient(to bottom, #fef08a, #fde047, #eab308);
             border: 2px solid #b45309;
-            padding: 8px 0;
-            margin-bottom: 12px;
-            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            padding: 5px 0;
+            margin-bottom: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
         }
         .mushaf-header-title {
             font-family: 'Amiri', serif;
-            font-size: 1.3rem;
+            font-size: 1.1rem;
             color: #451a03;
             font-weight: 700;
             letter-spacing: 1px;
         }
         .back-back-btn {
             position: absolute;
-            left: 10px;
+            left: 8px;
             top: 50%;
             transform: translateY(-50%);
             background: #78350f;
             color: #fef08a;
             border: 1px solid #fde047;
-            padding: 4px 10px;
-            font-size: 0.75rem;
+            padding: 2px 6px;
+            font-size: 0.65rem;
             border-radius: 4px;
             cursor: pointer;
             font-weight: 800;
         }
         .back-back-btn:hover { background: #451a03; }
 
-        /* Reader Content */
+        /* Reader Content - Si ay ugu ekaadaan ugu badnaan 8 aayadood oo aan marnaba u baahnayn scroll */
         .reader-content {
             background: transparent;
-            padding: 5px 10px;
+            padding: 0 2px;
             text-align: right;
-            line-height: 2.8;
-            font-size: 1.35rem;
+            line-height: 2.1;
+            font-size: 1.05rem;
             color: #1c1917;
             font-family: 'Amiri', serif;
             width: 100%;
-            word-spacing: 2px;
+            word-spacing: 1px;
             flex: 1;
-            overflow-y: auto;
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
         }
         .bismillah {
             text-align: center;
-            font-size: 1.45rem;
+            font-size: 1.15rem;
             color: #9a3412;
-            margin-bottom: 15px;
+            margin-bottom: 6px;
             font-family: 'Amiri', serif;
             font-weight: bold;
             letter-spacing: 1px;
             border-bottom: 1px dashed #d97706;
-            padding-bottom: 10px;
+            padding-bottom: 4px;
         }
         .ayah-number {
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 28px;
-            height: 28px;
+            width: 22px;
+            height: 22px;
             background: radial-gradient(circle, #fef08a 0%, #fde047 70%, #ca8a04 100%);
-            border: 1.5px solid #854d0e;
+            border: 1px solid #854d0e;
             border-radius: 50%;
-            font-size: 0.75rem;
+            font-size: 0.6rem;
             color: #451a03;
-            margin: 0 4px;
+            margin: 0 2px;
             font-family: 'Amiri', serif;
-            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+            box-shadow: 0 1px 2px rgba(0,0,0,0.15);
         }
 
         /* Ayah Pagination inside Surah Reader */
@@ -422,8 +427,7 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            margin-top: 15px;
-            padding-top: 10px;
+            padding-top: 4px;
             border-top: 2px solid #fde047;
             background: #fffdf9;
         }
@@ -518,7 +522,7 @@
                     <div class="reader-content" id="readerContent">
                         Loading...
                     </div>
-                    <!-- Badhamada Bogagga Aayadaha (Dheellitiran: ~18 aayadood bog kasta) -->
+                    <!-- Badhamada Bogagga Aayadaha oo ku kooban ilaa 8 aayadood bog walba iyadoon scroll loo baahnayn -->
                     <div class="surah-pagination" id="surahPaginationBar" style="display:none;">
                         <button class="page-btn" id="prevAyahPageBtn" onclick="changeAyahPage(-1)">← Bogga Hore</button>
                         <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 1</span>
@@ -636,11 +640,10 @@
 
     let currentAyahsData = [];
     let currentAyahPage = 1;
-    const ayahsPerPage = 18; // Dheellitiran: qiyaastii 18 aayadood bog kasta (Suuratul Baqarah waxay noqonaysaa ~16 bog oo isku dheellitiran)
+    const ayahsPerPage = 8; // Hadda bog walba wuxuu xambaarsan yahay ugu badnaan 8 aayadood oo aan marnaba u baahnayn scroll
     let activeSurahNum = 1;
     let activeSurahName = "";
 
-    // Shaqo beddesha nambarada Ingiriiska u beddesha nambarada Carabiga (Eastern Arabic Numerals)
     function toArabicNumeral(n) {
         const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
@@ -725,7 +728,6 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
-        // Bismilaah waxaa la soo bandhigayaa bogga koowaad ee suuradaha (marka laga reebo At-Tawbah / 9)
         if (currentAyahPage === 1 && activeSurahNum !== 9) {
             html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
         }
@@ -741,7 +743,6 @@
                 text = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
             }
 
-            // Nambarka aayadda oo loo beddelay farta Carabiga (tusaale: ١، ٢، ٣)
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
             html += `${text} <span class="ayah-number">${arabicNum}</span> `;
         });

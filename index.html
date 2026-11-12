@@ -329,7 +329,7 @@
             font-weight: 800;
         }
         
-        /* Classic Ornate Mushaf Page Container with Scroll Support */
+        /* Classic Ornate Mushaf Page Container */
         .mushaf-page {
             background: #fffdf9;
             margin: 6px;
@@ -378,10 +378,11 @@
         }
         .back-back-btn:hover { background: #451a03; }
 
-        /* Reader Content - Wuxuu leeyahay scroll dabacsan oo aayadaha 8-da ah qaadaya */
+        /* Reader Content - RTL sax ah oo nambarku ku dhamaado aayadda gadaasheeda */
         .reader-content {
             background: transparent;
             padding: 4px 6px;
+            direction: rtl;
             text-align: right;
             line-height: 2.5;
             font-size: 1.2rem;
@@ -412,7 +413,17 @@
             letter-spacing: 1px;
             border-bottom: 1px dashed #d97706;
             padding-bottom: 6px;
+            direction: rtl;
         }
+
+        .ayah-container {
+            display: inline;
+        }
+
+        .ayah-text {
+            display: inline;
+        }
+
         .ayah-number {
             display: inline-flex;
             justify-content: center;
@@ -424,7 +435,8 @@
             border-radius: 50%;
             font-size: 0.65rem;
             color: #451a03;
-            margin: 0 3px;
+            margin: 0 4px;
+            vertical-align: middle;
             font-family: 'Amiri', serif;
             box-shadow: 0 1px 2px rgba(0,0,0,0.15);
         }
@@ -520,7 +532,7 @@
                 <div class="surah-list" id="surahList"></div>
             </div>
 
-            <!-- Bogga Akhriska Suurada oo leh Scroll u gaar ah 8-da aayadood -->
+            <!-- Bogga Akhriska Suurada -->
             <div id="quranReaderContainer" class="hidden" style="width: 100%;">
                 <div class="mushaf-page">
                     <div class="mushaf-header-banner">
@@ -647,7 +659,7 @@
 
     let currentAyahsData = [];
     let currentAyahPage = 1;
-    const ayahsPerPage = 8; // Bog walba wuxuu xambaarsan yahay 8 aayadood oo leh scroll yar haddii loo baahdo
+    const ayahsPerPage = 8;
     let activeSurahNum = 1;
     let activeSurahName = "";
 
@@ -751,7 +763,8 @@
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
-            html += `${text} <span class="ayah-number">${arabicNum}</span> `;
+            // Halkan nambarka aayadda wuxuu si sax ah u raacayaa dhammaadka qoraalka aayadda (RTL order)
+            html += `<span class="ayah-container"><span class="ayah-text">${text}</span><span class="ayah-number">${arabicNum}</span></span> `;
         });
 
         readerContent.innerHTML = html;
@@ -948,7 +961,7 @@
         }
     }
 
-    function logoutUser() {
+    logoutUser = function() {
         firebase.auth().signOut().then(() => {
             localStorage.clear();
             location.reload();

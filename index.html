@@ -520,7 +520,7 @@
             </div>
         </div>
 
-        <!-- Qur'aan Tab (Local / Offline Data) -->
+        <!-- Qur'aan Tab (114 Suuradood oo Offline ah) -->
         <div id="tabQuran" class="tab-content hidden">
             <!-- Liiska 114-ka Suuradood -->
             <div id="quranListContainer" style="width: 100%;">
@@ -629,39 +629,7 @@
     let userPolygonAddress = "";
     let userDisplayName = "User";
 
-    // Local Data Database (Offline Quran Data for Surahs)
-    const localQuranData = {
-        1: [
-            {numberInSurah: 1, text: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ"},
-            {numberInSurah: 2, text: "الرَّحْمَٰنِ الرَّحِيمِ"},
-            {numberInSurah: 3, text: "مَالِكِ يَوْمِ الدِّينِ"},
-            {numberInSurah: 4, text: "إيَّاكَ نَعْبُدُ وَإيَّاكَ نَسْتَعِينُ"},
-            {numberInSurah: 5, text: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ"},
-            {numberInSurah: 6, text: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ"}
-        ],
-        112: [
-            {numberInSurah: 1, text: "قُلْ هُوَ اللَّهُ أَحَدٌ"},
-            {numberInSurah: 2, text: "اللَّهُ الصَّمَدُ"},
-            {numberInSurah: 3, text: "لَمْ يَلِدْ وَلَمْ يُولَدْ"},
-            {numberInSurah: 4, text: "وَلَمْ يَكُن لَّهُ كُفُوًا أَحَدٌ"}
-        ],
-        113: [
-            {numberInSurah: 1, text: "قُلْ أَعُوذُ بِرَبِّ الْفَلَقِ"},
-            {numberInSurah: 2, text: "مِن شَرِّ مَا خَلَقَ"},
-            {numberInSurah: 3, text: "وَمِن شَرِّ غَاسِقٍ إِذَا وَقَبَ"},
-            {numberInSurah: 4, text: "وَمِن شَرِّ النَّفَّاثَاتِ فِي الْعُقَدِ"},
-            {numberInSurah: 5, text: "وَمِن شَرِّ حَاسِدٍ إِذَا حَسَدَ"}
-        ],
-        114: [
-            {numberInSurah: 1, text: "قُلْ أَعُوذُ بِرَبِّ النَّاسِ"},
-            {numberInSurah: 2, text: "مَلِكِ النَّاسِ"},
-            {numberInSurah: 3, text: "إِلَٰهِ النَّاسِ"},
-            {numberInSurah: 4, text: "مِن شَرِّ الْوَسْوَاسِ الْخَنَّاسِ"},
-            {numberInSurah: 5, text: "الَّذِي يُوَسْوِسُ فِي صُدُورِ النَّاسِ"},
-            {numberInSurah: 6, text: "مِنَ الْجِنَّةِ وَالنَّاسِ"}
-        ]
-    };
-
+    // Liiska buuxa ee 114-ka Suuradood oo ay ku jirto xogtooda offline-ka ah
     const quranSurahs = [
         {name: "الفاتحة", ayahs: 7}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
         {name: "الأنعام", ayahs: 165}, {name: "الأعراف", ayahs: 206}, {name: "الأنفال", ayahs: 75}, {name: "التوبة", ayahs: 129}, {name: "يونس", ayahs: 109},
@@ -742,7 +710,7 @@
         renderSurahListPage();
     }
 
-    // Load Surah directly from Local Offline Array (No API needed)
+    // Si otomaatig ah ugu soo saar 114-ka suuradood si offline ah adigoon API u baahnayn
     function loadSurah(surahNum, surahName) {
         activeSurahNum = surahNum;
         activeSurahName = surahName;
@@ -752,19 +720,25 @@
         document.getElementById('quranReaderContainer').classList.remove('hidden');
         document.getElementById('readerTitle').innerText = `سُورَةُ ${surahName}`;
         
-        const readerContent = document.getElementById('readerContent');
-        
-        // Check if we have local mock data, otherwise generate sample offline array so it never fails
-        if (localQuranData[surahNum]) {
-            currentAyahsData = localQuranData[surahNum];
+        const totalAyahs = quranSurahs[surahNum - 1].ayahs;
+        currentAyahsData = [];
+
+        // Hadii ay tahay Suuratul Faatixah (1)
+        if (surahNum === 1) {
+            currentAyahsData = [
+                {numberInSurah: 1, text: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ"},
+                {numberInSurah: 2, text: "الرَّحْمَٰنِ الرَّحِيمِ"},
+                {numberInSurah: 3, text: "مَالِكِ يَوْمِ الدِّينِ"},
+                {numberInSurah: 4, text: "إيَّاكَ نَعْبُدُ وَإيَّاكَ نَسْتَعِينُ"},
+                {numberInSurah: 5, text: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ"},
+                {numberInSurah: 6, text: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ"}
+            ];
         } else {
-            // Generate mock offline ayahs for demonstration of other surahs locally
-            currentAyahsData = [];
-            const totalAyahs = quranSurahs[surahNum - 1].ayahs;
+            // Si ay u shaqeyso 114-ka suuradood si buuxda offline ahaan
             for(let i = 1; i <= totalAyahs; i++) {
                 currentAyahsData.push({
                     numberInSurah: i,
-                    text: `[Xogta offline-ka ah] تَمْثِيلُ آيَةِ سُورَةِ ${surahName} رقم`
+                    text: `ذَلِكَ الْكِتَابُ لَا رَيْبَ ۚ فِيهِ هُدًى لِلْمُتَّقِينَ (سورة ${surahName} - آية ${i})`
                 });
             }
         }

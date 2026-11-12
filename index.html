@@ -747,23 +747,24 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
-        // Bismilaah waxay ka muuqataa oo keliya cinwaan ahaan bogga koowaad (marka laga reebo At-Tawbah / 9)
-        if (currentAyahPage === 1 && activeSurahNum !== 9) {
-            html += `<div class="bismillah-header">بِسْمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ</div>`;
+        // Bismilaah waxaa la muujiyaa oo keliya bogga koowaad haddii aysan ahayn Al-Fatihah (1) ama At-Tawbah (9)
+        if (currentAyahPage === 1 && activeSurahNum !== 1 && activeSurahNum !== 9) {
+            html += `<div class="bismillah-header">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ</div>`;
         }
 
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
             
-            // Ka saar Bismilaaha ku dhex jirta bilowga aayadda koowaad ee API-ga (iyadoon loo eegin qaabka farta la isugu keenay)
+            // Si buuxda uga sifee Bismilaaha ku dhex jirta bilowga aayadda koowaad ee API-ga
             if (activeSurahNum !== 1 && activeSurahNum !== 9 && ayah.numberInSurah === 1) {
                 text = text.replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
                            .trim();
             }
 
+            // Suuradda Al-Fatihah (1): Aayadda 1aad waa Alxamdu, Bismilaahna waxay ku jirta kor cinwaan ahaan (ama API-ga ayay ku jirtaa)
             if (activeSurahNum === 1 && ayah.numberInSurah === 1) {
-                text = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
+                text = "ٱلۡحَمۡدُ لِلَّهِ رَبِّ ٱلۡعَٰلَمِينَ";
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
@@ -954,7 +955,7 @@
             const data = await response.json();
             if (data.success) {
                 alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
-                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL";
+                document.getElementById('balanceDivider').innerText = data.newBalance + " POL";
             } else {
                 alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
             }

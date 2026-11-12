@@ -668,6 +668,20 @@
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
     }
 
+    // Shaqada u badasha qoraalka Uthmaniga mid caadi ah (Simple Text)
+    function convertToSimpleText(text) {
+        return text
+            // Ka saar aliflada yaryar iyo calaamadaha gaarka ah ee Uthmaniga
+            .replace(/[\u0670\u0656\u0657\u0658\u0659\u065A\u065B\u065C\u065D\u065E\u065F]/g, '')
+            // Bedel alifka yar ee dhexda ku jira sida لِّلْمُتَّقِينَ -> للْمتقين ama si caadi ah u hagaaji
+            .replace(/ٱ/g, 'ا')
+            .replace(/ٰ/g, '')
+            .replace(/ۦ/g, '')
+            .replace(/ۧ/g, '')
+            .replace(/ۨ/g, '')
+            .trim();
+    }
+
     window.onload = function() {
         renderSurahListPage();
     };
@@ -723,7 +737,8 @@
         document.getElementById('surahPaginationBar').style.display = 'none';
 
         try {
-            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}`);
+            // Waxaan isticmaaleynaa edition-ka qoraalka caadiga ah (quran-simple ama imlaei) si uusan u noqon rasm uthmani
+            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}/ar.quran-simple`);
             const data = await response.json();
             
             if (data.code === 200) {
@@ -749,17 +764,15 @@
 
         // Bismilaah waxay ka muuqataa kore bogga koowaad ee dhammaan suuradaha (marka laga reebo At-Tawbah / 9)
         if (currentAyahPage === 1 && activeSurahNum !== 9) {
-            html += `<div class="bismillah-header">بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ</div>`;
+            html += `<div class="bismillah-header">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
         }
 
         paginatedAyahs.forEach(ayah => {
-            let text = ayah.text;
+            let text = convertToSimpleText(ayah.text);
             
-            // Ka sifee Bismilaaha haddii ay ku jirto bilowga aayadda 1aad ee API-ga si aysan u labalaabmin
+            // Ka sifee Bismilaaha haddii ay ku jirto bilowga aayadda 1aad
             if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
-                text = text.replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
-                           .replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
-                           .trim();
+                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "").trim();
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);

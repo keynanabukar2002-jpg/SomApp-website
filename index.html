@@ -413,7 +413,7 @@
             font-size: 0.75rem;
             color: #451a03;
             margin: 0 4px;
-            font-family: 'Plus Jakarta Sans', sans-serif;
+            font-family: 'Amiri', serif;
             box-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
 
@@ -518,10 +518,10 @@
                     <div class="reader-content" id="readerContent">
                         Loading...
                     </div>
-                    <!-- Badhamada Bogagga Aayadaha (Hadda Suuratul Baqarah waxay leedahay ku dhawaad 50 bog oo qiyaastii 6 aayadood ah) -->
+                    <!-- Badhamada Bogagga Aayadaha (Dheellitiran: ~18 aayadood bog kasta) -->
                     <div class="surah-pagination" id="surahPaginationBar" style="display:none;">
                         <button class="page-btn" id="prevAyahPageBtn" onclick="changeAyahPage(-1)">← Bogga Hore</button>
-                        <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 50</span>
+                        <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 1</span>
                         <button class="page-btn" id="nextAyahPageBtn" onclick="changeAyahPage(1)">Bogga Xiga →</button>
                     </div>
                 </div>
@@ -628,8 +628,7 @@
         {name: "الشمس", ayahs: 15}, {name: "الليل", ayahs: 21}, {name: "الضحى", ayahs: 11}, {name: "الشرح", ayahs: 8}, {name: "التين", ayahs: 8},
         {name: "العلق", ayahs: 19}, {name: "القدر", ayahs: 5}, {name: "البينة", ayahs: 8}, {name: "الزلزلة", ayahs: 8}, {name: "العاديات", ayahs: 11},
         {name: "القارعة", ayahs: 11}, {name: "التكاثر", ayahs: 8}, {name: "العصر", ayahs: 3}, {name: "الهمزة", ayahs: 9}, {name: "الفيل", ayahs: 5},
-        {name: "قريش", ayahs: 4}, {name: "الماعون", ayahs: 7}, {name: "الكوثر", ayahs: 3}, {name: "الكافرون", ayahs: 6}, {name: "النصر", ayahs: 3},
-        {name: "المسد", ayahs: 5}, {name: "الإخلاص", ayahs: 4}, {name: "الفلق", ayahs: 5}, {name: "الناس", ayahs: 6}
+        {name: "قريش", ayahs: 4}, {name: "الماعون", ayahs: 7}, {name: "الكوثر", ayahs: 3}, {name: "الكافرون", ayahs: 6}, {name: "النصر", ayahs: 3}, {name: "المسد", ayahs: 5}, {name: "الإخلاص", ayahs: 4}, {name: "الفلق", ayahs: 5}, {name: "الناس", ayahs: 6}
     ];
 
     let currentSurahPage = 1;
@@ -637,9 +636,15 @@
 
     let currentAyahsData = [];
     let currentAyahPage = 1;
-    const ayahsPerPage = 6; // Qiyaastii 6 aayadood bog kasta = ~48 bog oo Suuratul Baqarah ah
+    const ayahsPerPage = 18; // Dheellitiran: qiyaastii 18 aayadood bog kasta (Suuratul Baqarah waxay noqonaysaa ~16 bog oo isku dheellitiran)
     let activeSurahNum = 1;
     let activeSurahName = "";
+
+    // Shaqo beddesha nambarada Ingiriiska u beddesha nambarada Carabiga (Eastern Arabic Numerals)
+    function toArabicNumeral(n) {
+        const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
+    }
 
     window.onload = function() {
         renderSurahListPage();
@@ -720,6 +725,7 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
+        // Bismilaah waxaa la soo bandhigayaa bogga koowaad ee suuradaha (marka laga reebo At-Tawbah / 9)
         if (currentAyahPage === 1 && activeSurahNum !== 9) {
             html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
         }
@@ -735,7 +741,9 @@
                 text = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
             }
 
-            html += `${text} <span class="ayah-number">${ayah.numberInSurah}</span> `;
+            // Nambarka aayadda oo loo beddelay farta Carabiga (tusaale: ١، ٢، ٣)
+            const arabicNum = toArabicNumeral(ayah.numberInSurah);
+            html += `${text} <span class="ayah-number">${arabicNum}</span> `;
         });
 
         readerContent.innerHTML = html;

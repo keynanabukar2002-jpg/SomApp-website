@@ -723,7 +723,6 @@
         document.getElementById('surahPaginationBar').style.display = 'none';
 
         try {
-            // Isticmaalka ar.quran-simple si ay u noqoto qoraal caadi ah oo nadiif ah (Sida lill-muttaqiin)
             const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}/ar.quran-simple`);
             const data = await response.json();
             
@@ -756,9 +755,11 @@
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
             
-            // Ka sifee Bismilaaha haddii ay ku jirto bilowga aayadda 1aad
+            // Si buuxda uga sifee Bismilaaha haddii ay ku jirto bilowga aayadda koowaad (iyadoo la tixraacayo qaababka kala duwan ee API-ga)
             if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
-                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "").trim();
+                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
+                           .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
+                           .trim();
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);

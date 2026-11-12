@@ -403,19 +403,6 @@
             border-radius: 4px;
         }
 
-        .bismillah {
-            text-align: center;
-            font-size: 1.25rem;
-            color: #9a3412;
-            margin-bottom: 8px;
-            font-family: 'Amiri', serif;
-            font-weight: bold;
-            letter-spacing: 1px;
-            border-bottom: 1px dashed #d97706;
-            padding-bottom: 6px;
-            direction: rtl;
-        }
-
         .ayah-container {
             display: inline;
         }
@@ -520,7 +507,7 @@
             </div>
         </div>
 
-        <!-- Qur'aan Tab (114 Suuradood oo Offline ah) -->
+        <!-- Qur'aan Tab -->
         <div id="tabQuran" class="tab-content hidden">
             <!-- Liiska 114-ka Suuradood -->
             <div id="quranListContainer" style="width: 100%;">
@@ -601,8 +588,7 @@
         <button class="nav-item" onclick="switchTab('tabWallet', this)">
             <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
             <span>Wallet</span>
-        </button>
-        <button class="nav-item" onclick="switchTab('tabSettings', this)">
+        </button><button class="nav-item" onclick="switchTab('tabSettings', this)">
             <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             <span>Profile</span>
         </button>
@@ -629,7 +615,6 @@
     let userPolygonAddress = "";
     let userDisplayName = "User";
 
-    // Liiska buuxa ee 114-ka Suuradood oo ay ku jirto xogtooda offline-ka ah
     const quranSurahs = [
         {name: "الفاتحة", ayahs: 7}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
         {name: "الأنعام", ayahs: 165}, {name: "الأعراف", ayahs: 206}, {name: "الأنفال", ayahs: 75}, {name: "التوبة", ayahs: 129}, {name: "يونس", ayahs: 109},
@@ -710,8 +695,7 @@
         renderSurahListPage();
     }
 
-    // Si otomaatig ah ugu soo saar 114-ka suuradood si offline ah adigoon API u baahnayn
-    function loadSurah(surahNum, surahName) {
+    async function loadSurah(surahNum, surahName) {
         activeSurahNum = surahNum;
         activeSurahName = surahName;
         currentAyahPage = 1;
@@ -720,30 +704,24 @@
         document.getElementById('quranReaderContainer').classList.remove('hidden');
         document.getElementById('readerTitle').innerText = `سُورَةُ ${surahName}`;
         
-        const totalAyahs = quranSurahs[surahNum - 1].ayahs;
-        currentAyahsData = [];
+        const readerContent = document.getElementById('readerContent');
+        readerContent.innerHTML = "<div style='text-align:center; padding: 40px; color:#854d0e;'>Aayadaha waa la soo dejinayaa...</div>";
+        document.getElementById('surahPaginationBar').style.display = 'none';
 
-        // Hadii ay tahay Suuratul Faatixah (1)
-        if (surahNum === 1) {
-            currentAyahsData = [
-                {numberInSurah: 1, text: "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ"},
-                {numberInSurah: 2, text: "الرَّحْمَٰنِ الرَّحِيمِ"},
-                {numberInSurah: 3, text: "مَالِكِ يَوْمِ الدِّينِ"},
-                {numberInSurah: 4, text: "إيَّاكَ نَعْبُدُ وَإيَّاكَ نَسْتَعِينُ"},
-                {numberInSurah: 5, text: "اهْدِنَا الصِّرَاطَ الْمُسْتَقِيمَ"},
-                {numberInSurah: 6, text: "صِرَاطَ الَّذِينَ أَنْعَمْتَ عَلَيْهِمْ غَيْرِ الْمَغْضُوبِ عَلَيْهِمْ وَلَا الضَّالِّينَ"}
-            ];
-        } else {
-            // Si ay u shaqeyso 114-ka suuradood si buuxda offline ahaan
-            for(let i = 1; i <= totalAyahs; i++) {
-                currentAyahsData.push({
-                    numberInSurah: i,
-                    text: `ذَلِكَ الْكِتَابُ لَا رَيْبَ ۚ فِيهِ هُدًى لِلْمُتَّقِينَ (سورة ${surahName} - آية ${i})`
-                });
+        try {
+            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}`);
+            const data = await response.json();
+            
+            if (data.code === 200) {
+                currentAyahsData = data.data.ayahs;
+                renderAyahPage();
+            } else {
+                readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
             }
+        } catch (err) {
+            console.error(err);
+            readerContent.innerHTML = "Fadlan hubi internet-kaaga, xiriirkii waa lumay.";
         }
-        
-        renderAyahPage();
     }
 
     function renderAyahPage() {
@@ -755,12 +733,13 @@
         const end = start + ayahsPerPage;
         const paginatedAyahs = currentAyahsData.slice(start, end);
 
-        if (currentAyahPage === 1 && activeSurahNum !== 9) {
-            html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
-        }
-
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
+            
+            if (activeSurahNum === 1 && ayah.numberInSurah === 1) {
+                text = "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ";
+            }
+
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
             html += `<span class="ayah-container"><span class="ayah-text">${text}</span><span class="ayah-number">${arabicNum}</span></span> `;
         });

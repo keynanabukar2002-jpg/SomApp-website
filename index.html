@@ -259,7 +259,7 @@
             border: 1px solid #3396FF;
         }
 
-        /* Quran Styles - Page by Page Pagination */
+        /* Quran Styles - Classic Mushaf Ornate Page Style */
         .surah-list {
             display: flex;
             flex-direction: column;
@@ -330,68 +330,94 @@
             font-weight: 800;
         }
         
-        /* Reader Header Stylish */
-        .reader-header {
-            text-align: center;
-            padding: 12px 16px;
-            background: linear-gradient(to bottom, #fefce8, #fef9c3);
-            border-bottom: 2px solid #fde047;
-            position: sticky;
-            top: 0;
-            z-index: 10;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-        }
-        .reader-title-badge {
-            font-family: 'Amiri', serif;
-            font-size: 1.3rem;
-            color: #713f12;
-            font-weight: 700;
-            background: #ffffff;
-            padding: 4px 20px;
-            border-radius: 20px;
-            border: 1px solid #fef08a;
-            display: inline-block;
-            margin-bottom: 6px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.03);
+        /* Classic Ornate Mushaf Page Container */
+        .mushaf-page {
+            background: #fffdf9;
+            margin: 10px;
+            padding: 15px;
+            border: 4px solid #b45309;
+            outline: 2px solid #fde047;
+            outline-offset: -8px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            min-height: calc(100dvh - 100px);
+            display: flex;
+            flex-direction: column;
         }
 
-        /* Reader Content */
+        /* Ornate Surah Header Banner */
+        .mushaf-header-banner {
+            text-align: center;
+            background: linear-gradient(to bottom, #fef08a, #fde047, #eab308);
+            border: 2px solid #b45309;
+            padding: 8px 0;
+            margin-bottom: 15px;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        .mushaf-header-title {
+            font-family: 'Amiri', serif;
+            font-size: 1.5rem;
+            color: #451a03;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .back-back-btn {
+            position: absolute;
+            left: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #78350f;
+            color: #fef08a;
+            border: 1px solid #fde047;
+            padding: 4px 10px;
+            font-size: 0.75rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 800;
+        }
+        .back-back-btn:hover { background: #451a03; }
+
+        /* Reader Content Styled like Real Mushaf */
         .reader-content {
-            background: #fbf9f1;
-            padding: 24px 20px;
+            background: transparent;
+            padding: 5px 10px;
             text-align: right;
             line-height: 3.2;
-            font-size: 1.5rem;
-            color: #111827;
+            font-size: 1.45rem;
+            color: #1c1917;
             font-family: 'Amiri', serif;
             width: 100%;
             word-spacing: 2px;
+            flex: 1;
+            overflow-y: auto;
         }
         .bismillah {
             text-align: center;
-            font-size: 1.6rem;
+            font-size: 1.55rem;
             color: #9a3412;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
             font-family: 'Amiri', serif;
             font-weight: bold;
             letter-spacing: 1px;
-            border-bottom: 1px dashed #e2dcc5;
-            padding-bottom: 15px;
+            border-bottom: 1px dashed #d97706;
+            padding-bottom: 12px;
         }
+        /* Classic Golden Star/Circle Ayah Number */
         .ayah-number {
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 32px;
-            height: 32px;
-            background: linear-gradient(135deg, #fef08a, #fde047);
-            border: 1px solid #ca8a04;
+            width: 30px;
+            height: 30px;
+            background: radial-gradient(circle, #fef08a 0%, #fde047 70%, #ca8a04 100%);
+            border: 1.5px solid #854d0e;
             border-radius: 50%;
-            font-size: 0.85rem;
-            color: #713f12;
-            margin: 0 6px;
+            font-size: 0.8rem;
+            color: #451a03;
+            margin: 0 5px;
             font-family: 'Plus Jakarta Sans', sans-serif;
-            box-shadow: 0 2px 4px rgba(202, 138, 4, 0.2);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.15);
         }
     </style>
 </head>
@@ -462,9 +488,9 @@
             </div>
         </div>
 
-        <!-- Qur'aan Tab (Page by Page Pagination) -->
+        <!-- Qur'aan Tab (Classic Ornate Mushaf Style) -->
         <div id="tabQuran" class="tab-content hidden">
-            <!-- Liiska 114-ka Suuradood oo bogaysan -->
+            <!-- Liiska 114-ka Suuradood (Pagination) -->
             <div id="quranListContainer" style="width: 100%;">
                 <div class="pagination-bar">
                     <button class="page-btn" id="prevBtn" onclick="changePage(-1)">← Bogga Hore</button>
@@ -472,21 +498,20 @@
                     <button class="page-btn" id="nextBtn" onclick="changePage(1)">Bogga Xiga →</button>
                 </div>
                 <div class="surah-list" id="surahList">
-                    <!-- JavaScript ayaa ku soo buuxin doona suuradaha bogga taagan -->
+                    <!-- JavaScript ayaa ku soo buuxin doona suuradaha -->
                 </div>
             </div>
 
-            <!-- Bogga Akhriska Suurada -->
+            <!-- Bogga Akhriska Suurada (Classic Ornate Mushaf Border) -->
             <div id="quranReaderContainer" class="hidden" style="width: 100%;">
-                <div class="reader-header">
-                    <div style="display:flex; justify-content:space-between; align-items:center;">
-                        <button class="btn" style="width: auto; padding: 6px 14px; font-size: 0.75rem; margin:0; background:#ca8a04; box-shadow:none; border-radius:8px;" onclick="backToSurahList()">← Dib u laabo</button>
-                        <span id="readerTitle" class="reader-title-badge">سُورَةُ</span>
-                        <div style="width: 70px;"></div>
+                <div class="mushaf-page">
+                    <div class="mushaf-header-banner">
+                        <button class="back-back-btn" onclick="backToSurahList()">← Dib u laabo</button>
+                        <span id="readerTitle" class="mushaf-header-title">سُورَةُ</span>
                     </div>
-                </div>
-                <div class="reader-content" id="readerContent">
-                    Loading...
+                    <div class="reader-content" id="readerContent">
+                        Loading...
+                    </div>
                 </div>
             </div>
         </div>
@@ -596,7 +621,7 @@
     ];
 
     let currentPage = 1;
-    const itemsPerPage = 20; // Tirada suuradaha bog kasta ka muuqda
+    const itemsPerPage = 20;
 
     window.onload = function() {
         renderQuranPage();
@@ -625,7 +650,6 @@
             listEl.appendChild(item);
         });
 
-        // Updating Pagination Controls
         const totalPages = Math.ceil(quranSurahs.length / itemsPerPage);
         document.getElementById('pageIndicator').innerText = `Bogga ${currentPage} / ${totalPages}`;
         document.getElementById('prevBtn').disabled = currentPage === 1;

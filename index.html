@@ -299,15 +299,23 @@
         }
         .reader-content {
             background: #ffffff;
-            padding: 20px;
+            padding: 16px;
             border-radius: 12px;
             border: 2px solid #3396FF;
-            text-align: center;
-            line-height: 1.8;
-            font-size: 1rem;
+            text-align: right;
+            line-height: 2.4;
+            font-size: 1.25rem;
             color: #0f172a;
             max-height: 400px;
             overflow-y: auto;
+            font-family: 'Traditional Arabic', 'Amiri', serif;
+        }
+        .bismillah {
+            text-align: center;
+            font-size: 1.2rem;
+            color: #0284c7;
+            margin-bottom: 15px;
+            font-weight: bold;
         }
     </style>
 </head>
@@ -391,7 +399,7 @@
 
             <!-- Bogga Akhriska Suurada (Reader) -->
             <div id="quranReaderContainer" class="card hidden">
-                <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                <div class="card-title" style="display:flex; justify-content:space-between; align-items:center; margin-bottom: 10px;">
                     <span id="readerTitle" style="color:#0369a1; font-weight:800;">Suurada</span>
                     <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin:0;" onclick="backToSurahList()">← Dib u laabo</button>
                 </div>
@@ -479,63 +487,72 @@
     let userPolygonAddress = "";
     let userDisplayName = "User";
 
-    // Liiska 114-ka Suuradood oo leh xogtooda gaarka ah
     const quranSurahs = [
-        { name: "Al-Faatixah", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>1. Alxamdulillaahi Rabbil Caalamiin.<br>2. Ar-Raxmaan Ar-Raxiim.<br>3. Maaliki Yawmid-Diin.<br>4. Iwaaka Naqbudu Wa Iwaaka Nasta'iin.<br>5. Ihdinas-Swiraatal Mustaqiim.<br>6. Swiraatal Ladheena Ancamta Calayhim.<br>7. Gayril Maghduubi Calayhim Walaad-Daaliin." },
-        { name: "Al-Baqarah", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Alif-Laam-Miime. Dhaalkaa Kitaabka aan shaki ku jirin, waa han loogu talagalay kuwa Alle ka cabsada..." },
-        { name: "Aali Imraan", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Alif-Laam-Miime. Allaah ma jiro ilaah xaq lagu caabudo aniga oo ah mid nool oo maamula wax walba..." },
-        { name: "An-Nisaa", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Dadow ka cabsaada Rabbigiin ee idinkaa abuuray naftii qura, kana abuurayna..." },
-        { name: "Al-Ma'idah", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Kuwa rumeeyow oofiya ballamaha..." },
-        { name: "Al-An'aam", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Mahad waxaa leh Allaah keenay samada iyo dhulka..." },
-        { name: "Al-A'raaf", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Kitaab laguu soo dejiyey hana ku noqon laabjeex..." },
-        { name: "Al-Anfaal", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Waxay kaa weydiinayaan xoolaha la ganeystay..." },
-        { name: "At-Tawbah", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Baraako ka timid Alle iyo Rasuulkiisa..." },
-        { name: "Yuunus", text: "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br>Alif-Laam-Raaxi. Kuwaas waa Aayadaha Kitaabka xigmadda leh..." }
-        // Suuradaha kale waxaa loo diyaariyay qaab guud oo si toos ah u soo bandhigaya magaca suurada
+        "Al-Faatixah", "Al-Baqarah", "Aali Imraan", "An-Nisaa", "Al-Ma'idah", "Al-An'aam", "Al-A'raaf", "Al-Anfaal", "At-Tawbah", "Yuunus",
+        "Huud", "Yuusuf", "Ar-Ra'd", "Ibraahiim", "Al-Hijr", "An-Nahl", "Al-Israa", "Al-Kahf", "Maryam", "Ṭaa Haa",
+        "Al-Anbiyaa", "Al-Hajj", "Al-Mu'minuun", "An-Nuur", "Al-Furqaan", "Ash-Shu'araa", "An-Naml", "Al-Qasas", "Al-Ankabuut", "Ar-Ruum",
+        "Luqman", "As-Sajdah", "Al-Ahzaab", "Saba'", "Faatir", "Yaasiin", "As-Saafaat", "Swaad", "Az-Zumar", "Ghaafir",
+        "Fussilat", "Ash-Shuura", "Az-Zukhruf", "Ad-Dukhaan", "Al-Jaathiyah", "Al-Ahqaaf", "Maxamed", "Al-Fatx", "Al-Xujuraat", "Qaaf",
+        "Ad-Dhaariyaat", "At-Tuur", "An-Najm", "Al-Qamar", "Ar-Raxmaan", "Al-Waaqi'ah", "Al-Xadiid", "Al-Mujaadilah", "Al-Hashr", "Al-Mumtaxanah",
+        "As-Swaf", "Al-Jumu'ah", "Al-Munaafiquun", "At-Taghaabun", "At-Talaaq", "At-Taxriim", "Al-Mulk", "Al-Qalam", "Al-Xaaqah", "Al-Macarij",
+        "Nuux", "Al-Jinn", "Al-Muzzammil", "Al-Muddathtir", "Al-Qiyaamah", "Al-Insaan", "Al-Mursalaat", "An-Naba'", "An-Naazi'aat", "'Abasa",
+        "At-Takwiir", "Al-Infitaar", "Al-Mutaffifiin", "Al-Inshiqaaq", "Al-Buruuj", "At-Taariq", "Al-A'laa", "Al-Ghaashiyah", "Al-Fajr", "Al-Balad",
+        "Ash-Shams", "Al-Layl", "Ad-Duxaa", "Ash-Sharx", "At-Tiin", "Al-Calaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-'Aadiyaat",
+        "Al-Qaari'ah", "At-Takaathur", "Al-'Asr", "Al-Humazah", "Al-Fiil", "Quraysh", "Al-Maa'uun", "Al-Kawthar", "Al-Kaafiruun", "An-Nasr",
+        "Al-Masad", "Al-Ikhlaas", "Al-Falaq", "An-Naas"
     ];
 
-    // Soo buuxi liiska 114-ka suuradood markuu app-ku furmo
     window.onload = function() {
         const listEl = document.getElementById('surahList');
         listEl.innerHTML = "";
-        
-        for (let i = 1; i <= 114; i++) {
-            let sName = "Suurad " + i;
-            if (i <= 10 && quranSurahs[i-1]) {
-                sName = quranSurahs[i-1].name;
-            } else {
-                // Magacyada qaar ama tixraaca guud ee 114-ka
-                const namesList = ["Al-Faatixah", "Al-Baqarah", "Aali Imraan", "An-Nisaa", "Al-Ma'idah", "Al-An'aam", "Al-A'raaf", "Al-Anfaal", "At-Tawbah", "Yuunus", "Huud", "Yuusuf", "Ar-Ra'd", "Ibraahiim", "Al-Hijr", "An-Nahl", "Al-Israa", "Al-Kahf", "Maryam", "Ṭaa Haa", "Al-Anbiyaa", "Al-Hajj", "Al-Mu'minuun", "An-Nuur", "Al-Furqaan", "Ash-Shu'araa", "An-Naml", "Al-Qasas", "Al-Ankabuut", "Ar-Ruum", "Luqman", "As-Sajdah", "Al-Ahzaab", "Saba'", "Faatir", "Yaasiin", "As-Saafaat", "Swaad", "Az-Zumar", "Ghaafir", "Fussilat", "Ash-Shuura", "Az-Zukhruf", "Ad-Dukhaan", "Al-Jaathiyah", "Al-Ahqaaf", "Maxamed", "Al-Fatx", "Al-Xujuraat", "Qaaf", "Ad-Dhaariyaat", "At-Tuur", "An-Najm", "Al-Qamar", "Ar-Raxmaan", "Al-Waaqi'ah", "Al-Xadiid", "Al-Mujaadilah", "Al-Hashr", "Al-Mumtaxanah", "As-Swaf", "Al-Jumu'ah", "Al-Munaafiquun", "At-Taghaabun", "At-Talaaq", "At-Taxriim", "Al-Mulk", "Al-Qalam", "Al-Xaaqah", "Al-Macarij", "Nuux", "Al-Jinn", "Al-Muzzammil", "Al-Muddathtir", "Al-Qiyaamah", "Al-Insaan", "Al-Mursalaat", "An-Naba'", "An-Naazi'aat", "'Abasa", "At-Takwiir", "Al-Infitaar", "Al-Mutaffifiin", "Al-Inshiqaaq", "Al-Buruuj", "At-Taariq", "Al-A'laa", "Al-Ghaashiyah", "Al-Fajr", "Al-Balad", "Ash-Shams", "Al-Layl", "Ad-Duxaa", "Ash-Sharx", "At-Tiin", "Al-Calaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-'Aadiyaat", "Al-Qaari'ah", "At-Takaathur", "Al-'Asr", "Al-Humazah", "Al-Fiil", "Quraysh", "Al-Maa'uun", "Al-Kawthar", "Al-Kaafiruun", "An-Nasr", "Al-Masad", "Al-Ikhlaas", "Al-Falaq", "An-Naas"];
-                sName = namesList[i-1] || ("Suuradda " + i);
-            }
-
+        quranSurahs.forEach((surah, index) => {
             const item = document.createElement('div');
             item.className = 'surah-item';
-            item.innerHTML = `<span class="surah-title">${i}. Suurat ${sName}</span> <span class="surah-number">Akhriso</span>`;
-            item.onclick = () => openSurahReader(i, sName);
+            item.innerHTML = `<span class="surah-title">${index + 1}. Suurat ${surah}</span> <span class="surah-number">Akhriso</span>`;
+            item.onclick = () => openSurahReader(index + 1, surah);
             listEl.appendChild(item);
-        }
+        });
     };
 
-    function openSurahReader(surahNum, surahName) {
+    // Funsankan wuxuu ka soo jiidnayaa aayadaha Carabi ahaan API-ga rasmiga ah
+    async function openSurahReader(surahNum, surahName) {
         document.getElementById('quranListContainer').classList.add('hidden');
         document.getElementById('quranReaderContainer').classList.remove('hidden');
         document.getElementById('readerTitle').innerText = `Suurat ${surahName} (${surahNum})`;
         
-        // Hubi haddii ay jirto qoraal gaar ah oo la kaydiyey, haddii kale soo bandhig qoraalka saxda ah ee suuradaas
-        let specificText = `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br><br>Halkan waxaa ku qoran qoraalka buuxa ee <strong>Suurat ${surahName}</strong> (Tiro Lambar: ${surahNum}).<br><br>Waa suurad barakeysan oo ka mid ah Qur'aanka kariimka ah. Si joogto ah u akhriso adigoo raadinaya raali ahaanshaha Alle SWT.`;
-        
-        if(surahNum === 1) {
-            specificText = `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br><br>1. Alxamdulillaahi Rabbil Caalamiin.<br>2. Ar-Raxmaan Ar-Raxiim.<br>3. Maaliki Yawmid-Diin.<br>4. Iwaaka Naqbudu Wa Iwaaka Nasta'iin.<br>5. Ihdinas-Swiraatal Mustaqiim.<br>6. Swiraatal Ladheena Ancamta Calayhim.<br>7. Gayril Maghduubi Calayhim Walaad-Daaliin.`;
-        } else if(surahNum === 112) {
-            specificText = `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br><br>1. Qul Huwallaahu Axad.<br>2. Allaahus-Samad.<br>3. Lam Yalid Walam Yuulad.<br>4. Walam Yakun Lahuu Kufuwan Axad.`;
-        } else if(surahNum === 113) {
-            specificText = `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br><br>1. Qul A'uudhu Birabbil Falaq.<br>2. Min Sharri Maa Khalaq.<br>3. Wamin Sharri Ghaasiqin Idhaa Waqab.<br>4. Wamin Sharrin-Naffaathaati Fiil 'Uqad.<br>5. Wamin Sharri Xaasidin Idhaa Xasad.`;
-        } else if(surahNum === 114) {
-            specificText = `بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ<br><br>1. Qul A'uudhu Birabbin-Naas.<br>2. Malikin-Naas.<br>3. Ilaahin-Naas.<br>4. Min Sharril Waswaasil Khannaas.<br>5. Alladhi Yuwaswisu Fii Suduurin-Naas.<br>6. Minal Jinnati Wan-Naas.`;
-        }
+        const readerContent = document.getElementById('readerContent');
+        readerContent.innerHTML = "Aayadaha waa la soo dejinayaa...";
 
-        document.getElementById('readerContent').innerHTML = specificText;
+        try {
+            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}`);
+            const data = await response.json();
+            
+            if (data.code === 200) {
+                const ayahs = data.data.ayahs;
+                let html = "";
+                
+                // Suuradaha intooda badan waxaa ka horeeya Bismillah (marka laga reebo At-Tawbah)
+                if (surahNum !== 9) {
+                    html += `<div class="bismillah">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+                }
+
+                ayahs.forEach(ayah => {
+                    // Ka saar Bismillah-da hordhaca ah suuradda Al-Baqarah ama kuwa kale haddii ay ku jirto hal aayad ahaan si aysan u laban-laabmin, ama soo bandhig si toos ah
+                    let text = ayah.text;
+                    if(surahNum === 1 && ayah.numberInSurah === 1) {
+                        text = "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ <br> الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ...";
+                    }
+                    html += `${text} ﴿${ayah.numberInSurah}﴾ `;
+                });
+
+                readerContent.innerHTML = html;
+            } else {
+                readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
+            }
+        } catch (err) {
+            console.error(err);
+            readerContent.innerHTML = "Fadlan hubi internet-kaaga, xiriirkii waa lumay.";
+        }
     }
 
     function backToSurahList() {

@@ -1,145 +1,134 @@
 
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="so">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>سورة البقرة</title>
+<title>Al-Qur'aan Kariim - 114 Suuradood</title>
 
 <style>
-:root {
-  --navy: #102b52;
-  --gold: #c69b43;
-  --paper: #f7efd9;
-  --ink: #21180f;
-}
-
 * { box-sizing: border-box; }
 
 body {
   margin: 0;
-  background: #e8e0d0;
-  color: var(--ink);
-  font-family: "Noto Naskh Arabic", "Amiri", serif;
+  background: #e9e2d3;
+  font-family: Arial, sans-serif;
+  color: #172d50;
 }
 
-.toolbar {
-  position: sticky;
-  top: 0;
-  background: var(--navy);
-  color: white;
+header {
+  background: #142b4d;
+  color: #f4d58a;
+  text-align: center;
+  padding: 18px 10px;
+}
+
+header h2 { margin: 0 0 12px; }
+
+select, button {
   padding: 12px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  font-family: Arial;
-  z-index: 5;
+  border-radius: 8px;
+  border: 1px solid #c6a45c;
+  font-size: 16px;
+}
+
+select {
+  width: min(90%, 420px);
+  background: #fffaf0;
+  color: #142b4d;
 }
 
 button {
-  background: var(--paper);
-  color: var(--navy);
-  border: 1px solid var(--gold);
-  border-radius: 8px;
-  padding: 9px 14px;
+  background: #c6a45c;
+  color: #142b4d;
   cursor: pointer;
   font-weight: bold;
+  margin: 5px;
 }
 
-.book {
-  max-width: 900px;
-  margin: 20px auto;
-  padding: 14px;
+#pages {
+  padding: 18px 10px;
 }
 
 .page {
-  position: relative;
-  min-height: 1100px;
-  padding: 95px 9%;
-  background: var(--paper);
-  border: 8px double var(--gold);
-  outline: 3px solid var(--navy);
-  outline-offset: -17px;
-  box-shadow: 0 8px 28px #0002;
-}
-
-.page::before,
-.page::after {
-  content: "✿ ❖ ✿";
-  display: block;
+  max-width: 850px;
+  min-height: 900px;
+  margin: 15px auto;
+  padding: 35px 25px;
+  background: #fffaf0;
+  border: 9px double #b18b42;
+  outline: 3px solid #142b4d;
+  outline-offset: -16px;
+  box-shadow: 0 4px 15px #0002;
   text-align: center;
-  color: var(--gold);
-  font-size: 27px;
-  letter-spacing: 14px;
 }
 
-h1 {
-  text-align: center;
-  color: var(--navy);
-  font-size: 38px;
-  margin: 15px 0;
+.ornament {
+  color: #b18b42;
+  font-size: 25px;
+  margin: 8px;
 }
 
-.bism {
+.surah-title {
+  color: #142b4d;
+  font-size: 30px;
+  margin: 25px 0;
+  padding: 15px;
+  border-top: 2px solid #b18b42;
+  border-bottom: 2px solid #b18b42;
+}
+
+.bismillah {
   font-size: 29px;
-  text-align: center;
-  margin-bottom: 30px;
+  line-height: 2;
+  margin: 25px 0;
+  color: #172d50;
 }
 
 .verses {
-  font-size: 27px;
-  line-height: 2.25;
+  direction: rtl;
   text-align: justify;
   text-align-last: center;
+  font-family: "Traditional Arabic", "Noto Naskh Arabic",
+               "Amiri", serif;
+  font-size: 30px;
+  line-height: 2.2;
+  color: #172d50;
 }
 
 .ayah {
   display: inline;
 }
 
-.num {
+.marker {
   display: inline-flex;
-  vertical-align: middle;
-  justify-content: center;
-  align-items: center;
   width: 34px;
   height: 34px;
-  margin: 0 5px;
-  border: 2px double var(--gold);
+  border: 2px solid #b18b42;
   border-radius: 50%;
-  color: var(--navy);
+  align-items: center;
+  justify-content: center;
   font-size: 16px;
-  background: #fff8e7;
+  margin: 0 5px;
+  color: #142b4d;
+  vertical-align: middle;
 }
 
 .status {
   text-align: center;
-  font: 14px Arial;
-  margin: 18px;
-}
-
-@media(max-width:600px) {
-  .page {
-    padding: 75px 7%;
-    min-height: 85vh;
-    border-width: 5px;
-  }
-
-  .verses {
-    font-size: 22px;
-    line-height: 2.15;
-  }
-
-  h1 { font-size: 31px; }
+  padding: 15px;
+  color: #142b4d;
 }
 
 @media print {
   body { background: white; }
-  .toolbar, .status { display: none; }
-  .book { margin: 0; padding: 0; }
+  header, .controls, .status { display: none; }
+  #pages { padding: 0; }
   .page {
     box-shadow: none;
+    margin: 0 auto;
     page-break-after: always;
+    min-height: 95vh;
   }
 }
 </style>
@@ -147,82 +136,128 @@ h1 {
 
 <body>
 
-<div class="toolbar">
-  <strong>القرآن الكريم</strong>
-  <span>سورة البقرة</span>
-  <button onclick="window.print()">PDF / Daabac</button>
+<header>
+  <h2>القرآن الكريم</h2>
+  <div>114 Suuradood</div>
+  <br>
+
+  <div class="controls">
+    <select id="surahSelect">
+      <option value="">Dooro Suurada</option>
+    </select>
+    <br>
+    <button onclick="loadSurah()">Fur Suurada</button>
+    <button onclick="window.print()">Daabac / PDF</button>
+  </div>
+</header>
+
+<div class="status" id="status">
+  Fadlan sug, Qur'aanka ayaa la soo rarayaa...
 </div>
 
-<main class="book">
-<section class="page">
-
-<h1>سورة البقرة</h1>
-
-<div class="bism">
-بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ
-</div>
-
-<div id="verses" class="verses"></div>
-
-<div id="status" class="status">
-Aayadaha ayaa la soo rarayaa...
-</div>
-
-</section>
-</main>
+<main id="pages"></main>
 
 <script>
-const digits = n =>
-  String(n).replace(/\d/g, d => "٠١٢٣٤٥٦٧٨٩"[d]);
+const select = document.getElementById("surahSelect");
+const pages = document.getElementById("pages");
+const statusBox = document.getElementById("status");
 
-async function loadSurah() {
-  const status = document.getElementById("status");
+let quranData = [];
 
+async function initialize() {
   try {
     const response = await fetch(
-      "https://cdn.jsdelivr.net/gh/fawazahmed0/quran-api@1/editions/ara-quransimple.json"
+      "https://api.alquran.cloud/v1/quran/quran-simple"
     );
 
-    if (!response.ok) throw new Error("Data lama helin");
+    if (!response.ok) throw new Error("Xogta lama helin");
 
-    const data = await response.json();
+    const result = await response.json();
+    quranData = result.data.surahs;
 
-    const all = data.quran || data;
-
-    const ayat = all
-      .filter(v => Number(v.chapter) === 2)
-      .sort((a,b) => Number(a.verse)-Number(b.verse));
-
-    if (ayat.length !== 286) {
-      throw new Error("286 aayadood lama helin");
-    }
-
-    const target = document.getElementById("verses");
-    target.innerHTML = "";
-
-    ayat.forEach(v => {
-      const text = document.createElement("span");
-      text.className = "ayah";
-      text.textContent = v.text + " ";
-
-      const number = document.createElement("span");
-      number.className = "num";
-      number.textContent = digits(v.verse);
-
-      target.appendChild(text);
-      target.appendChild(number);
-      target.appendChild(document.createTextNode(" "));
+    quranData.forEach(surah => {
+      const option = document.createElement("option");
+      option.value = surah.number;
+      option.textContent =
+        surah.number + ". " + surah.name;
+      select.appendChild(option);
     });
 
-    status.textContent = "286 aayadood waa la soo raray.";
+    statusBox.textContent =
+      "114-ka suuradood waa diyaar. Dooro suurada aad rabto.";
 
-  } catch(error) {
-    status.textContent =
-      "Internet-ka hubi kadibna dib u fur bogga. " + error.message;
+  } catch (error) {
+    statusBox.textContent =
+      "Xogta lama soo dejin. Hubi internet-kaaga kadib dib u fur bogga.";
   }
 }
 
-loadSurah();
+function loadSurah() {
+  const number = Number(select.value);
+
+  if (!number) {
+    statusBox.textContent = "Fadlan dooro suurad.";
+    return;
+  }
+
+  const surah = quranData.find(s => s.number === number);
+
+  if (!surah) return;
+
+  pages.innerHTML = "";
+
+  const page = document.createElement("section");
+  page.className = "page";
+
+  const ornament = document.createElement("div");
+  ornament.className = "ornament";
+  ornament.textContent = "❖ ✿ ❖";
+
+  const title = document.createElement("h2");
+  title.className = "surah-title";
+  title.textContent = surah.name;
+
+  page.appendChild(ornament);
+  page.appendChild(title);
+
+  if (number !== 1 && number !== 9) {
+    const bismillah = document.createElement("div");
+    bismillah.className = "bismillah";
+    bismillah.textContent =
+      "بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ";
+    page.appendChild(bismillah);
+  }
+
+  const verses = document.createElement("div");
+  verses.className = "verses";
+
+  surah.ayahs.forEach(ayah => {
+    const text = document.createElement("span");
+    text.className = "ayah";
+    text.textContent = ayah.text + " ";
+
+    const marker = document.createElement("span");
+    marker.className = "marker";
+    marker.textContent = ayah.numberInSurah;
+
+    verses.appendChild(text);
+    verses.appendChild(marker);
+    verses.appendChild(document.createTextNode(" "));
+  });
+
+  page.appendChild(verses);
+
+  const bottom = document.createElement("div");
+  bottom.className = "ornament";
+  bottom.textContent = "❖ ✿ ❖";
+  page.appendChild(bottom);
+
+  pages.appendChild(page);
+  statusBox.textContent =
+    surah.name + " — " + surah.ayahs.length + " aayadood";
+}
+
+initialize();
 </script>
 
 </body>

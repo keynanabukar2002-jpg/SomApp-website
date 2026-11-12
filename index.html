@@ -99,7 +99,7 @@
             display: none;
         }
 
-        /* Bottom Navigation Bar (6 Badhan) */
+        /* Bottom Navigation Bar */
         .bottom-nav {
             position: absolute;
             bottom: 0;
@@ -219,7 +219,7 @@
         .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
         .btn-scan { background: #7c3aed; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); }
         .btn-quran { background: #0284c7; box-shadow: 0 4px 15px rgba(2, 132, 199, 0.4); }
-        .btn-chat { background: #25d366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); } /* WhatsApp green style */
+        .btn-chat { background: #25d366; box-shadow: 0 4px 15px rgba(37, 211, 102, 0.4); }
         .btn-logout { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: none; margin-top: 10px; font-weight: 800; }
         
         input {
@@ -259,6 +259,55 @@
             font-size: 0.85rem;
             color: #0f172a;
             border: 1px solid #3396FF;
+        }
+
+        /* Quran List & Reader styles */
+        .surah-list {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 450px;
+            overflow-y: auto;
+            padding-right: 4px;
+        }
+        .surah-item {
+            background: #f8fafc;
+            padding: 12px 16px;
+            border-radius: 10px;
+            border: 1px solid #cbd5e1;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+        }
+        .surah-item:hover {
+            background: #e0f2fe;
+            border-color: #3396FF;
+        }
+        .surah-title {
+            font-size: 0.9rem;
+            color: #0f172a;
+            font-weight: 800;
+        }
+        .surah-number {
+            background: #3396FF;
+            color: white;
+            padding: 2px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+        }
+        .reader-content {
+            background: #ffffff;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #3396FF;
+            text-align: center;
+            line-height: 1.8;
+            font-size: 1.1rem;
+            color: #0f172a;
+            max-height: 400px;
+            overflow-y: auto;
         }
     </style>
 </head>
@@ -305,26 +354,7 @@
             </div>
         </div>
 
-        <!-- Scan / Voucher Tab -->
-        <div id="tabScan" class="tab-content hidden">
-            <div class="card">
-                <div class="card-title" style="color:#7c3aed; font-weight:800;">Scan Cash Paper / Voucher</div>
-                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 12px;">Ku eeg kaamerada QR code-ka ku yaal waraaqda lacagta si aad u geliso nidaamka.</p>
-                <button class="btn btn-scan" onclick="startScanner()">Furo Camera-ha (Scan)</button>
-                <div id="reader" class="hidden"></div>
-            </div>
-        </div>
-
-        <!-- Qur'aan Tab -->
-        <div id="tabQuran" class="tab-content hidden">
-            <div class="card" style="text-align: center; padding: 24px;">
-                <h3 style="color: #0369a1; margin-bottom: 12px; font-size: 1.3rem; font-weight: 800;">📖 Al-Qur'aan Al-Kareem</h3>
-                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 16px;">Ku soo dhawoow qaybta akhrinta iyo dhageysiga Qur'aanka kariimka ah.</p>
-                <button class="btn btn-quran" onclick="alert('Qaybta Qur\'aanka waa la soo kordhinayaa halkan!')">Furo Suuradaha Qur'aanka</button>
-            </div>
-        </div>
-
-        <!-- Chat Tab (BOGGII WADA-SHEEKAYSIGA) -->
+        <!-- Chat Tab -->
         <div id="tabChat" class="tab-content hidden">
             <div class="card">
                 <div class="card-title" style="color:#16a34a; font-weight:800;">💬 Bulshada / Chat-ka Guud</div>
@@ -335,6 +365,39 @@
                     <input type="text" id="chatInput" placeholder="Qor fariintaada...">
                 </div>
                 <button class="btn btn-chat" onclick="sendChatMessage()">Dir Fariinta</button>
+            </div>
+        </div>
+
+        <!-- Scan / Voucher Tab -->
+        <div id="tabScan" class="tab-content hidden">
+            <div class="card">
+                <div class="card-title" style="color:#7c3aed; font-weight:800;">Scan Cash Paper / Voucher</div>
+                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 12px;">Ku eeg kaamerada QR code-ka ku yaal waraaqda lacagta si aad u geliso nidaamka.</p>
+                <button class="btn btn-scan" onclick="startScanner()">Furo Camera-ha (Scan)</button>
+                <div id="reader" class="hidden"></div>
+            </div>
+        </div>
+
+        <!-- Qur'aan Tab (114 Suuradood & Reader) -->
+        <div id="tabQuran" class="tab-content hidden">
+            <!-- Liiska 114-ka Suuradood -->
+            <div id="quranListContainer" class="card">
+                <div class="card-title" style="color:#0369a1; font-weight:800;">📖 114-ka Suuradood ee Qur'aanka</div>
+                <p style="font-size: 0.8rem; color: #475569; margin-bottom: 10px;">Dooro suurada aad rabto inaad akhriso:</p>
+                <div class="surah-list" id="surahList">
+                    <!-- JavaScript ayaa ku soo buuxin doona 114-ka suuradood -->
+                </div>
+            </div>
+
+            <!-- Bogga Akhriska Suurada (Reader) -->
+            <div id="quranReaderContainer" class="card hidden">
+                <div class="card-title" style="display:flex; justify-content:space-between; align-items:center;">
+                    <span id="readerTitle" style="color:#0369a1; font-weight:800;">Suurada</span>
+                    <button class="btn" style="width: auto; padding: 6px 12px; font-size: 0.75rem; margin:0;" onclick="backToSurahList()">← Dib u laabo</button>
+                </div>
+                <div class="reader-content" id="readerContent">
+                    Loading...
+                </div>
             </div>
         </div>
 
@@ -367,11 +430,15 @@
 
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (6 Badhan: Home, Scan, Qur'aan, Chat, Wallet, Profile) -->
+    <!-- BOTTOM NAVIGATION BAR -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             <span>Home</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabChat', this)">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            <span>Chat</span>
         </button>
         <button class="nav-item" onclick="switchTab('tabScan', this)">
             <svg viewBox="0 0 24 24"><path d="M4 4h3v2H6v1H4V4m13 0h3v3h-2V6h-1V4M4 17h2v1h1v2H4v-3m16 0v3h-3v-2h1v-1h2M6 8h12v8H6V8z"/></svg>
@@ -381,13 +448,6 @@
             <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5-1.17 0-2.39.15-3.5.5D2 5.6v14.3c0 .25.25.5.5.5.1 0 .15-.05.25-.05C4.1 19.8 5.8 19.5 7.5 19.5c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V5.5c-.3-.2-.7-.4-1-.5zm-1 12.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v10.5z"/></svg>
             <span>Qur'aan</span>
         </button>
-
-        <!-- BADHANKA CUSUB EE CHAT-KA -->
-        <button class="nav-item" onclick="switchTab('tabChat', this)">
-            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
-            <span>Chat</span>
-        </button>
-
         <button class="nav-item" onclick="switchTab('tabWallet', this)">
             <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
             <span>Wallet</span>
@@ -418,6 +478,51 @@
     let currentUserUid = null;
     let userPolygonAddress = "";
     let userDisplayName = "User";
+
+    // Liiska 114-ka Suuradood ee Qur'aanka
+    const quranSurahs = [
+        "Al-Faatixah", "Al-Baqarah", "Aali Imraan", "An-Nisaa", "Al-Ma'idah", "Al-An'aam", "Al-A'raaf", "Al-Anfaal", "At-Tawbah", "Yuunus",
+        "Huud", "Yuusuf", "Ar-Ra'd", "Ibraahiim", "Al-Hijr", "An-Nahl", "Al-Israa", "Al-Kahf", "Maryam", "Ṭaa Haa",
+        "Al-Anbiyaa", "Al-Hajj", "Al-Mu'minuun", "An-Nuur", "Al-Furqaan", "Ash-Shu'araa", "An-Naml", "Al-Qasas", "Al-Ankabuut", "Ar-Ruum",
+        "Luqman", "As-Sajdah", "Al-Ahzaab", "Saba'", "Faatir", "Yaasiin", "As-Saafaat", "Swaad", "Az-Zumar", "Ghaafir",
+        "Fussilat", "Ash-Shuura", "Az-Zukhruf", "Ad-Dukhaan", "Al-Jaathiyah", "Al-Ahqaaf", "Maxamed", "Al-Fatx", "Al-Xujuraat", "Qaaf",
+        "Ad-Dhaariyaat", "At-Tuur", "An-Najm", "Al-Qamar", "Ar-Raxmaan", "Al-Waaqi'ah", "Al-Xadiid", "Al-Mujaadilah", "Al-Hashr", "Al-Mumtaxanah",
+        "As-Swaf", "Al-Jumu'ah", "Al-Munaafiquun", "At-Taghaabun", "At-Talaaq", "At-Taxriim", "Al-Mulk", "Al-Qalam", "Al-Xaaqah", "Al-Macarij",
+        "Nuux", "Al-Jinn", "Al-Muzzammil", "Al-Muddathtir", "Al-Qiyaamah", "Al-Insaan", "Al-Mursalaat", "An-Naba'", "An-Naazi'aat", "'Abasa",
+        "At-Takwiir", "Al-Infitaar", "Al-Mutaffifiin", "Al-Inshiqaaq", "Al-Buruuj", "At-Taariq", "Al-A'laa", "Al-Ghaashiyah", "Al-Fajr", "Al-Balad",
+        "Ash-Shams", "Al-Layl", "Ad-Duxaa", "Ash-Sharx", "At-Tiin", "Al-Calaq", "Al-Qadr", "Al-Bayyinah", "Az-Zalzalah", "Al-'Aadiyaat",
+        "Al-Qaari'ah", "At-Takaathur", "Al-'Asr", "Al-Humazah", "Al-Fiil", "Quraysh", "Al-Maa'uun", "Al-Kawthar", "Al-Kaafiruun", "An-Nasr",
+        "Al-Masad", "Al-Ikhlaas", "Al-Falaq", "An-Naas"
+    ];
+
+    // Soo buuxi liiska 114-ka suuradood markuu app-ku furmo
+    window.onload = function() {
+        const listEl = document.getElementById('surahList');
+        listEl.innerHTML = "";
+        quranSurahs.forEach((surah, index) => {
+            const item = document.createElement('div');
+            item.className = 'surah-item';
+            item.innerHTML = `<span class="surah-title">${index + 1}. Suurat ${surah}</span> <span class="surah-number">Akhriso</span>`;
+            item.onclick = () => openSurahReader(index + 1, surah);
+            listEl.appendChild(item);
+        });
+    };
+
+    function openSurahReader(surahNum, surahName) {
+        document.getElementById('quranListContainer').classList.add('hidden');
+        document.getElementById('quranReaderContainer').classList.remove('hidden');
+        document.getElementById('readerTitle').innerText = `Suurat ${surahName} (${surahNum})`;
+        document.getElementById('readerContent').innerHTML = `
+            <p style="color:#0369a1; font-weight:800; margin-bottom:15px;">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</p>
+            <p style="font-size: 1rem; color: #334155;">Halkan waxaa ku qoran macluumaadka iyo qoraalka buuxa ee <strong>Suurat ${surahName}</strong>.</p>
+            <p style="margin-top: 20px; font-size: 0.9rem; color: #64748b;">(Qoraalka oo dhan iyo Aayadaha waxaa lagu soo darayaa nidaamka si aad si fudud u akhrisan kartid wakhti kasta).</p>
+        `;
+    }
+
+    function backToSurahList() {
+        document.getElementById('quranReaderContainer').classList.add('hidden');
+        document.getElementById('quranListContainer').classList.remove('hidden');
+    }
 
     function switchTab(tabId, element) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));

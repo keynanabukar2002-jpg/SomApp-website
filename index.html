@@ -3,184 +3,120 @@
 <html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>الأرقام العربية 1 - 286</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Arabic Numbers 1-286</title>
 
 <style>
-* {
-    box-sizing: border-box;
-}
-
 body {
     margin: 0;
     padding: 20px;
-    background: #fff;
-    font-family: "Traditional Arabic", "Amiri", serif;
-}
-
-h2 {
+    background: white;
+    font-family: Arial, sans-serif;
     text-align: center;
-    color: #4D0707;
-    margin-bottom: 25px;
 }
 
-.container {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
-    gap: 15px;
-    max-width: 1100px;
-    margin: auto;
-}
-
-.number-box {
+.design {
     position: relative;
-    width: 95px;
-    height: 95px;
-    margin: auto;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: min(90vw, 400px);
+    margin: 20px auto;
 }
 
-.octagon {
-    position: absolute;
-    inset: 3px;
-    background: #120403;
-    clip-path: polygon(
-        30% 0%, 70% 0%,
-        100% 30%, 100% 70%,
-        70% 100%, 30% 100%,
-        0% 70%, 0% 30%
-    );
+.design img {
+    width: 100%;
+    display: block;
 }
 
-.octagon::before {
-    content: "";
+/* Lambarka dhexe */
+#number {
     position: absolute;
-    inset: 4px;
-    background: #D5AE65;
-    clip-path: polygon(
-        30% 0%, 70% 0%,
-        100% 30%, 100% 70%,
-        70% 100%, 30% 100%,
-        0% 70%, 0% 30%
-    );
-}
-
-.octagon::after {
-    content: "";
-    position: absolute;
-    inset: 7px;
-    background: #4D0707;
-    clip-path: polygon(
-        30% 0%, 70% 0%,
-        100% 30%, 100% 70%,
-        70% 100%, 30% 100%,
-        0% 70%, 0% 30%
-    );
-}
-
-.inner {
-    position: absolute;
-    inset: 13px;
-    background: #F8E8C5;
-    clip-path: polygon(
-        30% 0%, 70% 0%,
-        100% 30%, 100% 70%,
-        70% 100%, 30% 100%,
-        0% 70%, 0% 30%
-    );
-    border: none;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: "Amiri", "Traditional Arabic", serif;
+    font-size: 65px;
+    font-weight: bold;
+    color: #880C0E;
+    text-shadow: 1px 1px 2px #D5AE65;
     z-index: 2;
 }
 
-.number {
-    position: relative;
-    z-index: 3;
-    color: #4D0707;
-    font-size: 29px;
-    font-weight: bold;
-    direction: rtl;
+.controls {
+    display: flex;
+    justify-content: center;
+    gap: 12px;
+    margin: 20px auto;
 }
 
-.number-box::before,
-.number-box::after {
-    content: "✦";
-    position: absolute;
-    z-index: 4;
-    color: #D5AE65;
-    font-size: 12px;
+button {
+    padding: 12px 22px;
+    background: #4D0707;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 18px;
 }
 
-.number-box::before {
-    top: 7px;
-    left: 40px;
+input {
+    width: 90px;
+    padding: 10px;
+    font-size: 20px;
+    text-align: center;
 }
 
-.number-box::after {
-    bottom: 7px;
-    left: 40px;
-}
-
-@media(max-width: 400px) {
-    .container {
-        grid-template-columns: repeat(3, 1fr);
-        gap: 10px;
-    }
-
-    .number-box {
-        width: 85px;
-        height: 85px;
-    }
-
-    .number {
-        font-size: 26px;
-    }
-}
-
-@media print {
-    body {
-        padding: 5px;
-    }
-
-    .container {
-        grid-template-columns: repeat(6, 1fr);
-        gap: 8px;
-    }
-
-    .number-box {
-        break-inside: avoid;
-    }
-}
 </style>
 </head>
 
 <body>
 
-<h2>الأرقام العربية</h2>
+<h3>الأرقام العربية</h3>
 
-<div class="container" id="numbers"></div>
+<div class="design">
+    <img src="https://i.ibb.co/Z1xLpXCb/file-00000000464c8208a75ea713338fbdb7.png">
+    <div id="number">١</div>
+</div>
+
+<div class="controls">
+    <button onclick="change(-1)">السابق</button>
+    <button onclick="change(1)">التالي</button>
+</div>
+
+<input type="number" id="inputNumber"
+min="1" max="286" value="1"
+oninput="setNumber(this.value)">
 
 <script>
-const container = document.getElementById("numbers");
+let current = 1;
 
-for (let i = 1; i <= 286; i++) {
+function display() {
+    document.getElementById("number").textContent =
+        current.toLocaleString("ar-u-nu-arab", {
+            useGrouping: false
+        });
 
-    const arabicNumber = new Intl.NumberFormat(
-        "ar-u-nu-arab",
-        { useGrouping: false }
-    ).format(i);
+    document.getElementById("inputNumber").value = current;
+}
 
-    const box = document.createElement("div");
-    box.className = "number-box";
+function change(amount) {
+    current += amount;
 
-    box.innerHTML = `
-        <div class="octagon"></div>
-        <div class="inner"></div>
-        <div class="number">${arabicNumber}</div>
-    `;
+    if (current < 1) current = 1;
+    if (current > 286) current = 286;
 
-    container.appendChild(box);
+    display();
+}
+
+function setNumber(value) {
+    if (value === "") return;
+
+    let n = Number(value);
+
+    if (n >= 1 && n <= 286 && Number.isInteger(n)) {
+        current = n;
+        document.getElementById("number").textContent =
+            n.toLocaleString("ar-u-nu-arab", {
+                useGrouping: false
+            });
+    }
 }
 </script>
 

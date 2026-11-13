@@ -7,163 +7,133 @@
 <title>Quran Ayah Marker</title>
 
 <style>
-body {
-    background: #f5f5f5;
-    font-family: Arial, sans-serif;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    padding: 30px;
+* {
+    box-sizing: border-box;
 }
 
-.marker {
-    width: 150px;
-    height: 150px;
+body {
+    margin: 0;
+    min-height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: #f8f8f8;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    text-align: center;
+}
+
+.ayah-marker {
+    width: 180px;
+    height: 180px;
+    position: relative;
+    margin: auto;
+}
+
+.ayah-marker img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+}
+
+.ayah-number {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: #b47b12;
+    font-family: "Times New Roman", serif;
+    font-size: 43px;
+    font-weight: bold;
+    direction: rtl;
 }
 
 .controls {
-    margin-top: 20px;
+    margin-top: 25px;
     display: flex;
-    align-items: center;
-    gap: 12px;
+    justify-content: center;
+    gap: 10px;
 }
 
 button {
-    background: #c99525;
-    border: none;
-    color: white;
-    padding: 10px 18px;
+    background: linear-gradient(135deg,#ffe18a,#bd851c);
+    border: 1px solid #a97817;
     border-radius: 8px;
-    font-size: 18px;
+    padding: 10px 18px;
+    font-size: 20px;
+    cursor: pointer;
 }
 
 input {
-    width: 65px;
-    padding: 10px;
+    width: 75px;
     text-align: center;
-    font-size: 18px;
+    font-size: 20px;
+    border: 1px solid #c99a38;
+    border-radius: 8px;
 }
 </style>
 </head>
 
 <body>
 
-<div id="marker"></div>
+<div class="container">
 
-<div class="controls">
-    <button onclick="change(-1)">−</button>
-    <input id="number" type="number" min="1"
-           max="286" value="1"
-           onchange="renderMarker()">
-    <button onclick="change(1)">+</button>
+    <div class="ayah-marker">
+
+        <img
+        src="https://i.ibb.co/Z1xLpXCb/file-00000000464c8208a75ea713338fbdb7.png"
+        alt="Quran Ayah Ornament">
+
+        <div class="ayah-number" id="ayahNumber">
+            ١
+        </div>
+
+    </div>
+
+    <div class="controls">
+        <button onclick="changeNumber(-1)">−</button>
+
+        <input
+        type="number"
+        id="ayahInput"
+        min="1"
+        max="286"
+        value="1"
+        onchange="updateNumber()">
+
+        <button onclick="changeNumber(1)">+</button>
+    </div>
+
 </div>
 
 <script>
-function renderMarker() {
-    let n = Math.max(1, Math.min(286,
-        Number(document.getElementById("number").value) || 1
-    ));
+function updateNumber() {
+    let input = document.getElementById("ayahInput");
 
-    document.getElementById("number").value = n;
+    let number = Math.max(
+        1,
+        Math.min(286, Number(input.value) || 1)
+    );
 
-    let arabic = n.toLocaleString("ar",
-        {useGrouping: false});
+    input.value = number;
 
-    document.getElementById("marker").innerHTML = `
-    <svg class="marker" viewBox="0 0 200 200"
-         xmlns="http://www.w3.org/2000/svg">
-
-      <defs>
-        <linearGradient id="gold" x1="0" y1="0"
-                        x2="1" y2="1">
-          <stop offset="0%" stop-color="#fff3ad"/>
-          <stop offset="35%" stop-color="#d49b22"/>
-          <stop offset="65%" stop-color="#ffdf72"/>
-          <stop offset="100%" stop-color="#95600b"/>
-        </linearGradient>
-
-        <filter id="shadow" x="-30%" y="-30%"
-                width="160%" height="160%">
-          <feGaussianBlur stdDeviation="2"/>
-        </filter>
-      </defs>
-
-      <!-- Shadow -->
-      <path d="M100 5 L145 25 L175 55 L195 100
-               L175 145 L145 175 L100 195
-               L55 175 L25 145 L5 100
-               L25 55 L55 25 Z"
-            fill="#777" opacity=".2"
-            filter="url(#shadow)"
-            transform="translate(0 3)"/>
-
-      <!-- Outer Octagon -->
-      <path d="M100 5 L145 25 L175 55 L195 100
-               L175 145 L145 175 L100 195
-               L55 175 L25 145 L5 100
-               L25 55 L55 25 Z"
-            fill="#fff" stroke="url(#gold)"
-            stroke-width="5"/>
-
-      <!-- Inner frame -->
-      <path d="M100 17 L140 33 L167 60 L183 100
-               L167 140 L140 167 L100 183
-               L60 167 L33 140 L17 100
-               L33 60 L60 33 Z"
-            fill="#fff" stroke="url(#gold)"
-            stroke-width="3"/>
-
-      <!-- Central circle -->
-      <circle cx="100" cy="100" r="65"
-              fill="#fffdf7"
-              stroke="url(#gold)"
-              stroke-width="4"/>
-
-      <circle cx="100" cy="100" r="59"
-              fill="none"
-              stroke="#e5b94e"
-              stroke-width="1.5"/>
-
-      <!-- Decorative ornaments -->
-      <g fill="url(#gold)" stroke="#b47b12"
-         stroke-width=".5">
-
-        <path d="M100 20 Q90 38 100 48
-                 Q110 38 100 20Z"/>
-        <path d="M100 180 Q90 162 100 152
-                 Q110 162 100 180Z"/>
-
-        <path d="M20 100 Q38 90 48 100
-                 Q38 110 20 100Z"/>
-        <path d="M180 100 Q162 90 152 100
-                 Q162 110 180 100Z"/>
-
-        <circle cx="48" cy="48" r="3"/>
-        <circle cx="152" cy="48" r="3"/>
-        <circle cx="48" cy="152" r="3"/>
-        <circle cx="152" cy="152" r="3"/>
-      </g>
-
-      <!-- Ayah Number -->
-      <text x="100" y="113"
-            text-anchor="middle"
-            font-size="48"
-            font-weight="bold"
-            font-family="serif"
-            fill="#b47b12"
-            direction="rtl">${arabic}</text>
-
-    </svg>`;
+    document.getElementById("ayahNumber").textContent =
+        number.toLocaleString("ar", {
+            useGrouping: false
+        });
 }
 
-function change(amount) {
-    let input = document.getElementById("number");
-    input.value = Math.max(1, Math.min(286,
-        Number(input.value) + amount));
-    renderMarker();
+function changeNumber(value) {
+    let input = document.getElementById("ayahInput");
+
+    input.value = Number(input.value) + value;
+
+    updateNumber();
 }
 
-renderMarker();
+updateNumber();
 </script>
 
 </body>

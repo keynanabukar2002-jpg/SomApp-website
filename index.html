@@ -329,11 +329,11 @@
             font-weight: 800;
         }
         
-        /* Classic Ornate Mushaf Page Container - Midab Indhaha u fiican (Cream/Warm Paper background) */
+        /* Classic Ornate Mushaf Page Container */
         .mushaf-page {
-            background: #fbf8ef;
+            background: #fffdf9;
             margin: 6px;
-            padding: 12px;
+            padding: 10px;
             border: 3px solid #b45309;
             outline: 2px solid #fde047;
             outline-offset: -5px;
@@ -349,7 +349,7 @@
             text-align: center;
             background: linear-gradient(to bottom, #fef08a, #fde047, #eab308);
             border: 2px solid #b45309;
-            padding: 6px 0;
+            padding: 5px 0;
             margin-bottom: 6px;
             box-shadow: 0 2px 4px rgba(0,0,0,0.1);
             position: relative;
@@ -357,8 +357,8 @@
         }
         .mushaf-header-title {
             font-family: 'Amiri', serif;
-            font-size: 1.2rem;
-            color: #3b1c02;
+            font-size: 1.1rem;
+            color: #451a03;
             font-weight: 700;
             letter-spacing: 1px;
         }
@@ -378,24 +378,22 @@
         }
         .back-back-btn:hover { background: #451a03; }
 
-        /* Reader Content - Midab Qoraal indhaha u roon (Dark Charcoal / Brownish) */
+        /* Reader Content */
         .reader-content {
-            background: #fffdf7;
-            border-radius: 8px;
-            padding: 10px;
+            background: transparent;
+            padding: 4px 6px;
             direction: rtl;
             text-align: right;
-            line-height: 3.2;
-            font-size: 1.3rem;
-            color: #2c221e;
+            line-height: 2.8;
+            font-size: 1.2rem;
+            color: #1c1917;
             font-family: 'Amiri', serif;
             width: 100%;
-            word-spacing: 2px;
+            word-spacing: 1px;
             flex: 1;
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: #d97706 #fbf9f1;
-            box-shadow: inset 0 2px 5px rgba(0,0,0,0.03);
         }
         .reader-content::-webkit-scrollbar {
             width: 4px;
@@ -407,14 +405,14 @@
 
         .bismillah-header {
             text-align: center;
-            font-size: 1.35rem;
-            color: #b45309;
-            margin-bottom: 14px;
+            font-size: 1.25rem;
+            color: #9a3412;
+            margin-bottom: 12px;
             font-family: 'Amiri', serif;
             font-weight: bold;
             letter-spacing: 1px;
             border-bottom: 1px dashed #d97706;
-            padding-bottom: 8px;
+            padding-bottom: 6px;
             direction: rtl;
         }
 
@@ -426,24 +424,14 @@
             display: inline;
         }
 
-        /* Nambarka Hore ee Aayadda (Arabic Number Text) iyo SVG Gold Marker */
-        .ayah-prefix-num {
-            font-family: 'Amiri', serif;
-            font-size: 1rem;
-            color: #b8860b;
-            font-weight: bold;
-            margin-left: 4px;
-            margin-right: 2px;
-            vertical-align: middle;
-        }
-
+        /* Pure Luxury Gold SVG Ayah Marker Styles */
         .ayah-svg-marker {
             display: inline-block;
-            width: 40px;
-            height: 40px;
+            width: 38px;
+            height: 38px;
             vertical-align: middle;
             margin: 0 4px;
-            filter: drop-shadow(0px 2px 3px rgba(139, 101, 8, 0.4));
+            filter: drop-shadow(0px 2px 3px rgba(149, 96, 11, 0.35));
         }
 
         /* Ayah Pagination inside Surah Reader */
@@ -451,9 +439,9 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
-            padding-top: 8px;
+            padding-top: 6px;
             border-top: 2px solid #fde047;
-            background: #fbf8ef;
+            background: #fffdf9;
             flex-shrink: 0;
         }
     </style>
@@ -673,7 +661,7 @@
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
     }
 
-    // Pure Luxury Gold Octagon SVG Marker with Gold Number inside
+    // Pure Luxury Gold Octagon SVG Marker
     function createAyahMarkerSvg(numberStr) {
         return `
         <svg class="ayah-svg-marker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -700,8 +688,8 @@
           <!-- Central clean circle -->
           <circle cx="100" cy="100" r="62" fill="#ffffff" stroke="url(#pureGold)" stroke-width="4"/>
 
-          <!-- Number inside (Gold styled text) -->
-          <text x="100" y="115" text-anchor="middle" font-size="52" font-weight="bold" font-family="serif" fill="#b8860b" direction="rtl">${numberStr}</text>
+          <!-- Number inside -->
+          <text x="100" y="115" text-anchor="middle" font-size="52" font-weight="bold" font-family="serif" fill="#7a5200" direction="rtl">${numberStr}</text>
         </svg>`;
     }
 
@@ -799,9 +787,7 @@
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
             const svgMarker = createAyahMarkerSvg(arabicNum);
-            
-            // Halkan waxaa lagu daray nambarkii oo hortiisa yaal (ayah-prefix-num) iyo SVG-gii dahabiga ahaa ee dhamaadka aayadda
-            html += `<span class="ayah-container"><span class="ayah-prefix-num">[${arabicNum}]</span> <span class="ayah-text">${text}</span>${svgMarker}</span> `;
+            html += `<span class="ayah-container"><span class="ayah-text">${text}</span>${svgMarker}</span> `;
         });
 
         readerContent.innerHTML = html;

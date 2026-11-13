@@ -379,15 +379,14 @@
         }
         .back-back-btn:hover { background: #3d230b; }
 
-        /* Reader Content (Inline block flow layout) */
+        /* Reader Content */
         .reader-content {
             background: transparent;
             padding: 6px 8px;
             direction: rtl;
-            text-align: justify; /* Si ay u noqoto qoraal dabiiji ah oo buuxa */
-            text-align-last: right;
-            line-height: 3.5; 
-            font-size: 1.6rem; 
+            text-align: right;
+            line-height: 3.2;
+            font-size: 1.6rem;
             color: #2b1d0c;
             font-family: 'Amiri', serif;
             width: 100%;
@@ -413,26 +412,24 @@
             font-family: 'Amiri', serif;
             font-weight: bold;
             letter-spacing: 1px;
-            border-bottom: 1px dashed #b8860b;
+            border-bottom: 1px dashed #8c2e0b;
             padding-bottom: 8px;
             direction: rtl;
         }
 
-        /* Ayah block oo nidaamsan */
-        .ayah-block {
+        .ayah-container {
             display: inline;
-            white-space: normal;
         }
 
         .ayah-text {
             display: inline;
         }
 
-        /* Pure Luxury Gold SVG Ayah Marker Styles (Dhexda aayadda si habsami leh ugu jirta) */
+        /* Pure Luxury Gold SVG Ayah Marker Styles (Fixed & Adjusted for Numbers) */
         .ayah-svg-marker {
             display: inline-block;
-            width: 42px;
-            height: 42px;
+            width: 44px;
+            height: 44px;
             vertical-align: middle;
             margin: 0 6px;
             filter: drop-shadow(0px 2px 3px rgba(139, 101, 8, 0.4));
@@ -665,7 +662,7 @@
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
     }
 
-    // Pure Luxury Gold Octagon SVG Marker oo si hagaagsan u dhexgelaya qoraalka
+    // Fixed Pure Luxury Gold Octagon SVG Marker with Correctly Positioned Number Text
     function createAyahMarkerSvg(numberStr) {
         return `
         <svg class="ayah-svg-marker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -692,8 +689,8 @@
           <!-- Central clean circle -->
           <circle cx="100" cy="100" r="62" fill="#f7f1e5" stroke="url(#pureGold)" stroke-width="4"/>
 
-          <!-- Number inside -->
-          <text x="100" y="115" text-anchor="middle" font-size="52" font-weight="bold" font-family="serif" fill="#5c3814" direction="rtl">${numberStr}</text>
+          <!-- Number inside (Centered and fully visible) -->
+          <text x="100" y="118" text-anchor="middle" font-size="75" font-weight="bold" font-family="Amiri, serif" fill="#5c3814">${numberStr}</text>
         </svg>`;
     }
 
@@ -791,9 +788,7 @@
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
             const svgMarker = createAyahMarkerSvg(arabicNum);
-            
-            // Xaqiijinta in aayadda iyo nambarku isku xirnaadaan si toos ah oo nadiif ah
-            html += `<span class="ayah-block"><span class="ayah-text">${text}</span>${svgMarker}</span> `;
+            html += `<span class="ayah-container"><span class="ayah-text">${text}</span>${svgMarker}</span> `;
         });
 
         readerContent.innerHTML = html;

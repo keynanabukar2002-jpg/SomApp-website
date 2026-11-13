@@ -746,7 +746,15 @@
             const data = await response.json();
             
             if (data.code === 200) {
-                currentAyahsData = data.data.ayahs;
+                let ayahs = data.data.ayahs;
+
+                // Haddii ay tahay Suuratul Faatixah (Surah 1), ku dar aayadda 6-aad iyo 7-aad si ay u noqoto 6 aayadood oo qudha
+                if (surahNum === 1 && ayahs.length === 7) {
+                    ayahs[5].text = ayahs[5].text + " " + ayahs[6].text;
+                    ayahs.pop(); // Ka saar aayadda dambe si ay u noqoto 6
+                }
+
+                currentAyahsData = ayahs;
                 renderAyahPage();
             } else {
                 readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
@@ -773,7 +781,6 @@
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text.trim();
             
-            // Ka saar Bismillah ku dhex jirta aayadda kowaad haddii ay jirto
             if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
                 text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
                            .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
@@ -783,7 +790,6 @@
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
             const svgMarker = createAyahMarkerSvg(arabicNum);
             
-            // Xaqiiji in aayadda Faatixah (ama suurad kasta) ay si sax ah ula socoto nambarkeeda dhamaadka
             html += `${text} ${svgMarker} `;
         });
 

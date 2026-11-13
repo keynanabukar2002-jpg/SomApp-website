@@ -379,14 +379,15 @@
         }
         .back-back-btn:hover { background: #3d230b; }
 
-        /* Reader Content */
+        /* Reader Content (Inline block flow layout) */
         .reader-content {
             background: transparent;
             padding: 6px 8px;
             direction: rtl;
-            text-align: right;
-            line-height: 3.2;
-            font-size: 1.6rem;
+            text-align: justify; /* Si ay u noqoto qoraal dabiiji ah oo buuxa */
+            text-align-last: right;
+            line-height: 3.5; 
+            font-size: 1.6rem; 
             color: #2b1d0c;
             font-family: 'Amiri', serif;
             width: 100%;
@@ -417,22 +418,23 @@
             direction: rtl;
         }
 
-        .ayah-container {
+        /* Ayah block oo nidaamsan */
+        .ayah-block {
             display: inline;
+            white-space: normal;
         }
 
         .ayah-text {
             display: inline;
         }
 
-        /* Pure Luxury Gold SVG Ayah Marker Styles */
+        /* Pure Luxury Gold SVG Ayah Marker Styles (Dhexda aayadda si habsami leh ugu jirta) */
         .ayah-svg-marker {
             display: inline-block;
             width: 42px;
             height: 42px;
             vertical-align: middle;
-            margin-left: 8px;
-            margin-right: 2px;
+            margin: 0 6px;
             filter: drop-shadow(0px 2px 3px rgba(139, 101, 8, 0.4));
         }
 
@@ -663,7 +665,7 @@
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
     }
 
-    // Pure Luxury Gold Octagon SVG Marker
+    // Pure Luxury Gold Octagon SVG Marker oo si hagaagsan u dhexgelaya qoraalka
     function createAyahMarkerSvg(numberStr) {
         return `
         <svg class="ayah-svg-marker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -754,10 +756,7 @@
             const data = await response.json();
             
             if (data.code === 200) {
-                let ayahs = data.data.ayahs;
-                
-                // Haddii ay tahay Suuratul Faatixa (Suurada 1aad), API wuxuu keenaa 7 aayadood oo sax ah
-                currentAyahsData = ayahs;
+                currentAyahsData = data.data.ayahs;
                 renderAyahPage();
             } else {
                 readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
@@ -783,26 +782,18 @@
 
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
-            let ayahNumInSurah = ayah.numberInSurah;
-
-            // Suuratul Faatixa xaaladeeda gaarka ah
-            if (activeSurahNum === 1) {
-                if (text.includes("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ") && ayahNumInSurah === 1) {
-                    text = text.replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "").trim();
-                }
-            }
-
-            if (activeSurahNum !== 9 && ayahNumInSurah === 1 && activeSurahNum !== 1) {
+            
+            if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
                 text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
                            .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .trim();
             }
 
-            const arabicNum = toArabicNumeral(ayahNumInSurah);
+            const arabicNum = toArabicNumeral(ayah.numberInSurah);
             const svgMarker = createAyahMarkerSvg(arabicNum);
             
-            // Halkan waxaa lagu hormariyey nambarka aayadda (Hortiis ayuu ku qoran yahay qoraalka)
-            html += `<span class="ayah-container">${svgMarker}<span class="ayah-text">${text}</span></span> `;
+            // Xaqiijinta in aayadda iyo nambarku isku xirnaadaan si toos ah oo nadiif ah
+            html += `<span class="ayah-block"><span class="ayah-text">${text}</span>${svgMarker}</span> `;
         });
 
         readerContent.innerHTML = html;

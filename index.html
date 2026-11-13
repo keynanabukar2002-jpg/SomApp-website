@@ -424,24 +424,13 @@
             display: inline;
         }
 
-        /* Qaabka Cusub: Sideed-geesoodka (Octagonal Star / Rub' al-Hizb Design) ee Dahabiga ah */
-        .ayah-number {
-            display: inline-flex;
-            justify-content: center;
-            align-items: center;
-            width: 34px;
-            height: 34px;
-            background: linear-gradient(135deg, #fef08a 0%, #fde047 50%, #ca8a04 100%);
-            border: 2px solid #854d0e;
-            /* Waxaa loo sameeyay qaab sideed-geesood ah (Octagon / Star style) adigदेह clip-path */
-            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
-            font-size: 0.75rem;
-            color: #111827;
-            margin: 0 6px;
+        /* SVG Ayah Number Marker Styles */
+        .ayah-svg-marker {
+            display: inline-block;
+            width: 36px;
+            height: 36px;
             vertical-align: middle;
-            font-family: 'Amiri', serif;
-            font-weight: 700;
-            box-shadow: 0 2px 5px rgba(133, 77, 14, 0.4);
+            margin: 0 4px;
         }
 
         /* Ayah Pagination inside Surah Reader */
@@ -671,6 +660,49 @@
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
     }
 
+    // Function to generate the exact Gold Octagon SVG for Ayah Number
+    function createAyahMarkerSvg(numberStr) {
+        return `
+        <svg class="ayah-svg-marker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="gold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fff3ad"/>
+              <stop offset="35%" stop-color="#d49b22"/>
+              <stop offset="65%" stop-color="#ffdf72"/>
+              <stop offset="100%" stop-color="#95600b"/>
+            </linearGradient>
+            <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%">
+              <feGaussianBlur stdDeviation="2"/>
+            </filter>
+          </defs>
+
+          <!-- Outer Octagon -->
+          <path d="M100 5 L145 25 L175 55 L195 100 L175 145 L145 175 L100 195 L55 175 L25 145 L5 100 L25 55 L55 25 Z" fill="#fff" stroke="url(#gold)" stroke-width="5"/>
+
+          <!-- Inner frame -->
+          <path d="M100 17 L140 33 L167 60 L183 100 L167 140 L140 167 L100 183 L60 167 L33 140 L17 100 L33 60 L60 33 Z" fill="#fff" stroke="url(#gold)" stroke-width="3"/>
+
+          <!-- Central circle -->
+          <circle cx="100" cy="100" r="65" fill="#fffdf7" stroke="url(#gold)" stroke-width="4"/>
+          <circle cx="100" cy="100" r="59" fill="none" stroke="#e5b94e" stroke-width="1.5"/>
+
+          <!-- Decorative ornaments -->
+          <g fill="url(#gold)" stroke="#b47b12" stroke-width=".5">
+            <path d="M100 20 Q90 38 100 48 Q110 38 100 20Z"/>
+            <path d="M100 180 Q90 162 100 152 Q110 162 100 180Z"/>
+            <path d="M20 100 Q38 90 48 100 Q38 110 20 100Z"/>
+            <path d="M180 100 Q162 90 152 100 Q162 110 180 100Z"/>
+            <circle cx="48" cy="48" r="3"/>
+            <circle cx="152" cy="48" r="3"/>
+            <circle cx="48" cy="152" r="3"/>
+            <circle cx="152" cy="152" r="3"/>
+          </g>
+
+          <!-- Ayah Number -->
+          <text x="100" y="113" text-anchor="middle" font-size="48" font-weight="bold" font-family="serif" fill="#b47b12" direction="rtl">${numberStr}</text>
+        </svg>`;
+    }
+
     window.onload = function() {
         renderSurahListPage();
     };
@@ -764,7 +796,8 @@
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
-            html += `<span class="ayah-container"><span class="ayah-text">${text}</span><span class="ayah-number">${arabicNum}</span></span> `;
+            const svgMarker = createAyahMarkerSvg(arabicNum);
+            html += `<span class="ayah-container"><span class="ayah-text">${text}</span>${svgMarker}</span> `;
         });
 
         readerContent.innerHTML = html;

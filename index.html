@@ -384,8 +384,9 @@
             background: transparent;
             padding: 6px 8px;
             direction: rtl;
-            text-align: right;
-            line-height: 3.2;
+            text-align: justify; /* Wuxuu ka dhigayaa qoraalka mid si siman u hufan oo nambarkuna raaco dhamaadka */
+            text-align-last: right;
+            line-height: 3.5;
             font-size: 1.6rem;
             color: #2b1d0c;
             font-family: 'Amiri', serif;
@@ -425,11 +426,11 @@
             display: inline;
         }
 
-        /* Pure Luxury Gold SVG Ayah Marker Styles (Fixed & Adjusted for Numbers) */
+        /* Pure Luxury Gold SVG Ayah Marker Styles (Inline style oo ku dheggan aayadda) */
         .ayah-svg-marker {
             display: inline-block;
-            width: 44px;
-            height: 44px;
+            width: 42px;
+            height: 42px;
             vertical-align: middle;
             margin: 0 6px;
             filter: drop-shadow(0px 2px 3px rgba(139, 101, 8, 0.4));
@@ -662,7 +663,7 @@
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
     }
 
-    // Fixed Pure Luxury Gold Octagon SVG Marker with Correctly Positioned Number Text
+    // Pure Luxury Gold Octagon SVG Marker (Sida Suratul Baqarah oo kale)
     function createAyahMarkerSvg(numberStr) {
         return `
         <svg class="ayah-svg-marker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -689,7 +690,7 @@
           <!-- Central clean circle -->
           <circle cx="100" cy="100" r="62" fill="#f7f1e5" stroke="url(#pureGold)" stroke-width="4"/>
 
-          <!-- Number inside (Centered and fully visible) -->
+          <!-- Number inside -->
           <text x="100" y="118" text-anchor="middle" font-size="75" font-weight="bold" font-family="Amiri, serif" fill="#5c3814">${numberStr}</text>
         </svg>`;
     }
@@ -788,7 +789,7 @@
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
             const svgMarker = createAyahMarkerSvg(arabicNum);
-            html += `<span class="ayah-container"><span class="ayah-text">${text}</span>${svgMarker}</span> `;
+            html += `${text} ${svgMarker} `;
         });
 
         readerContent.innerHTML = html;

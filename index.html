@@ -124,7 +124,7 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 2px;
+            gap: 3px;
             cursor: pointer;
             transition: all 0.2s ease;
             flex: 1;
@@ -135,19 +135,32 @@
             font-weight: 800;
         }
         .nav-item svg {
-            width: 20px;
-            height: 20px;
+            width: 22px;
+            height: 22px;
             fill: currentColor;
             transition: 0.2s;
         }
+        
+        /* Quran Nav Icon Special Luxury Style */
+        .nav-quran-icon {
+            width: 26px !important;
+            height: 26px !important;
+            filter: drop-shadow(0 2px 4px rgba(184, 134, 11, 0.4));
+            transition: transform 0.2s ease;
+        }
+
         .nav-item.active {
             color: #3396FF;
         }
         .nav-item.active span {
-            color: #3396FF;
+            color: #b8860b;
             font-weight: 800;
         }
-        .nav-item.active svg {
+        .nav-item.active .nav-quran-icon {
+            transform: scale(1.2);
+            filter: drop-shadow(0 3px 6px rgba(212, 175, 55, 0.7));
+        }
+        .nav-item.active svg:not(.nav-quran-icon) {
             fill: #3396FF;
             transform: scale(1.15);
         }
@@ -582,7 +595,29 @@
             <span>Scan</span>
         </button>
         <button class="nav-item" onclick="switchTab('tabQuran', this)">
-            <svg viewBox="0 0 24 24"><path d="M21 5c-1.11-.35-2.33-.5-3.5-.5-1.95 0-4.05.4-5.5 1.5-1.45-1.1-3.55-1.5-5.5-1.5-1.17 0-2.39.15-3.5.5D2 5.6v14.3c0 .25.25.5.5.5.1 0 .15-.05.25-.05C4.1 19.8 5.8 19.5 7.5 19.5c1.95 0 4.05.4 5.5 1.5 1.35-.85 3.8-1.5 5.5-1.5 1.65 0 3.35.3 4.75 1.05.1.05.15.05.25.05.25 0 .5-.25.5-.5V5.5c-.3-.2-.7-.4-1-.5zm-1 12.5c-1.1-.35-2.3-.5-3.5-.5-1.7 0-4.15.65-5.5 1.5V8c1.35-.85 3.8-1.5 5.5-1.5 1.2 0 2.4.15 3.5.5v10.5z"/></svg>
+            <!-- Luxury Gold Quran Book & Star Icon -->
+            <svg class="nav-quran-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="navGold" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#fff6cc"/>
+                  <stop offset="30%" stop-color="#d4af37"/>
+                  <stop offset="70%" stop-color="#b8860b"/>
+                  <stop offset="100%" stop-color="#8b6508"/>
+                </linearGradient>
+              </defs>
+              <!-- Open Book Base -->
+              <path d="M100 35 C100 35 70 25 35 35 C20 40 10 50 10 65 L10 155 C10 165 20 170 35 165 C70 155 100 165 100 165 C100 165 130 155 165 165 C180 170 190 165 190 155 L190 65 C190 50 180 40 165 35 C130 25 100 35 100 35 Z" fill="#fcf8ee" stroke="url(#navGold)" stroke-width="8"/>
+              <!-- Center Binding Spine -->
+              <path d="M93 37 L93 163 C97 165 103 165 107 163 L107 37 Z" fill="url(#navGold)"/>
+              <!-- Left Pages Lines -->
+              <line x1="35" y1="65" x2="75" y2="75" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="30" y1="90" x2="75" y2="100" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="35" y1="115" x2="70" y2="125" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <!-- Right Pages Lines -->
+              <line x1="125" y1="75" x2="165" y2="65" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="125" y1="100" x2="170" y2="90" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="130" y1="125" x2="165" y2="115" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+            </svg>
             <span>Qur'aan</span>
         </button>
         <button class="nav-item" onclick="switchTab('tabWallet', this)">
@@ -617,7 +652,7 @@
     let userDisplayName = "User";
 
     const quranSurahs = [
-        {name: "الفاتحة", ayahs: 7}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
+        {name: "الفاتحة", ayahs: 6}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
         {name: "الأنعام", ayahs: 165}, {name: "الأعراف", ayahs: 206}, {name: "الأنفال", ayahs: 75}, {name: "التوبة", ayahs: 129}, {name: "يونس", ayahs: 109},
         {name: "هود", ayahs: 123}, {name: "يوسف", ayahs: 111}, {name: "الرعد", ayahs: 43}, {name: "إبراهيم", ayahs: 52}, {name: "الحجر", ayahs: 99},
         {name: "النحل", ayahs: 128}, {name: "الإسراء", ayahs: 111}, {name: "الكهف", ayahs: 110}, {name: "مريم", ayahs: 98}, {name: "طه", ayahs: 135},
@@ -746,13 +781,7 @@
             const data = await response.json();
             
             if (data.code === 200) {
-                let ayahs = data.data.ayahs;
-                // Haddii ay tahay Suuratul Faatixah (Surah 1), ka dhig 6 aayadood adoo isku daraya aayadda 1 iyo 2 ama hagaajinaya tirada
-                if (surahNum === 1) {
-                    // Suuratul Faatixah: API-ga wuxuu soo celiyaa 7, laakiin haddii la rabo 6 aayadood iyadoo Bismillah laga saaray kuna salaysan qaabkaaga:
-                    // Waxaan ka dhigaynaa in aayadda koowaad ay tahay "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ" oo nambarkeedu yahay 1.
-                }
-                currentAyahsData = ayahs;
+                currentAyahsData = data.data.ayahs;
                 renderAyahPage();
             } else {
                 readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
@@ -767,16 +796,12 @@
         const readerContent = document.getElementById('readerContent');
         let html = "";
 
-        // Haddii ay tahay Suuratul Faatixah, waxaan hubineynaa in tirada aayadaha ay noqoto 6 (iyadoo Bismillah laga reebay oo aayadaha la habeeyay)
         let activeAyahs = currentAyahsData;
         if (activeSurahNum === 1) {
-            // Suuratul Faatixah waxaa ka saaraynaa ama u habeyneynaa si ay u noqoto 6 aayadood sax ah
-            // API-ga wuxuu ku bilaabaa Bismillah sida aayadda 1aad mararka qaar ama wuxuu u qaybiyaa si gooni ah
             activeAyahs = currentAyahsData.filter(ayah => {
                 let t = ayah.text.trim();
                 return !t.includes("بِسْمِ اللَّهِ") && !t.includes("بِسۡمِ ٱللَّهِ");
             });
-            // Haddii ay noqoto 6 aayadood sax ah:
         }
 
         const totalAyahPages = Math.ceil(activeAyahs.length / ayahsPerPage);
@@ -797,7 +822,6 @@
                            .trim();
             }
 
-            // Hubi nambarka aayadda (Haddii ay tahay Faatixah, ka billow 1 illaa 6)
             let displayNum = activeSurahNum === 1 ? (start + idx + 1) : ayah.numberInSurah;
             const arabicNum = toArabicNumeral(displayNum);
             const svgMarker = createAyahMarkerSvg(arabicNum);

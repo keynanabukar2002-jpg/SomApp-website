@@ -4,7 +4,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quran Ayah Marker</title>
+<title>Quran Ayah Number</title>
 
 <style>
 * {
@@ -14,22 +14,27 @@
 body {
     margin: 0;
     min-height: 100vh;
+    background: #f8f8f8;
     display: flex;
     justify-content: center;
     align-items: center;
-    background: #f8f8f8;
     font-family: Arial, sans-serif;
 }
 
 .container {
+    width: 100%;
     text-align: center;
+    padding: 20px;
 }
 
+/* Ayah Marker */
 .ayah-marker {
-    width: 180px;
-    height: 180px;
+    width: 300px;
+    height: 300px;
+    max-width: 85vw;
+    max-height: 85vw;
     position: relative;
-    margin: auto;
+    margin: 0 auto 35px;
 }
 
 .ayah-marker img {
@@ -38,40 +43,98 @@ body {
     object-fit: contain;
 }
 
+/* Qari lambarka PNG-ga ku dhex jira */
+.number-cover {
+    position: absolute;
+    width: 27%;
+    height: 27%;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: #fff;
+    border-radius: 50%;
+    z-index: 1;
+}
+
+/* Lambarka cusub */
 .ayah-number {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
+    z-index: 2;
+
     color: #b47b12;
     font-family: "Times New Roman", serif;
-    font-size: 43px;
+    font-size: 75px;
     font-weight: bold;
-    direction: rtl;
+    line-height: 1;
 }
 
+/* Controls */
 .controls {
-    margin-top: 25px;
     display: flex;
     justify-content: center;
-    gap: 10px;
+    align-items: center;
+    gap: 15px;
 }
 
 button {
-    background: linear-gradient(135deg,#ffe18a,#bd851c);
-    border: 1px solid #a97817;
-    border-radius: 8px;
-    padding: 10px 18px;
-    font-size: 20px;
+    width: 82px;
+    height: 75px;
+    border: 1px solid #bd943e;
+    border-radius: 14px;
+    background: linear-gradient(
+        135deg,
+        #ffe28b,
+        #d5a438,
+        #b98720
+    );
+    color: #17100a;
+    font-size: 35px;
+    font-weight: bold;
     cursor: pointer;
 }
 
+button:active {
+    transform: scale(0.94);
+}
+
 input {
-    width: 75px;
+    width: 125px;
+    height: 75px;
     text-align: center;
-    font-size: 20px;
-    border: 1px solid #c99a38;
-    border-radius: 8px;
+    font-size: 30px;
+    border: 1px solid #c5a04c;
+    border-radius: 14px;
+    background: white;
+    outline: none;
+}
+
+input:focus {
+    border: 2px solid #c3942d;
+}
+
+/* Mobile */
+@media (max-width: 480px) {
+    .ayah-marker {
+        width: 260px;
+        height: 260px;
+    }
+
+    .ayah-number {
+        font-size: 65px;
+    }
+
+    button {
+        width: 75px;
+        height: 70px;
+    }
+
+    input {
+        width: 115px;
+        height: 70px;
+    }
 }
 </style>
 </head>
@@ -80,60 +143,81 @@ input {
 
 <div class="container">
 
+    <!-- Quran Ayah Design -->
     <div class="ayah-marker">
 
         <img
-        src="https://i.ibb.co/Z1xLpXCb/file-00000000464c8208a75ea713338fbdb7.png"
-        alt="Quran Ayah Ornament">
+            src="https://i.ibb.co/Z1xLpXCb/file-00000000464c8208a75ea713338fbdb7.png"
+            alt="Quran Ayah Ornament"
+        >
 
-        <div class="ayah-number" id="ayahNumber">
-            ١
-        </div>
+        <!-- Cover old number -->
+        <div class="number-cover"></div>
+
+        <!-- New number -->
+        <div class="ayah-number" id="ayahNumber">1</div>
 
     </div>
 
+    <!-- Number Controls -->
     <div class="controls">
+
         <button onclick="changeNumber(-1)">−</button>
 
         <input
-        type="number"
-        id="ayahInput"
-        min="1"
-        max="286"
-        value="1"
-        onchange="updateNumber()">
+            type="number"
+            id="ayahInput"
+            value="1"
+            min="1"
+            max="286"
+            onchange="updateNumber()"
+        >
 
         <button onclick="changeNumber(1)">+</button>
+
     </div>
 
 </div>
 
 <script>
-function updateNumber() {
-    let input = document.getElementById("ayahInput");
 
-    let number = Math.max(
-        1,
-        Math.min(286, Number(input.value) || 1)
-    );
+// Update number
+function updateNumber() {
+
+    const input = document.getElementById("ayahInput");
+
+    let number = parseInt(input.value);
+
+    if (isNaN(number)) {
+        number = 1;
+    }
+
+    // Limit 1 - 286
+    number = Math.max(1, Math.min(286, number));
 
     input.value = number;
 
-    document.getElementById("ayahNumber").textContent =
-        number.toLocaleString("ar", {
-            useGrouping: false
-        });
+    // Change center number
+    document.getElementById("ayahNumber").textContent = number;
+
 }
 
+// Plus and Minus
 function changeNumber(value) {
-    let input = document.getElementById("ayahInput");
 
-    input.value = Number(input.value) + value;
+    const input = document.getElementById("ayahInput");
+
+    let current = parseInt(input.value) || 1;
+
+    input.value = current + value;
 
     updateNumber();
+
 }
 
+// Initial number
 updateNumber();
+
 </script>
 
 </body>

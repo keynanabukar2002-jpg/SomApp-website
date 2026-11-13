@@ -384,7 +384,7 @@
             padding: 4px 6px;
             direction: rtl;
             text-align: right;
-            line-height: 2.6;
+            line-height: 2.8;
             font-size: 1.2rem;
             color: #1c1917;
             font-family: 'Amiri', serif;
@@ -424,23 +424,24 @@
             display: inline;
         }
 
-        /* Qaabka cusub ee Dahabiga ah ee Nambarka Aayadda (oo la mid ah qaabkaaga aad soo dirtay) */
+        /* Qaabka Cusub: Sideed-geesoodka (Octagonal Star / Rub' al-Hizb Design) ee Dahabiga ah */
         .ayah-number {
             display: inline-flex;
             justify-content: center;
             align-items: center;
-            width: 32px;
-            height: 32px;
-            background: radial-gradient(circle, #fef08a 0%, #fde047 70%, #ca8a04 100%);
-            border: 2px solid #b45309;
-            border-radius: 50%;
+            width: 34px;
+            height: 34px;
+            background: linear-gradient(135deg, #fef08a 0%, #fde047 50%, #ca8a04 100%);
+            border: 2px solid #854d0e;
+            /* Waxaa loo sameeyay qaab sideed-geesood ah (Octagon / Star style) adigदेह clip-path */
+            clip-path: polygon(30% 0%, 70% 0%, 100% 30%, 100% 70%, 70% 100%, 30% 100%, 0% 70%, 0% 30%);
             font-size: 0.75rem;
             color: #111827;
             margin: 0 6px;
             vertical-align: middle;
             font-family: 'Amiri', serif;
             font-weight: 700;
-            box-shadow: 0 2px 4px rgba(180, 83, 9, 0.3);
+            box-shadow: 0 2px 5px rgba(133, 77, 14, 0.4);
         }
 
         /* Ayah Pagination inside Surah Reader */

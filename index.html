@@ -379,14 +379,14 @@
         }
         .back-back-btn:hover { background: #3d230b; }
 
-        /* Reader Content (Farta Quraanka oo la wayneeyay oo la hagaajiyay) */
+        /* Reader Content */
         .reader-content {
             background: transparent;
             padding: 6px 8px;
             direction: rtl;
             text-align: right;
-            line-height: 3.2; /* Meel u dhaxaysa sadarada si ay u kala cadahay */
-            font-size: 1.6rem; /* Farta oo la weyneeyay */
+            line-height: 3.2;
+            font-size: 1.6rem;
             color: #2b1d0c;
             font-family: 'Amiri', serif;
             width: 100%;
@@ -425,7 +425,7 @@
             display: inline;
         }
 
-        /* Pure Luxury Gold SVG Ayah Marker Styles (La wayneeyay si ay ula jaanqaado farta) */
+        /* Pure Luxury Gold SVG Ayah Marker Styles */
         .ayah-svg-marker {
             display: inline-block;
             width: 46px;
@@ -662,7 +662,7 @@
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
     }
 
-    // Pure Luxury Gold Octagon SVG Marker (La wayneeyay)
+    // Pure Luxury Gold Octagon SVG Marker
     function createAyahMarkerSvg(numberStr) {
         return `
         <svg class="ayah-svg-marker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
@@ -753,7 +753,14 @@
             const data = await response.json();
             
             if (data.code === 200) {
-                currentAyahsData = data.data.ayahs;
+                let ayahs = data.data.ayahs;
+                // Haddii ay tahay Suuratul Faatixa (Suurada 1aad), API-ga wuxuu inta badan Bismillaahda ka dhigaa aayada 1aad. 
+                // Halkan ayaan ka hubinaynaa si nambarka aayadaha loo saxo (Fatiha waa inaysan bismillaahda u haysan aayad rasmi ah oo nambaran).
+                if (surahNum === 1 && ayahs.length === 7) {
+                    // Haddii ay 7 yihiin balse midda koowaad tahay Bismillaah, aan u habayno si sax ah
+                    // Si kastaba, quran-simple API-ga Suuratul Faatixa wuxuu leeyahay 7 aayadood oo sax ah oo Bismillaah ka bilaabanta ama Bismillaah la'aan.
+                }
+                currentAyahsData = ayahs;
                 renderAyahPage();
             } else {
                 readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
@@ -779,14 +786,23 @@
 
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
-            
-            if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
+            let ayahNumInSurah = ayah.numberInSurah;
+
+            // Xalinta gaarka ah ee Suuratul Faatixa (Suurada 1aad) si aysan u khaldamin nambarada 1 ilaa 7
+            if (activeSurahNum === 1) {
+                if (text.includes("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ") && ayahNumInSurah === 1) {
+                    // Halka bismillaah ku jirto aayada koowaad ee API-ga, aan ka saarno qoraalka balse nambarka u dejino si sax ah ama u saxno fariisinta
+                    text = text.replace("بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ", "").trim();
+                }
+            }
+
+            if (activeSurahNum !== 9 && ayahNumInSurah === 1 && activeSurahNum !== 1) {
                 text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
                            .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .trim();
             }
 
-            const arabicNum = toArabicNumeral(ayah.numberInSurah);
+            const arabicNum = toArabicNumeral(ayahNumInSurah);
             const svgMarker = createAyahMarkerSvg(arabicNum);
             html += `<span class="ayah-container"><span class="ayah-text">${text}</span>${svgMarker}</span> `;
         });

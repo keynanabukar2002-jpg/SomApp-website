@@ -384,7 +384,8 @@
             background: transparent;
             padding: 6px 8px;
             direction: rtl;
-            text-align: right;
+            text-align: justify;
+            text-align-last: right;
             line-height: 3.5;
             font-size: 1.6rem;
             color: #2b1d0c;
@@ -393,7 +394,6 @@
             word-spacing: 2px;
             flex: 1;
             overflow-y: auto;
-            unicode-bidi: plaintext;
             scrollbar-width: thin;
             scrollbar-color: #b8860b #f4ecdf;
         }
@@ -416,14 +416,6 @@
             border-bottom: 1px dashed #8c2e0b;
             padding-bottom: 8px;
             direction: rtl;
-        }
-
-        .ayah-container {
-            display: inline;
-        }
-
-        .ayah-text {
-            display: inline;
         }
 
         /* Pure Luxury Gold SVG Ayah Marker Styles */
@@ -779,19 +771,20 @@
         }
 
         paginatedAyahs.forEach(ayah => {
-            let text = ayah.text;
+            let text = ayah.text.trim();
             
+            // Ka saar Bismillah ku dhex jirta aayadda kowaad haddii ay jirto
             if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
                 text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
-                           .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحۡیمِ/g, "")
+                           .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .trim();
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
             const svgMarker = createAyahMarkerSvg(arabicNum);
             
-            // Hubinta in lambarka aayadda uu si sax ah ula socdo qoraalka dhexdiisa adigoo isticmaalaya bidi tag
-            html += `<bdi class="ayah-container">${text} ${svgMarker}</bdi> `;
+            // Xaqiiji in aayadda Faatixah (ama suurad kasta) ay si sax ah ula socoto nambarkeeda dhamaadka
+            html += `${text} ${svgMarker} `;
         });
 
         readerContent.innerHTML = html;

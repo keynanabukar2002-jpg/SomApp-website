@@ -747,13 +747,11 @@
             
             if (data.code === 200) {
                 let ayahs = data.data.ayahs;
-
-                // Haddii ay tahay Suuratul Faatixah (Surah 1), ku dar aayadda 6-aad iyo 7-aad si ay u noqoto 6 aayadood oo qudha
-                if (surahNum === 1 && ayahs.length === 7) {
-                    ayahs[5].text = ayahs[5].text + " " + ayahs[6].text;
-                    ayahs.pop(); // Ka saar aayadda dambe si ay u noqoto 6
+                // Haddii ay tahay Suuratul Faatixah (Surah 1), ka dhig 6 aayadood adoo isku daraya aayadda 1 iyo 2 ama hagaajinaya tirada
+                if (surahNum === 1) {
+                    // Suuratul Faatixah: API-ga wuxuu soo celiyaa 7, laakiin haddii la rabo 6 aayadood iyadoo Bismillah laga saaray kuna salaysan qaabkaaga:
+                    // Waxaan ka dhigaynaa in aayadda koowaad ay tahay "الْحَمْدُ لِلَّهِ رَبِّ الْعَالَمِينَ" oo nambarkeedu yahay 1.
                 }
-
                 currentAyahsData = ayahs;
                 renderAyahPage();
             } else {
@@ -769,25 +767,39 @@
         const readerContent = document.getElementById('readerContent');
         let html = "";
 
-        const totalAyahPages = Math.ceil(currentAyahsData.length / ayahsPerPage);
+        // Haddii ay tahay Suuratul Faatixah, waxaan hubineynaa in tirada aayadaha ay noqoto 6 (iyadoo Bismillah laga reebay oo aayadaha la habeeyay)
+        let activeAyahs = currentAyahsData;
+        if (activeSurahNum === 1) {
+            // Suuratul Faatixah waxaa ka saaraynaa ama u habeyneynaa si ay u noqoto 6 aayadood sax ah
+            // API-ga wuxuu ku bilaabaa Bismillah sida aayadda 1aad mararka qaar ama wuxuu u qaybiyaa si gooni ah
+            activeAyahs = currentAyahsData.filter(ayah => {
+                let t = ayah.text.trim();
+                return !t.includes("بِسْمِ اللَّهِ") && !t.includes("بِسۡمِ ٱللَّهِ");
+            });
+            // Haddii ay noqoto 6 aayadood sax ah:
+        }
+
+        const totalAyahPages = Math.ceil(activeAyahs.length / ayahsPerPage);
         const start = (currentAyahPage - 1) * ayahsPerPage;
         const end = start + ayahsPerPage;
-        const paginatedAyahs = currentAyahsData.slice(start, end);
+        const paginatedAyahs = activeAyahs.slice(start, end);
 
         if (currentAyahPage === 1 && activeSurahNum !== 9) {
             html += `<div class="bismillah-header">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
         }
 
-        paginatedAyahs.forEach(ayah => {
+        paginatedAyahs.forEach((ayah, idx) => {
             let text = ayah.text.trim();
             
-            if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
+            if (activeSurahNum !== 9) {
                 text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
                            .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .trim();
             }
 
-            const arabicNum = toArabicNumeral(ayah.numberInSurah);
+            // Hubi nambarka aayadda (Haddii ay tahay Faatixah, ka billow 1 illaa 6)
+            let displayNum = activeSurahNum === 1 ? (start + idx + 1) : ayah.numberInSurah;
+            const arabicNum = toArabicNumeral(displayNum);
             const svgMarker = createAyahMarkerSvg(arabicNum);
             
             html += `${text} ${svgMarker} `;
@@ -809,7 +821,8 @@
     }
 
     function changeAyahPage(direction) {
-        const totalAyahPages = Math.ceil(currentAyahsData.length / ayahsPerPage);
+        let activeAyahs = activeSurahNum === 1 ? currentAyahsData.filter(a => !a.text.includes("بِسْمِ اللَّهِ") && !a.text.includes("بِسۡمِ ٱللَّهِ")) : currentAyahsData;
+        const totalAyahPages = Math.ceil(activeAyahs.length / ayahsPerPage);
         currentAyahPage += direction;
         if (currentAyahPage < 1) currentAyahPage = 1;
         if (currentAyahPage > totalAyahPages) currentAyahPage = totalAyahPages;

@@ -1,10 +1,10 @@
 
 <!DOCTYPE html>
-<html lang="so">
+<html lang="ar" dir="rtl">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Quran Ayah Number</title>
+<title>الأرقام العربية 1 - 286</title>
 
 <style>
 * {
@@ -13,127 +13,143 @@
 
 body {
     margin: 0;
-    min-height: 100vh;
-    background: #f8f8f8;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: Arial, sans-serif;
+    padding: 20px;
+    background: #fff;
+    font-family: "Traditional Arabic", "Amiri", serif;
+}
+
+h2 {
+    text-align: center;
+    color: #4D0707;
+    margin-bottom: 25px;
 }
 
 .container {
-    width: 100%;
-    text-align: center;
-    padding: 20px;
-}
-
-/* Ayah Marker */
-.ayah-marker {
-    width: 300px;
-    height: 300px;
-    max-width: 85vw;
-    max-height: 85vw;
-    position: relative;
-    margin: 0 auto 35px;
-}
-
-.ayah-marker img {
-    width: 100%;
-    height: 100%;
-    object-fit: contain;
-}
-
-/* Qari lambarka PNG-ga ku dhex jira */
-.number-cover {
-    position: absolute;
-    width: 27%;
-    height: 27%;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    background: #fff;
-    border-radius: 50%;
-    z-index: 1;
-}
-
-/* Lambarka cusub */
-.ayah-number {
-    position: absolute;
-    top: 50%;
-    left: 50%;
-    transform: translate(-50%, -50%);
-    z-index: 2;
-
-    color: #b47b12;
-    font-family: "Times New Roman", serif;
-    font-size: 75px;
-    font-weight: bold;
-    line-height: 1;
-}
-
-/* Controls */
-.controls {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(95px, 1fr));
     gap: 15px;
+    max-width: 1100px;
+    margin: auto;
 }
 
-button {
-    width: 82px;
-    height: 75px;
-    border: 1px solid #bd943e;
-    border-radius: 14px;
-    background: linear-gradient(
-        135deg,
-        #ffe28b,
-        #d5a438,
-        #b98720
+.number-box {
+    position: relative;
+    width: 95px;
+    height: 95px;
+    margin: auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.octagon {
+    position: absolute;
+    inset: 3px;
+    background: #120403;
+    clip-path: polygon(
+        30% 0%, 70% 0%,
+        100% 30%, 100% 70%,
+        70% 100%, 30% 100%,
+        0% 70%, 0% 30%
     );
-    color: #17100a;
-    font-size: 35px;
+}
+
+.octagon::before {
+    content: "";
+    position: absolute;
+    inset: 4px;
+    background: #D5AE65;
+    clip-path: polygon(
+        30% 0%, 70% 0%,
+        100% 30%, 100% 70%,
+        70% 100%, 30% 100%,
+        0% 70%, 0% 30%
+    );
+}
+
+.octagon::after {
+    content: "";
+    position: absolute;
+    inset: 7px;
+    background: #4D0707;
+    clip-path: polygon(
+        30% 0%, 70% 0%,
+        100% 30%, 100% 70%,
+        70% 100%, 30% 100%,
+        0% 70%, 0% 30%
+    );
+}
+
+.inner {
+    position: absolute;
+    inset: 13px;
+    background: #F8E8C5;
+    clip-path: polygon(
+        30% 0%, 70% 0%,
+        100% 30%, 100% 70%,
+        70% 100%, 30% 100%,
+        0% 70%, 0% 30%
+    );
+    border: none;
+    z-index: 2;
+}
+
+.number {
+    position: relative;
+    z-index: 3;
+    color: #4D0707;
+    font-size: 29px;
     font-weight: bold;
-    cursor: pointer;
+    direction: rtl;
 }
 
-button:active {
-    transform: scale(0.94);
+.number-box::before,
+.number-box::after {
+    content: "✦";
+    position: absolute;
+    z-index: 4;
+    color: #D5AE65;
+    font-size: 12px;
 }
 
-input {
-    width: 125px;
-    height: 75px;
-    text-align: center;
-    font-size: 30px;
-    border: 1px solid #c5a04c;
-    border-radius: 14px;
-    background: white;
-    outline: none;
+.number-box::before {
+    top: 7px;
+    left: 40px;
 }
 
-input:focus {
-    border: 2px solid #c3942d;
+.number-box::after {
+    bottom: 7px;
+    left: 40px;
 }
 
-/* Mobile */
-@media (max-width: 480px) {
-    .ayah-marker {
-        width: 260px;
-        height: 260px;
+@media(max-width: 400px) {
+    .container {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 10px;
     }
 
-    .ayah-number {
-        font-size: 65px;
+    .number-box {
+        width: 85px;
+        height: 85px;
     }
 
-    button {
-        width: 75px;
-        height: 70px;
+    .number {
+        font-size: 26px;
+    }
+}
+
+@media print {
+    body {
+        padding: 5px;
     }
 
-    input {
-        width: 115px;
-        height: 70px;
+    .container {
+        grid-template-columns: repeat(6, 1fr);
+        gap: 8px;
+    }
+
+    .number-box {
+        break-inside: avoid;
     }
 }
 </style>
@@ -141,83 +157,31 @@ input:focus {
 
 <body>
 
-<div class="container">
+<h2>الأرقام العربية</h2>
 
-    <!-- Quran Ayah Design -->
-    <div class="ayah-marker">
-
-        <img
-            src="https://i.ibb.co/Z1xLpXCb/file-00000000464c8208a75ea713338fbdb7.png"
-            alt="Quran Ayah Ornament"
-        >
-
-        <!-- Cover old number -->
-        <div class="number-cover"></div>
-
-        <!-- New number -->
-        <div class="ayah-number" id="ayahNumber">1</div>
-
-    </div>
-
-    <!-- Number Controls -->
-    <div class="controls">
-
-        <button onclick="changeNumber(-1)">−</button>
-
-        <input
-            type="number"
-            id="ayahInput"
-            value="1"
-            min="1"
-            max="286"
-            onchange="updateNumber()"
-        >
-
-        <button onclick="changeNumber(1)">+</button>
-
-    </div>
-
-</div>
+<div class="container" id="numbers"></div>
 
 <script>
+const container = document.getElementById("numbers");
 
-// Update number
-function updateNumber() {
+for (let i = 1; i <= 286; i++) {
 
-    const input = document.getElementById("ayahInput");
+    const arabicNumber = new Intl.NumberFormat(
+        "ar-u-nu-arab",
+        { useGrouping: false }
+    ).format(i);
 
-    let number = parseInt(input.value);
+    const box = document.createElement("div");
+    box.className = "number-box";
 
-    if (isNaN(number)) {
-        number = 1;
-    }
+    box.innerHTML = `
+        <div class="octagon"></div>
+        <div class="inner"></div>
+        <div class="number">${arabicNumber}</div>
+    `;
 
-    // Limit 1 - 286
-    number = Math.max(1, Math.min(286, number));
-
-    input.value = number;
-
-    // Change center number
-    document.getElementById("ayahNumber").textContent = number;
-
+    container.appendChild(box);
 }
-
-// Plus and Minus
-function changeNumber(value) {
-
-    const input = document.getElementById("ayahInput");
-
-    let current = parseInt(input.value) || 1;
-
-    input.value = current + value;
-
-    updateNumber();
-
-}
-
-// Initial number
-updateNumber();
-
 </script>
 
 </body>

@@ -2,7 +2,7 @@
 <html lang="so">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>KNN MicroPay - Smart Mining & Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
@@ -602,6 +602,21 @@
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
     }
 
+    const fallbackSurahsList = [
+        "الفاتحة", "البقرة", "آل عمران", "النساء", "المائدة", "الأنعام", "الأعراف", "الأنفال", "التوبة", "يونس",
+        "هود", "يوسف", "الرعد", "إبراهيم", "الحجر", "النحل", "الإسراء", "الكهف", "مريم", "طه",
+        "الأنبياء", "الحج", "المؤمنون", "النور", "الفرقان", "الشعراء", "النمل", "القصص", "العنكبوت", "الروم",
+        "لقمان", "السجدة", "الأحزاب", "سبأ", "فاطر", "يس", "الصافات", "ص", "الزمر", "غافر",
+        "فصلت", "الشورى", "الزخرف", "الدخان", "الجاثية", "الأحقاف", "محمد", "الفتح", "الحجرات", "ق",
+        "الذاريات", "الطور", "النجم", "القمر", "الرحمن", "الواقعة", "الحديد", "المجادلة", "الحشر", "الممتحنة",
+        "الصف", "الجمعة", "المنافقون", "التغابن", "الطلاق", "التحريم", "الملك", "القلم", "الحاقة", "المعارج",
+        "نوح", "الجن", "المزمل", "المداثر", "القيامة", "الإنسان", "المرسلات", "النبأ", "النازعات", "عبس",
+        "التكوير", "الإنفطار", "المطففين", "الإنشقاق", "البروج", "الطارق", "الأعلى", "الغاشية", "الفجر", "البلد",
+        "الشمس", "الليل", "الضحى", "الشرح", "التين", "العلق", "القدر", "البينة", "الزلزلة", "العاديات",
+        "القارعة", "التكاثر", "العصر", "الهمزة", "الفيل", "قريش", "الماعون", "الكوثر", "الكافرون", "النصر",
+        "المسد", "الإخلاص", "الفلق", "الناس"
+    ];
+
     async function initializeQuran() {
         const select = document.getElementById("surahSelect");
         const statusBox = document.getElementById("statusBox");
@@ -613,6 +628,7 @@
             const result = await response.json();
             quranData = result.data.surahs;
 
+            select.innerHTML = '<option value="">Dooro Suurada</option>';
             quranData.forEach(surah => {
                 const option = document.createElement("option");
                 option.value = surah.number;
@@ -622,7 +638,16 @@
 
             statusBox.textContent = "114-ka suuradood waa diyaar. Dooro suurada aad rabto.";
         } catch (error) {
-            statusBox.textContent = "Xogta lama soo dejin. Hubi internet-kaaga kadib dib u fur bogga.";
+            console.warn("API Error, loading fallback list...", error);
+            select.innerHTML = '<option value="">Dooro Suurada</option>';
+            fallbackSurahsList.forEach((name, idx) => {
+                const num = idx + 1;
+                const option = document.createElement("option");
+                option.value = num;
+                option.textContent = num + ". " + name;
+                select.appendChild(option);
+            });
+            statusBox.textContent = "Waxaa la isticmaalay xogta keydka ah. Dooro suurad si aad u aqriso.";
         }
     }
 
@@ -630,7 +655,7 @@
         initializeQuran();
     };
 
-    function loadSurahFromSelect() {
+    async function loadSurahFromSelect() {
         const select = document.getElementById("surahSelect");
         const number = Number(select.value);
 
@@ -639,17 +664,13 @@
             return;
         }
 
-        const surah = quranData.find(s => s.number === number);
-        if (!surah) return;
-
-        activeSurahNum = surah.number;
-        activeSurahName = surah.name;
-        currentAyahsData = surah.ayahs;
-        currentAyahPage = 1;
+        activeSurahNum = number;
+        const selectedOptionText = select.options[select.selectedIndex].text;
+        activeSurahName = selectedOptionText.split('. ')[1] || "Suuradda";
 
         document.getElementById('quranListContainer').classList.add('hidden');
         document.getElementById('quranReaderContainer').classList.remove('hidden');
-        document.getElementById('readerTitle').innerText = surah.name;
+        document.getElementById('readerTitle').innerText = activeSurahName;
 
         const bismillahContainer = document.getElementById('bismillahContainer');
         if (activeSurahNum !== 1 && activeSurahNum !== 9) {
@@ -658,7 +679,33 @@
             bismillahContainer.innerHTML = "";
         }
 
-        renderAyahPage();
+        const readerContent = document.getElementById('readerContent');
+        readerContent.innerHTML = "<div style='text-align:center; padding: 40px; color:#142b4d;'>Aayadaha waa la soo dejinayaa...</div>";
+
+        // Haddii quranData horey u joogto
+        let surah = quranData.find(s => s.number === number);
+        if (surah && surah.ayahs) {
+            currentAyahsData = surah.ayahs;
+            currentAyahPage = 1;
+            renderAyahPage();
+            return;
+        }
+
+        // Haddii kale si toos ah uga soo jiid hal suurad API-ga
+        try {
+            const response = await fetch(`https://api.alquran.cloud/v1/surah/${number}/ar.quran-simple`);
+            const data = await response.json();
+            if (data.code === 200) {
+                currentAyahsData = data.data.ayahs;
+                currentAyahPage = 1;
+                renderAyahPage();
+            } else {
+                readerContent.innerHTML = "Cilad ayaa dhacday soo dejinta aayadaha.";
+            }
+        } catch (err) {
+            console.error(err);
+            readerContent.innerHTML = "Fadlan hubi xiriirka internet-kaaga.";
+        }
     }
 
     function renderAyahPage() {
@@ -673,9 +720,8 @@
         paginatedAyahs.forEach(ayah => {
             let text = ayah.text;
 
-            // Suuradaha marka laga reebo Tawbah (9), ka sifee Bismilaahda haddii ay ku jirto aayadda 1aad
             if (activeSurahNum !== 9 && ayah.numberInSurah === 1) {
-                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "").trim();
+                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "").trim();
             }
 
             const arabicNum = toArabicNumeral(ayah.numberInSurah);
@@ -716,19 +762,6 @@
 
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         element.classList.add('active');
-
-        const topNav = document.getElementById('topNav');
-        const contentBody = document.getElementById('contentBody');
-
-        if (tabId === 'tabQuran') {
-            topNav.classList.remove('hidden');
-            contentBody.style.marginTop = '65px';
-            contentBody.style.padding = '10px 0';
-        } else {
-            topNav.classList.remove('hidden');
-            contentBody.style.marginTop = '65px';
-            contentBody.style.padding = '10px 0';
-        }
     }
 
     async function loginWithGoogle() {
@@ -866,7 +899,7 @@
             const data = await response.json();
             if (data.success) {
                 alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
-                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL`;
+                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL";
             } else {
                 alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
             }

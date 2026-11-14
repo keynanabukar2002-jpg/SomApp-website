@@ -231,9 +231,8 @@
         .btn-google { background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
         .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
         .btn-scan { background: #7c3aed; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); }
-        .btn-logout { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: none; font-weight: 800; }
         
-        input {
+        input[type="text"] {
             width: 100%;
             padding: 14px;
             border-radius: 10px;
@@ -245,7 +244,7 @@
             margin-top: 6px;
             outline: none;
         }
-        input:focus { border-color: #3396FF; }
+        input[type="text"]:focus { border-color: #3396FF; }
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
         #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 12px; border: 2px solid #3396FF; }
@@ -474,10 +473,65 @@
             font-weight: 800;
             box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
+
+        /* Three Dots Menu Top Right */
+        .profile-menu-wrapper {
+            position: absolute;
+            right: 15px;
+            top: 20px;
+            z-index: 50;
+        }
+        .three-dots-btn {
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #3396FF;
+            width: 34px;
+            height: 34px;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 1.2rem;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.08);
+        }
+        .three-dots-dropdown {
+            position: absolute;
+            right: 0;
+            top: 40px;
+            background: #ffffff;
+            border: 2px solid #3396FF;
+            border-radius: 10px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.15);
+            min-width: 130px;
+            overflow: hidden;
+            z-index: 60;
+        }
+        .dropdown-logout-item {
+            width: 100%;
+            padding: 10px 14px;
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 0.85rem;
+            font-weight: 800;
+            text-align: left;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .dropdown-logout-item:hover {
+            background: #fee2e2;
+        }
+
+        /* Clickable Avatar to Change Photo */
         .profile-avatar-wrapper {
             position: relative;
             margin-top: 25px;
             margin-bottom: 12px;
+            cursor: pointer;
         }
         .profile-avatar {
             width: 85px;
@@ -492,21 +546,12 @@
             color: #ffffff;
             box-shadow: 0 4px 15px rgba(51, 150, 255, 0.4);
             border: 3px solid #ffffff;
+            overflow: hidden;
         }
-        .camera-badge {
-            position: absolute;
-            bottom: 0;
-            right: 0;
-            background: #3396FF;
-            color: white;
-            width: 28px;
-            height: 28px;
-            border-radius: 50%;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            font-size: 0.8rem;
-            border: 2px solid #ffffff;
+        .profile-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
         .profile-name {
             font-size: 1.2rem;
@@ -537,17 +582,18 @@
             font-weight: 700;
         }
         
+        /* Bold Blue Divider Line */
         .profile-content-section {
             width: 100%;
             display: flex;
-            justify-content: space-between;
+            justify-content: flex-start;
             align-items: center;
-            border-top: 2px solid #cbd5e1; /* Xariiqdii dhuubnayd oo la hagaajiyay oo kor loo soo qaaday */
+            border-top: 3px solid #3396FF;
             padding-top: 15px;
             margin-top: 5px;
         }
         .profile-section-title {
-            font-size: 0.9rem;
+            font-size: 0.95rem;
             font-weight: 800;
             color: #0f172a;
         }
@@ -669,15 +715,29 @@
             </div>
         </div>
 
-        <!-- Settings / Profile Tab (TikTok Style - Top Nav Hidden & Full Screen) -->
+        <!-- Settings / Profile Tab -->
         <div id="tabSettings" class="tab-content hidden">
-            <div class="tiktok-profile">
+            <div class="tiktok-profile" onclick="closeProfileMenuOutside(event)">
                 <!-- Back Button to return home -->
                 <button class="profile-back-btn" onclick="switchTab('tabHome', document.querySelector('.nav-item'))">← Dib u laabo</button>
 
-                <div class="profile-avatar-wrapper">
-                    <div class="profile-avatar" id="profileInitial">K</div>
-                    <div class="camera-badge">📷</div>
+                <!-- Three Dots Menu Top Right with Logout inside -->
+                <div class="profile-menu-wrapper">
+                    <button class="three-dots-btn" onclick="toggleProfileMenu(event)">⋮</button>
+                    <div id="profileDropdownMenu" class="three-dots-dropdown hidden">
+                        <button class="dropdown-logout-item" onclick="logoutUser()">
+                            <span>🚪 Logout</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Clickable Avatar (Camera Badge Removed, Click to Change Image) -->
+                <div class="profile-avatar-wrapper" onclick="document.getElementById('avatarFileInput').click()" title="Guji si aad sawirka u beddesho">
+                    <div class="profile-avatar" id="profileAvatarBox">
+                        <span id="profileInitial">K</span>
+                        <img id="profileAvatarImg" class="hidden" src="" alt="Profile">
+                    </div>
+                    <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="changeProfilePhoto(event)">
                 </div>
                 
                 <div class="profile-name" id="profileDisplayName">Keynan abukar</div>
@@ -698,10 +758,9 @@
                     </div>
                 </div>
 
-                <!-- Xariiqda dhuub iyo qaybta Fiidiyowyadaada & Logout oo kor loo soo qaaday -->
+                <!-- Bold Blue Line & Videos Section -->
                 <div class="profile-content-section">
                     <span class="profile-section-title">Fiidiyowyadaada</span>
-                    <button class="btn btn-logout" style="width: auto; padding: 6px 14px; font-size: 0.75rem;" onclick="logoutUser()">Logout</button>
                 </div>
 
                 <div style="text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 30px; font-weight: 700;">
@@ -843,7 +902,51 @@
 
     window.onload = function() {
         renderSurahListPage();
+        loadSavedAvatar();
     };
+
+    /* Three Dots Menu Toggle */
+    function toggleProfileMenu(event) {
+        event.stopPropagation();
+        const menu = document.getElementById('profileDropdownMenu');
+        menu.classList.toggle('hidden');
+    }
+
+    function closeProfileMenuOutside(event) {
+        const menu = document.getElementById('profileDropdownMenu');
+        if (!menu.classList.contains('hidden')) {
+            menu.classList.add('hidden');
+        }
+    }
+
+    /* Change Profile Photo from Device */
+    function changeProfilePhoto(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const imgDataUrl = e.target.result;
+            localStorage.setItem('knn_custom_avatar', imgDataUrl);
+            applyAvatarImage(imgDataUrl);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function loadSavedAvatar() {
+        const savedImg = localStorage.getItem('knn_custom_avatar');
+        if (savedImg) {
+            applyAvatarImage(savedImg);
+        }
+    }
+
+    function applyAvatarImage(src) {
+        const imgEl = document.getElementById('profileAvatarImg');
+        const initialEl = document.getElementById('profileInitial');
+        imgEl.src = src;
+        imgEl.classList.remove('hidden');
+        initialEl.classList.add('hidden');
+    }
 
     function renderSurahListPage() {
         const listEl = document.getElementById('surahList');

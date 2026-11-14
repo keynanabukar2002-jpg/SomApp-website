@@ -1,16 +1,30 @@
 const express = require('express');
 const { ethers } = require('ethers');
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
-app.use(express.json({ limit: '500mb' })); // Kordhinta xadka si uu u qaado fiidiyowyo waaweyn
-app.use(express.urlencoded({ extended: true, limit: '500mb' }));
+app.use(express.json({ limit: '50mb' }));
 app.use(cors());
+
+// Samaynta folder lagu keydiyo fiidiyowyada iyo sawirrada
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir);
+}
+app.use('/uploads', express.static(uploadDir));
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'))
+});
+const upload = multer({ storage: storage });
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
 
-// Meel ku meel gaar ah oo server-ka ugu keydsan fiidiyowyada (Memory-based store)
 let uploadedVideosStore = [];
 
 async function getFirestoreUser(uid) {
@@ -175,39 +189,46 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// API: Soo gelinta Video-ga (Server Storage)
-app.post('/api/upload-video', async (req, res) => {
+// API: Soo gelinta Video-ga (Multer - File Upload)
+app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
     try {
-        const { id, uid, username, title, avatar, type, url, timestamp } = req.body;
-        if (!uid || !url) {
-            return res.status(400).json({ success: false, error: "Xogta video-ga waa maqan tahay." });
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: "Fayl lama soo dooran." });
         }
-        const newVideo = { id, uid, username, title, avatar, type, url, timestamp };
+
+        const { id, uid, username, title, avatar, type, timestamp } = req.body;
+        const serverBaseUrl = `${req.protocol}://${req.get('host')}`;
+        const fileUrl = `${serverBaseUrl}/uploads/${req.file.filename}`;
+
+        const newVideo = {
+            id: id || 'vid_' + Date.now(),
+            uid,
+            username,
+            title,
+            avatar,
+            type,
+            url: fileUrl,
+            timestamp: Number(timestamp) || Date.now()
+        };
+
         uploadedVideosStore.unshift(newVideo);
-        return res.json({ success: true, message: "Video-ga waa la keydiyay." });
+        return res.json({ success: true, message: "Video-ga waa la keydiyay.", video: newVideo });
     } catch (err) {
+        console.error("Upload Error:", err);
         return res.status(500).json({ success: false, error: err.message });
     }
 });
 
 // API: Soo qaadashada dhammaan Video-yada
-app.get('/api/get-videos', async (req, res) => {
-    try {
-        return res.json({ success: true, videos: uploadedVideosStore });
-    } catch (err) {
-        return res.status(500).json({ success: false, error: err.message });
-    }
+app.get('/api/get-videos', (req, res) => {
+    return res.json({ success: true, videos: uploadedVideosStore });
 });
 
 // API: Tirtirida Video-ga
-app.post('/api/delete-video', async (req, res) => {
-    try {
-        const { videoId, uid } = req.body;
-        uploadedVideosStore = uploadedVideosStore.filter(v => v.id !== videoId);
-        return res.json({ success: true, message: "Video-ga waa la tirtiray." });
-    } catch (err) {
-        return res.status(500).json({ success: false, error: err.message });
-    }
+app.post('/api/delete-video', (req, res) => {
+    const { videoId } = req.body;
+    uploadedVideosStore = uploadedVideosStore.filter(v => v.id !== videoId);
+    return res.json({ success: true });
 });
 
 const PORT = process.env.PORT || 3000;

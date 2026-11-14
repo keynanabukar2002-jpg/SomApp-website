@@ -918,7 +918,7 @@
         }
     }
 
-    /* Change Profile Photo & Save Permanently per User UID */
+    /* Change Profile Photo & Save Permanently tied to Universal Key + UID */
     function changeProfilePhoto(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -926,6 +926,8 @@
         const reader = new FileReader();
         reader.onload = function(e) {
             const imgDataUrl = e.target.result;
+            // Kaydi laba jeer si uusan u lumin haddii account la beddelo
+            localStorage.setItem('knn_permanent_avatar', imgDataUrl);
             if (currentUserUid) {
                 localStorage.setItem('knn_avatar_' + currentUserUid, imgDataUrl);
             }
@@ -935,12 +937,18 @@
     }
 
     function loadSavedAvatar(uid) {
-        if (!uid) return;
-        const savedImg = localStorage.getItem('knn_avatar_' + uid);
+        // Marka hore fiiri midka gaarka ah, haddii la waayana fiiri midka guud ee universal-ka ah
+        let savedImg = null;
+        if (uid) {
+            savedImg = localStorage.getItem('knn_avatar_' + uid);
+        }
+        if (!savedImg) {
+            savedImg = localStorage.getItem('knn_permanent_avatar');
+        }
+
         if (savedImg) {
             applyAvatarImage(savedImg);
         } else {
-            // Reset to initial letter if no saved photo exists
             document.getElementById('profileAvatarImg').classList.add('hidden');
             document.getElementById('profileInitial').classList.remove('hidden');
         }
@@ -1168,7 +1176,7 @@
                     document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
                 }
 
-                // Load saved avatar for this specific user if exists
+                // Load saved avatar immediately after login
                 loadSavedAvatar(user.uid);
             } else {
                 alert("Cilad Server: " + (data.error || "Unknown error"));
@@ -1265,14 +1273,18 @@
 
     logoutUser = function() {
         firebase.auth().signOut().then(() => {
-            // Kaydi sawirka ka hor inta aadan tirtirin localStorage si uusan u lumin
+            // Xafid labada furaha ee sawirka si uusan u tirtirmin logout-ka
+            let savedAvatarPerm = localStorage.getItem('knn_permanent_avatar');
             let avatarKey = currentUserUid ? 'knn_avatar_' + currentUserUid : null;
-            let savedAvatar = avatarKey ? localStorage.getItem(avatarKey) : null;
+            let savedAvatarUser = avatarKey ? localStorage.getItem(avatarKey) : null;
             
             localStorage.clear();
             
-            if (avatarKey && savedAvatar) {
-                localStorage.setItem(avatarKey, savedAvatar);
+            if (savedAvatarPerm) {
+                localStorage.setItem('knn_permanent_avatar', savedAvatarPerm);
+            }
+            if (avatarKey && savedAvatarUser) {
+                localStorage.setItem(avatarKey, savedAvatarUser);
             }
             
             location.reload();

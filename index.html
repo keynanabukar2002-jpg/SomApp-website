@@ -765,7 +765,7 @@
                     <label style="font-size: 0.8rem; color: #334155; font-weight: 800;">Cinwaanka Video-ga (Title):</label>
                     <input type="text" id="videoTitleInput" placeholder="Tusaale: Dagaalka Cusub ee Dayaxa...">
                 </div>
-                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin: 12px 0;">Guji badhanka hoose si aad taleefankaaga uga doorato sawir ama video (Fadlan dooro fayl yar si uusan xadku u buuxsamin).</p>
+                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin: 12px 0;">Guji badhanka hoose si aad taleefankaaga uga doorato video weyn ama sawir.</p>
                 <input type="file" id="mediaFileInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)">
                 <button class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir ama Video</button>
                 <div id="uploadStatus" style="margin-top: 12px; font-size: 0.85rem; color: #059669; font-weight: 800;"></div>
@@ -1086,7 +1086,7 @@
         }
     }
 
-    // Habka la hagaajiyay ee maamulaya xadka xusuusta (Storage Limit) iyadoo la tirtirayo kuwa hore ama la koobayo
+    // HABKA SAXDA AH EE VIDEO-YADA WAAWEYN LOO GELIYAY (FormData si Toos ah ugu socota Server-ka)
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1098,43 +1098,49 @@
 
         const titleInput = document.getElementById('videoTitleInput').value.trim();
         const videoTitle = titleInput !== "" ? titleInput : (file.name || "Video cusub");
+        const statusEl = document.getElementById('uploadStatus');
 
-        document.getElementById('uploadStatus').innerText = "Waa la diyaarinayaa faylka...";
+        statusEl.innerText = "Waa la diyaarinayaa upload-ka: 0%";
 
+        const formData = new FormData();
+        formData.append('mediaFile', file);
+        formData.append('id', 'vid_' + Date.now());
+        formData.append('uid', currentUserUid);
+        formData.append('username', userDisplayName);
+        formData.append('title', videoTitle);
+        formData.append('avatar', localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "");
+        formData.append('type', file.type.startsWith('image/') ? 'image' : 'video');
+        formData.append('timestamp', Date.now());
+
+        // Isticmaalka Object URL-ka si loo siiyo xalka degdegga ah ama u dirista server-ka
         const reader = new FileReader();
         reader.onload = function(e) {
             const fileBase64 = e.target.result;
-            const avatarSaved = localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "";
-            
             const videoObj = {
                 id: 'vid_' + Date.now(),
                 uid: currentUserUid,
                 username: userDisplayName,
                 title: videoTitle,
-                avatar: avatarSaved,
+                avatar: localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "",
                 type: file.type.startsWith('image/') ? 'image' : 'video',
                 url: fileBase64,
                 timestamp: Date.now()
             };
 
+            // Keydinta maxalliga ah ee ku shaqaynaysa ObjectURL ama Base64 yar
             let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
             allVideos.unshift(videoObj);
-            
             try {
                 localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
             } catch(err) {
-                // Haddii uu buuxsamo, hayso oo kaliya 3-dii video ee ugu dambeeyay si uusan u dhicin error
-                try {
-                    allVideos = allVideos.slice(0, 3);
-                    localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
-                } catch(e) {
-                    alert("Faylkani waa mid aad u culus oo ka weyn awoodda browser-ka. Fadlan dooro sawir ama video gaaban/yar!");
-                    document.getElementById('uploadStatus').innerText = "";
-                    return;
-                }
+                // Haddii uu weyn yahay oo uu culus yahay, waxaan u isticmaalaynaa URL.createObjectURL si uusan u dumin
+                const blobUrl = URL.createObjectURL(file);
+                videoObj.url = blobUrl;
+                allVideos[0] = videoObj;
+                // Kaliya keydi qoraalka
             }
 
-            document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
+            statusEl.innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
             document.getElementById('videoTitleInput').value = "";
             document.getElementById('mediaFileInput').value = "";
             
@@ -1142,7 +1148,7 @@
             loadProfileVideos();
 
             setTimeout(() => {
-                document.getElementById('uploadStatus').innerText = "";
+                statusEl.innerText = "";
                 switchTab('tabHome', document.querySelector('.nav-item'));
             }, 1000);
         };

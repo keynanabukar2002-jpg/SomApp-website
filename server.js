@@ -10,6 +10,9 @@ app.use(cors());
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
 
+// Keydka Video-yada ee server-ka
+let serverVideosStore = [];
+
 async function getFirestoreUser(uid) {
     try {
         const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users/${uid}`;
@@ -168,6 +171,42 @@ app.post('/api/withdraw', async (req, res) => {
         console.error("Withdraw Error:", err.message);
         return res.status(500).json({ success: false, error: "Cilad Blockchain: " + err.message });
     }
+});
+
+// --- API-YADA VIDEO-YADA (Cusub) ---
+app.post('/api/upload-video', (req, res) => {
+    try {
+        const { id, uid, username, title, avatar, type, url, timestamp } = req.body;
+        if (!url) {
+            return res.status(400).json({ success: false, error: "Url-ka faylku waa maqan yahay." });
+        }
+
+        const newVideo = {
+            id: id || 'vid_' + Date.now(),
+            uid,
+            username,
+            title,
+            avatar,
+            type,
+            url,
+            timestamp: timestamp || Date.now()
+        };
+
+        serverVideosStore.unshift(newVideo);
+        return res.json({ success: true, message: "Video-ga waa la keydiyay.", video: newVideo });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.get('/api/get-videos', (req, res) => {
+    return res.json({ success: true, videos: serverVideosStore });
+});
+
+app.post('/api/delete-video', (req, res) => {
+    const { videoId } = req.body;
+    serverVideosStore = serverVideosStore.filter(v => v.id !== videoId);
+    return res.json({ success: true });
 });
 
 const PORT = process.env.PORT || 3000;

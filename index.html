@@ -661,7 +661,7 @@
             </button>
         </div>
 
-        <!-- Dashboard / Home Tab (Halkan waxaa ka muuqda dhammaan fiidiyowyada dadka) -->
+        <!-- Dashboard / Home Tab -->
         <div id="tabHome" class="tab-content hidden" style="padding: 10px 0;">
             <div id="homeFeedContainer" class="feed-container">
                 <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 20px;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>
@@ -785,7 +785,6 @@
                   <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg></div>
                 </div>
 
-                <!-- Qeybta lagu soo bandhigo fiidiyowyada qofka (Profile Videos Grid) -->
                 <div id="profileVideosGrid" class="profile-videos-grid" style="width: 100%; margin-top: 5px;">
                     <div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px; font-weight: 700;">Weli ma aadan soo gelin wax video ah.</div>
                 </div>
@@ -1011,7 +1010,7 @@
         initialEl.classList.add('hidden');
     }
 
-    /* System for Local Storage Video Feed & Profile Videos */
+    /* Fast & Lightweight Local Media Handling */
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1021,37 +1020,38 @@
             return;
         }
 
-        const reader = new FileReader();
         document.getElementById('uploadStatus').innerText = "Waa la soo gelinayaa...";
 
-        reader.onload = function(e) {
-            const fileDataUrl = e.target.result;
-            const videoObj = {
-                id: 'vid_' + Date.now(),
-                uid: currentUserUid,
-                username: userDisplayName,
-                type: file.type.startsWith('image/') ? 'image' : 'video',
-                url: fileDataUrl,
-                timestamp: Date.now()
-            };
-
-            // Get existing videos or initialize
-            let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
-            allVideos.unshift(videoObj); // Add new to top
-            localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
-
-            document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
-            
-            // Reload feeds
-            loadAllVideosFeed();
-            loadProfileVideos();
-
-            setTimeout(() => {
-                document.getElementById('uploadStatus').innerText = "";
-                switchTab('tabHome', document.querySelector('.nav-item'));
-            }, 1200);
+        // Use Object URL to instantly load without crashing or freezing browser
+        const fileURL = URL.createObjectURL(file);
+        
+        const videoObj = {
+            id: 'vid_' + Date.now(),
+            uid: currentUserUid,
+            username: userDisplayName,
+            type: file.type.startsWith('image/') ? 'image' : 'video',
+            url: fileURL,
+            timestamp: Date.now()
         };
-        reader.readAsDataURL(file);
+
+        let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
+        allVideos.unshift(videoObj);
+        
+        try {
+            localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
+        } catch(err) {
+            console.log("Storage limit reached for object URLs, keeping memory active");
+        }
+
+        document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
+        
+        loadAllVideosFeed();
+        loadProfileVideos();
+
+        setTimeout(() => {
+            document.getElementById('uploadStatus').innerText = "";
+            switchTab('tabHome', document.querySelector('.nav-item'));
+        }, 1000);
     }
 
     function loadAllVideosFeed() {
@@ -1296,7 +1296,7 @@
             const data = await response.json();
             if (data.success) {
                 userPolygonAddress = data.polygonAddress;
-                userDisplayName = user.displayName || "User";
+                userDisplayName = data.displayName || "User";
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('bottomNav').classList.remove('hidden');
@@ -1386,7 +1386,7 @@
             const data = await response.json();
             if (data.success) {
                 alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
-                document.getElementById('balanceDeposit').innerText = data.newBalance + " POL";
+                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL";
             } else {
                 alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
             }

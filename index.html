@@ -235,7 +235,6 @@
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
 
-        /* YouTube Style Home Feed */
         .feed-container {
             display: flex;
             flex-direction: column;
@@ -301,7 +300,6 @@
             font-weight: 700;
         }
 
-        /* Profile Grid Videos */
         .profile-videos-grid {
             display: grid;
             grid-template-columns: repeat(3, 1fr);
@@ -723,7 +721,6 @@
 <body>
 
 <div class="app-frame" onclick="closeProfileMenuOutside(event)">
-    <!-- TOP NAVIGATION BAR -->
     <div class="top-nav" id="topNav">
         <div class="logo">
             <span class="logo-badge">K</span>
@@ -732,10 +729,7 @@
         <div id="userStatus" class="status-pill">Loading...</div>
     </div>
 
-    <!-- CONTENT BODY -->
     <div class="content-body" id="contentBody">
-
-        <!-- Login View -->
         <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 20px; margin-left: 15px; margin-right: 15px;">
             <h3 style="color: #0f172a; margin-bottom: 8px; font-size: 1.4rem; font-weight: 800;">Ku soo dhawoow</h3>
             <p style="color: #334155; font-size: 0.9rem; font-weight: 800; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
@@ -745,14 +739,12 @@
             </button>
         </div>
 
-        <!-- Dashboard / Home Tab (YouTube Style Feed) -->
         <div id="tabHome" class="tab-content hidden" style="padding: 0;">
             <div id="homeFeedContainer" class="feed-container">
                 <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>
             </div>
         </div>
 
-        <!-- Chat Tab -->
         <div id="tabChat" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card">
                 <div class="card-title" style="color:#16a34a; font-weight:800;">💬 Bulshada / Chat-ka Guud</div>
@@ -766,26 +758,20 @@
             </div>
         </div>
 
-        <!-- Upload Media Tab -->
         <div id="tabUpload" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card" style="text-align: center;">
                 <div class="card-title" style="color:#7c3aed; font-weight:800;">Soo geli Sawir ama Video</div>
-                
                 <div class="input-group" style="text-align: left; margin-top: 10px;">
                     <label style="font-size: 0.8rem; color: #334155; font-weight: 800;">Cinwaanka Video-ga (Title):</label>
                     <input type="text" id="videoTitleInput" placeholder="Tusaale: Dagaalka Cusub ee Dayaxa...">
                 </div>
-
                 <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin: 12px 0;">Guji badhanka hoose si aad taleefankaaga uga doorato sawir ama video.</p>
-                
                 <input type="file" id="mediaFileInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)">
                 <button class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir ama Video</button>
-                
                 <div id="uploadStatus" style="margin-top: 12px; font-size: 0.85rem; color: #059669; font-weight: 800;"></div>
             </div>
         </div>
 
-        <!-- Qur'aan Tab -->
         <div id="tabQuran" class="tab-content hidden">
             <div id="quranListContainer" style="width: 100%;">
                 <div class="pagination-bar">
@@ -811,7 +797,6 @@
             </div>
         </div>
 
-        <!-- Wallet & Withdraw Tab -->
         <div id="tabWallet" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card">
                 <div class="card-title">
@@ -841,7 +826,6 @@
             </div>
         </div>
 
-        <!-- Settings / Profile Tab -->
         <div id="tabSettings" class="tab-content hidden">
             <div class="tiktok-profile">
                 <button class="profile-back-btn" onclick="switchTab('tabHome', document.querySelector('.nav-item'))">← Dib u laabo</button>
@@ -874,16 +858,13 @@
                   <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-5-7 5V4a1 1 0 0 1 1-1z"/></svg></div>
                   <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg></div>
                 </div>
-
                 <div id="profileVideosGrid" class="profile-videos-grid" style="width: 100%; margin-top: 5px;">
                     <div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px; font-weight: 700;">Weli ma aadan soo gelin wax video ah.</div>
                 </div>
             </div>
         </div>
-
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -1105,7 +1086,6 @@
         }
     }
 
-    // Soo gelinta Video-ga oo FormData adeegsanaya (Si fiidiyow weyn u galo)
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;

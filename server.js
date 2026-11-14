@@ -7,7 +7,6 @@ const fs = require('fs');
 
 const app = express();
 
-// CORS si buuxda u fur si uusan GitHub Pages u xirin xiriirka
 app.use(cors({
     origin: '*',
     methods: ['GET', 'POST', 'PUT', 'DELETE'],
@@ -18,14 +17,19 @@ app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
 const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir);
+try {
+    if (!fs.existsSync(uploadDir)) {
+        fs.mkdirSync(uploadDir, { recursive: true });
+    }
+} catch (e) {
+    console.log("Upload dir creation error:", e);
 }
+
 app.use('/uploads', express.static(uploadDir));
 
 const storage = multer.diskStorage({
     destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + file.originalname.replace(/\s+/g, '_'))
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + (file.originalname ? file.originalname.replace(/\s+/g, '_') : 'file'))
 });
 const upload = multer({ storage: storage });
 

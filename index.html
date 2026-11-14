@@ -1108,6 +1108,7 @@
         }
     }
 
+    // Soo gelinta Video-ga oo Server-ka loo dirayo (lagama cabsanayo xadka localStorage)
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1120,10 +1121,10 @@
         const titleInput = document.getElementById('videoTitleInput').value.trim();
         const videoTitle = titleInput !== "" ? titleInput : (file.name || "Video cusub");
 
-        document.getElementById('uploadStatus').innerText = "Waa la soo gelinayaa...";
+        document.getElementById('uploadStatus').innerText = "Waa la soo gelinayaa server-ka...";
 
         const reader = new FileReader();
-        reader.onload = function(e) {
+        reader.onload = async function(e) {
             const fileBase64 = e.target.result;
             const avatarSaved = localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "";
             
@@ -1138,108 +1139,128 @@
                 timestamp: Date.now()
             };
 
-            let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
-            allVideos.unshift(videoObj);
-            
             try {
-                localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
-            } catch(err) {
-                alert("Faylku waa uu ka weyn yahay xadka xusuusta (Storage limit). Fadlan soo geli video ka yar!");
+                const response = await fetch(`${SERVER_URL}/api/upload-video`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(videoObj)
+                });
+                const data = await response.json();
+                if (data.success) {
+                    document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
+                    document.getElementById('videoTitleInput').value = "";
+                    document.getElementById('mediaFileInput').value = "";
+                    
+                    loadAllVideosFeed();
+                    loadProfileVideos();
+
+                    setTimeout(() => {
+                        document.getElementById('uploadStatus').innerText = "";
+                        switchTab('tabHome', document.querySelector('.nav-item'));
+                    }, 1000);
+                } else {
+                    alert("Cilad: " + data.error);
+                    document.getElementById('uploadStatus').innerText = "";
+                }
+            } catch (err) {
+                console.error(err);
+                alert("Xiriirkii Server-ka ayaa go'ay.");
                 document.getElementById('uploadStatus').innerText = "";
-                return;
             }
-
-            document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
-            document.getElementById('videoTitleInput').value = "";
-            document.getElementById('mediaFileInput').value = "";
-            
-            loadAllVideosFeed();
-            loadProfileVideos();
-
-            setTimeout(() => {
-                document.getElementById('uploadStatus').innerText = "";
-                switchTab('tabHome', document.querySelector('.nav-item'));
-            }, 1000);
         };
         reader.readAsDataURL(file);
     }
 
-    function loadAllVideosFeed() {
+    // Soo bandhigida fiidiyowyada Home Feed-ka ee Server-ka laga keenayo
+    async function loadAllVideosFeed() {
         const feedContainer = document.getElementById('homeFeedContainer');
-        const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
+        try {
+            const response = await fetch(`${SERVER_URL}/api/get-videos`);
+            const data = await response.json();
+            const allVideos = data.videos || [];
 
-        if (allVideos.length === 0) {
-            feedContainer.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px; font-weight:700;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>`;
-            return;
-        }
-
-        feedContainer.innerHTML = "";
-        allVideos.forEach(item => {
-            const card = document.createElement('div');
-            card.className = 'yt-card';
-            
-            let mediaHtml = '';
-            if (item.type === 'image') {
-                mediaHtml = `<img src="${item.url}" class="yt-media" alt="Post">`;
-            } else {
-                mediaHtml = `<video src="${item.url}" class="yt-media" controls playsinline></video>`;
+            if (allVideos.length === 0) {
+                feedContainer.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px; font-weight:700;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>`;
+                return;
             }
 
-            let avatarHtml = '';
-            if (item.avatar) {
-                avatarHtml = `<img src="${item.avatar}" alt="Avatar">`;
-            } else {
-                avatarHtml = (item.username || 'U').charAt(0).toUpperCase();
-            }
+            feedContainer.innerHTML = "";
+            allVideos.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'yt-card';
+                
+                let mediaHtml = '';
+                if (item.type === 'image') {
+                    mediaHtml = `<img src="${item.url}" class="yt-media" alt="Post">`;
+                } else {
+                    mediaHtml = `<video src="${item.url}" class="yt-media" controls playsinline></video>`;
+                }
 
-            card.innerHTML = `
-                <div class="yt-media-container">
-                    ${mediaHtml}
-                </div>
-                <div class="yt-details">
-                    <div class="yt-avatar">${avatarHtml}</div>
-                    <div class="yt-meta">
-                        <div class="yt-title">${item.title || 'Video cusub oo la soo geliyay'}</div>
-                        <div class="yt-subinfo">@${item.username || 'User'} • 1 view • Hadda la soo geliyay</div>
+                let avatarHtml = '';
+                if (item.avatar) {
+                    avatarHtml = `<img src="${item.avatar}" alt="Avatar">`;
+                } else {
+                    avatarHtml = (item.username || 'U').charAt(0).toUpperCase();
+                }
+
+                card.innerHTML = `
+                    <div class="yt-media-container">
+                        ${mediaHtml}
                     </div>
-                </div>
-            `;
-            feedContainer.appendChild(card);
-        });
+                    <div class="yt-details">
+                        <div class="yt-avatar">${avatarHtml}</div>
+                        <div class="yt-meta">
+                            <div class="yt-title">${item.title || 'Video cusub oo la soo geliyay'}</div>
+                            <div class="yt-subinfo">@${item.username || 'User'} • 1 view • Hadda la soo geliyay</div>
+                        </div>
+                    </div>
+                `;
+                feedContainer.appendChild(card);
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
 
-    function loadProfileVideos() {
+    // Soo bandhigida Profile Videos iyo badhanka Delete-ka
+    async function loadProfileVideos() {
         const gridContainer = document.getElementById('profileVideosGrid');
-        const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
-        
-        const userVideos = allVideos.filter(v => v.uid === currentUserUid);
-
-        if (userVideos.length === 0) {
-            gridContainer.innerHTML = `<div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px; font-weight: 700;">Weli ma aadan soo gelin wax video ah.</div>`;
-            return;
-        }
-
-        gridContainer.innerHTML = "";
-        userVideos.forEach(item => {
-            const div = document.createElement('div');
-            div.className = 'profile-video-item';
+        try {
+            const response = await fetch(`${SERVER_URL}/api/get-videos`);
+            const data = await response.json();
+            const allVideos = data.videos || [];
             
-            let mediaElHtml = '';
-            if (item.type === 'image') {
-                mediaElHtml = `<img src="${item.url}" alt="Profile Post">`;
-            } else {
-                mediaElHtml = `<video src="${item.url}" playsinline onclick="togglePlay(this)"></video>`;
+            const userVideos = allVideos.filter(v => v.uid === currentUserUid);
+
+            if (userVideos.length === 0) {
+                gridContainer.innerHTML = `<div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px; font-weight: 700;">Weli ma aadan soo gelin wax video ah.</div>`;
+                return;
             }
 
-            div.innerHTML = `
-                ${mediaElHtml}
-                <button class="video-menu-btn" onclick="toggleVideoMenu(event, '${item.id}')">⋮</button>
-                <div class="video-dropdown" id="dropdown_${item.id}">
-                    <button class="delete-video-option" onclick="deleteVideo('${item.id}')">🗑️ Delete</button>
-                </div>
-            `;
-            gridContainer.appendChild(div);
-        });
+            gridContainer.innerHTML = "";
+            userVideos.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'profile-video-item';
+                
+                let mediaElHtml = '';
+                if (item.type === 'image') {
+                    mediaElHtml = `<img src="${item.url}" alt="Profile Post">`;
+                } else {
+                    mediaElHtml = `<video src="${item.url}" playsinline onclick="togglePlay(this)"></video>`;
+                }
+
+                div.innerHTML = `
+                    ${mediaElHtml}
+                    <button class="video-menu-btn" onclick="toggleVideoMenu(event, '${item.id}')">⋮</button>
+                    <div class="video-dropdown" id="dropdown_${item.id}">
+                        <button class="delete-video-option" onclick="deleteVideo('${item.id}')">🗑️ Delete</button>
+                    </div>
+                `;
+                gridContainer.appendChild(div);
+            });
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     function togglePlay(videoEl) {
@@ -1260,15 +1281,21 @@
         dropdown.classList.toggle('show');
     }
 
-    function deleteVideo(videoId) {
+    async function deleteVideo(videoId) {
         if (!confirm("Ma hubtaa inaad tirtirto fiidiyowgan?")) return;
 
-        let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
-        allVideos = allVideos.filter(v => v.id !== videoId);
-        localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
+        try {
+            await fetch(`${SERVER_URL}/api/delete-video`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ videoId, uid: currentUserUid })
+            });
 
-        loadProfileVideos();
-        loadAllVideosFeed();
+            loadProfileVideos();
+            loadAllVideosFeed();
+        } catch (err) {
+            console.error(err);
+        }
     }
 
     function renderSurahListPage() {

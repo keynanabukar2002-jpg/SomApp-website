@@ -235,18 +235,54 @@
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
 
-        /* Media Preview Styles */
-        .media-preview-container {
-            margin-top: 12px;
-            text-align: center;
+        /* Home Feed Video Styles */
+        .feed-container {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            padding: 0 15px;
         }
-        .media-preview-container img, .media-preview-container video {
-            max-width: 100%;
-            max-height: 220px;
-            border-radius: 10px;
-            border: 2px solid #7c3aed;
+        .feed-card {
+            background: #ffffff;
+            border-radius: 16px;
+            overflow: hidden;
+            border: 2px solid rgba(51, 150, 255, 0.3);
+            box-shadow: 0 6px 20px rgba(51, 150, 255, 0.12);
+        }
+        .feed-header {
+            padding: 12px 16px;
+            font-size: 0.85rem;
+            color: #0f172a;
+            font-weight: 800;
+            border-bottom: 1px solid #e2e8f0;
+            background: #f8fafc;
+        }
+        .feed-media {
+            width: 100%;
+            max-height: 350px;
             object-fit: contain;
-            margin-top: 8px;
+            background: #000;
+            display: block;
+        }
+
+        /* Profile Grid Videos */
+        .profile-videos-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 4px;
+            padding: 4px;
+            width: 100%;
+        }
+        .profile-video-item {
+            aspect-ratio: 9/16;
+            background: #000;
+            overflow: hidden;
+            border-radius: 4px;
+        }
+        .profile-video-item video, .profile-video-item img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
         }
 
         /* Chat styles */
@@ -625,11 +661,10 @@
             </button>
         </div>
 
-        <!-- Dashboard / Home Tab -->
-        <div id="tabHome" class="tab-content hidden" style="padding: 0 15px; text-align: center; padding-top: 40px;">
-            <div class="card">
-                <div class="card-title">Home Dashboard</div>
-                <p style="color: #475569; font-size: 0.9rem; font-weight: 800;">Ku soo dhowaow KNN MicroPay. Xogtaada lacagta iyo wallet-ka waxay ku jiraan qaybta Wallet.</p>
+        <!-- Dashboard / Home Tab (Halkan waxaa ka muuqda dhammaan fiidiyowyada dadka) -->
+        <div id="tabHome" class="tab-content hidden" style="padding: 10px 0;">
+            <div id="homeFeedContainer" class="feed-container">
+                <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 20px;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>
             </div>
         </div>
 
@@ -647,19 +682,16 @@
             </div>
         </div>
 
-        <!-- Upload Media Tab (Bedelkii Scan-ka) -->
+        <!-- Upload Media Tab -->
         <div id="tabUpload" class="tab-content hidden" style="padding: 0 15px;">
-            <div class="card">
+            <div class="card" style="text-align: center;">
                 <div class="card-title" style="color:#7c3aed; font-weight:800;">Soo geli Sawir ama Video</div>
-                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 12px;">Guji badhanka hoose si aad taleefankaaga uga doorato ama uga soo geliso Sawir ama Video.</p>
+                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 12px;">Guji badhanka hoose si aad taleefankaaga uga doorato sawir ama video.</p>
                 
-                <!-- Hidden file input for images & videos -->
                 <input type="file" id="mediaFileInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)">
-                
                 <button class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir ama Video</button>
                 
-                <!-- Preview area -->
-                <div id="mediaPreview" class="media-preview-container hidden"></div>
+                <div id="uploadStatus" style="margin-top: 12px; font-size: 0.85rem; color: #059669; font-weight: 800;"></div>
             </div>
         </div>
 
@@ -741,7 +773,7 @@
                 <div class="profile-name" id="profileDisplayName">Keynan abukar</div>
                 <div class="profile-username" id="profileUsernameDisplay">@keynanabukar2002</div>
                 <div class="profile-stats">
-                    <div><div class="stat-num">0</div><div class="stat-label">subscribed</div></div>
+                    <div><div class="stat-num">14</div><div class="stat-label">Following</div></div>
                     <div><div class="stat-num">0</div><div class="stat-label">Subscribers</div></div>
                     <div><div class="stat-num">0</div><div class="stat-label">Likes</div></div>
                 </div>
@@ -752,13 +784,17 @@
                   <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-5-7 5V4a1 1 0 0 1 1-1z"/></svg></div>
                   <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg></div>
                 </div>
-                <div style="text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 30px; font-weight: 700;">Weli ma aadan soo gelin wax video ah.</div>
+
+                <!-- Qeybta lagu soo bandhigo fiidiyowyada qofka (Profile Videos Grid) -->
+                <div id="profileVideosGrid" class="profile-videos-grid" style="width: 100%; margin-top: 5px;">
+                    <div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px; font-weight: 700;">Weli ma aadan soo gelin wax video ah.</div>
+                </div>
             </div>
         </div>
 
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (Scan bedelkeedii waxaa la galiyay Upload Icon & Label) -->
+    <!-- BOTTOM NAVIGATION BAR -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -768,7 +804,6 @@
             <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
             <span>Chat</span>
         </button>
-        <!-- Upload / Media Button -->
         <button class="nav-item" onclick="switchTab('tabUpload', this)">
             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             <span>Upload</span>
@@ -890,6 +925,7 @@
 
     window.onload = function() {
         renderSurahListPage();
+        loadAllVideosFeed();
     };
 
     function selectProfileTab(selected) {
@@ -942,18 +978,13 @@
                 ctx.drawImage(img, 0, 0, width, height);
 
                 const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
-                
                 try {
                     if (currentUserUid) {
                         localStorage.setItem('knn_avatar_uid_' + currentUserUid, compressedDataUrl);
                     }
-                    if (currentUserEmail) {
-                        localStorage.setItem('knn_avatar_email_' + currentUserEmail.toLowerCase(), compressedDataUrl);
-                    }
                 } catch (err) {
                     console.error("Storage error:", err);
                 }
-
                 applyAvatarImage(compressedDataUrl);
             };
             img.src = e.target.result;
@@ -961,15 +992,9 @@
         reader.readAsDataURL(file);
     }
 
-    function loadSavedAvatar(uid, email) {
-        let savedImg = null;
-        if (uid) {
-            savedImg = localStorage.getItem('knn_avatar_uid_' + uid);
-        }
-        if (!savedImg && email) {
-            savedImg = localStorage.getItem('knn_avatar_email_' + email.toLowerCase());
-        }
-
+    function loadSavedAvatar(uid) {
+        if (!uid) return;
+        const savedImg = localStorage.getItem('knn_avatar_uid_' + uid);
         if (savedImg) {
             applyAvatarImage(savedImg);
         } else {
@@ -986,28 +1011,101 @@
         initialEl.classList.add('hidden');
     }
 
-    /* Media Upload Handler (Sawir ama Video) */
+    /* System for Local Storage Video Feed & Profile Videos */
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
 
-        const previewContainer = document.getElementById('mediaPreview');
-        previewContainer.classList.remove('hidden');
-        previewContainer.innerHTML = `<p style="font-size:0.85rem; color:#059669; font-weight:800; margin-bottom:6px;">Waa la soo geliyay: ${file.name}</p>`;
-
-        const fileURL = URL.createObjectURL(file);
-
-        if (file.type.startsWith('image/')) {
-            const img = document.createElement('img');
-            img.src = fileURL;
-            previewContainer.appendChild(img);
-        } else if (file.type.startsWith('video/')) {
-            const video = document.createElement('video');
-            video.src = fileURL;
-            video.controls = true;
-            video.autoplay = false;
-            previewContainer.appendChild(video);
+        if (!currentUserUid) {
+            alert("Fadlan marka hore gal Account-kaaga!");
+            return;
         }
+
+        const reader = new FileReader();
+        document.getElementById('uploadStatus').innerText = "Waa la soo gelinayaa...";
+
+        reader.onload = function(e) {
+            const fileDataUrl = e.target.result;
+            const videoObj = {
+                id: 'vid_' + Date.now(),
+                uid: currentUserUid,
+                username: userDisplayName,
+                type: file.type.startsWith('image/') ? 'image' : 'video',
+                url: fileDataUrl,
+                timestamp: Date.now()
+            };
+
+            // Get existing videos or initialize
+            let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
+            allVideos.unshift(videoObj); // Add new to top
+            localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
+
+            document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
+            
+            // Reload feeds
+            loadAllVideosFeed();
+            loadProfileVideos();
+
+            setTimeout(() => {
+                document.getElementById('uploadStatus').innerText = "";
+                switchTab('tabHome', document.querySelector('.nav-item'));
+            }, 1200);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function loadAllVideosFeed() {
+        const feedContainer = document.getElementById('homeFeedContainer');
+        const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
+
+        if (allVideos.length === 0) {
+            feedContainer.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px; font-weight:700;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>`;
+            return;
+        }
+
+        feedContainer.innerHTML = "";
+        allVideos.forEach(item => {
+            const card = document.createElement('div');
+            card.className = 'feed-card';
+            
+            let mediaHtml = '';
+            if (item.type === 'image') {
+                mediaHtml = `<img src="${item.url}" class="feed-media" alt="Post">`;
+            } else {
+                mediaHtml = `<video src="${item.url}" class="feed-media" controls muted playsinline></video>`;
+            }
+
+            card.innerHTML = `
+                <div class="feed-header">@${item.username || 'User'}</div>
+                ${mediaHtml}
+            `;
+            feedContainer.appendChild(card);
+        });
+    }
+
+    function loadProfileVideos() {
+        const gridContainer = document.getElementById('profileVideosGrid');
+        const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
+        
+        const userVideos = allVideos.filter(v => v.uid === currentUserUid);
+
+        if (userVideos.length === 0) {
+            gridContainer.innerHTML = `<div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px; font-weight: 700;">Weli ma aadan soo gelin wax video ah.</div>`;
+            return;
+        }
+
+        gridContainer.innerHTML = "";
+        userVideos.forEach(item => {
+            const div = document.createElement('div');
+            div.className = 'profile-video-item';
+            
+            if (item.type === 'image') {
+                div.innerHTML = `<img src="${item.url}" alt="Profile Post">`;
+            } else {
+                div.innerHTML = `<video src="${item.url}" muted></video>`;
+            }
+            gridContainer.appendChild(div);
+        });
     }
 
     function renderSurahListPage() {
@@ -1099,22 +1197,18 @@
 
         paginatedAyahs.forEach((ayah, idx) => {
             let text = ayah.text.trim();
-            
             if (activeSurahNum !== 9) {
                 text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
                            .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
                            .trim();
             }
-
             let displayNum = activeSurahNum === 1 ? (start + idx + 1) : ayah.numberInSurah;
             const arabicNum = toArabicNumeral(displayNum);
             const svgMarker = createAyahMarkerSvg(arabicNum);
-            
             html += `${text} ${svgMarker} `;
         });
 
         readerContent.innerHTML = html;
-
         const paginationBar = document.getElementById('surahPaginationBar');
         if (totalAyahPages > 1) {
             paginationBar.style.display = 'flex';
@@ -1124,7 +1218,6 @@
         } else {
             paginationBar.style.display = 'none';
         }
-
         readerContent.scrollTop = 0;
     }
 
@@ -1185,7 +1278,7 @@
 
         currentUserUid = user.uid;
         currentUserEmail = user.email || "";
-        loadSavedAvatar(user.uid, user.email);
+        loadSavedAvatar(user.uid);
 
         try {
             document.getElementById('userStatus').innerText = "Connecting...";
@@ -1203,7 +1296,7 @@
             const data = await response.json();
             if (data.success) {
                 userPolygonAddress = data.polygonAddress;
-                userDisplayName = data.displayName || "User";
+                userDisplayName = user.displayName || "User";
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('bottomNav').classList.remove('hidden');
@@ -1226,7 +1319,9 @@
                     document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
                 }
 
-                loadSavedAvatar(user.uid, user.email);
+                loadSavedAvatar(user.uid);
+                loadProfileVideos();
+                loadAllVideosFeed();
             } else {
                 alert("Cilad Server: " + (data.error || "Unknown error"));
                 document.getElementById('userStatus').innerText = "Error";
@@ -1291,7 +1386,7 @@
             const data = await response.json();
             if (data.success) {
                 alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
-                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL";
+                document.getElementById('balanceDeposit').innerText = data.newBalance + " POL";
             } else {
                 alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
             }

@@ -658,21 +658,11 @@
             </button>
         </div>
 
-        <!-- Dashboard / Home Tab -->
-        <div id="tabHome" class="tab-content hidden" style="padding: 0 15px;">
+        <!-- Dashboard / Home Tab (Hadda waa madhan yahay ama wuxuu qaadan karaa waxyaabaha kale) -->
+        <div id="tabHome" class="tab-content hidden" style="padding: 0 15px; text-align: center; padding-top: 40px;">
             <div class="card">
-                <div class="card-title">
-                    <span>Harraaga Lacagta</span>
-                    <span style="color:#059669; font-weight:800;">● Mining Active</span>
-                </div>
-                <div class="balance" id="balanceDisplay">0.00 POL</div>
-                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#3396FF; font-weight:800;">0.00</strong> POL</div>
-            </div>
-
-            <div class="card">
-                <div class="card-title">Macluumaadkaaga</div>
-                <div style="font-size: 0.9rem; color: #1e293b; font-weight: 800; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#3396FF; font-weight:800;">--</strong></div>
-                <div style="font-size: 0.85rem; color: #475569; font-weight: 800;" id="userEmailDisplay">--</div>
+                <div class="card-title">Home Dashboard</div>
+                <p style="color: #475569; font-size: 0.9rem; font-weight: 800;">Ku soo dhowaow KNN MicroPay. Xogtaada lacagta iyo wallet-ka waxay ku jiraan qaybta Wallet.</p>
             </div>
         </div>
 
@@ -731,14 +721,33 @@
             </div>
         </div>
 
-        <!-- Wallet & Withdraw Tab -->
+        <!-- Wallet & Withdraw Tab (Halkan waxaa la keenay labadii Card iyo xogtii lacagta) -->
         <div id="tabWallet" class="tab-content hidden" style="padding: 0 15px;">
+            <!-- Card 1: Harraaga Lacagta & Mining -->
+            <div class="card">
+                <div class="card-title">
+                    <span>Harraaga Lacagta</span>
+                    <span style="color:#059669; font-weight:800;">● Mining Active</span>
+                </div>
+                <div class="balance" id="balanceDisplay">0.00 POL</div>
+                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#3396FF; font-weight:800;">0.00</strong> POL</div>
+            </div>
+
+            <!-- Card 2: Macluumaadkaaga (ID & Email) -->
+            <div class="card">
+                <div class="card-title">Macluumaadkaaga</div>
+                <div style="font-size: 0.9rem; color: #1e293b; font-weight: 800; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#3396FF; font-weight:800;">--</strong></div>
+                <div style="font-size: 0.85rem; color: #475569; font-weight: 800;" id="userEmailDisplay">--</div>
+            </div>
+
+            <!-- Card 3: Cinwaankaaga Deposit-ka -->
             <div class="card">
                 <div class="card-title">Cinwaankaaga Deposit-ka</div>
                 <div class="address-box" id="depositAddress">Loading...</div>
                 <button class="btn" style="background: #e2e8f0; color: #0f172a; box-shadow:none; border: 2px solid #cbd5e1;" onclick="copyAddress()">Copy Address</button>
             </div>
 
+            <!-- Card 4: Withdraw -->
             <div class="card">
                 <div class="card-title" style="color:#3396FF; font-weight:800;">Kala bax Saamiga Maanta</div>
                 <div class="input-group">
@@ -779,8 +788,8 @@
 
                 <div class="profile-stats">
                     <div>
-                        <div class="stat-num">0</div>
-                        <div class="stat-label">subscribed</div>
+                        <div class="stat-num">14</div>
+                        <div class="stat-label">Following</div>
                     </div>
                     <div>
                         <div class="stat-num">0</div>

@@ -278,32 +278,62 @@
             background: #000;
             overflow: hidden;
             border-radius: 4px;
-            cursor: pointer;
             position: relative;
         }
         .profile-video-item video, .profile-video-item img {
             width: 100%;
             height: 100%;
             object-fit: cover;
+            cursor: pointer;
         }
-        .delete-btn-overlay {
+
+        /* Three dots overlay on profile video items */
+        .video-menu-btn {
             position: absolute;
-            top: 6px;
-            right: 6px;
-            background: rgba(220, 38, 38, 0.85);
-            color: white;
+            top: 4px;
+            right: 4px;
+            background: rgba(0,0,0,0.6);
+            color: #fff;
             border: none;
+            width: 24px;
+            height: 24px;
             border-radius: 50%;
-            width: 28px;
-            height: 28px;
-            font-size: 0.8rem;
-            font-weight: 800;
+            font-size: 0.9rem;
             display: flex;
             justify-content: center;
             align-items: center;
             cursor: pointer;
-            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
             z-index: 10;
+        }
+        .video-dropdown {
+            position: absolute;
+            top: 30px;
+            right: 4px;
+            background: #ffffff;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            display: none;
+            z-index: 20;
+            min-width: 90px;
+        }
+        .video-dropdown.show {
+            display: block;
+        }
+        .delete-video-option {
+            background: none;
+            border: none;
+            color: #dc2626;
+            font-size: 0.75rem;
+            font-weight: 800;
+            width: 100%;
+            padding: 8px;
+            text-align: left;
+            cursor: pointer;
+        }
+        .delete-video-option:hover {
+            background: #fee2e2;
+            border-radius: 8px;
         }
 
         /* Chat styles */
@@ -966,6 +996,8 @@
         if (!menu.classList.contains('hidden')) {
             menu.classList.add('hidden');
         }
+        // Close any open video dropdowns
+        document.querySelectorAll('.video-dropdown').forEach(d => d.classList.remove('show'));
     }
 
     function changeProfilePhoto(event) {
@@ -1102,19 +1134,7 @@
         });
     }
 
-    /* Qeybta Tirtirista (Delete Video) ee Profile-ka */
-    function deleteVideo(videoId, event) {
-        event.stopPropagation(); // Si uusan video-gu u daarmateyn markii la tirtirayo
-        if (!confirm("Ma hubtaa inaad tirtirto fiidiyowgan?")) return;
-
-        let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
-        allVideos = allVideos.filter(v => v.id !== videoId);
-        localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
-
-        loadProfileVideos();
-        loadAllVideosFeed();
-    }
-
+    // Load Profile Videos with 3-dots Menu & Delete Option
     function loadProfileVideos() {
         const gridContainer = document.getElementById('profileVideosGrid');
         const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
@@ -1131,34 +1151,52 @@
             const div = document.createElement('div');
             div.className = 'profile-video-item';
             
-            // Badhanka tirtirista (Delete button oo saaran geeska kore)
-            const deleteBtn = document.createElement('button');
-            deleteBtn.className = 'delete-btn-overlay';
-            deleteBtn.innerHTML = '✕';
-            deleteBtn.title = 'Tirtir Video-ga';
-            deleteBtn.onclick = (e) => deleteVideo(item.id, e);
-            div.appendChild(deleteBtn);
-
+            let mediaElHtml = '';
             if (item.type === 'image') {
-                const img = document.createElement('img');
-                img.src = item.url;
-                div.appendChild(img);
+                mediaElHtml = `<img src="${item.url}" alt="Profile Post">`;
             } else {
-                const videoEl = document.createElement('video');
-                videoEl.src = item.url;
-                videoEl.setAttribute('playsinline', '');
-                videoEl.onclick = function() {
-                    if (videoEl.paused) {
-                        videoEl.play();
-                        videoEl.setAttribute('controls', 'controls');
-                    } else {
-                        videoEl.pause();
-                    }
-                };
-                div.appendChild(videoEl);
+                mediaElHtml = `<video src="${item.url}" playsinline onclick="togglePlay(this)"></video>`;
             }
+
+            div.innerHTML = `
+                ${mediaElHtml}
+                <button class="video-menu-btn" onclick="toggleVideoMenu(event, '${item.id}')">⋮</button>
+                <div class="video-dropdown" id="dropdown_${item.id}">
+                    <button class="delete-video-option" onclick="deleteVideo('${item.id}')">🗑️ Delete</button>
+                </div>
+            `;
             gridContainer.appendChild(div);
         });
+    }
+
+    function togglePlay(videoEl) {
+        if (videoEl.paused) {
+            videoEl.play();
+            videoEl.setAttribute('controls', 'controls');
+        } else {
+            videoEl.pause();
+        }
+    }
+
+    function toggleVideoMenu(event, videoId) {
+        event.stopPropagation();
+        // Hide all other open dropdowns first
+        document.querySelectorAll('.video-dropdown').forEach(d => {
+            if (d.id !== 'dropdown_' + videoId) d.classList.remove('show');
+        });
+        const dropdown = document.getElementById('dropdown_' + videoId);
+        dropdown.classList.toggle('show');
+    }
+
+    function deleteVideo(videoId) {
+        if (!confirm("Ma hubtaa inaad tirtirto fiidiyowgan?")) return;
+
+        let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
+        allVideos = allVideos.filter(v => v.id !== videoId);
+        localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
+
+        loadProfileVideos();
+        loadAllVideosFeed();
     }
 
     function renderSurahListPage() {
@@ -1349,7 +1387,7 @@
             const data = await response.json();
             if (data.success) {
                 userPolygonAddress = data.polygonAddress;
-                userDisplayName = data.displayName || "User";
+                userDisplayName = user.displayName || "User";
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('bottomNav').classList.remove('hidden');

@@ -523,7 +523,7 @@
         .profile-stats {
             display: flex;
             gap: 30px;
-            margin-bottom: 18px;
+            margin-bottom: 15px;
             text-align: center;
         }
         .stat-num {
@@ -536,29 +536,15 @@
             color: #475569;
             font-weight: 700;
         }
-        .bio-btn {
-            background: #ffffff;
-            color: #0f172a;
-            border: 1px solid #cbd5e1;
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 0.8rem;
-            font-weight: 800;
-            cursor: pointer;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
-            transition: 0.2s;
-        }
-        .bio-btn:hover { background: #f1f5f9; }
         
         .profile-content-section {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #e2e8f0;
+            border-top: 2px solid #cbd5e1; /* Xariiqdii dhuubnayd oo la hagaajiyay oo kor loo soo qaaday */
             padding-top: 15px;
-            margin-top: 10px;
+            margin-top: 5px;
         }
         .profile-section-title {
             font-size: 0.9rem;
@@ -712,14 +698,13 @@
                     </div>
                 </div>
 
-                <button class="bio-btn">+ Add bio (Guji si aad u beddesho)</button>
-
+                <!-- Xariiqda dhuub iyo qaybta Fiidiyowyadaada & Logout oo kor loo soo qaaday -->
                 <div class="profile-content-section">
                     <span class="profile-section-title">Fiidiyowyadaada</span>
                     <button class="btn btn-logout" style="width: auto; padding: 6px 14px; font-size: 0.75rem;" onclick="logoutUser()">Logout</button>
                 </div>
 
-                <div style="text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 40px; font-weight: 700;">
+                <div style="text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 30px; font-weight: 700;">
                     Weli ma aadan soo gelin wax video ah.
                 </div>
             </div>

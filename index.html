@@ -731,7 +731,7 @@
                     </div>
                 </div>
 
-                <!-- Clickable Avatar (Saved per User, Persistent across Refresh & Logout) -->
+                <!-- Clickable Avatar (Persistent via LocalStorage UID) -->
                 <div class="profile-avatar-wrapper" onclick="document.getElementById('avatarFileInput').click()" title="Guji si aad sawirka u beddesho">
                     <div class="profile-avatar" id="profileAvatarBox">
                         <span id="profileInitial">K</span>
@@ -939,6 +939,10 @@
         const savedImg = localStorage.getItem('knn_avatar_' + uid);
         if (savedImg) {
             applyAvatarImage(savedImg);
+        } else {
+            // Reset to initial letter if no saved photo exists
+            document.getElementById('profileAvatarImg').classList.add('hidden');
+            document.getElementById('profileInitial').classList.remove('hidden');
         }
     }
 
@@ -1261,7 +1265,7 @@
 
     logoutUser = function() {
         firebase.auth().signOut().then(() => {
-            // Hada tirtir kaliya xogta aan ahayn sawirka profile-ka
+            // Kaydi sawirka ka hor inta aadan tirtirin localStorage si uusan u lumin
             let avatarKey = currentUserUid ? 'knn_avatar_' + currentUserUid : null;
             let savedAvatar = avatarKey ? localStorage.getItem(avatarKey) : null;
             

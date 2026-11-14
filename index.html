@@ -731,7 +731,7 @@
                     </div>
                 </div>
 
-                <!-- Clickable Avatar (Persistent via LocalStorage UID) -->
+                <!-- Clickable Avatar (Auto-Compressed & Permanently Saved per Account) -->
                 <div class="profile-avatar-wrapper" onclick="document.getElementById('avatarFileInput').click()" title="Guji si aad sawirka u beddesho">
                     <div class="profile-avatar" id="profileAvatarBox">
                         <span id="profileInitial">K</span>
@@ -835,6 +835,7 @@
 
     const SERVER_URL = 'https://somapp-website-production.up.railway.app';
     let currentUserUid = null;
+    let currentUserEmail = null;
     let userPolygonAddress = "";
     let userDisplayName = "User";
 
@@ -918,32 +919,64 @@
         }
     }
 
-    /* Change Profile Photo & Save Permanently tied to Universal Key + UID */
+    /* Auto-Compress Image so it NEVER fails storage limits, and save per user */
     function changeProfilePhoto(event) {
         const file = event.target.files[0];
         if (!file) return;
 
         const reader = new FileReader();
         reader.onload = function(e) {
-            const imgDataUrl = e.target.result;
-            // Kaydi laba jeer si uusan u lumin haddii account la beddelo
-            localStorage.setItem('knn_permanent_avatar', imgDataUrl);
-            if (currentUserUid) {
-                localStorage.setItem('knn_avatar_' + currentUserUid, imgDataUrl);
-            }
-            applyAvatarImage(imgDataUrl);
+            const img = new Image();
+            img.onload = function() {
+                // Resize image to 200x200px so it takes only ~15KB instead of 5MB!
+                const canvas = document.createElement('canvas');
+                const maxSize = 200;
+                let width = img.width;
+                let height = img.height;
+
+                if (width > height) {
+                    if (width > maxSize) {
+                        height *= maxSize / width;
+                        width = maxSize;
+                    }
+                } else {
+                    if (height > maxSize) {
+                        width *= maxSize / height;
+                        height = maxSize;
+                    }
+                }
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+
+                const compressedDataUrl = canvas.toDataURL('image/jpeg', 0.85);
+                
+                try {
+                    if (currentUserUid) {
+                        localStorage.setItem('knn_avatar_uid_' + currentUserUid, compressedDataUrl);
+                    }
+                    if (currentUserEmail) {
+                        localStorage.setItem('knn_avatar_email_' + currentUserEmail.toLowerCase(), compressedDataUrl);
+                    }
+                } catch (err) {
+                    console.error("Storage error:", err);
+                }
+
+                applyAvatarImage(compressedDataUrl);
+            };
+            img.src = e.target.result;
         };
         reader.readAsDataURL(file);
     }
 
-    function loadSavedAvatar(uid) {
-        // Marka hore fiiri midka gaarka ah, haddii la waayana fiiri midka guud ee universal-ka ah
+    function loadSavedAvatar(uid, email) {
         let savedImg = null;
         if (uid) {
-            savedImg = localStorage.getItem('knn_avatar_' + uid);
+            savedImg = localStorage.getItem('knn_avatar_uid_' + uid);
         }
-        if (!savedImg) {
-            savedImg = localStorage.getItem('knn_permanent_avatar');
+        if (!savedImg && email) {
+            savedImg = localStorage.getItem('knn_avatar_email_' + email.toLowerCase());
         }
 
         if (savedImg) {
@@ -1135,6 +1168,11 @@
     async function authenticateWithBackend(user) {
         if (!user || !user.uid) return;
 
+        currentUserUid = user.uid;
+        currentUserEmail = user.email || "";
+        // Load saved avatar immediately even before server responds
+        loadSavedAvatar(user.uid, user.email);
+
         try {
             document.getElementById('userStatus').innerText = "Connecting...";
             const response = await fetch(`${SERVER_URL}/api/auth-user`, {
@@ -1150,7 +1188,6 @@
 
             const data = await response.json();
             if (data.success) {
-                currentUserUid = user.uid;
                 userPolygonAddress = data.polygonAddress;
                 userDisplayName = user.displayName || "User";
 
@@ -1176,8 +1213,8 @@
                     document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
                 }
 
-                // Load saved avatar immediately after login
-                loadSavedAvatar(user.uid);
+                // Ensure avatar is loaded for this account
+                loadSavedAvatar(user.uid, user.email);
             } else {
                 alert("Cilad Server: " + (data.error || "Unknown error"));
                 document.getElementById('userStatus').innerText = "Error";
@@ -1272,21 +1309,8 @@
     }
 
     logoutUser = function() {
+        // HA ISTICMAALIN localStorage.clear() si aysan u tirtirmin sawirrada account-yada!
         firebase.auth().signOut().then(() => {
-            // Xafid labada furaha ee sawirka si uusan u tirtirmin logout-ka
-            let savedAvatarPerm = localStorage.getItem('knn_permanent_avatar');
-            let avatarKey = currentUserUid ? 'knn_avatar_' + currentUserUid : null;
-            let savedAvatarUser = avatarKey ? localStorage.getItem(avatarKey) : null;
-            
-            localStorage.clear();
-            
-            if (savedAvatarPerm) {
-                localStorage.setItem('knn_permanent_avatar', savedAvatarPerm);
-            }
-            if (avatarKey && savedAvatarUser) {
-                localStorage.setItem(avatarKey, savedAvatarUser);
-            }
-            
             location.reload();
         });
     }

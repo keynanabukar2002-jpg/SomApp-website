@@ -27,12 +27,12 @@
             padding: 0;
             overflow: hidden;
         }
-        /* App Frame */
+        /* App Frame - Original Cream Background */
         .app-frame {
             width: 100%;
             max-width: 420px;
             height: 100dvh;
-            background: #0f172a; /* TikTok dark vibe */
+            background: #f4ecdf;
             display: flex;
             flex-direction: column;
             box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
@@ -51,8 +51,8 @@
             justify-content: space-between;
             align-items: center;
             padding: 0 20px;
-            background: #0f172a;
-            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            border-bottom: 2px solid rgba(51, 150, 255, 0.2);
             z-index: 100;
             box-shadow: 0 4px 12px rgba(0,0,0,0.05);
             transition: all 0.3s ease;
@@ -60,7 +60,7 @@
         .logo {
             font-weight: 800;
             font-size: 1.15rem;
-            color: #ffffff;
+            color: #0f172a;
             display: flex;
             align-items: center;
             gap: 8px;
@@ -79,8 +79,8 @@
             font-size: 0.75rem;
             padding: 5px 12px;
             border-radius: 20px;
-            background: rgba(51, 150, 255, 0.15);
-            color: #38bdf8;
+            background: #e0f2fe;
+            color: #0369a1;
             font-weight: 800;
             border: 1px solid #3396FF;
         }
@@ -106,9 +106,9 @@
             left: 0;
             width: 100%;
             height: 85px;
-            background: #0f172a;
-            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
-            border-top: 2px solid rgba(255, 255, 255, 0.1);
+            background: #ffffff;
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1);
+            border-top: 2px solid rgba(51, 150, 255, 0.2);
             display: flex;
             justify-content: space-around;
             align-items: center;
@@ -118,7 +118,7 @@
         .nav-item {
             background: none;
             border: none;
-            color: #94a3b8;
+            color: #64748b;
             font-size: 0.7rem;
             font-weight: 800;
             display: flex;
@@ -130,7 +130,7 @@
             flex: 1;
         }
         .nav-item span {
-            color: #94a3b8;
+            color: #334155;
             font-size: 0.65rem;
             font-weight: 800;
         }
@@ -150,10 +150,10 @@
         }
 
         .nav-item.active {
-            color: #ffffff;
+            color: #3396FF;
         }
         .nav-item.active span {
-            color: #ffffff;
+            color: #b8860b;
             font-weight: 800;
         }
         .nav-item.active .nav-quran-icon {
@@ -161,21 +161,21 @@
             filter: drop-shadow(0 3px 6px rgba(212, 175, 55, 0.7));
         }
         .nav-item.active svg:not(.nav-quran-icon) {
-            fill: #ffffff;
+            fill: #3396FF;
             transform: scale(1.15);
         }
 
         /* Cards & UI Elements */
         .card {
-            background: #1e293b;
+            background: #ffffff;
             border-radius: 16px;
             padding: 16px;
             margin-bottom: 16px;
-            border: 2px solid rgba(51, 150, 255, 0.2);
-            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            border: 2px solid rgba(51, 150, 255, 0.3);
+            box-shadow: 0 6px 20px rgba(51, 150, 255, 0.12);
         }
         .card-title {
-            color: #f8fafc;
+            color: #1e293b;
             font-size: 0.8rem;
             font-weight: 800;
             text-transform: uppercase;
@@ -188,22 +188,22 @@
         .balance {
             font-size: 2.2rem;
             font-weight: 800;
-            color: #ffffff;
+            color: #0f172a;
             letter-spacing: -1px;
         }
         .balance-sub {
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: #334155;
             font-weight: 800;
             margin-top: 4px;
         }
         .address-box {
             word-break: break-all;
-            background: #0f172a;
+            background: #f8fafc;
             padding: 14px;
             border-radius: 10px;
             font-family: monospace;
-            color: #38bdf8;
+            color: #1d4ed8;
             font-weight: 800;
             font-size: 0.8rem;
             margin: 8px 0;
@@ -231,15 +231,15 @@
         .btn-google { background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
         .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
         .btn-scan { background: #7c3aed; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); }
-        .btn-logout { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: none; font-weight: 800; }
+        .btn-logout { background: rgba(239, 68, 68, 0.15); color: #dc2626; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: none; font-weight: 800; }
         
         input {
             width: 100%;
             padding: 14px;
             border-radius: 10px;
-            border: 2px solid #334155;
-            background: #0f172a;
-            color: #ffffff;
+            border: 2px solid #cbd5e1;
+            background: #ffffff;
+            color: #0f172a;
             font-weight: 800;
             font-size: 0.95rem;
             margin-top: 6px;
@@ -252,23 +252,23 @@
 
         /* Chat styles */
         .chat-box {
-            background: #0f172a;
+            background: #f8fafc;
             border-radius: 12px;
             padding: 12px;
             height: 300px;
             overflow-y: auto;
-            border: 2px solid #334155;
+            border: 2px solid #cbd5e1;
             margin-bottom: 10px;
             display: flex;
             flex-direction: column;
             gap: 8px;
         }
         .chat-message {
-            background: #1e293b;
+            background: #e0f2fe;
             padding: 10px;
             border-radius: 10px;
             font-size: 0.85rem;
-            color: #ffffff;
+            color: #0f172a;
             border: 1px solid #3396FF;
         }
 
@@ -449,27 +449,30 @@
             flex-shrink: 0;
         }
 
-        /* TikTok Style Profile Container */
+        /* TikTok Style Profile Container (Matched with App Color Scheme) */
         .tiktok-profile {
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 20px 15px;
-            color: #ffffff;
+            color: #0f172a;
             position: relative;
+            background: #f4ecdf;
+            min-height: calc(100dvh - 150px);
         }
         .profile-back-btn {
             position: absolute;
             left: 15px;
             top: 20px;
-            background: #1e293b;
-            color: #38bdf8;
+            background: #ffffff;
+            color: #0369a1;
             border: 1px solid #3396FF;
             padding: 6px 12px;
             border-radius: 8px;
             font-size: 0.8rem;
             cursor: pointer;
             font-weight: 800;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.05);
         }
         .profile-avatar-wrapper {
             position: relative;
@@ -480,21 +483,21 @@
             width: 85px;
             height: 85px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #f97316, #ef4444);
+            background: linear-gradient(135deg, #3396FF, #2563eb);
             display: flex;
             justify-content: center;
             align-items: center;
             font-size: 2.5rem;
             font-weight: 800;
             color: #ffffff;
-            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            box-shadow: 0 4px 15px rgba(51, 150, 255, 0.4);
             border: 3px solid #ffffff;
         }
         .camera-badge {
             position: absolute;
             bottom: 0;
             right: 0;
-            background: #3b82f6;
+            background: #3396FF;
             color: white;
             width: 28px;
             height: 28px;
@@ -503,17 +506,17 @@
             justify-content: center;
             align-items: center;
             font-size: 0.8rem;
-            border: 2px solid #0f172a;
+            border: 2px solid #ffffff;
         }
         .profile-name {
             font-size: 1.2rem;
             font-weight: 800;
-            color: #ffffff;
+            color: #0f172a;
             margin-bottom: 4px;
         }
         .profile-username {
             font-size: 0.85rem;
-            color: #94a3b8;
+            color: #475569;
             font-weight: 700;
             margin-bottom: 16px;
         }
@@ -526,40 +529,41 @@
         .stat-num {
             font-size: 1rem;
             font-weight: 800;
-            color: #ffffff;
+            color: #0f172a;
         }
         .stat-label {
             font-size: 0.75rem;
-            color: #94a3b8;
+            color: #475569;
             font-weight: 700;
         }
         .bio-btn {
-            background: #1e293b;
-            color: #e2e8f0;
-            border: 1px solid #334155;
+            background: #ffffff;
+            color: #0f172a;
+            border: 1px solid #cbd5e1;
             padding: 8px 20px;
             border-radius: 20px;
             font-size: 0.8rem;
             font-weight: 800;
             cursor: pointer;
             margin-bottom: 25px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             transition: 0.2s;
         }
-        .bio-btn:hover { background: #334155; }
+        .bio-btn:hover { background: #f1f5f9; }
         
         .profile-content-section {
             width: 100%;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            border-top: 1px solid #1e293b;
+            border-top: 1px solid #e2e8f0;
             padding-top: 15px;
             margin-top: 10px;
         }
         .profile-section-title {
             font-size: 0.9rem;
             font-weight: 800;
-            color: #ffffff;
+            color: #0f172a;
         }
     </style>
 </head>
@@ -580,8 +584,8 @@
 
         <!-- Login View -->
         <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 20px; margin-left: 15px; margin-right: 15px;">
-            <h3 style="color: #ffffff; margin-bottom: 8px; font-size: 1.4rem; font-weight: 800;">Ku soo dhawoow</h3>
-            <p style="color: #94a3b8; font-size: 0.9rem; font-weight: 800; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
+            <h3 style="color: #0f172a; margin-bottom: 8px; font-size: 1.4rem; font-weight: 800;">Ku soo dhawoow</h3>
+            <p style="color: #334155; font-size: 0.9rem; font-weight: 800; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
             <button class="btn btn-google" onclick="loginWithGoogle()">
                 <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
                 <span>Google Login-ka ku gal</span>
@@ -593,23 +597,23 @@
             <div class="card">
                 <div class="card-title">
                     <span>Harraaga Lacagta</span>
-                    <span style="color:#34d399; font-weight:800;">● Mining Active</span>
+                    <span style="color:#059669; font-weight:800;">● Mining Active</span>
                 </div>
                 <div class="balance" id="balanceDisplay">0.00 POL</div>
-                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#38bdf8; font-weight:800;">0.00</strong> POL</div>
+                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#3396FF; font-weight:800;">0.00</strong> POL</div>
             </div>
 
             <div class="card">
                 <div class="card-title">Macluumaadkaaga</div>
-                <div style="font-size: 0.9rem; color: #ffffff; font-weight: 800; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#38bdf8; font-weight:800;">--</strong></div>
-                <div style="font-size: 0.85rem; color: #94a3b8; font-weight: 800;" id="userEmailDisplay">--</div>
+                <div style="font-size: 0.9rem; color: #1e293b; font-weight: 800; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#3396FF; font-weight:800;">--</strong></div>
+                <div style="font-size: 0.85rem; color: #475569; font-weight: 800;" id="userEmailDisplay">--</div>
             </div>
         </div>
 
         <!-- Chat Tab -->
         <div id="tabChat" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card">
-                <div class="card-title" style="color:#4ade80; font-weight:800;">💬 Bulshada / Chat-ka Guud</div>
+                <div class="card-title" style="color:#16a34a; font-weight:800;">💬 Bulshada / Chat-ka Guud</div>
                 <div class="chat-box" id="chatContainer">
                     <div class="chat-message"><strong>Nidaamka:</strong> Ku soo dhowaada KNN Chat-ka. Halkaan waxaad fikradaha ugala wadaagi kartaan dadka kale.</div>
                 </div>
@@ -623,8 +627,8 @@
         <!-- Scan / Voucher Tab -->
         <div id="tabScan" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card">
-                <div class="card-title" style="color:#c084fc; font-weight:800;">Scan Cash Paper / Voucher</div>
-                <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 800; margin-bottom: 12px;">Ku eeg kaamerada QR code-ka ku yaal waraaqda lacagta si aad u geliso nidaamka.</p>
+                <div class="card-title" style="color:#7c3aed; font-weight:800;">Scan Cash Paper / Voucher</div>
+                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 12px;">Ku eeg kaamerada QR code-ka ku yaal waraaqda lacagta si aad u geliso nidaamka.</p>
                 <button class="btn btn-scan" onclick="startScanner()">Furo Camera-ha (Scan)</button>
                 <div id="reader" class="hidden"></div>
             </div>
@@ -666,20 +670,20 @@
             <div class="card">
                 <div class="card-title">Cinwaankaaga Deposit-ka</div>
                 <div class="address-box" id="depositAddress">Loading...</div>
-                <button class="btn" style="background: #334155; color: #ffffff; box-shadow:none; border: 2px solid #475569;" onclick="copyAddress()">Copy Address</button>
+                <button class="btn" style="background: #e2e8f0; color: #0f172a; box-shadow:none; border: 2px solid #cbd5e1;" onclick="copyAddress()">Copy Address</button>
             </div>
 
             <div class="card">
-                <div class="card-title" style="color:#38bdf8; font-weight:800;">Kala bax Saamiga Maanta</div>
+                <div class="card-title" style="color:#3396FF; font-weight:800;">Kala bax Saamiga Maanta</div>
                 <div class="input-group">
-                    <label style="font-size: 0.8rem; color: #94a3b8; font-weight: 800;">Cinwaankaaga (MetaMask/Binance):</label>
+                    <label style="font-size: 0.8rem; color: #334155; font-weight: 800;">Cinwaankaaga (MetaMask/Binance):</label>
                     <input type="text" id="recipientInput" placeholder="0x...">
                 </div>
                 <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Saamiga Maanta</button>
             </div>
         </div>
 
-        <!-- Settings / Profile Tab (TikTok Style with Back Button) -->
+        <!-- Settings / Profile Tab (TikTok Style with Back Button & App Color) -->
         <div id="tabSettings" class="tab-content hidden">
             <div class="tiktok-profile">
                 <!-- Back Button to return home -->
@@ -1053,8 +1057,8 @@
                 switchTab('tabHome', document.querySelector('.nav-item'));
 
                 document.getElementById('userStatus').innerText = "Connected";
-                document.getElementById('userStatus').style.background = "rgba(52, 211, 153, 0.2)";
-                document.getElementById('userStatus').style.color = "#34d399";
+                document.getElementById('userStatus').style.background = "#dcfce7";
+                document.getElementById('userStatus').style.color = "#15803d";
 
                 document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
                 document.getElementById('userEmailDisplay').innerText = user.email;

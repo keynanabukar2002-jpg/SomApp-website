@@ -3,9 +3,10 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
-    <title>KNN Social & Quran App</title>
+    <title>KNN MicroPay - Smart Mining & Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://unpkg.com/html5-qrcode" type="text/javascript"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * {
@@ -18,11 +19,12 @@
         body {
             background: linear-gradient(135deg, #1a73e8 0%, #3396FF 50%, #66b2ff 100%);
             background-attachment: fixed;
-            color: #ffffff;
+            color: #0f172a;
             display: flex;
             justify-content: center;
             align-items: center;
             min-height: 100dvh;
+            padding: 0;
             overflow: hidden;
         }
         /* App Frame */
@@ -30,101 +32,469 @@
             width: 100%;
             max-width: 420px;
             height: 100dvh;
-            background: #0f172a;
+            background: #0f172a; /* TikTok dark vibe */
             display: flex;
             flex-direction: column;
-            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.4);
+            box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
             position: relative;
             overflow: hidden;
+        }
+
+        /* Top Navigation Bar */
+        .top-nav {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 65px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 0 20px;
+            background: #0f172a;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.1);
+            z-index: 100;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+        }
+        .logo {
+            font-weight: 800;
+            font-size: 1.15rem;
+            color: #ffffff;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            letter-spacing: -0.5px;
+        }
+        .logo-badge {
+            background: #3396FF;
+            color: #ffffff;
+            padding: 5px 10px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 800;
+            box-shadow: 0 4px 12px rgba(51, 150, 255, 0.4);
+        }
+        .status-pill {
+            font-size: 0.75rem;
+            padding: 5px 12px;
+            border-radius: 20px;
+            background: rgba(51, 150, 255, 0.15);
+            color: #38bdf8;
+            font-weight: 800;
+            border: 1px solid #3396FF;
         }
 
         /* Main Content Area */
         .content-body {
             flex: 1;
-            height: calc(100dvh - 75px);
+            margin-top: 65px;
+            margin-bottom: 85px;
             overflow-y: auto;
-            padding: 15px;
-            padding-bottom: 90px;
+            padding: 0;
             scrollbar-width: none;
+            transition: margin-top 0.3s ease;
         }
-        .content-body::-webkit-scrollbar { display: none; }
+        .content-body::-webkit-scrollbar {
+            display: none;
+        }
 
-        /* Bottom Navigation Bar (Waa mid joogto ah oo aan weligii lumin) */
+        /* Bottom Navigation Bar */
         .bottom-nav {
             position: absolute;
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 75px;
+            height: 85px;
             background: #0f172a;
-            border-top: 1px solid rgba(255, 255, 255, 0.1);
+            box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.3);
+            border-top: 2px solid rgba(255, 255, 255, 0.1);
             display: flex;
             justify-content: space-around;
             align-items: center;
-            z-index: 1000;
-            padding-bottom: 10px;
+            z-index: 100;
+            padding-bottom: 15px;
         }
         .nav-item {
             background: none;
             border: none;
             color: #94a3b8;
             font-size: 0.7rem;
+            font-weight: 800;
             display: flex;
             flex-direction: column;
             align-items: center;
-            gap: 4px;
+            gap: 3px;
             cursor: pointer;
+            transition: all 0.2s ease;
             flex: 1;
         }
-        .nav-item span { color: #94a3b8; font-size: 0.7rem; }
-        .nav-item svg { width: 24px; height: 24px; fill: currentColor; }
-        .nav-item.active { color: #ffffff; }
-        .nav-item.active span { color: #ffffff; }
-        .nav-item.active svg { fill: #ffffff; }
+        .nav-item span {
+            color: #94a3b8;
+            font-size: 0.65rem;
+            font-weight: 800;
+        }
+        .nav-item svg {
+            width: 22px;
+            height: 22px;
+            fill: currentColor;
+            transition: 0.2s;
+        }
+        
+        /* Quran Nav Icon Special Luxury Style */
+        .nav-quran-icon {
+            width: 26px !important;
+            height: 26px !important;
+            filter: drop-shadow(0 2px 4px rgba(184, 134, 11, 0.4));
+            transition: transform 0.2s ease;
+        }
 
-        /* Upload Center Button (+) */
-        .upload-btn-nav {
-            background: #ffffff;
-            color: #0f172a;
-            width: 45px;
-            height: 32px;
-            border-radius: 8px;
+        .nav-item.active {
+            color: #ffffff;
+        }
+        .nav-item.active span {
+            color: #ffffff;
+            font-weight: 800;
+        }
+        .nav-item.active .nav-quran-icon {
+            transform: scale(1.2);
+            filter: drop-shadow(0 3px 6px rgba(212, 175, 55, 0.7));
+        }
+        .nav-item.active svg:not(.nav-quran-icon) {
+            fill: #ffffff;
+            transform: scale(1.15);
+        }
+
+        /* Cards & UI Elements */
+        .card {
+            background: #1e293b;
+            border-radius: 16px;
+            padding: 16px;
+            margin-bottom: 16px;
+            border: 2px solid rgba(51, 150, 255, 0.2);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+        }
+        .card-title {
+            color: #f8fafc;
+            font-size: 0.8rem;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-bottom: 8px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .balance {
+            font-size: 2.2rem;
+            font-weight: 800;
+            color: #ffffff;
+            letter-spacing: -1px;
+        }
+        .balance-sub {
+            font-size: 0.85rem;
+            color: #94a3b8;
+            font-weight: 800;
+            margin-top: 4px;
+        }
+        .address-box {
+            word-break: break-all;
+            background: #0f172a;
+            padding: 14px;
+            border-radius: 10px;
+            font-family: monospace;
+            color: #38bdf8;
+            font-weight: 800;
+            font-size: 0.8rem;
+            margin: 8px 0;
+            border: 2px solid #3396FF;
+        }
+        .btn {
+            background: #3396FF;
+            color: white;
+            border: none;
+            padding: 14px 16px;
+            border-radius: 12px;
+            width: 100%;
+            font-weight: 800;
+            font-size: 0.95rem;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 4px 15px rgba(51, 150, 255, 0.4);
             display: flex;
             justify-content: center;
             align-items: center;
-            font-size: 1.5rem;
+            gap: 8px;
+            margin-top: 8px;
+        }
+        .btn:hover { background: #2563eb; }
+        .btn-google { background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05); }
+        .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.4); }
+        .btn-scan { background: #7c3aed; box-shadow: 0 4px 15px rgba(124, 58, 237, 0.4); }
+        .btn-logout { background: rgba(239, 68, 68, 0.15); color: #f87171; border: 2px solid rgba(239, 68, 68, 0.3); box-shadow: none; font-weight: 800; }
+        
+        input {
+            width: 100%;
+            padding: 14px;
+            border-radius: 10px;
+            border: 2px solid #334155;
+            background: #0f172a;
+            color: #ffffff;
             font-weight: 800;
-            box-shadow: 0 4px 10px rgba(255,255,255,0.2);
-            cursor: pointer;
+            font-size: 0.95rem;
+            margin-top: 6px;
+            outline: none;
+        }
+        input:focus { border-color: #3396FF; }
+        .input-group { margin-bottom: 12px; }
+        .hidden { display: none !important; }
+        #reader { width: 100%; border-radius: 10px; overflow: hidden; margin-top: 12px; border: 2px solid #3396FF; }
+
+        /* Chat styles */
+        .chat-box {
+            background: #0f172a;
+            border-radius: 12px;
+            padding: 12px;
+            height: 300px;
+            overflow-y: auto;
+            border: 2px solid #334155;
+            margin-bottom: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .chat-message {
+            background: #1e293b;
+            padding: 10px;
+            border-radius: 10px;
+            font-size: 0.85rem;
+            color: #ffffff;
+            border: 1px solid #3396FF;
         }
 
-        /* Profile Header Section */
-        .profile-header {
+        /* Quran Surah List Styles */
+        .surah-list {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+            background: #f4ecdf;
+        }
+        .surah-row {
+            background: #efe5d4;
+            padding: 14px 18px;
+            border-bottom: 1px solid #dccbb1;
+            cursor: pointer;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: 0.2s;
+            width: 100%;
+        }
+        .surah-row:hover {
+            background: #e6d7be;
+        }
+        .surah-info-left {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 0.8rem;
+            color: #5c3814;
+            font-weight: 800;
+            background: #e3d2b4;
+            padding: 4px 12px;
+            border-radius: 20px;
+            border: 1px solid #c4a777;
+        }
+        .surah-name-arabic {
+            font-family: 'Amiri', serif;
+            font-size: 1.4rem;
+            color: #2b1d0c;
+            font-weight: 700;
+        }
+
+        .pagination-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: #e6d7be;
+            padding: 12px 16px;
+            border-bottom: 2px solid #c4a777;
+        }
+        .page-btn {
+            background: #8c5822;
+            color: #fef9c3;
+            border: 1px solid #d4af37;
+            padding: 8px 16px;
+            border-radius: 8px;
+            font-size: 0.85rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+        .page-btn:disabled {
+            background: #cbbba0;
+            color: #8c7a5b;
+            border-color: #b5a384;
+            cursor: not-allowed;
+        }
+        .page-indicator {
+            font-size: 0.9rem;
+            color: #3d230b;
+            font-weight: 800;
+        }
+        
+        /* Soft Sepia / Warm Cream Mushaf Page Container */
+        .mushaf-page {
+            background: #f4ecdf;
+            margin: 6px;
+            padding: 10px;
+            border: 3px solid #8c5822;
+            outline: 2px solid #d4af37;
+            outline-offset: -5px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+            position: relative;
+            height: calc(100dvh - 85px);
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        .mushaf-header-banner {
+            text-align: center;
+            background: linear-gradient(to bottom, #f3e5ab, #d4af37, #b8860b);
+            border: 2px solid #8c5822;
+            padding: 5px 0;
+            margin-bottom: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            position: relative;
+            flex-shrink: 0;
+        }
+        .mushaf-header-title {
+            font-family: 'Amiri', serif;
+            font-size: 1.2rem;
+            color: #3d230b;
+            font-weight: 700;
+            letter-spacing: 1px;
+        }
+        .back-back-btn {
+            position: absolute;
+            left: 8px;
+            top: 50%;
+            transform: translateY(-50%);
+            background: #5c3814;
+            color: #fef08a;
+            border: 1px solid #d4af37;
+            padding: 2px 6px;
+            font-size: 0.65rem;
+            border-radius: 4px;
+            cursor: pointer;
+            font-weight: 800;
+        }
+        .back-back-btn:hover { background: #3d230b; }
+
+        /* Reader Content */
+        .reader-content {
+            background: transparent;
+            padding: 6px 10px;
+            direction: rtl;
+            text-align: right;
+            line-height: 2.8;
+            font-size: 1.55rem;
+            color: #2b1d0c;
+            font-family: 'Amiri', serif;
+            width: 100%;
+            word-spacing: normal;
+            flex: 1;
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: #b8860b #f4ecdf;
+        }
+        .reader-content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .reader-content::-webkit-scrollbar-thumb {
+            background-color: #b8860b;
+            border-radius: 4px;
+        }
+
+        .bismillah-header {
+            text-align: center;
+            font-size: 1.4rem;
+            color: #8c2e0b;
+            margin-bottom: 12px;
+            font-family: 'Amiri', serif;
+            font-weight: bold;
+            letter-spacing: 0.5px;
+            border-bottom: 1px dashed #8c2e0b;
+            padding-bottom: 6px;
+            direction: rtl;
+        }
+
+        .ayah-svg-marker {
+            display: inline-block;
+            width: 38px;
+            height: 38px;
+            vertical-align: middle;
+            margin: 0 4px;
+            filter: drop-shadow(0px 2px 3px rgba(139, 101, 8, 0.4));
+        }
+
+        .surah-pagination {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding-top: 6px;
+            border-top: 2px solid #d4af37;
+            background: #f4ecdf;
+            flex-shrink: 0;
+        }
+
+        /* TikTok Style Profile Container */
+        .tiktok-profile {
             display: flex;
             flex-direction: column;
             align-items: center;
-            padding-top: 10px;
-        }
-        .profile-avatar-container {
+            padding: 20px 15px;
+            color: #ffffff;
             position: relative;
-            width: 90px;
-            height: 90px;
-            margin-bottom: 10px;
+        }
+        .profile-back-btn {
+            position: absolute;
+            left: 15px;
+            top: 20px;
+            background: #1e293b;
+            color: #38bdf8;
+            border: 1px solid #3396FF;
+            padding: 6px 12px;
+            border-radius: 8px;
+            font-size: 0.8rem;
             cursor: pointer;
+            font-weight: 800;
+        }
+        .profile-avatar-wrapper {
+            position: relative;
+            margin-top: 15px;
+            margin-bottom: 12px;
         }
         .profile-avatar {
-            width: 100%;
-            height: 100%;
+            width: 85px;
+            height: 85px;
             border-radius: 50%;
-            object-fit: cover;
-            border: 3px solid #3396FF;
-            background: #333;
+            background: linear-gradient(135deg, #f97316, #ef4444);
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-size: 2.5rem;
+            font-weight: 800;
+            color: #ffffff;
+            box-shadow: 0 4px 15px rgba(239, 68, 68, 0.4);
+            border: 3px solid #ffffff;
         }
-        .avatar-camera-badge {
+        .camera-badge {
             position: absolute;
             bottom: 0;
             right: 0;
-            background: #3396FF;
+            background: #3b82f6;
             color: white;
             width: 28px;
             height: 28px;
@@ -135,217 +505,265 @@
             font-size: 0.8rem;
             border: 2px solid #0f172a;
         }
-        .profile-username {
-            font-size: 1.1rem;
+        .profile-name {
+            font-size: 1.2rem;
             font-weight: 800;
             color: #ffffff;
             margin-bottom: 4px;
         }
-        .profile-handle {
+        .profile-username {
             font-size: 0.85rem;
             color: #94a3b8;
-            margin-bottom: 15px;
+            font-weight: 700;
+            margin-bottom: 16px;
         }
-
-        /* Stats Row (Following, Subscribers, Likes) */
-        .stats-row {
+        .profile-stats {
             display: flex;
-            gap: 25px;
-            margin-bottom: 15px;
+            gap: 30px;
+            margin-bottom: 18px;
             text-align: center;
         }
-        .stat-box {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-        }
         .stat-num {
-            font-size: 1.1rem;
+            font-size: 1rem;
             font-weight: 800;
             color: #ffffff;
         }
         .stat-label {
             font-size: 0.75rem;
             color: #94a3b8;
-        }
-
-        /* Bio & Hobbies Box */
-        .bio-box {
-            background: rgba(255, 255, 255, 0.05);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-            padding: 10px 16px;
-            border-radius: 20px;
-            font-size: 0.85rem;
-            color: #e2e8f0;
-            margin-bottom: 20px;
-            text-align: center;
-            max-width: 300px;
-            width: 100%;
-            cursor: pointer;
-        }
-
-        /* Videos Grid */
-        .videos-grid {
-            display: grid;
-            grid-template-columns: repeat(3, 1fr);
-            gap: 4px;
-            width: 100%;
-            margin-top: 10px;
-        }
-        .video-thumbnail {
-            aspect-ratio: 9/16;
-            background: #1e293b;
-            border-radius: 4px;
-            overflow: hidden;
-            position: relative;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-        .video-thumbnail video {
-            width: 100%;
-            height: 100%;
-            object-fit: cover;
-        }
-        .video-views {
-            position: absolute;
-            bottom: 6px;
-            left: 6px;
-            font-size: 0.7rem;
-            color: #ffffff;
             font-weight: 700;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
         }
-
-        .no-videos {
-            text-align: center;
-            padding: 40px 20px;
-            color: #64748b;
-            font-size: 0.9rem;
-            grid-column: span 3;
-        }
-
-        /* Buttons & Inputs */
-        .btn {
-            background: #3396FF;
-            color: white;
-            border: none;
-            padding: 12px;
-            border-radius: 12px;
-            width: 100%;
+        .bio-btn {
+            background: #1e293b;
+            color: #e2e8f0;
+            border: 1px solid #334155;
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 0.8rem;
             font-weight: 800;
             cursor: pointer;
+            margin-bottom: 25px;
+            transition: 0.2s;
+        }
+        .bio-btn:hover { background: #334155; }
+        
+        .profile-content-section {
+            width: 100%;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-top: 1px solid #1e293b;
+            padding-top: 15px;
             margin-top: 10px;
         }
-        .hidden { display: none !important; }
-        input, textarea {
-            width: 100%;
-            padding: 12px;
-            border-radius: 8px;
-            border: 1px solid #334155;
-            background: #1e293b;
-            color: white;
-            margin-top: 6px;
-            outline: none;
+        .profile-section-title {
+            font-size: 0.9rem;
+            font-weight: 800;
+            color: #ffffff;
         }
     </style>
 </head>
 <body>
 
 <div class="app-frame">
+    <!-- TOP NAVIGATION BAR -->
+    <div class="top-nav" id="topNav">
+        <div class="logo">
+            <span class="logo-badge">K</span>
+            KNN MicroPay
+        </div>
+        <div id="userStatus" class="status-pill">Loading...</div>
+    </div>
+
     <!-- CONTENT BODY -->
     <div class="content-body" id="contentBody">
 
-        <!-- Login View (Gmail Auth) -->
-        <div id="loginView" style="text-align: center; padding: 60px 20px;">
-            <h2 style="margin-bottom: 10px; font-size: 1.5rem;">Ku soo dhowow KNN App</h2>
-            <p style="color: #94a3b8; font-size: 0.9rem; margin-bottom: 30px;">Fadlan ku gal Google Gmail-kaaga si aad u bilowdo.</p>
-            <button class="btn" style="background: white; color: black; display: flex; align-items: center; justify-content: center; gap: 10px;" onclick="loginWithGoogle()">
+        <!-- Login View -->
+        <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin-top: 20px; margin-left: 15px; margin-right: 15px;">
+            <h3 style="color: #ffffff; margin-bottom: 8px; font-size: 1.4rem; font-weight: 800;">Ku soo dhawoow</h3>
+            <p style="color: #94a3b8; font-size: 0.9rem; font-weight: 800; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
+            <button class="btn btn-google" onclick="loginWithGoogle()">
                 <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
-                Google Gmail Login
+                <span>Google Login-ka ku gal</span>
             </button>
         </div>
 
-        <!-- Home Tab -->
-        <div id="tabHome" class="tab-content hidden">
-            <h3 style="margin-bottom: 15px;">Feedyada Dadka</h3>
-            <div id="homeFeed" style="display: flex; flex-direction: column; gap: 15px;">
-                <p style="color: #64748b; text-align: center;">Weli ma jiraan fiidiyooyin la soo geliyay.</p>
+        <!-- Dashboard / Home Tab -->
+        <div id="tabHome" class="tab-content hidden" style="padding: 0 15px;">
+            <div class="card">
+                <div class="card-title">
+                    <span>Harraaga Lacagta</span>
+                    <span style="color:#34d399; font-weight:800;">● Mining Active</span>
+                </div>
+                <div class="balance" id="balanceDisplay">0.00 POL</div>
+                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#38bdf8; font-weight:800;">0.00</strong> POL</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Macluumaadkaaga</div>
+                <div style="font-size: 0.9rem; color: #ffffff; font-weight: 800; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#38bdf8; font-weight:800;">--</strong></div>
+                <div style="font-size: 0.85rem; color: #94a3b8; font-weight: 800;" id="userEmailDisplay">--</div>
             </div>
         </div>
 
-        <!-- Upload Tab (Meesha Video-ga Loo Soo Geliyo) -->
-        <div id="tabUpload" class="tab-content hidden">
-            <h3>Soo Geli Video Cusub</h3>
-            <div style="margin-top: 15px;">
-                <label style="font-size: 0.85rem; color: #94a3b8;">Dooro Video (File):</label>
-                <input type="file" id="videoFileInput" accept="video/*">
+        <!-- Chat Tab -->
+        <div id="tabChat" class="tab-content hidden" style="padding: 0 15px;">
+            <div class="card">
+                <div class="card-title" style="color:#4ade80; font-weight:800;">💬 Bulshada / Chat-ka Guud</div>
+                <div class="chat-box" id="chatContainer">
+                    <div class="chat-message"><strong>Nidaamka:</strong> Ku soo dhowaada KNN Chat-ka. Halkaan waxaad fikradaha ugala wadaagi kartaan dadka kale.</div>
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <input type="text" id="chatInput" placeholder="Qor fariintaada...">
+                </div>
+                <button class="btn btn-chat" onclick="sendChatMessage()">Dir Fariinta</button>
             </div>
-            <div style="margin-top: 15px;">
-                <label style="font-size: 0.85rem; color: #94a3b8;">Sharaxaad (Caption):</label>
-                <input type="text" id="videoCaptionInput" placeholder="Qor qoraalka video-ga...">
-            </div>
-            <button class="btn" style="margin-top: 20px;" onclick="uploadVideo()">Soo Post-garee</button>
         </div>
 
-        <!-- Profile Tab -->
-        <div id="tabProfile" class="tab-content hidden">
-            <div class="profile-header">
-                <!-- Avatar oo la beddeli karo -->
-                <div class="profile-avatar-container" onclick="document.getElementById('avatarFileInput').click()">
-                    <img id="profileAvatarImg" src="https://via.placeholder.com/150" class="profile-avatar" alt="Profile">
-                    <div class="avatar-camera-badge">📷</div>
+        <!-- Scan / Voucher Tab -->
+        <div id="tabScan" class="tab-content hidden" style="padding: 0 15px;">
+            <div class="card">
+                <div class="card-title" style="color:#c084fc; font-weight:800;">Scan Cash Paper / Voucher</div>
+                <p style="font-size: 0.85rem; color: #94a3b8; font-weight: 800; margin-bottom: 12px;">Ku eeg kaamerada QR code-ka ku yaal waraaqda lacagta si aad u geliso nidaamka.</p>
+                <button class="btn btn-scan" onclick="startScanner()">Furo Camera-ha (Scan)</button>
+                <div id="reader" class="hidden"></div>
+            </div>
+        </div>
+
+        <!-- Qur'aan Tab -->
+        <div id="tabQuran" class="tab-content hidden">
+            <!-- Liiska 114-ka Suuradood -->
+            <div id="quranListContainer" style="width: 100%;">
+                <div class="pagination-bar">
+                    <button class="page-btn" id="prevSurahPageBtn" onclick="changeSurahPage(-1)">← Bogga Hore</button>
+                    <span class="page-indicator" id="surahPageIndicator">Bogga 1 / 6</span>
+                    <button class="page-btn" id="nextSurahPageBtn" onclick="changeSurahPage(1)">Bogga Xiga →</button>
                 </div>
-                <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="updateProfileAvatar(event)">
+                <div class="surah-list" id="surahList"></div>
+            </div>
 
-                <div class="profile-username" id="profileDisplayName">User Name</div>
-                <div class="profile-handle" id="profileEmailDisplay">@username</div>
-
-                <!-- Stats: Following, Subscribers, Likes -->
-                <div class="stats-row">
-                    <div class="stat-box">
-                        <span class="stat-num" id="followingCount">14</span>
-                        <span class="stat-label">Following</span>
+            <!-- Bogga Akhriska Suurada -->
+            <div id="quranReaderContainer" class="hidden" style="width: 100%;">
+                <div class="mushaf-page">
+                    <div class="mushaf-header-banner">
+                        <button class="back-back-btn" onclick="backToSurahList()">← Dib</button>
+                        <span id="readerTitle" class="mushaf-header-title">سُورَةُ</span>
                     </div>
-                    <div class="stat-box">
-                        <span class="stat-num" id="subscribersCount">0</span>
-                        <span class="stat-label">Subscribers</span>
+                    <div class="reader-content" id="readerContent">
+                        Loading...
                     </div>
-                    <div class="stat-box">
-                        <span class="stat-num" id="likesCount">0</span>
-                        <span class="stat-label">Likes</span>
+                    <div class="surah-pagination" id="surahPaginationBar" style="display:none;">
+                        <button class="page-btn" id="prevAyahPageBtn" onclick="changeAyahPage(-1)">← Bogga Hore</button>
+                        <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 1</span>
+                        <button class="page-btn" id="nextAyahPageBtn" onclick="changeAyahPage(1)">Bogga Xiga →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wallet & Withdraw Tab -->
+        <div id="tabWallet" class="tab-content hidden" style="padding: 0 15px;">
+            <div class="card">
+                <div class="card-title">Cinwaankaaga Deposit-ka</div>
+                <div class="address-box" id="depositAddress">Loading...</div>
+                <button class="btn" style="background: #334155; color: #ffffff; box-shadow:none; border: 2px solid #475569;" onclick="copyAddress()">Copy Address</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#38bdf8; font-weight:800;">Kala bax Saamiga Maanta</div>
+                <div class="input-group">
+                    <label style="font-size: 0.8rem; color: #94a3b8; font-weight: 800;">Cinwaankaaga (MetaMask/Binance):</label>
+                    <input type="text" id="recipientInput" placeholder="0x...">
+                </div>
+                <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Saamiga Maanta</button>
+            </div>
+        </div>
+
+        <!-- Settings / Profile Tab (TikTok Style with Back Button) -->
+        <div id="tabSettings" class="tab-content hidden">
+            <div class="tiktok-profile">
+                <!-- Back Button to return home -->
+                <button class="profile-back-btn" onclick="switchTab('tabHome', document.querySelector('.nav-item'))">← Dib u laabo</button>
+
+                <div class="profile-avatar-wrapper">
+                    <div class="profile-avatar" id="profileInitial">K</div>
+                    <div class="camera-badge">📷</div>
+                </div>
+                
+                <div class="profile-name" id="profileDisplayName">Keynan abukar</div>
+                <div class="profile-username" id="profileUsernameDisplay">@keynanabukar2002</div>
+
+                <div class="profile-stats">
+                    <div>
+                        <div class="stat-num">14</div>
+                        <div class="stat-label">Following</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">0</div>
+                        <div class="stat-label">Subscribers</div>
+                    </div>
+                    <div>
+                        <div class="stat-num">0</div>
+                        <div class="stat-label">Likes</div>
                     </div>
                 </div>
 
-                <!-- Add Bio -->
-                <div class="bio-box" onclick="editBio()" id="userBioText">
-                    + Add bio (Guji si aad u beddesho)
+                <button class="bio-btn">+ Add bio (Guji si aad u beddesho)</button>
+
+                <div class="profile-content-section">
+                    <span class="profile-section-title">Fiidiyowyadaada</span>
+                    <button class="btn btn-logout" style="width: auto; padding: 6px 14px; font-size: 0.75rem;" onclick="logoutUser()">Logout</button>
                 </div>
 
-                <!-- Videos Grid ee Qofka -->
-                <div style="width: 100%; display: flex; justify-content: space-between; align-items: center; border-top: 1px solid #334155; padding-top: 10px;">
-                    <span style="font-size: 0.9rem;">Fiidiyowyadaada</span>
-                    <button onclick="logoutUser()" style="background: none; border: none; color: #ef4444; font-size: 0.8rem; cursor: pointer;">Logout</button>
-                </div>
-
-                <div class="videos-grid" id="userVideosGrid">
-                    <div class="no-videos">Weli ma aadan soo gelin wax video ah.</div>
+                <div style="text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 40px; font-weight: 700;">
+                    Weli ma aadan soo gelin wax video ah.
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- BOTTOM NAVIGATION BAR (Waa mid joogto ah oo aan waligii lumin) -->
+    <!-- BOTTOM NAVIGATION BAR -->
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             <span>Home</span>
         </button>
-        <button class="nav-item" onclick="switchTab('tabUpload', this)">
-            <div class="upload-btn-nav">+</div>
+        <button class="nav-item" onclick="switchTab('tabChat', this)">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            <span>Chat</span>
         </button>
-        <button class="nav-item" onclick="switchTab('tabProfile', this)">
+        <button class="nav-item" onclick="switchTab('tabScan', this)">
+            <svg viewBox="0 0 24 24"><path d="M4 4h3v2H6v1H4V4m13 0h3v3h-2V6h-1V4M4 17h2v1h1v2H4v-3m16 0v3h-3v-2h1v-1h2M6 8h12v8H6V8z"/></svg>
+            <span>Scan</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabQuran', this)">
+            <!-- Luxury Gold Quran Book & Star Icon -->
+            <svg class="nav-quran-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="navGold" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#fff6cc"/>
+                  <stop offset="30%" stop-color="#d4af37"/>
+                  <stop offset="70%" stop-color="#b8860b"/>
+                  <stop offset="100%" stop-color="#8b6508"/>
+                </linearGradient>
+              </defs>
+              <path d="M100 35 C100 35 70 25 35 35 C20 40 10 50 10 65 L10 155 C10 165 20 170 35 165 C70 155 100 165 100 165 C100 165 130 155 165 165 C180 170 190 165 190 155 L190 65 C190 50 180 40 165 35 C130 25 100 35 100 35 Z" fill="#fcf8ee" stroke="url(#navGold)" stroke-width="8"/>
+              <path d="M93 37 L93 163 C97 165 103 165 107 163 L107 37 Z" fill="url(#navGold)"/>
+              <line x1="35" y1="65" x2="75" y2="75" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="30" y1="90" x2="75" y2="100" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="35" y1="115" x2="70" y2="125" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="125" y1="75" x2="165" y2="65" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="125" y1="100" x2="170" y2="90" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="130" y1="125" x2="165" y2="115" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+            <span>Qur'aan</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabWallet', this)">
+            <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            <span>Wallet</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabSettings', this)">
             <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             <span>Profile</span>
         </button>
@@ -359,154 +777,396 @@
       projectId: "somapp-61ebd",
       storageBucket: "somapp-61ebd.firebasestorage.app",
       messagingSenderId: "890890688001",
-      appId: "1:890890688001:web:b7063dda31b860785f5200"
+      appId: "1:890890688001:web:b7063dda31b860785f5200",
+      measurementId: "G-XG4K89NNMM"
     };
     
-    if (!firebase.apps.length) { firebase.initializeApp(firebaseConfig); }
+    if (!firebase.apps.length) {
+        firebase.initializeApp(firebaseConfig);
+    }
 
-    let currentUser = null;
-    let userVideos = [];
+    const SERVER_URL = 'https://somapp-website-production.up.railway.app';
+    let currentUserUid = null;
+    let userPolygonAddress = "";
+    let userDisplayName = "User";
 
-    async function loginWithGoogle() {
-        const provider = new firebase.auth.GoogleAuthProvider();
+    const quranSurahs = [
+        {name: "الفاتحة", ayahs: 6}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
+        {name: "الأنعام", ayahs: 165}, {name: "الأعراف", ayahs: 206}, {name: "الأنفال", ayahs: 75}, {name: "التوبة", ayahs: 129}, {name: "يونس", ayahs: 109},
+        {name: "هود", ayahs: 123}, {name: "يوسف", ayahs: 111}, {name: "الرعد", ayahs: 43}, {name: "إبراهيم", ayahs: 52}, {name: "الحجر", ayahs: 99},
+        {name: "النحل", ayahs: 128}, {name: "الإسراء", ayahs: 111}, {name: "الكهف", ayahs: 110}, {name: "مريم", ayahs: 98}, {name: "طه", ayahs: 135},
+        {name: "الأنبياء", ayahs: 112}, {name: "الحج", ayahs: 78}, {name: "المؤمنون", ayahs: 118}, {name: "النور", ayahs: 64}, {name: "الفرقان", ayahs: 77},
+        {name: "الشعراء", ayahs: 227}, {name: "النمل", ayahs: 93}, {name: "القصص", ayahs: 88}, {name: "العنكبوت", ayahs: 69}, {name: "الروم", ayahs: 60},
+        {name: "لقمان", ayahs: 34}, {name: "السجدة", ayahs: 30}, {name: "الأحزاب", ayahs: 73}, {name: "سبأ", ayahs: 54}, {name: "فاطر", ayahs: 45},
+        {name: "يس", ayahs: 83}, {name: "الصافات", ayahs: 182}, {name: "ص", ayahs: 88}, {name: "الزمر", ayahs: 75}, {name: "غافر", ayahs: 85},
+        {name: "فصلت", ayahs: 54}, {name: "الشورى", ayahs: 53}, {name: "الزخرف", ayahs: 89}, {name: "الدخان", ayahs: 59}, {name: "الجاثية", ayahs: 37},
+        {name: "الأحقاف", ayahs: 35}, {name: "محمد", ayahs: 38}, {name: "الفتح", ayahs: 29}, {name: "الحجرات", ayahs: 18}, {name: "ق", ayahs: 45},
+        {name: "الذاريات", ayahs: 60}, {name: "الطور", ayahs: 49}, {name: "النجم", ayahs: 62}, {name: "القمر", ayahs: 55}, {name: "الرحمن", ayahs: 78},
+        {name: "واقعة", ayahs: 96}, {name: "الحديد", ayahs: 29}, {name: "المجادلة", ayahs: 22}, {name: "الحشر", ayahs: 24}, {name: "الممتحنة", ayahs: 13},
+        {name: "الصف", ayahs: 14}, {name: "الجمعة", ayahs: 11}, {name: "المنافقون", ayahs: 11}, {name: "التغابن", ayahs: 18}, {name: "الطلاق", ayahs: 12},
+        {name: "التحريم", ayahs: 12}, {name: "الملك", ayahs: 30}, {name: "القلم", ayahs: 52}, {name: "الحاقة", ayahs: 52}, {name: "المعارج", ayahs: 44},
+        {name: "نوح", ayahs: 28}, {name: "الجن", ayahs: 28}, {name: "المزمل", ayahs: 20}, {name: "المسثر", ayahs: 56}, {name: "القيامة", ayahs: 40},
+        {name: "الإنسان", ayahs: 31}, {name: "المرسلات", ayahs: 50}, {name: "النبأ", ayahs: 40}, {name: "النازعات", ayahs: 46}, {name: "عبس", ayahs: 42},
+        {name: "التكوير", ayahs: 29}, {name: "الإنفطار", ayahs: 19}, {name: "المطففين", ayahs: 36}, {name: "الإنشقاق", ayahs: 25}, {name: "البروج", ayahs: 22},
+        {name: "الطارق", ayahs: 17}, {name: "الأعلى", ayahs: 19}, {name: "الغاشية", ayahs: 26}, {name: "الفجر", ayahs: 30}, {name: "البلد", ayahs: 20},
+        {name: "الشمس", ayahs: 15}, {name: "الليل", ayahs: 21}, {name: "الضحى", ayahs: 11}, {name: "الشرح", ayahs: 8}, {name: "التين", ayahs: 8},
+        {name: "العلق", ayahs: 19}, {name: "القدر", ayahs: 5}, {name: "البينة", ayahs: 8}, {name: "الزلزلة", ayahs: 8}, {name: "العاديات", ayahs: 11},
+        {name: "القارعة", ayahs: 11}, {name: "التكاثر", ayahs: 8}, {name: "العصر", ayahs: 3}, {name: "الهمزة", ayahs: 9}, {name: "الفيل", ayahs: 5},
+        {name: "قريش", ayahs: 4}, {name: "الماعون", ayahs: 7}, {name: "الكوثر", ayahs: 3}, {name: "الكافرون", ayahs: 6}, {name: "النصر", ayahs: 3}, {name: "المسد", ayahs: 5}, {name: "الإخلاص", ayahs: 4}, {name: "الفلق", ayahs: 5}, {name: "الناس", ayahs: 6}
+    ];
+
+    let currentSurahPage = 1;
+    const surahsPerPage = 20;
+
+    let currentAyahsData = [];
+    let currentAyahPage = 1;
+    const ayahsPerPage = 8;
+    let activeSurahNum = 1;
+    let activeSurahName = "";
+
+    function toArabicNumeral(n) {
+        const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
+    }
+
+    function createAyahMarkerSvg(numberStr) {
+        return `
+        <svg class="ayah-svg-marker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="pureGold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fff6cc"/>
+              <stop offset="25%" stop-color="#e6b839"/>
+              <stop offset="50%" stop-color="#b8860b"/>
+              <stop offset="75%" stop-color="#f3e5ab"/>
+              <stop offset="100%" stop-color="#8b6508"/>
+            </linearGradient>
+            <linearGradient id="innerGold" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fffbe8"/>
+              <stop offset="100%" stop-color="#d4af37"/>
+            </linearGradient>
+          </defs>
+          <path d="M100 5 L145 25 L175 55 L195 100 L175 145 L145 175 L100 195 L55 175 L25 145 L5 100 L25 55 L55 25 Z" fill="#fcf8ee" stroke="url(#pureGold)" stroke-width="6"/>
+          <path d="M100 17 L140 33 L167 60 L183 100 L167 140 L140 167 L100 183 L60 167 L33 140 L17 100 L33 60 L60 33 Z" fill="url(#innerGold)" stroke="url(#pureGold)" stroke-width="3"/>
+          <circle cx="100" cy="100" r="62" fill="#f7f1e5" stroke="url(#pureGold)" stroke-width="4"/>
+          <text x="100" y="118" text-anchor="middle" font-size="75" font-weight="bold" font-family="Amiri, serif" fill="#5c3814">${numberStr}</text>
+        </svg>`;
+    }
+
+    window.onload = function() {
+        renderSurahListPage();
+    };
+
+    function renderSurahListPage() {
+        const listEl = document.getElementById('surahList');
+        listEl.innerHTML = "";
+
+        const start = (currentSurahPage - 1) * surahsPerPage;
+        const end = start + surahsPerPage;
+        const paginatedSurahs = quranSurahs.slice(start, end);
+
+        paginatedSurahs.forEach((surah, index) => {
+            const globalIndex = start + index + 1;
+            const item = document.createElement('div');
+            item.className = 'surah-row';
+            item.innerHTML = `
+                <div class="surah-info-left">
+                    <span>${globalIndex}</span>
+                    <span>آياتها ${surah.ayahs}</span>
+                </div>
+                <div class="surah-name-arabic">سُورَةُ ${surah.name}</div>
+            `;
+            item.onclick = () => loadSurah(globalIndex, surah.name);
+            listEl.appendChild(item);
+        });
+
+        const totalPages = Math.ceil(quranSurahs.length / surahsPerPage);
+        document.getElementById('surahPageIndicator').innerText = `Bogga ${currentSurahPage} / ${totalPages}`;
+        document.getElementById('prevSurahPageBtn').disabled = currentSurahPage === 1;
+        document.getElementById('nextSurahPageBtn').disabled = currentSurahPage === totalPages;
+    }
+
+    function changeSurahPage(direction) {
+        const totalPages = Math.ceil(quranSurahs.length / surahsPerPage);
+        currentSurahPage += direction;
+        if (currentSurahPage < 1) currentSurahPage = 1;
+        if (currentSurahPage > totalPages) currentSurahPage = totalPages;
+        renderSurahListPage();
+    }
+
+    async function loadSurah(surahNum, surahName) {
+        activeSurahNum = surahNum;
+        activeSurahName = surahName;
+        currentAyahPage = 1;
+
+        document.getElementById('quranListContainer').classList.add('hidden');
+        document.getElementById('quranReaderContainer').classList.remove('hidden');
+        document.getElementById('readerTitle').innerText = `سُورَةُ ${surahName}`;
+        
+        const readerContent = document.getElementById('readerContent');
+        readerContent.innerHTML = "<div style='text-align:center; padding: 40px; color:#854d0e;'>Aayadaha waa la soo dejinayaa...</div>";
+        document.getElementById('surahPaginationBar').style.display = 'none';
+
         try {
-            const result = await firebase.auth().signInWithPopup(provider);
-            if (result.user) handleUserLogin(result.user);
+            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}/quran-simple`);
+            const data = await response.json();
+            
+            if (data.code === 200) {
+                currentAyahsData = data.data.ayahs;
+                renderAyahPage();
+            } else {
+                readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
+            }
         } catch (err) {
-            alert("Cilad Login: " + err.message);
+            console.error(err);
+            readerContent.innerHTML = "Fadlan hubi internet-kaaga, xiriirkii waa lumay.";
         }
     }
 
-    firebase.auth().onAuthStateChanged((user) => {
-        if (user) {
-            handleUserLogin(user);
+    function renderAyahPage() {
+        const readerContent = document.getElementById('readerContent');
+        let html = "";
+
+        let activeAyahs = currentAyahsData;
+        if (activeSurahNum === 1) {
+            activeAyahs = currentAyahsData.filter(ayah => {
+                let t = ayah.text.trim();
+                return !t.includes("بِسْمِ اللَّهِ") && !t.includes("بِسۡمِ ٱللَّهِ");
+            });
+        }
+
+        const totalAyahPages = Math.ceil(activeAyahs.length / ayahsPerPage);
+        const start = (currentAyahPage - 1) * ayahsPerPage;
+        const end = start + ayahsPerPage;
+        const paginatedAyahs = activeAyahs.slice(start, end);
+
+        if (currentAyahPage === 1 && activeSurahNum !== 9) {
+            html += `<div class="bismillah-header">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+        }
+
+        paginatedAyahs.forEach((ayah, idx) => {
+            let text = ayah.text.trim();
+            
+            if (activeSurahNum !== 9) {
+                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
+                           .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
+                           .trim();
+            }
+
+            let displayNum = activeSurahNum === 1 ? (start + idx + 1) : ayah.numberInSurah;
+            const arabicNum = toArabicNumeral(displayNum);
+            const svgMarker = createAyahMarkerSvg(arabicNum);
+            
+            html += `${text} ${svgMarker} `;
+        });
+
+        readerContent.innerHTML = html;
+
+        const paginationBar = document.getElementById('surahPaginationBar');
+        if (totalAyahPages > 1) {
+            paginationBar.style.display = 'flex';
+            document.getElementById('ayahPageIndicator').innerText = `Bogga ${currentAyahPage} / ${totalAyahPages}`;
+            document.getElementById('prevAyahPageBtn').disabled = currentAyahPage === 1;
+            document.getElementById('nextAyahPageBtn').disabled = currentAyahPage === totalAyahPages;
         } else {
-            document.getElementById('loginView').classList.remove('hidden');
-            document.getElementById('bottomNav').classList.add('hidden');
-            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            paginationBar.style.display = 'none';
         }
-    });
 
-    function handleUserLogin(user) {
-        currentUser = user;
-        document.getElementById('loginView').classList.add('hidden');
-        document.getElementById('bottomNav').classList.remove('hidden');
-        switchTab('tabHome', document.querySelector('.bottom-nav button'));
+        readerContent.scrollTop = 0;
+    }
 
-        document.getElementById('profileDisplayName').innerText = user.displayName || "User";
-        document.getElementById('profileEmailDisplay').innerText = "@" + (user.email ? user.email.split('@')[0] : "user");
-        if (user.photoURL) {
-            document.getElementById('profileAvatarImg').src = user.photoURL;
-        }
+    function changeAyahPage(direction) {
+        let activeAyahs = activeSurahNum === 1 ? currentAyahsData.filter(a => !a.text.includes("بِسْمِ اللَّهِ") && !a.text.includes("بِسۡمِ ٱللَّهِ")) : currentAyahsData;
+        const totalAyahPages = Math.ceil(activeAyahs.length / ayahsPerPage);
+        currentAyahPage += direction;
+        if (currentAyahPage < 1) currentAyahPage = 1;
+        if (currentAyahPage > totalAyahPages) currentAyahPage = totalAyahPages;
+        renderAyahPage();
+    }
+
+    function backToSurahList() {
+        document.getElementById('quranReaderContainer').classList.add('hidden');
+        document.getElementById('quranListContainer').classList.remove('hidden');
     }
 
     function switchTab(tabId, element) {
         document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
         document.getElementById(tabId).classList.remove('hidden');
 
-        document.querySelectorAll('.bottom-nav .nav-item').forEach(el => el.classList.remove('active'));
-        if(element) element.classList.add('active');
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        if (element) element.classList.add('active');
+
+        const topNav = document.getElementById('topNav');
+        const contentBody = document.getElementById('contentBody');
+
+        if (tabId === 'tabQuran') {
+            topNav.classList.add('hidden');
+            contentBody.style.marginTop = '0px';
+            contentBody.style.padding = '0';
+        } else {
+            topNav.classList.remove('hidden');
+            contentBody.style.marginTop = '65px';
+            contentBody.style.padding = '10px 0';
+        }
     }
 
-    function updateProfileAvatar(event) {
-        const file = event.target.files[0];
-        if (file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                document.getElementById('profileAvatarImg').src = e.target.result;
-                alert("Sawirka profile-ka waa la beddelay!");
+    async function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+
+        try {
+            document.getElementById('userStatus').innerText = "Opening...";
+            const result = await firebase.auth().signInWithPopup(provider);
+            if (result.user) {
+                await authenticateWithBackend(result.user);
             }
-            reader.readAsDataURL(file);
+        } catch (err) {
+            console.error("Login Error:", err);
+            alert("Cilad Login: " + err.message);
+            document.getElementById('userStatus').innerText = "Failed";
         }
     }
 
-    function editBio() {
-        const newBio = prompt("Geli qoraalkaaga Bio:", document.getElementById('userBioText').innerText);
-        if (newBio !== null) {
-            document.getElementById('userBioText').innerText = newBio || "+ Add bio";
+    async function authenticateWithBackend(user) {
+        if (!user || !user.uid) return;
+
+        try {
+            document.getElementById('userStatus').innerText = "Connecting...";
+            const response = await fetch(`${SERVER_URL}/api/auth-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    email: user.email || "",
+                    uid: user.uid,
+                    userId: user.uid,
+                    displayName: user.displayName || "User"
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                currentUserUid = user.uid;
+                userPolygonAddress = data.polygonAddress;
+                userDisplayName = user.displayName || "User";
+
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('bottomNav').classList.remove('hidden');
+                switchTab('tabHome', document.querySelector('.nav-item'));
+
+                document.getElementById('userStatus').innerText = "Connected";
+                document.getElementById('userStatus').style.background = "rgba(52, 211, 153, 0.2)";
+                document.getElementById('userStatus').style.color = "#34d399";
+
+                document.getElementById('userIdDisplay').innerText = data.userId || user.uid;
+                document.getElementById('userEmailDisplay').innerText = user.email;
+                document.getElementById('depositAddress').innerText = data.polygonAddress;
+                document.getElementById('balanceDisplay').innerText = data.balance + " POL";
+                document.getElementById('dailyLimitDisplay').innerText = data.dailyLimit;
+
+                // Update Profile Info
+                document.getElementById('profileDisplayName').innerText = user.displayName || "Keynan abukar";
+                document.getElementById('profileInitial').innerText = (user.displayName || "K").charAt(0).toUpperCase();
+                if(user.email) {
+                    let uname = user.email.split('@')[0];
+                    document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
+                }
+            } else {
+                alert("Cilad Server: " + (data.error || "Unknown error"));
+                document.getElementById('userStatus').innerText = "Error";
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Cilad ayaa ka dhacday xiriirka Server-ka.");
+            document.getElementById('userStatus').innerText = "Offline";
         }
     }
 
-    function uploadVideo() {
-        const fileInput = document.getElementById('videoFileInput');
-        const caption = document.getElementById('videoCaptionInput').value;
-
-        if (fileInput.files.length === 0) {
-            alert("Fadlan dooro video!");
-            return;
+    firebase.auth().onAuthStateChanged(async (user) => {
+        if (user) {
+            await authenticateWithBackend(user);
+        } else {
+            document.getElementById('loginView').classList.remove('hidden');
+            document.getElementById('bottomNav').classList.add('hidden');
+            document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+            document.getElementById('userStatus').innerText = "Not Logged In";
         }
+    });
 
-        const file = fileInput.files[0];
-        const videoUrl = URL.createObjectURL(file);
-
-        const newVideo = {
-            url: videoUrl,
-            caption: caption || "Video cusub",
-            likes: 0,
-            views: 1
-        };
-
-        userVideos.push(newVideo);
-        renderVideos();
-
-        alert("Video-ga waa la soo geliyay!");
-        document.getElementById('videoCaptionInput').value = "";
-        fileInput.value = "";
-        switchTab('tabProfile', document.querySelectorAll('.bottom-nav .nav-item')[2]);
+    function copyAddress() {
+        navigator.clipboard.writeText(userPolygonAddress);
+        alert("Cinwaanka waa la koobiyeeyay!");
     }
 
-    function renderVideos() {
-        const grid = document.getElementById('userVideosGrid');
-        const homeFeed = document.getElementById('homeFeed');
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        const text = input.value.trim();
+        if(!text) return;
 
-        if (userVideos.length === 0) {
-            grid.innerHTML = `<div class="no-videos">Weli ma aadan soo gelin wax video ah.</div>`;
-            homeFeed.innerHTML = `<p style="color: #64748b; text-align: center;">Weli ma jiraan fiidiyooyin la soo geliyay.</p>`;
-            return;
-        }
+        const chatContainer = document.getElementById('chatContainer');
+        const msgDiv = document.createElement('div');
+        msgDiv.className = 'chat-message';
+        msgDiv.innerHTML = `<strong>${userDisplayName}:</strong> ${text}`;
+        chatContainer.appendChild(msgDiv);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        input.value = '';
+    }
 
-        let gridHtml = '';
-        let feedHtml = '';
-
-        userVideos.forEach((v, index) => {
-            gridHtml += `
-                <div class="video-thumbnail">
-                    <video src="${v.url}"></video>
-                    <div class="video-views">▶ ${v.views}</div>
-                </div>
-            `;
-
-            feedHtml += `
-                <div style="background: #1e293b; border-radius: 12px; padding: 10px; margin-bottom: 15px;">
-                    <div style="font-size: 0.85rem; margin-bottom: 8px; font-weight: bold;">${currentUser.displayName}</div>
-                    <video src="${v.url}" controls style="width: 100%; border-radius: 8px; max-height: 300px; object-fit: cover;"></video>
-                    <p style="font-size: 0.8rem; margin-top: 8px; color: #cbd5e1;">${v.caption}</p>
-                    <div style="display: flex; gap: 15px; margin-top: 10px; font-size: 0.85rem;">
-                        <button onclick="likeVideo(${index})" style="background:none; border:none; color:white; cursor:pointer;">❤️ ${v.likes} Likes</button>
-                        <button onclick="subscribeChannel()" style="background:#3396FF; border:none; color:white; padding:4px 10px; border-radius:6px; cursor:pointer;">Subscribe</button>
-                    </div>
-                </div>
-            `;
+    function startScanner() {
+        const readerDiv = document.getElementById('reader');
+        readerDiv.classList.remove('hidden');
+        
+        const html5QrCode = new Html5Qrcode("reader");
+        html5QrCode.start(
+            { facingMode: "environment" },
+            { fps: 10, qrbox: { width: 250, height: 250 } },
+            async (decodedText) => {
+                alert("Waa la helay Code-kii: " + decodedText);
+                html5QrCode.stop();
+                readerDiv.classList.add('hidden');
+            },
+            (errorMessage) => {}
+        ).catch(err => {
+            alert("Cilad Camera-ha ah: " + err);
         });
-
-        grid.innerHTML = gridHtml;
-        homeFeed.innerHTML = feedHtml;
     }
 
-    function likeVideo(index) {
-        userVideos[index].likes += 1;
-        document.getElementById('likesCount').innerText = parseInt(document.getElementById('likesCount').innerText) + 1;
-        renderVideos();
+    async function sendWithdraw() {
+        const recipient = document.getElementById('recipientInput').value.trim();
+
+        if (!recipient) {
+            alert("Fadlan geli cinwaankaaga qaataha!");
+            return;
+        }
+
+        if (!confirm("Ma hubtaa inaad la baxayso saamigaaga maanta?")) return;
+
+        try {
+            const response = await fetch(`${SERVER_URL}/api/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: currentUserUid,
+                    recipientAddress: recipient
+                })
+            });
+
+            const data = await response.json();
+            if (data.success) {
+                alert("Guul! " + data.message + "\nTxHash: " + data.txHash);
+                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL";
+            } else {
+                alert("Cilad: " + (data.error || "Waa la waayay jawaab"));
+            }
+        } catch (err) {
+            console.error(err);
+            alert("Cilad Server-ka ah ayaa dhacday.");
+        }
     }
 
-    function subscribeChannel() {
-        let subBox = document.getElementById('subscribersCount');
-        subBox.innerText = parseInt(subBox.innerText) + 1;
-        alert("Waa lagu soo-diiq-geliyay (Subscribed)!");
-    }
-
-    function logoutUser() {
-        firebase.auth().signOut().then(() => { location.reload(); });
+    logoutUser = function() {
+        firebase.auth().signOut().then(() => {
+            localStorage.clear();
+            location.reload();
+        });
     }
 </script>
 

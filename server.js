@@ -3,12 +3,15 @@ const { ethers } = require('ethers');
 const cors = require('cors');
 
 const app = express();
-app.use(express.json({ limit: '50mb' })); // Si uu u qaado fiidiyowyada waaweyn ee Base64
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '500mb' })); // Kordhinta xadka si uu u qaado fiidiyowyo waaweyn
+app.use(express.urlencoded({ extended: true, limit: '500mb' }));
 app.use(cors());
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
+
+// Meel ku meel gaar ah oo server-ka ugu keydsan fiidiyowyada (Memory-based store)
+let uploadedVideosStore = [];
 
 async function getFirestoreUser(uid) {
     try {
@@ -169,6 +172,41 @@ app.post('/api/withdraw', async (req, res) => {
     } catch (err) {
         console.error("Withdraw Error:", err.message);
         return res.status(500).json({ success: false, error: "Cilad Blockchain: " + err.message });
+    }
+});
+
+// API: Soo gelinta Video-ga (Server Storage)
+app.post('/api/upload-video', async (req, res) => {
+    try {
+        const { id, uid, username, title, avatar, type, url, timestamp } = req.body;
+        if (!uid || !url) {
+            return res.status(400).json({ success: false, error: "Xogta video-ga waa maqan tahay." });
+        }
+        const newVideo = { id, uid, username, title, avatar, type, url, timestamp };
+        uploadedVideosStore.unshift(newVideo);
+        return res.json({ success: true, message: "Video-ga waa la keydiyay." });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// API: Soo qaadashada dhammaan Video-yada
+app.get('/api/get-videos', async (req, res) => {
+    try {
+        return res.json({ success: true, videos: uploadedVideosStore });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+// API: Tirtirida Video-ga
+app.post('/api/delete-video', async (req, res) => {
+    try {
+        const { videoId, uid } = req.body;
+        uploadedVideosStore = uploadedVideosStore.filter(v => v.id !== videoId);
+        return res.json({ success: true, message: "Video-ga waa la tirtiray." });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
     }
 });
 

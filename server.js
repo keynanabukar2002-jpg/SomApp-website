@@ -6,10 +6,17 @@ const path = require('path');
 const fs = require('fs');
 
 const app = express();
-app.use(express.json({ limit: '50mb' }));
-app.use(cors());
 
-// Samaynta folder lagu keydiyo fiidiyowyada iyo sawirrada
+// CORS si buuxda u fur si uusan GitHub Pages u xirin xiriirka
+app.use(cors({
+    origin: '*',
+    methods: ['GET', 'POST', 'PUT', 'DELETE'],
+    allowedHeaders: ['Content-Type', 'Authorization']
+}));
+
+app.use(express.json({ limit: '50mb' }));
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+
 const uploadDir = path.join(__dirname, 'uploads');
 if (!fs.existsSync(uploadDir)) {
     fs.mkdirSync(uploadDir);
@@ -76,7 +83,6 @@ async function saveFirestoreUser(uid, userData) {
     }
 }
 
-// Auth & Wallet Setup
 app.post('/api/auth-user', async (req, res) => {
     try {
         const email = req.body.email || "";
@@ -136,7 +142,6 @@ app.post('/api/auth-user', async (req, res) => {
     }
 });
 
-// Withdraw API
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { uid, recipientAddress } = req.body;
@@ -189,7 +194,6 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// API: Soo gelinta Video-ga (Multer - File Upload)
 app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
     try {
         if (!req.file) {
@@ -219,12 +223,10 @@ app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
     }
 });
 
-// API: Soo qaadashada dhammaan Video-yada
 app.get('/api/get-videos', (req, res) => {
     return res.json({ success: true, videos: uploadedVideosStore });
 });
 
-// API: Tirtirida Video-ga
 app.post('/api/delete-video', (req, res) => {
     const { videoId } = req.body;
     uploadedVideosStore = uploadedVideosStore.filter(v => v.id !== videoId);

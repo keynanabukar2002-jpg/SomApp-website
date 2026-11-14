@@ -1108,6 +1108,7 @@
         }
     }
 
+    /* Hagaajinta Upload-ka si faylku u noqdo Base64 oo qof walba u shaqeeyo */
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1122,40 +1123,46 @@
 
         document.getElementById('uploadStatus').innerText = "Waa la soo gelinayaa...";
 
-        const fileURL = URL.createObjectURL(file);
-        const avatarSaved = localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "";
-        
-        const videoObj = {
-            id: 'vid_' + Date.now(),
-            uid: currentUserUid,
-            username: userDisplayName,
-            title: videoTitle,
-            avatar: avatarSaved,
-            type: file.type.startsWith('image/') ? 'image' : 'video',
-            url: fileURL,
-            timestamp: Date.now()
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const fileBase64 = e.target.result;
+            const avatarSaved = localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "";
+            
+            const videoObj = {
+                id: 'vid_' + Date.now(),
+                uid: currentUserUid,
+                username: userDisplayName,
+                title: videoTitle,
+                avatar: avatarSaved,
+                type: file.type.startsWith('image/') ? 'image' : 'video',
+                url: fileBase64,
+                timestamp: Date.now()
+            };
+
+            let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
+            allVideos.unshift(videoObj);
+            
+            try {
+                localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
+            } catch(err) {
+                alert("Faylku waa uu ka weyn yahay xadka xusuusta (Storage limit). Fadlan soo geli video ka yar!");
+                document.getElementById('uploadStatus').innerText = "";
+                return;
+            }
+
+            document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
+            document.getElementById('videoTitleInput').value = "";
+            document.getElementById('mediaFileInput').value = "";
+            
+            loadAllVideosFeed();
+            loadProfileVideos();
+
+            setTimeout(() => {
+                document.getElementById('uploadStatus').innerText = "";
+                switchTab('tabHome', document.querySelector('.nav-item'));
+            }, 1000);
         };
-
-        let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
-        allVideos.unshift(videoObj);
-        
-        try {
-            localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
-        } catch(err) {
-            console.log("Storage limit reached");
-        }
-
-        document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
-        document.getElementById('videoTitleInput').value = "";
-        document.getElementById('mediaFileInput').value = "";
-        
-        loadAllVideosFeed();
-        loadProfileVideos();
-
-        setTimeout(() => {
-            document.getElementById('uploadStatus').innerText = "";
-            switchTab('tabHome', document.querySelector('.nav-item'));
-        }, 1000);
+        reader.readAsDataURL(file);
     }
 
     // YouTube Style Feed Loader

@@ -235,34 +235,70 @@
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
 
-        /* Home Feed Video Styles */
+        /* YouTube Style Home Feed */
         .feed-container {
             display: flex;
             flex-direction: column;
             gap: 16px;
-            padding: 0 15px;
+            padding: 10px 0;
         }
-        .feed-card {
+        .yt-card {
             background: #ffffff;
-            border-radius: 16px;
-            overflow: hidden;
-            border: 2px solid rgba(51, 150, 255, 0.3);
-            box-shadow: 0 6px 20px rgba(51, 150, 255, 0.12);
+            width: 100%;
+            margin-bottom: 12px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+            border-bottom: 1px solid #e2e8f0;
         }
-        .feed-header {
-            padding: 12px 16px;
-            font-size: 0.85rem;
+        .yt-media-container {
+            width: 100%;
+            background: #000;
+            position: relative;
+            max-height: 400px;
+        }
+        .yt-media {
+            width: 100%;
+            max-height: 400px;
+            object-fit: contain;
+            display: block;
+        }
+        .yt-details {
+            display: flex;
+            padding: 12px;
+            gap: 12px;
+        }
+        .yt-avatar {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            background: #3396FF;
+            color: #fff;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: 800;
+            font-size: 1rem;
+            flex-shrink: 0;
+            overflow: hidden;
+        }
+        .yt-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        .yt-meta {
+            flex: 1;
+        }
+        .yt-title {
+            font-size: 0.95rem;
             color: #0f172a;
             font-weight: 800;
-            border-bottom: 1px solid #e2e8f0;
-            background: #f8fafc;
+            margin-bottom: 4px;
+            line-height: 1.3;
         }
-        .feed-media {
-            width: 100%;
-            max-height: 350px;
-            object-fit: contain;
-            background: #000;
-            display: block;
+        .yt-subinfo {
+            font-size: 0.75rem;
+            color: #64748b;
+            font-weight: 700;
         }
 
         /* Profile Grid Videos */
@@ -689,7 +725,7 @@
 </head>
 <body>
 
-<div class="app-frame">
+<div class="app-frame" onclick="closeProfileMenuOutside(event)">
     <!-- TOP NAVIGATION BAR -->
     <div class="top-nav" id="topNav">
         <div class="logo">
@@ -712,10 +748,10 @@
             </button>
         </div>
 
-        <!-- Dashboard / Home Tab -->
-        <div id="tabHome" class="tab-content hidden" style="padding: 10px 0;">
+        <!-- Dashboard / Home Tab (YouTube Style Feed) -->
+        <div id="tabHome" class="tab-content hidden" style="padding: 0;">
             <div id="homeFeedContainer" class="feed-container">
-                <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 20px;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>
+                <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>
             </div>
         </div>
 
@@ -737,7 +773,13 @@
         <div id="tabUpload" class="tab-content hidden" style="padding: 0 15px;">
             <div class="card" style="text-align: center;">
                 <div class="card-title" style="color:#7c3aed; font-weight:800;">Soo geli Sawir ama Video</div>
-                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin-bottom: 12px;">Guji badhanka hoose si aad taleefankaaga uga doorato sawir ama video.</p>
+                
+                <div class="input-group" style="text-align: left; margin-top: 10px;">
+                    <label style="font-size: 0.8rem; color: #334155; font-weight: 800;">Cinwaanka Video-ga (Title):</label>
+                    <input type="text" id="videoTitleInput" placeholder="Tusaale: Dagaalka Cusub ee Dayaxa...">
+                </div>
+
+                <p style="font-size: 0.85rem; color: #475569; font-weight: 800; margin: 12px 0;">Guji badhanka hoose si aad taleefankaaga uga doorato sawir ama video.</p>
                 
                 <input type="file" id="mediaFileInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)">
                 <button class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir ama Video</button>
@@ -804,7 +846,7 @@
 
         <!-- Settings / Profile Tab -->
         <div id="tabSettings" class="tab-content hidden">
-            <div class="tiktok-profile" onclick="closeProfileMenuOutside(event)">
+            <div class="tiktok-profile">
                 <button class="profile-back-btn" onclick="switchTab('tabHome', document.querySelector('.nav-item'))">← Dib u laabo</button>
                 <div class="profile-menu-wrapper">
                     <button class="three-dots-btn" onclick="toggleProfileMenu(event)">⋮</button>
@@ -993,10 +1035,9 @@
 
     function closeProfileMenuOutside(event) {
         const menu = document.getElementById('profileDropdownMenu');
-        if (!menu.classList.contains('hidden')) {
+        if (menu && !menu.classList.contains('hidden')) {
             menu.classList.add('hidden');
         }
-        // Close any open video dropdowns
         document.querySelectorAll('.video-dropdown').forEach(d => d.classList.remove('show'));
     }
 
@@ -1058,9 +1099,13 @@
     function applyAvatarImage(src) {
         const imgEl = document.getElementById('profileAvatarImg');
         const initialEl = document.getElementById('profileInitial');
-        imgEl.src = src;
-        imgEl.classList.remove('hidden');
-        initialEl.classList.add('hidden');
+        if (imgEl) {
+            imgEl.src = src;
+            imgEl.classList.remove('hidden');
+        }
+        if (initialEl) {
+            initialEl.classList.add('hidden');
+        }
     }
 
     function handleMediaUpload(event) {
@@ -1072,14 +1117,20 @@
             return;
         }
 
+        const titleInput = document.getElementById('videoTitleInput').value.trim();
+        const videoTitle = titleInput !== "" ? titleInput : (file.name || "Video cusub");
+
         document.getElementById('uploadStatus').innerText = "Waa la soo gelinayaa...";
 
         const fileURL = URL.createObjectURL(file);
+        const avatarSaved = localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "";
         
         const videoObj = {
             id: 'vid_' + Date.now(),
             uid: currentUserUid,
             username: userDisplayName,
+            title: videoTitle,
+            avatar: avatarSaved,
             type: file.type.startsWith('image/') ? 'image' : 'video',
             url: fileURL,
             timestamp: Date.now()
@@ -1095,6 +1146,8 @@
         }
 
         document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
+        document.getElementById('videoTitleInput').value = "";
+        document.getElementById('mediaFileInput').value = "";
         
         loadAllVideosFeed();
         loadProfileVideos();
@@ -1105,6 +1158,7 @@
         }, 1000);
     }
 
+    // YouTube Style Feed Loader
     function loadAllVideosFeed() {
         const feedContainer = document.getElementById('homeFeedContainer');
         const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
@@ -1117,18 +1171,33 @@
         feedContainer.innerHTML = "";
         allVideos.forEach(item => {
             const card = document.createElement('div');
-            card.className = 'feed-card';
+            card.className = 'yt-card';
             
             let mediaHtml = '';
             if (item.type === 'image') {
-                mediaHtml = `<img src="${item.url}" class="feed-media" alt="Post">`;
+                mediaHtml = `<img src="${item.url}" class="yt-media" alt="Post">`;
             } else {
-                mediaHtml = `<video src="${item.url}" class="feed-media" controls playsinline></video>`;
+                mediaHtml = `<video src="${item.url}" class="yt-media" controls playsinline></video>`;
+            }
+
+            let avatarHtml = '';
+            if (item.avatar) {
+                avatarHtml = `<img src="${item.avatar}" alt="Avatar">`;
+            } else {
+                avatarHtml = (item.username || 'U').charAt(0).toUpperCase();
             }
 
             card.innerHTML = `
-                <div class="feed-header">@${item.username || 'User'}</div>
-                ${mediaHtml}
+                <div class="yt-media-container">
+                    ${mediaHtml}
+                </div>
+                <div class="yt-details">
+                    <div class="yt-avatar">${avatarHtml}</div>
+                    <div class="yt-meta">
+                        <div class="yt-title">${item.title || 'Video cusub oo la soo geliyay'}</div>
+                        <div class="yt-subinfo">@${item.username || 'User'} • 1 view • Hadda la soo geliyay</div>
+                    </div>
+                </div>
             `;
             feedContainer.appendChild(card);
         });
@@ -1180,7 +1249,6 @@
 
     function toggleVideoMenu(event, videoId) {
         event.stopPropagation();
-        // Hide all other open dropdowns first
         document.querySelectorAll('.video-dropdown').forEach(d => {
             if (d.id !== 'dropdown_' + videoId) d.classList.remove('show');
         });
@@ -1201,6 +1269,7 @@
 
     function renderSurahListPage() {
         const listEl = document.getElementById('surahList');
+        if (!listEl) return;
         listEl.innerHTML = "";
 
         const start = (currentSurahPage - 1) * surahsPerPage;
@@ -1290,7 +1359,7 @@
             let text = ayah.text.trim();
             if (activeSurahNum !== 9) {
                 text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
-                           .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِیمِ/g, "")
+                           .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِۡیمِ/g, "")
                            .trim();
             }
             let displayNum = activeSurahNum === 1 ? (start + idx + 1) : ayah.numberInSurah;
@@ -1343,7 +1412,7 @@
         } else {
             topNav.classList.remove('hidden');
             contentBody.style.marginTop = '65px';
-            contentBody.style.padding = '10px 0';
+            contentBody.style.padding = '0';
         }
     }
 
@@ -1487,7 +1556,7 @@
         }
     }
 
-    logoutUser = function() {
+    function logoutUser() {
         firebase.auth().signOut().then(() => {
             location.reload();
         });

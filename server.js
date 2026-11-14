@@ -1,42 +1,14 @@
 const express = require('express');
 const { ethers } = require('ethers');
 const cors = require('cors');
-const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 const app = express();
-
-app.use(cors({
-    origin: '*',
-    methods: ['GET', 'POST', 'PUT', 'DELETE'],
-    allowedHeaders: ['Content-Type', 'Authorization']
-}));
-
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-
-const uploadDir = path.join(__dirname, 'uploads');
-try {
-    if (!fs.existsSync(uploadDir)) {
-        fs.mkdirSync(uploadDir, { recursive: true });
-    }
-} catch (e) {
-    console.log("Upload dir creation error:", e);
-}
-
-app.use('/uploads', express.static(uploadDir));
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + (file.originalname ? file.originalname.replace(/\s+/g, '_') : 'file'))
-});
-const upload = multer({ storage: storage });
+app.use(cors());
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
-
-let uploadedVideosStore = [];
 
 async function getFirestoreUser(uid) {
     try {
@@ -196,45 +168,6 @@ app.post('/api/withdraw', async (req, res) => {
         console.error("Withdraw Error:", err.message);
         return res.status(500).json({ success: false, error: "Cilad Blockchain: " + err.message });
     }
-});
-
-app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
-    try {
-        if (!req.file) {
-            return res.status(400).json({ success: false, error: "Fayl lama soo dooran." });
-        }
-
-        const { id, uid, username, title, avatar, type, timestamp } = req.body;
-        const serverBaseUrl = `${req.protocol}://${req.get('host')}`;
-        const fileUrl = `${serverBaseUrl}/uploads/${req.file.filename}`;
-
-        const newVideo = {
-            id: id || 'vid_' + Date.now(),
-            uid,
-            username,
-            title,
-            avatar,
-            type,
-            url: fileUrl,
-            timestamp: Number(timestamp) || Date.now()
-        };
-
-        uploadedVideosStore.unshift(newVideo);
-        return res.json({ success: true, message: "Video-ga waa la keydiyay.", video: newVideo });
-    } catch (err) {
-        console.error("Upload Error:", err);
-        return res.status(500).json({ success: false, error: err.message });
-    }
-});
-
-app.get('/api/get-videos', (req, res) => {
-    return res.json({ success: true, videos: uploadedVideosStore });
-});
-
-app.post('/api/delete-video', (req, res) => {
-    const { videoId } = req.body;
-    uploadedVideosStore = uploadedVideosStore.filter(v => v.id !== videoId);
-    return res.json({ success: true });
 });
 
 const PORT = process.env.PORT || 3000;

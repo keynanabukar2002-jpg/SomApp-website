@@ -323,7 +323,6 @@
             cursor: pointer;
         }
 
-        /* Three dots overlay on profile video items */
         .video-menu-btn {
             position: absolute;
             top: 4px;
@@ -372,7 +371,6 @@
             border-radius: 8px;
         }
 
-        /* Chat styles */
         .chat-box {
             background: #f8fafc;
             border-radius: 12px;
@@ -394,7 +392,6 @@
             border: 1px solid #3396FF;
         }
 
-        /* Quran Surah List Styles */
         .surah-list {
             display: flex;
             flex-direction: column;
@@ -1108,7 +1105,7 @@
         }
     }
 
-    // Soo gelinta Video-ga oo Server-ka loo dirayo (lagama cabsanayo xadka localStorage)
+    // Soo gelinta Video-ga oo FormData adeegsanaya (Si fiidiyow weyn u galo)
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1120,34 +1117,35 @@
 
         const titleInput = document.getElementById('videoTitleInput').value.trim();
         const videoTitle = titleInput !== "" ? titleInput : (file.name || "Video cusub");
+        const statusEl = document.getElementById('uploadStatus');
 
-        document.getElementById('uploadStatus').innerText = "Waa la soo gelinayaa server-ka...";
+        statusEl.innerText = "Waa la dirayaa: 0% ...";
 
-        const reader = new FileReader();
-        reader.onload = async function(e) {
-            const fileBase64 = e.target.result;
-            const avatarSaved = localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "";
-            
-            const videoObj = {
-                id: 'vid_' + Date.now(),
-                uid: currentUserUid,
-                username: userDisplayName,
-                title: videoTitle,
-                avatar: avatarSaved,
-                type: file.type.startsWith('image/') ? 'image' : 'video',
-                url: fileBase64,
-                timestamp: Date.now()
-            };
+        const formData = new FormData();
+        formData.append('mediaFile', file);
+        formData.append('id', 'vid_' + Date.now());
+        formData.append('uid', currentUserUid);
+        formData.append('username', userDisplayName);
+        formData.append('title', videoTitle);
+        formData.append('avatar', localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "");
+        formData.append('type', file.type.startsWith('image/') ? 'image' : 'video');
+        formData.append('timestamp', Date.now());
 
-            try {
-                const response = await fetch(`${SERVER_URL}/api/upload-video`, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(videoObj)
-                });
-                const data = await response.json();
+        const xhr = new XMLHttpRequest();
+        xhr.open('POST', `${SERVER_URL}/api/upload-video`, true);
+
+        xhr.upload.onprogress = function(e) {
+            if (e.lengthComputable) {
+                const percent = Math.round((e.loaded / e.total) * 100);
+                statusEl.innerText = `Waa la dirayaa server-ka: ${percent}% ...`;
+            }
+        };
+
+        xhr.onload = function() {
+            if (xhr.status === 200) {
+                const data = JSON.parse(xhr.responseText);
                 if (data.success) {
-                    document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
+                    statusEl.innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
                     document.getElementById('videoTitleInput').value = "";
                     document.getElementById('mediaFileInput').value = "";
                     
@@ -1155,23 +1153,27 @@
                     loadProfileVideos();
 
                     setTimeout(() => {
-                        document.getElementById('uploadStatus').innerText = "";
+                        statusEl.innerText = "";
                         switchTab('tabHome', document.querySelector('.nav-item'));
                     }, 1000);
                 } else {
                     alert("Cilad: " + data.error);
-                    document.getElementById('uploadStatus').innerText = "";
+                    statusEl.innerText = "";
                 }
-            } catch (err) {
-                console.error(err);
-                alert("Xiriirkii Server-ka ayaa go'ay.");
-                document.getElementById('uploadStatus').innerText = "";
+            } else {
+                alert("Cilad Server: " + xhr.status);
+                statusEl.innerText = "";
             }
         };
-        reader.readAsDataURL(file);
+
+        xhr.onerror = function() {
+            alert("Xiriirkii Server-ka ayaa go'ay.");
+            statusEl.innerText = "";
+        };
+
+        xhr.send(formData);
     }
 
-    // Soo bandhigida fiidiyowyada Home Feed-ka ee Server-ka laga keenayo
     async function loadAllVideosFeed() {
         const feedContainer = document.getElementById('homeFeedContainer');
         try {
@@ -1222,7 +1224,6 @@
         }
     }
 
-    // Soo bandhigida Profile Videos iyo badhanka Delete-ka
     async function loadProfileVideos() {
         const gridContainer = document.getElementById('profileVideosGrid');
         try {
@@ -1288,7 +1289,7 @@
             await fetch(`${SERVER_URL}/api/delete-video`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ videoId, uid: currentUserUid })
+                body: JSON.stringify({ videoId })
             });
 
             loadProfileVideos();

@@ -731,7 +731,7 @@
                     </div>
                 </div>
 
-                <!-- Clickable Avatar (Camera Badge Removed, Click to Change Image) -->
+                <!-- Clickable Avatar (Saved per User, Persistent across Refresh & Logout) -->
                 <div class="profile-avatar-wrapper" onclick="document.getElementById('avatarFileInput').click()" title="Guji si aad sawirka u beddesho">
                     <div class="profile-avatar" id="profileAvatarBox">
                         <span id="profileInitial">K</span>
@@ -902,7 +902,6 @@
 
     window.onload = function() {
         renderSurahListPage();
-        loadSavedAvatar();
     };
 
     /* Three Dots Menu Toggle */
@@ -919,7 +918,7 @@
         }
     }
 
-    /* Change Profile Photo from Device */
+    /* Change Profile Photo & Save Permanently per User UID */
     function changeProfilePhoto(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -927,14 +926,17 @@
         const reader = new FileReader();
         reader.onload = function(e) {
             const imgDataUrl = e.target.result;
-            localStorage.setItem('knn_custom_avatar', imgDataUrl);
+            if (currentUserUid) {
+                localStorage.setItem('knn_avatar_' + currentUserUid, imgDataUrl);
+            }
             applyAvatarImage(imgDataUrl);
         };
         reader.readAsDataURL(file);
     }
 
-    function loadSavedAvatar() {
-        const savedImg = localStorage.getItem('knn_custom_avatar');
+    function loadSavedAvatar(uid) {
+        if (!uid) return;
+        const savedImg = localStorage.getItem('knn_avatar_' + uid);
         if (savedImg) {
             applyAvatarImage(savedImg);
         }
@@ -1161,6 +1163,9 @@
                     let uname = user.email.split('@')[0];
                     document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
                 }
+
+                // Load saved avatar for this specific user if exists
+                loadSavedAvatar(user.uid);
             } else {
                 alert("Cilad Server: " + (data.error || "Unknown error"));
                 document.getElementById('userStatus').innerText = "Error";
@@ -1256,7 +1261,16 @@
 
     logoutUser = function() {
         firebase.auth().signOut().then(() => {
+            // Hada tirtir kaliya xogta aan ahayn sawirka profile-ka
+            let avatarKey = currentUserUid ? 'knn_avatar_' + currentUserUid : null;
+            let savedAvatar = avatarKey ? localStorage.getItem(avatarKey) : null;
+            
             localStorage.clear();
+            
+            if (avatarKey && savedAvatar) {
+                localStorage.setItem(avatarKey, savedAvatar);
+            }
+            
             location.reload();
         });
     }

@@ -278,6 +278,8 @@
             background: #000;
             overflow: hidden;
             border-radius: 4px;
+            cursor: pointer;
+            position: relative;
         }
         .profile-video-item video, .profile-video-item img {
             width: 100%;
@@ -1010,7 +1012,6 @@
         initialEl.classList.add('hidden');
     }
 
-    /* Fast & Lightweight Local Media Handling */
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1022,7 +1023,6 @@
 
         document.getElementById('uploadStatus').innerText = "Waa la soo gelinayaa...";
 
-        // Use Object URL to instantly load without crashing or freezing browser
         const fileURL = URL.createObjectURL(file);
         
         const videoObj = {
@@ -1040,7 +1040,7 @@
         try {
             localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
         } catch(err) {
-            console.log("Storage limit reached for object URLs, keeping memory active");
+            console.log("Storage limit reached");
         }
 
         document.getElementById('uploadStatus').innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
@@ -1072,7 +1072,7 @@
             if (item.type === 'image') {
                 mediaHtml = `<img src="${item.url}" class="feed-media" alt="Post">`;
             } else {
-                mediaHtml = `<video src="${item.url}" class="feed-media" controls muted playsinline></video>`;
+                mediaHtml = `<video src="${item.url}" class="feed-media" controls playsinline></video>`;
             }
 
             card.innerHTML = `
@@ -1083,6 +1083,7 @@
         });
     }
 
+    /* Hagaajinta Profile Videos si ay u daarmaan marka la taabto (Play/Pause) */
     function loadProfileVideos() {
         const gridContainer = document.getElementById('profileVideosGrid');
         const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
@@ -1102,7 +1103,19 @@
             if (item.type === 'image') {
                 div.innerHTML = `<img src="${item.url}" alt="Profile Post">`;
             } else {
-                div.innerHTML = `<video src="${item.url}" muted></video>`;
+                // Waxaa lagu daray controls iyo shaqo click ah si uu u daarmado ama u istaago
+                const videoEl = document.createElement('video');
+                videoEl.src = item.url;
+                videoEl.setAttribute('playsinline', '');
+                videoEl.onclick = function() {
+                    if (videoEl.paused) {
+                        videoEl.play();
+                        videoEl.setAttribute('controls', 'controls');
+                    } else {
+                        videoEl.pause();
+                    }
+                };
+                div.appendChild(videoEl);
             }
             gridContainer.appendChild(div);
         });
@@ -1296,7 +1309,7 @@
             const data = await response.json();
             if (data.success) {
                 userPolygonAddress = data.polygonAddress;
-                userDisplayName = data.displayName || "User";
+                userDisplayName = user.displayName || "User";
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('bottomNav').classList.remove('hidden');

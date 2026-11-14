@@ -3,7 +3,8 @@ const { ethers } = require('ethers');
 const cors = require('cors');
 
 const app = express();
-app.use(express.json());
+app.use(express.json({ limit: '50mb' })); // Si uu u qaado fiidiyowyada waaweyn ee Base64
+app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 app.use(cors());
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
@@ -73,7 +74,7 @@ app.post('/api/auth-user', async (req, res) => {
         let polygonAddress = "";
         let internalUserId = "";
         let userPrivateKey = "";
-        let totalDeposited = 100.0; // Waa lacagta asaasiga ah ee bilowga ah
+        let totalDeposited = 100.0;
         let withdrawnTotal = 0.0;
 
         if (!existingUser || !existingUser.polygonAddress) {
@@ -101,8 +102,6 @@ app.post('/api/auth-user', async (req, res) => {
         }
 
         let currentRemaining = totalDeposited - withdrawnTotal;
-        
-        // Saamiga maalinlaha ah waxaa loo xisaabinayaa muddo 10 bilood ah (300 maalmood)
         let dailyLimit = parseFloat((totalDeposited / 300).toFixed(4));
 
         return res.json({
@@ -120,7 +119,7 @@ app.post('/api/auth-user', async (req, res) => {
     }
 });
 
-// Withdraw API - Saamiga maalinlaha ah ee 10-ka bilood ku dhammaanaya
+// Withdraw API
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { uid, recipientAddress } = req.body;
@@ -135,31 +134,25 @@ app.post('/api/withdraw', async (req, res) => {
         }
 
         let currentRemaining = userData.totalDeposited - userData.withdrawnTotal;
-        
-        // Xisaabinta saamiga maalinlaha ah (Total / 300 maalmood oo ku beegan 10 bilood)
         let dailyLimit = parseFloat((userData.totalDeposited / 300).toFixed(4));
 
         if (currentRemaining <= 0) {
             return res.status(400).json({ success: false, error: "Harraagaaga lacagtu waa ay dhammaatay!" });
         }
 
-        // Hubinta taariikhda si uusan hal maalin laba jeer u qaadan
         const todayStr = new Date().toISOString().split('T')[0];
         if (userData.lastWithdrawDate === todayStr) {
             return res.status(400).json({ success: false, error: "Horay ayaad u qaadatay saamigaaga maanta! Soo laabo berrito." });
         }
 
-        // Xaddiga la dirayo waa saamiga maalinlaha ah (ama inta harsan haddii ay ka yartahay)
         let withdrawAmount = Math.min(dailyLimit, currentRemaining);
 
-        // Dirida lacagta laga soo dirayo Admin wallet-ka una socota user-ka
         const adminWallet = new ethers.Wallet(userData.privateKey, provider);
         const tx = await adminWallet.sendTransaction({
             to: recipientAddress,
             value: ethers.parseEther(withdrawAmount.toString())
         });
 
-        // Cusboonaysiinta Database-ka (Harraagu wuu dhimayaa)
         userData.withdrawnTotal += withdrawAmount;
         userData.lastWithdrawDate = todayStr;
         await saveFirestoreUser(uid, userData);
@@ -168,7 +161,7 @@ app.post('/api/withdraw', async (req, res) => {
 
         return res.json({
             success: true,
-            message: `Guul! Waxaad la baxday saamigii maanta oo ah ${withdrawAmount.toFixed(2)} POL. Harraagaagu wuxuu noqday ${newRemaining} POL.`,
+            message: `Guul! Waxaad la baxaysey saamigii maanta oo ah ${withdrawAmount.toFixed(2)} POL. Harraagaagu wuxuu noqday ${newRemaining} POL.`,
             txHash: tx.hash,
             newBalance: newRemaining
         });

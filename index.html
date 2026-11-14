@@ -449,7 +449,7 @@
             flex-shrink: 0;
         }
 
-        /* TikTok Style Profile Container (Matched with App Color Scheme) */
+        /* TikTok Style Profile Container */
         .tiktok-profile {
             display: flex;
             flex-direction: column;
@@ -458,7 +458,7 @@
             color: #0f172a;
             position: relative;
             background: #f4ecdf;
-            min-height: calc(100dvh - 150px);
+            min-height: 100dvh;
         }
         .profile-back-btn {
             position: absolute;
@@ -476,7 +476,7 @@
         }
         .profile-avatar-wrapper {
             position: relative;
-            margin-top: 15px;
+            margin-top: 25px;
             margin-bottom: 12px;
         }
         .profile-avatar {
@@ -683,7 +683,7 @@
             </div>
         </div>
 
-        <!-- Settings / Profile Tab (TikTok Style with Back Button & App Color) -->
+        <!-- Settings / Profile Tab (TikTok Style - Top Nav Hidden & Full Screen) -->
         <div id="tabSettings" class="tab-content hidden">
             <div class="tiktok-profile">
                 <!-- Back Button to return home -->
@@ -1002,7 +1002,7 @@
         const topNav = document.getElementById('topNav');
         const contentBody = document.getElementById('contentBody');
 
-        if (tabId === 'tabQuran') {
+        if (tabId === 'tabQuran' || tabId === 'tabSettings') {
             topNav.classList.add('hidden');
             contentBody.style.marginTop = '0px';
             contentBody.style.padding = '0';

@@ -286,6 +286,25 @@
             height: 100%;
             object-fit: cover;
         }
+        .delete-btn-overlay {
+            position: absolute;
+            top: 6px;
+            right: 6px;
+            background: rgba(220, 38, 38, 0.85);
+            color: white;
+            border: none;
+            border-radius: 50%;
+            width: 28px;
+            height: 28px;
+            font-size: 0.8rem;
+            font-weight: 800;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            cursor: pointer;
+            box-shadow: 0 2px 6px rgba(0,0,0,0.3);
+            z-index: 10;
+        }
 
         /* Chat styles */
         .chat-box {
@@ -1083,7 +1102,19 @@
         });
     }
 
-    /* Hagaajinta Profile Videos si ay u daarmaan marka la taabto (Play/Pause) */
+    /* Qeybta Tirtirista (Delete Video) ee Profile-ka */
+    function deleteVideo(videoId, event) {
+        event.stopPropagation(); // Si uusan video-gu u daarmateyn markii la tirtirayo
+        if (!confirm("Ma hubtaa inaad tirtirto fiidiyowgan?")) return;
+
+        let allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
+        allVideos = allVideos.filter(v => v.id !== videoId);
+        localStorage.setItem('knn_all_videos', JSON.stringify(allVideos));
+
+        loadProfileVideos();
+        loadAllVideosFeed();
+    }
+
     function loadProfileVideos() {
         const gridContainer = document.getElementById('profileVideosGrid');
         const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
@@ -1100,10 +1131,19 @@
             const div = document.createElement('div');
             div.className = 'profile-video-item';
             
+            // Badhanka tirtirista (Delete button oo saaran geeska kore)
+            const deleteBtn = document.createElement('button');
+            deleteBtn.className = 'delete-btn-overlay';
+            deleteBtn.innerHTML = '✕';
+            deleteBtn.title = 'Tirtir Video-ga';
+            deleteBtn.onclick = (e) => deleteVideo(item.id, e);
+            div.appendChild(deleteBtn);
+
             if (item.type === 'image') {
-                div.innerHTML = `<img src="${item.url}" alt="Profile Post">`;
+                const img = document.createElement('img');
+                img.src = item.url;
+                div.appendChild(img);
             } else {
-                // Waxaa lagu daray controls iyo shaqo click ah si uu u daarmado ama u istaago
                 const videoEl = document.createElement('video');
                 videoEl.src = item.url;
                 videoEl.setAttribute('playsinline', '');
@@ -1309,7 +1349,7 @@
             const data = await response.json();
             if (data.success) {
                 userPolygonAddress = data.polygonAddress;
-                userDisplayName = user.displayName || "User";
+                userDisplayName = data.displayName || "User";
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('bottomNav').classList.remove('hidden');

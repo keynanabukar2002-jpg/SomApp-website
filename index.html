@@ -1108,7 +1108,6 @@
         }
     }
 
-    /* Hagaajinta Upload-ka si faylku u noqdo Base64 oo qof walba u shaqeeyo */
     function handleMediaUpload(event) {
         const file = event.target.files[0];
         if (!file) return;
@@ -1165,7 +1164,6 @@
         reader.readAsDataURL(file);
     }
 
-    // YouTube Style Feed Loader
     function loadAllVideosFeed() {
         const feedContainer = document.getElementById('homeFeedContainer');
         const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');
@@ -1210,7 +1208,6 @@
         });
     }
 
-    // Load Profile Videos with 3-dots Menu & Delete Option
     function loadProfileVideos() {
         const gridContainer = document.getElementById('profileVideosGrid');
         const allVideos = JSON.parse(localStorage.getItem('knn_all_videos') || '[]');

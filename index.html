@@ -38,16 +38,48 @@
         input[type="text"] { width: 100%; padding: 14px; border-radius: 10px; border: 2px solid #cbd5e1; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 0.95rem; margin-top: 6px; outline: none; }
         .input-group { margin-bottom: 12px; }
         .hidden { display: none !important; }
+        
+        /* Video Feed & Social Interaction Styles */
         .feed-container { display: flex; flex-direction: column; gap: 16px; padding: 10px 0; }
-        .yt-card { background: #ffffff; width: 100%; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-bottom: 1px solid #e2e8f0; }
+        .yt-card { background: #ffffff; width: 100%; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
         .yt-media-container { width: 100%; background: #000; position: relative; max-height: 400px; }
         .yt-media { width: 100%; max-height: 400px; object-fit: contain; display: block; }
-        .yt-details { display: flex; padding: 12px; gap: 12px; }
+        .yt-details { display: flex; padding: 12px 12px 6px 12px; gap: 12px; justify-content: space-between; align-items: center; }
+        .yt-user-info { display: flex; gap: 10px; align-items: center; }
         .yt-avatar { width: 38px; height: 38px; border-radius: 50%; background: #3396FF; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; flex-shrink: 0; }
         .yt-avatar img { width: 100%; height: 100%; object-fit: cover; }
         .yt-meta { flex: 1; }
-        .yt-title { font-size: 0.95rem; color: #0f172a; font-weight: 800; margin-bottom: 4px; }
-        .yt-subinfo { font-size: 0.75rem; color: #64748b; font-weight: 700; }
+        .yt-title { font-size: 0.95rem; color: #0f172a; font-weight: 800; margin-bottom: 2px; }
+        .yt-subinfo { font-size: 0.7rem; color: #64748b; font-weight: 700; cursor: pointer; }
+        
+        /* Subscribe Button Styles */
+        .subscribe-btn { background: #dc2626; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .subscribe-btn.subscribed { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
+
+        /* Actions Bar (Love, Repost, Share, Comment) */
+        .yt-actions { display: flex; justify-content: space-around; padding: 8px 12px; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+        .action-item { background: none; border: none; display: flex; align-items: center; gap: 5px; color: #475569; font-size: 0.75rem; font-weight: 800; cursor: pointer; }
+        .action-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+        .action-item.liked svg { fill: #dc2626; stroke: #dc2626; }
+        .action-item.liked span { color: #dc2626; }
+
+        /* Comment Section per Video */
+        .comments-section { padding: 8px 12px; background: #f8fafc; display: none; }
+        .comments-section.show { display: block; }
+        .comment-input-box { display: flex; gap: 6px; margin-top: 6px; }
+        .comment-input-box input { padding: 8px; font-size: 0.8rem; margin-top: 0; }
+        .comment-input-box button { padding: 8px 12px; width: auto; font-size: 0.8rem; margin-top: 0; }
+        .comment-list { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+        .comment-bubble { background: #ffffff; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; border: 1px solid #e2e8f0; color: #1e293b; }
+
+        /* Subscribers Modal */
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: #ffffff; width: 85%; max-width: 320px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        .modal-title { font-size: 1rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
+        .subscribers-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left; }
+        .subscriber-row { padding: 8px 12px; background: #f8fafc; border-radius: 8px; font-size: 0.85rem; font-weight: 800; color: #334155; border: 1px solid #e2e8f0; }
+
         .profile-videos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; width: 100%; }
         .profile-video-item { aspect-ratio: 9/16; background: #000; overflow: hidden; border-radius: 4px; position: relative; }
         .profile-video-item video, .profile-video-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
@@ -244,6 +276,17 @@
         </div>
     </div>
 
+    <!-- Subscribers Modal -->
+    <div class="modal-overlay" id="subscribersModal" onclick="closeSubscribersModal(event)">
+        <div class="modal-content">
+            <div class="modal-title">👥 Dadka Subscribe-gareeyay</div>
+            <div class="subscribers-list" id="modalSubscribersList">
+                <div style="text-align: center; color: #64748b; font-size: 0.8rem;">Weli qof ma jiro.</div>
+            </div>
+            <button class="btn" style="padding: 10px; font-size: 0.85rem;" onclick="document.getElementById('subscribersModal').classList.remove('show')">Xidh</button>
+        </div>
+    </div>
+
     <div id="bottomNav" class="bottom-nav hidden">
         <button class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
@@ -403,11 +446,13 @@
         reader.readAsDataURL(file);
     }
 
-    function loadSavedAvatar(uid) {
+    function loadSavedAvatar(uid, googlePhotoUrl) {
         if (!uid) return;
         const savedImg = localStorage.getItem('knn_avatar_uid_' + uid);
         if (savedImg) {
             applyAvatarImage(savedImg);
+        } else if (googlePhotoUrl) {
+            applyAvatarImage(googlePhotoUrl);
         } else {
             document.getElementById('profileAvatarImg').classList.add('hidden');
             document.getElementById('profileInitial').classList.remove('hidden');
@@ -470,7 +515,6 @@
                 statusEl.innerText = "";
             }
         } catch (err) {
-            console.error(err);
             alert("Cilad xiriirka server-ka ah ayaa dhacday.");
             statusEl.innerText = "";
         }
@@ -501,20 +545,120 @@
                     ? `<img src="${item.avatar}" alt="Avatar">`
                     : (item.username || 'U').charAt(0).toUpperCase();
 
+                const isLiked = item.likes.includes(currentUserUid);
+                const isSubscribed = item.subscribers.includes(userDisplayName);
+                const subBtnClass = isSubscribed ? "subscribe-btn subscribed" : "subscribe-btn";
+                const subBtnText = isSubscribed ? "Subscribed" : "Subscribe";
+
                 card.innerHTML = `
                     <div class="yt-media-container">${mediaHtml}</div>
                     <div class="yt-details">
-                        <div class="yt-avatar">${avatarHtml}</div>
-                        <div class="yt-meta">
-                            <div class="yt-title">${item.title || 'Video cusub'}</div>
-                            <div class="yt-subinfo">@${item.username || 'User'} • Hadda la soo geliyay</div>
+                        <div class="yt-user-info">
+                            <div class="yt-avatar">${avatarHtml}</div>
+                            <div class="yt-meta">
+                                <div class="yt-title">${item.title || 'Video cusub'}</div>
+                                <div class="yt-subinfo" onclick="openSubscribersModal(${JSON.stringify(item.subscribers).replace(/"/g, '&quot;')})">@${item.username || 'User'} • ${item.subscribers.length} Subscribers</div>
+                            </div>
+                        </div>
+                        <button class="${subBtnClass}" onclick="interactVideo('${item.id}', 'subscribe')">${subBtnText}</button>
+                    </div>
+                    <div class="yt-actions">
+                        <button class="action-item ${isLiked ? 'liked' : ''}" onclick="interactVideo('${item.id}', 'like')">
+                            <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg>
+                            <span>${item.likes.length}</span>
+                        </button>
+                        <button class="action-item" onclick="toggleCommentBox('${item.id}')">
+                            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>${item.comments.length}</span>
+                        </button>
+                        <button class="action-item" onclick="interactVideo('${item.id}', 'repost')">
+                            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                            <span>${item.reposts}</span>
+                        </button>
+                        <button class="action-item" onclick="shareVideo('${item.url}')">
+                            <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                            <span>Share</span>
+                        </button>
+                    </div>
+                    <div class="comments-section" id="commentSec_${item.id}">
+                        <div class="comment-list" id="commentList_${item.id}">
+                            ${item.comments.map(c => `<div class="comment-bubble"><strong>${c.user}:</strong> ${c.text}</div>`).join('')}
+                        </div>
+                        <div class="comment-input-box">
+                            <input type="text" id="commentText_${item.id}" placeholder="Qor faallo...">
+                            <button class="btn" onclick="sendComment('${item.id}')">Dir</button>
                         </div>
                     </div>
                 `;
                 feedContainer.appendChild(card);
             });
         } catch (err) {
-            console.error("Error loading videos:", err);
+            console.error("Error loading feed:", err);
+        }
+    }
+
+    async function interactVideo(videoId, action, extraData = {}) {
+        if (!currentUserUid) {
+            alert("Fadlan marka hore gal Account-kaaga!");
+            return;
+        }
+
+        try {
+            const res = await fetch(`${SERVER_URL}/api/interact-video`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    videoId,
+                    action,
+                    userId: currentUserUid,
+                    userName: userDisplayName,
+                    ...extraData
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                loadAllVideosFeed();
+            }
+        } catch (err) {
+            console.error("Interaction error:", err);
+        }
+    }
+
+    function toggleCommentBox(videoId) {
+        const sec = document.getElementById(`commentSec_${videoId}`);
+        sec.classList.toggle('show');
+    }
+
+    function sendComment(videoId) {
+        const input = document.getElementById(`commentText_${videoId}`);
+        const text = input.value.trim();
+        if (!text) return;
+        interactVideo(videoId, 'comment', { commentText: text });
+        input.value = '';
+    }
+
+    function shareVideo(url) {
+        if (navigator.share) {
+            navigator.share({ title: 'KNN MicroPay Video', url: url }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(url);
+            alert("Linkiga video-ga waa la koobiyeeyay!");
+        }
+    }
+
+    function openSubscribersModal(subscribersArray) {
+        const listEl = document.getElementById('modalSubscribersList');
+        if (!subscribersArray || subscribersArray.length === 0) {
+            listEl.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.8rem;">Weli qof ma jiro.</div>`;
+        } else {
+            listEl.innerHTML = subscribersArray.map(sub => `<div class="subscriber-row">👤 @${sub}</div>`).join('');
+        }
+        document.getElementById('subscribersModal').classList.add('show');
+    }
+
+    function closeSubscribersModal(e) {
+        if (e.target.id === 'subscribersModal') {
+            e.target.classList.remove('show');
         }
     }
 
@@ -641,7 +785,6 @@
                 readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
             }
         } catch (err) {
-            console.error(err);
             readerContent.innerHTML = "Fadlan hubi internet-kaaga, xiriirkii waa lumay.";
         }
     }
@@ -762,7 +905,6 @@
                 document.getElementById('balanceDisplay').innerText = data.balance + " POL";
                 document.getElementById('dailyLimitDisplay').innerText = data.dailyLimit;
                 
-                // Soo celinta Magaca iyo Username-ka saxda ah ee qofka
                 document.getElementById('profileDisplayName').innerText = user.displayName || "User";
                 document.getElementById('profileInitial').innerText = (user.displayName || "U").charAt(0).toUpperCase();
                 if(user.email) {
@@ -770,13 +912,7 @@
                     document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
                 }
 
-                // Soo celinta Sawirka Profile-ka (Google Photo ama mid la keydiyay)
-                if (user.photoURL) {
-                    applyAvatarImage(user.photoURL);
-                } else {
-                    loadSavedAvatar(user.uid);
-                }
-
+                loadSavedAvatar(user.uid, user.photoURL);
                 loadAllVideosFeed();
                 loadProfileVideos();
             }

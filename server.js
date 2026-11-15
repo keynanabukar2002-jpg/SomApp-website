@@ -2,26 +2,17 @@ const express = require('express');
 const { ethers } = require('ethers');
 const cors = require('cors');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Samee folder-ka uploads haddii uusan jirin
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-app.use('/uploads', express.static(uploadDir));
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + (file.originalname ? file.originalname.replace(/\s+/g, '_') : 'file'))
+// Isticmaal Multer Memory Storage si uusan ugu baahnayn disk write (Railway compatible)
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 100 * 1024 * 1024 } // Ilaa 100MB
 });
-const upload = multer({ storage: storage });
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
@@ -188,7 +179,7 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// Video Upload Endpoint (Multer)
+// Video Upload Endpoint (Memory Buffer to Data URL or Store)
 app.post('/api/upload-video', upload.single('mediaFile'), (req, res) => {
     try {
         if (!req.file) {
@@ -196,8 +187,11 @@ app.post('/api/upload-video', upload.single('mediaFile'), (req, res) => {
         }
 
         const { id, uid, username, title, avatar, type, timestamp } = req.body;
-        const serverBaseUrl = `${req.protocol}://${req.get('host')}`;
-        const fileUrl = `${serverBaseUrl}/uploads/${req.file.filename}`;
+        
+        // Beddel buffer-ka faylka oo ka dhig Base64 Data URL si looga fogaado in disk-ku buuxmo
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const mimeType = req.file.mimetype;
+        const fileUrl = `data:${mimeType};base64,${b64}`;
 
         const newVideo = {
             id: id || 'vid_' + Date.now(),

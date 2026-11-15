@@ -1,16 +1,31 @@
 const express = require('express');
 const { ethers } = require('ethers');
 const cors = require('cors');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
 
 const app = express();
+app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
-app.use(cors());
+
+// Samee folder-ka uploads haddii uusan jirin
+const uploadDir = path.join(__dirname, 'uploads');
+if (!fs.existsSync(uploadDir)) {
+    fs.mkdirSync(uploadDir, { recursive: true });
+}
+app.use('/uploads', express.static(uploadDir));
+
+const storage = multer.diskStorage({
+    destination: (req, file, cb) => cb(null, uploadDir),
+    filename: (req, file, cb) => cb(null, Date.now() + '-' + (file.originalname ? file.originalname.replace(/\s+/g, '_') : 'file'))
+});
+const upload = multer({ storage: storage });
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
 
-// Keydka Video-yada ee server-ka
 let serverVideosStore = [];
 
 async function getFirestoreUser(uid) {
@@ -173,13 +188,16 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// --- API-YADA VIDEO-YADA (Cusub) ---
-app.post('/api/upload-video', (req, res) => {
+// Video Upload Endpoint (Multer)
+app.post('/api/upload-video', upload.single('mediaFile'), (req, res) => {
     try {
-        const { id, uid, username, title, avatar, type, url, timestamp } = req.body;
-        if (!url) {
-            return res.status(400).json({ success: false, error: "Url-ka faylku waa maqan yahay." });
+        if (!req.file) {
+            return res.status(400).json({ success: false, error: "Fayl lama soo dooran." });
         }
+
+        const { id, uid, username, title, avatar, type, timestamp } = req.body;
+        const serverBaseUrl = `${req.protocol}://${req.get('host')}`;
+        const fileUrl = `${serverBaseUrl}/uploads/${req.file.filename}`;
 
         const newVideo = {
             id: id || 'vid_' + Date.now(),
@@ -187,14 +205,15 @@ app.post('/api/upload-video', (req, res) => {
             username,
             title,
             avatar,
-            type,
-            url,
-            timestamp: timestamp || Date.now()
+            type: type || 'video',
+            url: fileUrl,
+            timestamp: Number(timestamp) || Date.now()
         };
 
         serverVideosStore.unshift(newVideo);
         return res.json({ success: true, message: "Video-ga waa la keydiyay.", video: newVideo });
     } catch (err) {
+        console.error("Upload Error:", err);
         return res.status(500).json({ success: false, error: err.message });
     }
 });

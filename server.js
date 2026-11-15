@@ -8,16 +8,13 @@ app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
 
-// Isticmaal Multer Memory Storage si uusan ugu baahnayn disk write (Railway compatible)
 const upload = multer({ 
     storage: multer.memoryStorage(),
-    limits: { fileSize: 100 * 1024 * 1024 } // Ilaa 100MB
+    limits: { fileSize: 100 * 1024 * 1024 } 
 });
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
-
-let serverVideosStore = [];
 
 async function getFirestoreUser(uid) {
     try {
@@ -179,47 +176,153 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// Video Upload Endpoint (Memory Buffer to Data URL or Store)
-app.post('/api/upload-video', upload.single('mediaFile'), (req, res) => {
+// Video Upload Endpoint
+app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
     try {
         if (!req.file) {
             return res.status(400).json({ success: false, error: "Fayl lama soo dooran." });
         }
 
         const { id, uid, username, title, avatar, type, timestamp } = req.body;
-        
-        // Beddel buffer-ka faylka oo ka dhig Base64 Data URL si looga fogaado in disk-ku buuxmo
         const b64 = Buffer.from(req.file.buffer).toString('base64');
-        const mimeType = req.file.mimetype;
-        const fileUrl = `data:${mimeType};base64,${b64}`;
+        const fileUrl = `data:${req.file.mimetype};base64,${b64}`;
+        const videoId = id || 'vid_' + Date.now();
 
-        const newVideo = {
-            id: id || 'vid_' + Date.now(),
-            uid,
-            username,
-            title,
-            avatar,
-            type: type || 'video',
-            url: fileUrl,
-            timestamp: Number(timestamp) || Date.now()
+        const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/videos/${videoId}`;
+        const body = {
+            fields: {
+                videoId: { stringValue: videoId },
+                uid: { stringValue: uid || '' },
+                username: { stringValue: username || 'User' },
+                title: { stringValue: title || '' },
+                avatar: { stringValue: avatar || '' },
+                type: { stringValue: type || 'video' },
+                url: { stringValue: fileUrl },
+                timestamp: { integerValue: String(timestamp || Date.now()) },
+                likes: { arrayValue: { values: [] } },
+                subscribers: { arrayValue: { values: [] } },
+                comments: { arrayValue: { values: [] } },
+                reposts: { integerValue: "0" }
+            }
         };
 
-        serverVideosStore.unshift(newVideo);
-        return res.json({ success: true, message: "Video-ga waa la keydiyay.", video: newVideo });
+        await fetch(firestoreUrl, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+
+        return res.json({ success: true, message: "Video-ga waa la keydiyay." });
     } catch (err) {
-        console.error("Upload Error:", err);
         return res.status(500).json({ success: false, error: err.message });
     }
 });
 
-app.get('/api/get-videos', (req, res) => {
-    return res.json({ success: true, videos: serverVideosStore });
+app.get('/api/get-videos', async (req, res) => {
+    try {
+        const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/videos`;
+        const response = await fetch(firestoreUrl);
+        const data = await response.json();
+        
+        let videos = [];
+        if (data.documents) {
+            videos = data.documents.map(doc => {
+                const fields = doc.fields;
+                const likes = fields.likes?.arrayValue?.values ? fields.likes.arrayValue.values.map(v => v.stringValue) : [];
+                const subscribers = fields.subscribers?.arrayValue?.values ? fields.subscribers.arrayValue.values.map(v => v.stringValue) : [];
+                const comments = fields.comments?.arrayValue?.values ? fields.comments.arrayValue.values.map(v => JSON.parse(v.stringValue)) : [];
+                
+                return {
+                    id: fields.videoId?.stringValue || '',
+                    uid: fields.uid?.stringValue || '',
+                    username: fields.username?.stringValue || '',
+                    title: fields.title?.stringValue || '',
+                    avatar: fields.avatar?.stringValue || '',
+                    type: fields.type?.stringValue || 'video',
+                    url: fields.url?.stringValue || '',
+                    timestamp: Number(fields.timestamp?.integerValue || Date.now()),
+                    likes,
+                    subscribers,
+                    comments,
+                    reposts: Number(fields.reposts?.integerValue || 0)
+                };
+            });
+            videos.sort((a, b) => b.timestamp - a.timestamp);
+        }
+
+        return res.json({ success: true, videos });
+    } catch (err) {
+        return res.json({ success: true, videos: [] });
+    }
 });
 
-app.post('/api/delete-video', (req, res) => {
-    const { videoId } = req.body;
-    serverVideosStore = serverVideosStore.filter(v => v.id !== videoId);
-    return res.json({ success: true });
+// Interaction Endpoint (Like, Subscribe, Comment, Repost)
+app.post('/api/interact-video', async (req, res) => {
+    try {
+        const { videoId, action, userId, userName, commentText } = req.body;
+        const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/videos/${videoId}`;
+        
+        const getRes = await fetch(firestoreUrl);
+        if (!getRes.ok) return res.status(404).json({ success: false, error: "Video lama helin" });
+        const docData = await getRes.json();
+        const fields = docData.fields;
+
+        let likes = fields.likes?.arrayValue?.values ? fields.likes.arrayValue.values.map(v => v.stringValue) : [];
+        let subscribers = fields.subscribers?.arrayValue?.values ? fields.subscribers.arrayValue.values.map(v => v.stringValue) : [];
+        let comments = fields.comments?.arrayValue?.values ? fields.comments.arrayValue.values.map(v => v.stringValue) : [];
+        let reposts = Number(fields.reposts?.integerValue || 0);
+
+        if (action === 'like') {
+            if (likes.includes(userId)) {
+                likes = likes.filter(id => id !== userId);
+            } else {
+                likes.push(userId);
+            }
+        } else if (action === 'subscribe') {
+            if (subscribers.includes(userName)) {
+                subscribers = subscribers.filter(name => name !== userName);
+            } else {
+                subscribers.push(userName);
+            }
+        } else if (action === 'comment') {
+            if (commentText) {
+                comments.push(JSON.stringify({ user: userName, text: commentText }));
+            }
+        } else if (action === 'repost') {
+            reposts += 1;
+        }
+
+        const updateBody = {
+            fields: {
+                ...fields,
+                likes: { arrayValue: { values: likes.map(v => ({ stringValue: v })) } },
+                subscribers: { arrayValue: { values: subscribers.map(v => ({ stringValue: v })) } },
+                comments: { arrayValue: { values: comments.map(v => ({ stringValue: v })) } },
+                reposts: { integerValue: String(reposts) }
+            }
+        };
+
+        await fetch(firestoreUrl, {
+            method: 'PATCH',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(updateBody)
+        });
+
+        return res.json({ success: true, likes, subscribers, comments, reposts });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
+});
+
+app.post('/api/delete-video', async (req, res) => {
+    try {
+        const { videoId } = req.body;
+        const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/videos/${videoId}`;
+        await fetch(firestoreUrl, { method: 'DELETE' });
+        return res.json({ success: true });
+    } catch (err) {
+        return res.status(500).json({ success: false, error: err.message });
+    }
 });
 
 const PORT = process.env.PORT || 3000;

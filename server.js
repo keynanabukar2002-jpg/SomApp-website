@@ -2,26 +2,16 @@ const express = require('express');
 const { ethers } = require('ethers');
 const cors = require('cors');
 const multer = require('multer');
-const path = require('path');
-const fs = require('fs');
 
 const app = express();
 app.use(cors({ origin: '*' }));
-app.use(express.json({ limit: '50mb' }));
-app.use(express.urlencoded({ extended: true, limit: '50mb' }));
+app.use(express.json({ limit: '100mb' }));
+app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
-// Samee folder-ka uploads haddii uusan jirin
-const uploadDir = path.join(__dirname, 'uploads');
-if (!fs.existsSync(uploadDir)) {
-    fs.mkdirSync(uploadDir, { recursive: true });
-}
-app.use('/uploads', express.static(uploadDir));
-
-const storage = multer.diskStorage({
-    destination: (req, file, cb) => cb(null, uploadDir),
-    filename: (req, file, cb) => cb(null, Date.now() + '-' + (file.originalname ? file.originalname.replace(/\s+/g, '_') : 'file'))
+const upload = multer({ 
+    storage: multer.memoryStorage(),
+    limits: { fileSize: 50 * 1024 * 1024 } // Ilaa 50MB
 });
-const upload = multer({ storage: storage });
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
@@ -186,7 +176,7 @@ app.post('/api/withdraw', async (req, res) => {
     }
 });
 
-// Video Upload Endpoint (Disk Storage & Firestore)
+// Video Upload Endpoint (Direct Base64 Data URL to Firestore)
 app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
     try {
         if (!req.file) {
@@ -194,8 +184,8 @@ app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
         }
 
         const { id, uid, username, title, avatar, type, timestamp } = req.body;
-        const serverBaseUrl = `${req.protocol}://${req.get('host')}`;
-        const fileUrl = `${serverBaseUrl}/uploads/${req.file.filename}`;
+        const b64 = Buffer.from(req.file.buffer).toString('base64');
+        const fileUrl = `data:${req.file.mimetype};base64,${b64}`;
         const videoId = id || 'vid_' + Date.now();
 
         const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/videos/${videoId}`;

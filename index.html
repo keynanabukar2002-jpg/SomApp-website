@@ -487,7 +487,7 @@
                 document.getElementById('videoTitleInput').value = "";
                 document.getElementById('mediaFileInput').value = "";
                 
-                loadAllVideosFeed();
+                await loadAllVideosFeed();
                 loadProfileVideos();
 
                 setTimeout(() => {
@@ -908,6 +908,13 @@
         document.getElementById(tabId).classList.remove('hidden');
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         if (element) element.classList.add('active');
+
+        // Hubi in haddii la guuro tab-ka Profile ama Home la cusboonaysiiyo xogta video-yada
+        if (tabId === 'tabSettings') {
+            loadProfileVideos();
+        } else if (tabId === 'tabHome') {
+            loadAllVideosFeed();
+        }
     }
 
     async function loginWithGoogle() {
@@ -954,7 +961,7 @@
                 }
 
                 loadSavedAvatar(user.uid, user.photoURL);
-                loadAllVideosFeed();
+                await loadAllVideosFeed();
                 loadProfileVideos();
             }
         } catch (err) {

@@ -11,12 +11,18 @@
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
         body { background: linear-gradient(135deg, #1a73e8 0%, #3396FF 50%, #66b2ff 100%); background-attachment: fixed; color: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100dvh; overflow: hidden; }
         .app-frame { width: 100%; max-width: 420px; height: 100dvh; background: #f4ecdf; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25); position: relative; overflow: hidden; }
-        .top-nav { position: absolute; top: 0; left: 0; width: 100%; height: 65px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: #ffffff; border-bottom: 2px solid rgba(51, 150, 255, 0.2); z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.05); }
+        
+        /* Top Nav oo noqonaya mid qarsama marka la scroll-gareeyo */
+        .top-nav { position: absolute; top: 0; left: 0; width: 100%; height: 65px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; background: #ffffff; border-bottom: 2px solid rgba(51, 150, 255, 0.2); z-index: 100; box-shadow: 0 4px 12px rgba(0,0,0,0.05); transition: transform 0.3s ease-in-out; }
+        .top-nav.hidden-nav { transform: translateY(-100%); }
+
         .logo { font-weight: 800; font-size: 1.15rem; color: #0f172a; display: flex; align-items: center; gap: 8px; }
         .logo-badge { background: #3396FF; color: #ffffff; padding: 5px 10px; border-radius: 8px; font-size: 0.9rem; font-weight: 800; }
         .status-pill { font-size: 0.75rem; padding: 5px 12px; border-radius: 20px; background: #e0f2fe; color: #0369a1; font-weight: 800; border: 1px solid #3396FF; }
-        .content-body { flex: 1; margin-top: 65px; margin-bottom: 85px; overflow-y: auto; scrollbar-width: none; }
+        
+        .content-body { flex: 1; margin-top: 65px; margin-bottom: 85px; overflow-y: auto; scrollbar-width: none; transition: margin-top 0.3s ease-in-out; }
         .content-body::-webkit-scrollbar { display: none; }
+        
         .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 85px; background: #ffffff; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1); border-top: 2px solid rgba(51, 150, 255, 0.2); display: flex; justify-content: space-around; align-items: center; z-index: 100; padding-bottom: 15px; }
         .nav-item { background: none; border: none; color: #64748b; font-size: 0.7rem; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; }
         .nav-item span { color: #334155; font-size: 0.65rem; font-weight: 800; }
@@ -135,7 +141,7 @@
         <div id="userStatus" class="status-pill">Loading...</div>
     </div>
 
-    <div class="content-body" id="contentBody">
+    <div class="content-body" id="contentBody" onscroll="handleScroll()">
         <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin: 20px 15px;">
             <h3 style="color: #0f172a; margin-bottom: 8px; font-size: 1.4rem;">Ku soo dhawoow</h3>
             <p style="color: #334155; font-size: 0.9rem; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
@@ -346,6 +352,24 @@
     let userPolygonAddress = "";
     let userDisplayName = "User";
     let globalVideosList = [];
+    let lastScrollTop = 0;
+
+    function handleScroll() {
+        const contentBody = document.getElementById('contentBody');
+        const topNav = document.getElementById('topNav');
+        let currentScroll = contentBody.scrollTop;
+
+        if (currentScroll > lastScrollTop && currentScroll > 40) {
+            // Marka uu qofku hoos u scrolling-gareynayo -> Qari top-nav-ka
+            topNav.classList.add('hidden-nav');
+            contentBody.style.marginTop = '0px';
+        } else {
+            // Marka uu kor u soo laabanayo -> Soo bandhig top-nav-ka
+            topNav.classList.remove('hidden-nav');
+            contentBody.style.marginTop = '65px';
+        }
+        lastScrollTop = currentScroll <= 0 ? 0 : currentScroll;
+    }
 
     const quranSurahs = [
         {name: "الفاتحة", ayahs: 6}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
@@ -544,8 +568,6 @@
                     : (item.username || 'U').charAt(0).toUpperCase();
 
                 const isLiked = item.likes.includes(currentUserUid);
-                
-                // Hubi in Qoraaga video-gan (item.username) uu marhore subscribe ka helay user-kan
                 const authorUsername = item.username || 'User';
                 const isSubscribedToAuthor = isUserSubscribedToAuthor(authorUsername);
 
@@ -600,7 +622,6 @@
     }
 
     function isUserSubscribedToAuthor(authorUsername) {
-        // Hubi haddii user-gan (userDisplayName) uu ku jiro subscribers-ka mid ka mid ah fiidiyowyada qoraaga
         const authorVideos = globalVideosList.filter(v => (v.username || 'User') === authorUsername);
         return authorVideos.some(v => v.subscribers && v.subscribers.includes(userDisplayName));
     }
@@ -622,11 +643,9 @@
             return;
         }
 
-        // Hel dhammaan video-yada uu qoraagaasi leeyahay si loogu wada daro subscribe-ka hal mar
         const authorVideos = globalVideosList.filter(v => (v.username || 'User') === authorUsername);
         if (authorVideos.length === 0) return;
 
-        // Si aan u hubino in dhammaan video-yadiisu ay helaan update-ka, waxaan u direynaa codsi mid walba ama kii ugu dambeeyay
         for (let v of authorVideos) {
             await interactVideo(v.id, 'subscribe', {}, false);
         }

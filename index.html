@@ -22,17 +22,30 @@
         .nav-item.active span { color: #b8860b; }
         .nav-item.active .nav-quran-icon { transform: scale(1.2); filter: drop-shadow(0 3px 6px rgba(212, 175, 55, 0.7)); }
         .nav-item.active svg:not(.nav-quran-icon) { fill: #3396FF; transform: scale(1.15); }
-        .card { background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 16px; border: 2px solid rgba(51, 150, 255, 0.3); box-shadow: 0 6px 20px rgba(51, 150, 255, 0.12); }
-        .card-title { color: #1e293b; font-size: 0.8rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .balance { font-size: 2.2rem; font-weight: 800; color: #0f172a; }
-        .balance-sub { font-size: 0.85rem; color: #334155; font-weight: 800; margin-top: 4px; }
-        .address-box { word-break: break-all; background: #f8fafc; padding: 14px; border-radius: 10px; font-family: monospace; color: #1d4ed8; font-weight: 800; font-size: 0.8rem; margin: 8px 0; border: 2px solid #3396FF; }
-        .btn { background: #3396FF; color: white; border: none; padding: 14px 16px; border-radius: 12px; width: 100%; font-weight: 800; font-size: 0.95rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px; box-shadow: 0 4px 15px rgba(51, 150, 255, 0.4); }
+        .card { background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 2px solid rgba(51, 150, 255, 0.28); box-shadow: 0 6px 20px rgba(51, 150, 255, 0.1); }
+        .card-title { color: #1e293b; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
+
+        /* LTCMiner-style Wallet & Live Mining Styles */
+        .miner-hero { background: linear-gradient(145deg, #0f172a 0%, #172554 65%, #1d4ed8 100%); color: #ffffff; border: 2px solid #3396FF; border-radius: 18px; padding: 18px; margin-bottom: 14px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22); }
+        .miner-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .miner-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.45); padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; animation: pulseDot 1.4s infinite; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(1.25); } }
+        .miner-plan-tag { font-size: 0.72rem; color: #93c5fd; background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 8px; }
+        .balance { font-size: 2rem; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+        .balance-sub { font-size: 0.8rem; color: #cbd5e1; font-weight: 700; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .hashrate-strip { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.14); display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .hash-box { background: rgba(255,255,255,0.07); border-radius: 10px; padding: 9px 10px; }
+        .hash-label { font-size: 0.68rem; color: #93c5fd; text-transform: uppercase; }
+        .hash-val { font-size: 0.9rem; color: #ffffff; font-weight: 800; margin-top: 2px; font-variant-numeric: tabular-nums; }
+
+        .address-box { word-break: break-all; background: #f8fafc; padding: 12px; border-radius: 10px; font-family: monospace; color: #1d4ed8; font-weight: 800; font-size: 0.78rem; margin: 8px 0; border: 2px solid #3396FF; }
+        .btn { background: #3396FF; color: white; border: none; padding: 13px 16px; border-radius: 12px; width: 100%; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px; box-shadow: 0 4px 15px rgba(51, 150, 255, 0.35); }
         .btn-google { background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; }
-        .btn-withdraw { background: #059669; }
+        .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); }
         .btn-upload { background: #7c3aed; }
-        input[type="text"] { width: 100%; padding: 14px; border-radius: 10px; border: 2px solid #cbd5e1; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 0.95rem; margin-top: 6px; outline: none; }
-        .input-group { margin-bottom: 12px; }
+        input[type="text"] { width: 100%; padding: 13px; border-radius: 10px; border: 2px solid #cbd5e1; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 0.92rem; margin-top: 6px; outline: none; }
+        .input-group { margin-bottom: 10px; }
         .hidden { display: none !important; }
         
         .feed-container { display: flex; flex-direction: column; gap: 16px; padding: 10px 0; }
@@ -192,31 +205,49 @@
         </div>
 
         <div id="tabWallet" class="tab-content hidden" style="padding: 15px 15px 0 15px;">
-            <div class="card" style="margin-top: 15px;">
-                <div class="card-title">
-                    <span>Harraaga Lacagta</span>
-                    <span style="color:#059669;">● Mining Active</span>
+            <div class="miner-hero">
+                <div class="miner-top-row">
+                    <div class="miner-badge">
+                        <span class="live-dot"></span>
+                        <span>LIVE MINING</span>
+                    </div>
+                    <div class="miner-plan-tag">Plan: Starter Node</div>
                 </div>
-                <div class="balance" id="balanceDisplay">0.00 POL</div>
-                <div class="balance-sub">Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#3396FF;">0.00</strong> POL</div>
+                <div class="balance" id="balanceDisplay">0.000000 POL</div>
+                <div class="balance-sub">
+                    <span>Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#60a5fa;">0.00</strong> POL</span>
+                    <span style="color:#34d399; font-size:0.74rem;" id="liveRateLabel">+0.000001/s</span>
+                </div>
+                <div class="hashrate-strip">
+                    <div class="hash-box">
+                        <div class="hash-label">Hashrate</div>
+                        <div class="hash-val" id="hashrateDisplay">120 MH/s</div>
+                    </div>
+                    <div class="hash-box">
+                        <div class="hash-label">Account ID</div>
+                        <div class="hash-val" id="userIdDisplay">--</div>
+                    </div>
+                </div>
             </div>
+
             <div class="card">
-                <div class="card-title">Macluumaadkaaga</div>
-                <div style="font-size: 0.9rem; color: #1e293b; margin-bottom: 6px;">ID: <strong id="userIdDisplay" style="color:#3396FF;">--</strong></div>
-                <div style="font-size: 0.85rem; color: #475569;" id="userEmailDisplay">--</div>
+                <div class="card-title">Macluumaadka Xisaabta</div>
+                <div style="font-size: 0.85rem; color: #334155;" id="userEmailDisplay">Sidoo kale ID-gaaga waa la xiriiriyay</div>
             </div>
+
             <div class="card">
                 <div class="card-title">Cinwaankaaga Deposit-ka</div>
                 <div class="address-box" id="depositAddress">Loading...</div>
-                <button class="btn" style="background: #e2e8f0; color: #0f172a; box-shadow:none; border: 2px solid #cbd5e1;" onclick="copyAddress()">Copy Address</button>
+                <button class="btn" style="background: #e2e8f0; color: #0f172a; box-shadow:none; border: 2px solid #cbd5e1;" onclick="copyAddress()">Copy Deposit Address</button>
             </div>
+
             <div class="card">
-                <div class="card-title" style="color:#3396FF;">Kala bax Saamiga Maanta</div>
+                <div class="card-title" style="color:#059669;">Withdraw Saamiga Maanta</div>
                 <div class="input-group">
-                    <label style="font-size: 0.8rem; color: #334155;">Cinwaankaaga (MetaMask/Binance):</label>
-                    <input type="text" id="recipientInput" placeholder="0x...">
+                    <label style="font-size: 0.8rem; color: #334155;">Cinwaankaaga (MetaMask / Binance / Wallet):</label>
+                    <input type="text" id="recipientInput" placeholder="0x... ama cinwaanka wallet-kaaga">
                 </div>
-                <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Saamiga Maanta</button>
+                <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Hadda</button>
             </div>
         </div>
 
@@ -335,6 +366,11 @@
     let userDisplayName = "User";
     let globalVideosList = [];
 
+    // Live mining ticker state
+    let currentBalanceNum = 0;
+    let liveRatePerSec = 0.000001;
+    let miningTickerInterval = null;
+
     const quranSurahs = [
         {name: "الفاتحة", ayahs: 6}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
         {name: "الأنعام", ayahs: 165}, {name: "الأعراف", ayahs: 206}, {name: "الأنفال", ayahs: 75}, {name: "التوبة", ayahs: 129}, {name: "يونس", ayahs: 109},
@@ -367,6 +403,32 @@
     const ayahsPerPage = 8;
     let activeSurahNum = 1;
 
+    function startLiveMiningTicker(baseBalance, dailyLimit) {
+        const parsedBal = parseFloat(baseBalance);
+        currentBalanceNum = isNaN(parsedBal) ? 0 : parsedBal;
+
+        const parsedLimit = parseFloat(dailyLimit);
+        liveRatePerSec = (!isNaN(parsedLimit) && parsedLimit > 0) ? (parsedLimit / 86400) : 0.000001;
+
+        const rateEl = document.getElementById('liveRateLabel');
+        if (rateEl) rateEl.innerText = `+${liveRatePerSec.toFixed(6)}/s`;
+
+        renderLiveBalance();
+
+        if (miningTickerInterval) clearInterval(miningTickerInterval);
+        miningTickerInterval = setInterval(() => {
+            currentBalanceNum += liveRatePerSec;
+            renderLiveBalance();
+        }, 1000);
+    }
+
+    function renderLiveBalance() {
+        const balEl = document.getElementById('balanceDisplay');
+        if (balEl) {
+            balEl.innerText = `${currentBalanceNum.toFixed(6)} POL`;
+        }
+    }
+
     function toArabicNumeral(n) {
         const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
@@ -398,6 +460,7 @@
     window.onload = function() {
         renderSurahListPage();
         loadAllVideosFeed();
+        startLiveMiningTicker(0, 0.05);
     };
 
     function selectProfileTab(selected) {
@@ -909,7 +972,6 @@
         document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
         if (element) element.classList.add('active');
 
-        // Hubi in haddii la guuro tab-ka Profile ama Home la cusboonaysiiyo xogta video-yada
         if (tabId === 'tabSettings') {
             loadProfileVideos();
         } else if (tabId === 'tabHome') {
@@ -950,8 +1012,8 @@
                 document.getElementById('userIdDisplay').innerText = data.userId;
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 document.getElementById('depositAddress').innerText = data.polygonAddress;
-                document.getElementById('balanceDisplay').innerText = data.balance + " POL";
                 document.getElementById('dailyLimitDisplay').innerText = data.dailyLimit;
+                startLiveMiningTicker(data.balance, data.dailyLimit);
                 
                 document.getElementById('profileDisplayName').innerText = user.displayName || "User";
                 document.getElementById('profileInitial').innerText = (user.displayName || "U").charAt(0).toUpperCase();
@@ -1005,7 +1067,7 @@
             const data = await res.json();
             if (data.success) {
                 alert(data.message);
-                document.getElementById('balanceDisplay').innerText = data.newBalance + " POL";
+                startLiveMiningTicker(data.newBalance, document.getElementById('dailyLimitDisplay').innerText);
             } else {
                 alert("Cilad: " + data.error);
             }

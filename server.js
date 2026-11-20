@@ -16,7 +16,6 @@ const upload = multer({
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
 
-// Cinwaankaaga guud ee Polygon ee deposit-ka lagu shubo & withdraw-ga laga bixiyo
 const TREASURY_WALLET_ADDRESS = "0x66Aa875c850aF5136eEcba5489a674CCA53eAae8";
 const TREASURY_PRIVATE_KEY = process.env.MAIN_WALLET_PRIVATE_KEY || "";
 
@@ -77,7 +76,6 @@ async function saveFirestoreUser(uid, userData) {
     }
 }
 
-// Si toos ah ayuu ugu wareejiyaa 0x66Aa875c850aF5136eEcba5489a674CCA53eAae8 marka deposit >= 0.00001 POL la helo
 async function syncUserDepositAndSweep(uid, userData) {
     if (!userData.polygonAddress) return userData;
 
@@ -128,9 +126,9 @@ app.post('/api/auth-user', async (req, res) => {
 
         let existingUser = await getFirestoreUser(uid);
 
-        if (!existingUser || !existingUser.polygonAddress) {
+        if (!existingUser || !existingUser.polygonAddress || !existingUser.privateKey) {
             const newWallet = ethers.Wallet.createRandom();
-            const internalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
+            const internalUserId = existingUser?.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
 
             existingUser = {
                 email: email || `${uid}@knn-micropay.com`,
@@ -138,15 +136,12 @@ app.post('/api/auth-user', async (req, res) => {
                 internalUserId,
                 polygonAddress: newWallet.address,
                 privateKey: newWallet.privateKey,
-                totalDeposited: 0.0,
-                dailyRewardTotal: 0.0,
-                withdrawnTotal: 0.0,
-                miningActive: false,
-                lastWithdrawDate: ""
+                totalDeposited: existingUser?.totalDeposited ?? 0.0,
+                dailyRewardTotal: existingUser?.dailyRewardTotal ?? 0.0,
+                withdrawnTotal: existingUser?.withdrawnTotal ?? 0.0,
+                miningActive: existingUser?.miningActive ?? false,
+                lastWithdrawDate: existingUser?.lastWithdrawDate ?? ""
             };
-            await saveFirestoreUser(uid, existingUser);
-        } else if (!existingUser.internalUserId) {
-            existingUser.internalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
             await saveFirestoreUser(uid, existingUser);
         }
 
@@ -155,6 +150,7 @@ app.post('/api/auth-user', async (req, res) => {
         const currentRemaining = Math.max(0, existingUser.dailyRewardTotal - existingUser.withdrawnTotal);
         const dailyLimit = existingUser.miningActive ? DAILY_REWARD_POL : 0;
 
+        // Lama soo celiyo privateKey si ammaanka loo ilaaliyo
         return res.json({
             success: true,
             userId: existingUser.internalUserId,
@@ -169,7 +165,6 @@ app.post('/api/auth-user', async (req, res) => {
     }
 });
 
-// Withdraw: waxaa laga bixiyaa cinwaanka 0x66Aa875c850aF5136eEcba5489a674CCA53eAae8
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { uid, recipientAddress, amount } = req.body;

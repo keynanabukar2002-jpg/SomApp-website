@@ -25,14 +25,15 @@
         .card { background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 2px solid rgba(51, 150, 255, 0.28); box-shadow: 0 6px 20px rgba(51, 150, 255, 0.1); }
         .card-title { color: #1e293b; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        /* LTCMiner-style Wallet & Live Mining Styles */
         .miner-hero { background: linear-gradient(145deg, #0f172a 0%, #172554 65%, #1d4ed8 100%); color: #ffffff; border: 2px solid #3396FF; border-radius: 18px; padding: 18px; margin-bottom: 14px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22); }
         .miner-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
         .miner-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.45); padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; }
+        .miner-badge.idle { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.4); }
         .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; animation: pulseDot 1.4s infinite; }
+        .miner-badge.idle .live-dot { background: #94a3b8; animation: none; }
         @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(1.25); } }
         .miner-plan-tag { font-size: 0.72rem; color: #93c5fd; background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 8px; }
-        .balance { font-size: 2rem; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+        .balance { font-size: 1.9rem; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
         .balance-sub { font-size: 0.8rem; color: #cbd5e1; font-weight: 700; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; }
         .hashrate-strip { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.14); display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
         .hash-box { background: rgba(255,255,255,0.07); border-radius: 10px; padding: 9px 10px; }
@@ -207,21 +208,21 @@
         <div id="tabWallet" class="tab-content hidden" style="padding: 15px 15px 0 15px;">
             <div class="miner-hero">
                 <div class="miner-top-row">
-                    <div class="miner-badge">
+                    <div class="miner-badge idle" id="miningStatusBadge">
                         <span class="live-dot"></span>
-                        <span>LIVE MINING</span>
+                        <span id="miningStatusText">MINING INACTIVE</span>
                     </div>
-                    <div class="miner-plan-tag">Plan: Starter Node</div>
+                    <div class="miner-plan-tag">Min Dep: 0.00001 POL</div>
                 </div>
-                <div class="balance" id="balanceDisplay">0.000000 POL</div>
+                <div class="balance" id="balanceDisplay">0.00000000 POL</div>
                 <div class="balance-sub">
-                    <span>Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#60a5fa;">0.00</strong> POL</span>
-                    <span style="color:#34d399; font-size:0.74rem;" id="liveRateLabel">+0.000001/s</span>
+                    <span>Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#60a5fa;">0</strong> POL</span>
+                    <span style="color:#34d399; font-size:0.74rem;" id="liveRateLabel">+0.000000/s</span>
                 </div>
                 <div class="hashrate-strip">
                     <div class="hash-box">
-                        <div class="hash-label">Hashrate</div>
-                        <div class="hash-val" id="hashrateDisplay">120 MH/s</div>
+                        <div class="hash-label">Daily Output</div>
+                        <div class="hash-val" id="dailyOutputBox">0.000009 POL</div>
                     </div>
                     <div class="hash-box">
                         <div class="hash-label">Account ID</div>
@@ -232,20 +233,24 @@
 
             <div class="card">
                 <div class="card-title">Macluumaadka Xisaabta</div>
-                <div style="font-size: 0.85rem; color: #334155;" id="userEmailDisplay">Sidoo kale ID-gaaga waa la xiriiriyay</div>
+                <div style="font-size: 0.85rem; color: #334155;" id="userEmailDisplay">--</div>
             </div>
 
             <div class="card">
-                <div class="card-title">Cinwaankaaga Deposit-ka</div>
+                <div class="card-title">Cinwaankaaga Deposit-ka (Polygon)</div>
                 <div class="address-box" id="depositAddress">Loading...</div>
                 <button class="btn" style="background: #e2e8f0; color: #0f172a; box-shadow:none; border: 2px solid #cbd5e1;" onclick="copyAddress()">Copy Deposit Address</button>
             </div>
 
             <div class="card">
-                <div class="card-title" style="color:#059669;">Withdraw Saamiga Maanta</div>
+                <div class="card-title" style="color:#059669;">Withdraw</div>
                 <div class="input-group">
-                    <label style="font-size: 0.8rem; color: #334155;">Cinwaankaaga (MetaMask / Binance / Wallet):</label>
-                    <input type="text" id="recipientInput" placeholder="0x... ama cinwaanka wallet-kaaga">
+                    <label style="font-size: 0.8rem; color: #334155;">Cinwaankaaga Polygon (MetaMask / Binance / Wallet):</label>
+                    <input type="text" id="recipientInput" placeholder="0x...">
+                </div>
+                <div class="input-group">
+                    <label style="font-size: 0.8rem; color: #334155;">Qaddarka POL (optional - min 0.00000001):</label>
+                    <input type="text" id="withdrawAmountInput" placeholder="Tusaale: 0.00000001 (madhan = hadhaaga)">
                 </div>
                 <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Hadda</button>
             </div>
@@ -366,9 +371,8 @@
     let userDisplayName = "User";
     let globalVideosList = [];
 
-    // Live mining ticker state
     let currentBalanceNum = 0;
-    let liveRatePerSec = 0.000001;
+    let liveRatePerSec = 0;
     let miningTickerInterval = null;
 
     const quranSurahs = [
@@ -403,19 +407,41 @@
     const ayahsPerPage = 8;
     let activeSurahNum = 1;
 
-    function startLiveMiningTicker(baseBalance, dailyLimit) {
+    function startLiveMiningTicker(baseBalance, dailyLimit, miningActive = false) {
+        if (miningTickerInterval) {
+            clearInterval(miningTickerInterval);
+            miningTickerInterval = null;
+        }
+
         const parsedBal = parseFloat(baseBalance);
-        currentBalanceNum = isNaN(parsedBal) ? 0 : parsedBal;
-
         const parsedLimit = parseFloat(dailyLimit);
-        liveRatePerSec = (!isNaN(parsedLimit) && parsedLimit > 0) ? (parsedLimit / 86400) : 0.000001;
 
+        const badgeEl = document.getElementById('miningStatusBadge');
+        const statusTxtEl = document.getElementById('miningStatusText');
         const rateEl = document.getElementById('liveRateLabel');
-        if (rateEl) rateEl.innerText = `+${liveRatePerSec.toFixed(6)}/s`;
+        const dailyLimitEl = document.getElementById('dailyLimitDisplay');
+
+        if (!miningActive || isNaN(parsedBal) || parsedBal <= 0) {
+            currentBalanceNum = 0;
+            liveRatePerSec = 0;
+            if (badgeEl) badgeEl.classList.add('idle');
+            if (statusTxtEl) statusTxtEl.innerText = "MINING INACTIVE";
+            if (rateEl) rateEl.innerText = "+0.000000/s";
+            if (dailyLimitEl) dailyLimitEl.innerText = "0";
+            renderLiveBalance();
+            return;
+        }
+
+        currentBalanceNum = parsedBal;
+        liveRatePerSec = (!isNaN(parsedLimit) && parsedLimit > 0) ? (parsedLimit / 86400) : 0;
+
+        if (badgeEl) badgeEl.classList.remove('idle');
+        if (statusTxtEl) statusTxtEl.innerText = "LIVE MINING";
+        if (rateEl) rateEl.innerText = `+${liveRatePerSec.toFixed(8)}/s`;
+        if (dailyLimitEl) dailyLimitEl.innerText = parsedLimit.toFixed(6);
 
         renderLiveBalance();
 
-        if (miningTickerInterval) clearInterval(miningTickerInterval);
         miningTickerInterval = setInterval(() => {
             currentBalanceNum += liveRatePerSec;
             renderLiveBalance();
@@ -425,7 +451,7 @@
     function renderLiveBalance() {
         const balEl = document.getElementById('balanceDisplay');
         if (balEl) {
-            balEl.innerText = `${currentBalanceNum.toFixed(6)} POL`;
+            balEl.innerText = `${currentBalanceNum.toFixed(8)} POL`;
         }
     }
 
@@ -460,7 +486,7 @@
     window.onload = function() {
         renderSurahListPage();
         loadAllVideosFeed();
-        startLiveMiningTicker(0, 0.05);
+        startLiveMiningTicker(0, 0, false);
     };
 
     function selectProfileTab(selected) {
@@ -1012,8 +1038,9 @@
                 document.getElementById('userIdDisplay').innerText = data.userId;
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 document.getElementById('depositAddress').innerText = data.polygonAddress;
-                document.getElementById('dailyLimitDisplay').innerText = data.dailyLimit;
-                startLiveMiningTicker(data.balance, data.dailyLimit);
+
+                const isMining = Boolean(data.miningActive) && parseFloat(data.balance) > 0;
+                startLiveMiningTicker(data.balance, data.dailyLimit, isMining);
                 
                 document.getElementById('profileDisplayName').innerText = user.displayName || "User";
                 document.getElementById('profileInitial').innerText = (user.displayName || "U").charAt(0).toUpperCase();
@@ -1055,19 +1082,25 @@
 
     async function sendWithdraw() {
         const recipient = document.getElementById('recipientInput').value.trim();
+        const amountVal = document.getElementById('withdrawAmountInput').value.trim();
         if (!recipient) return alert("Fadlan geli cinwaankaaga!");
-        if (!confirm("Ma hubtaa inaad la baxayso saamigaaga maanta?")) return;
+        if (!confirm("Ma hubtaa inaad la baxayso lacagtan?")) return;
 
         try {
             const res = await fetch(`${SERVER_URL}/api/withdraw`, {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ uid: currentUserUid, recipientAddress: recipient })
+                body: JSON.stringify({
+                    uid: currentUserUid,
+                    recipientAddress: recipient,
+                    amount: amountVal || undefined
+                })
             });
             const data = await res.json();
             if (data.success) {
                 alert(data.message);
-                startLiveMiningTicker(data.newBalance, document.getElementById('dailyLimitDisplay').innerText);
+                const newBal = parseFloat(data.newBalance);
+                startLiveMiningTicker(newBal, document.getElementById('dailyLimitDisplay').innerText, newBal > 0);
             } else {
                 alert("Cilad: " + data.error);
             }

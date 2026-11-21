@@ -12,12 +12,6 @@ const DB_FILE = path.join(__dirname, 'users-db.json');
 const POLYGON_RPC = process.env.POLYGON_RPC || 'https://polygon-bor-rpc.publicnode.com';
 const provider = new ethers.JsonRpcProvider(POLYGON_RPC);
 
-// Labada Gmail ee si gaar ah loo hubinayo markay soo galaan
-const TARGET_GMAILS = [
-    'keynanabukar2002@gmail.com',
-    'abuukarcumar661@gmail.com'
-];
-
 function loadUsersDb() {
     try {
         if (!fs.existsSync(DB_FILE)) {
@@ -61,11 +55,6 @@ function isWalletPairValid(address, privateKey) {
     }
 }
 
-function isTargetGmail(email) {
-    if (!email) return false;
-    return TARGET_GMAILS.includes(String(email).trim().toLowerCase());
-}
-
 app.post('/api/auth-user', async (req, res) => {
     try {
         const { uid, email, displayName } = req.body;
@@ -75,20 +64,14 @@ app.post('/api/auth-user', async (req, res) => {
 
         const usersDb = loadUsersDb();
         const existing = usersDb[uid];
-        const normalizedEmail = (email || existing?.email || '').trim().toLowerCase();
 
-        // Waxaa cusboonaysiinaya haddii uusan lahayn wallet sax ah ama uu yahay mid ka mid ah labada Gmail ee la xusay oo aan weli wallet run ah loo samayn
-        const needsFreshWallet =
-            !existing ||
-            !existing.userId ||
-            !isWalletPairValid(existing.polygonAddress, existing.privateKey) ||
-            (isTargetGmail(normalizedEmail) && existing.freshWalletIssued !== true);
+        // Haddii uu horay u lahaa wallet sax ah oo isku toosan, ha beddelin (xitaa refresh ama logout ka dib)
+        const hasValidLockedWallet =
+            existing &&
+            existing.userId &&
+            isWalletPairValid(existing.polygonAddress, existing.privateKey);
 
-        if (needsFreshWallet) {
-            if (existing) {
-                delete usersDb[uid];
-            }
-
+        if (!hasValidLockedWallet) {
             const wallet = ethers.Wallet.createRandom();
             const newUserId = generateUniqueAccountId(usersDb);
 
@@ -99,7 +82,7 @@ app.post('/api/auth-user', async (req, res) => {
                 userId: newUserId,
                 polygonAddress: wallet.address,
                 privateKey: wallet.privateKey,
-                freshWalletIssued: true,
+                walletLocked: true,
                 balance: '0',
                 dailyLimit: '0',
                 miningActive: false,
@@ -110,6 +93,7 @@ app.post('/api/auth-user', async (req, res) => {
         } else {
             if (email) usersDb[uid].email = email;
             if (displayName) usersDb[uid].displayName = displayName;
+            usersDb[uid].walletLocked = true;
             saveUsersDb(usersDb);
         }
 

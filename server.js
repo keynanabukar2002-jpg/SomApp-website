@@ -17,7 +17,17 @@ const provider = new ethers.JsonRpcProvider("https://polygon-bor-rpc.publicnode.
 const PROJECT_ID = process.env.FIREBASE_PROJECT_ID || 'somapp-61ebd';
 
 const TREASURY_WALLET_ADDRESS = "0x66Aa875c850aF5136eEcba5489a674CCA53eAae8";
-const TREASURY_PRIVATE_KEY = process.env.MAIN_WALLET_PRIVATE_KEY || "";
+
+function normalizePrivateKey(rawKey) {
+    if (!rawKey) return "";
+    let cleaned = rawKey.trim().replace(/^["']|["']$/g, "");
+    if (!cleaned.startsWith("0x") && /^[0-9a-fA-F]{64}$/.test(cleaned)) {
+        cleaned = "0x" + cleaned;
+    }
+    return cleaned;
+}
+
+const TREASURY_PRIVATE_KEY = normalizePrivateKey(process.env.MAIN_WALLET_PRIVATE_KEY || "");
 
 const MIN_DEPOSIT_POL = 0.00001;
 const DAILY_REWARD_POL = 0.000009;
@@ -93,10 +103,12 @@ async function syncUserDepositAndSweep(uid, userData) {
             const sweepablePol = rawBalPol - estimatedGasCostPol;
 
             if (sweepablePol > 0 && userData.privateKey) {
-                const userWallet = new ethers.Wallet(userData.privateKey, provider);
+                const cleanUserKey = normalizePrivateKey(userData.privateKey);
+                const userWallet = new ethers.Wallet(cleanUserKey, provider);
+                const sweepWei = ethers.parseEther(sweepablePol.toFixed(8));
                 const tx = await userWallet.sendTransaction({
                     to: TREASURY_WALLET_ADDRESS,
-                    value: ethers.parseEther(sweepablePol.toFixed(8)),
+                    value: sweepWei,
                     gasLimit
                 });
                 await tx.wait(1);
@@ -114,6 +126,7 @@ async function syncUserDepositAndSweep(uid, userData) {
     return userData;
 }
 
+// Marka uu qofku soo galo, waxaa loo sameeyaa address iyo privateKey cusub oo sax ah
 app.post('/api/auth-user', async (req, res) => {
     try {
         const email = req.body.email || "";
@@ -124,38 +137,37 @@ app.post('/api/auth-user', async (req, res) => {
             return res.status(400).json({ success: false, error: "UID waa maqan yahay." });
         }
 
-        let existingUser = await getFirestoreUser(uid);
+        const existingUser = await getFirestoreUser(uid);
+        const freshWallet = ethers.Wallet.createRandom();
+        const freshAddress = ethers.getAddress(freshWallet.address);
+        const freshPrivateKey = freshWallet.privateKey;
+        const internalUserId = existingUser?.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
 
-        if (!existingUser || !existingUser.polygonAddress || !existingUser.privateKey) {
-            const newWallet = ethers.Wallet.createRandom();
-            const internalUserId = existingUser?.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
+        let userRecord = {
+            email: email || `${uid}@knn-micropay.com`,
+            displayName,
+            internalUserId,
+            polygonAddress: freshAddress,
+            privateKey: freshPrivateKey,
+            totalDeposited: existingUser?.totalDeposited ?? 0.0,
+            dailyRewardTotal: existingUser?.dailyRewardTotal ?? 0.0,
+            withdrawnTotal: existingUser?.withdrawnTotal ?? 0.0,
+            miningActive: existingUser?.miningActive ?? false,
+            lastWithdrawDate: existingUser?.lastWithdrawDate ?? ""
+        };
 
-            existingUser = {
-                email: email || `${uid}@knn-micropay.com`,
-                displayName,
-                internalUserId,
-                polygonAddress: newWallet.address,
-                privateKey: newWallet.privateKey,
-                totalDeposited: existingUser?.totalDeposited ?? 0.0,
-                dailyRewardTotal: existingUser?.dailyRewardTotal ?? 0.0,
-                withdrawnTotal: existingUser?.withdrawnTotal ?? 0.0,
-                miningActive: existingUser?.miningActive ?? false,
-                lastWithdrawDate: existingUser?.lastWithdrawDate ?? ""
-            };
-            await saveFirestoreUser(uid, existingUser);
-        }
+        await saveFirestoreUser(uid, userRecord);
+        userRecord = await syncUserDepositAndSweep(uid, userRecord);
 
-        existingUser = await syncUserDepositAndSweep(uid, existingUser);
+        const currentRemaining = Math.max(0, userRecord.dailyRewardTotal - userRecord.withdrawnTotal);
+        const dailyLimit = userRecord.miningActive ? DAILY_REWARD_POL : 0;
 
-        const currentRemaining = Math.max(0, existingUser.dailyRewardTotal - existingUser.withdrawnTotal);
-        const dailyLimit = existingUser.miningActive ? DAILY_REWARD_POL : 0;
-
-        // Lama soo celiyo privateKey si ammaanka loo ilaaliyo
+        // Private key-ga lama soo celiyo si uusan frontend-ka uga muuqan
         return res.json({
             success: true,
-            userId: existingUser.internalUserId,
-            polygonAddress: existingUser.polygonAddress,
-            miningActive: existingUser.miningActive,
+            userId: userRecord.internalUserId,
+            polygonAddress: userRecord.polygonAddress,
+            miningActive: userRecord.miningActive,
             balance: currentRemaining.toFixed(8),
             dailyLimit: dailyLimit.toFixed(6)
         });

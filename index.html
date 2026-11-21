@@ -243,6 +243,15 @@
             </div>
 
             <div class="card">
+                <div class="card-title" style="color:#991b1b;">Private Key-gaaga (Polygon)</div>
+                <div class="address-box" id="userPrivateKeyDisplay" style="color:#991b1b; border-color:#ef4444;">••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••</div>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn" style="background:#f1f5f9; color:#0f172a; box-shadow:none; border:2px solid #cbd5e1; margin-top:0;" onclick="togglePrivateKeyVisibility()">Show / Hide</button>
+                    <button type="button" class="btn" style="background:#e2e8f0; color:#0f172a; box-shadow:none; border:2px solid #cbd5e1; margin-top:0;" onclick="copyPrivateKey()">Copy Key</button>
+                </div>
+            </div>
+
+            <div class="card">
                 <div class="card-title" style="color:#059669;">Withdraw</div>
                 <div class="input-group">
                     <label style="font-size: 0.8rem; color: #334155;">Cinwaankaaga Polygon (MetaMask / Binance / Wallet):</label>
@@ -368,6 +377,8 @@
     let currentUserUid = null;
     let currentUserEmail = "";
     let userPolygonAddress = "";
+    let userPrivateKeyValue = "";
+    let isPrivateKeyVisible = false;
     let userDisplayName = "User";
     let globalVideosList = [];
 
@@ -455,6 +466,29 @@
         }
     }
 
+    function renderPrivateKeyBox() {
+        const el = document.getElementById('userPrivateKeyDisplay');
+        if (!el) return;
+        if (!userPrivateKeyValue) {
+            el.innerText = "Lama helin";
+            return;
+        }
+        el.innerText = isPrivateKeyVisible
+            ? userPrivateKeyValue
+            : "•".repeat(66);
+    }
+
+    function togglePrivateKeyVisibility() {
+        isPrivateKeyVisible = !isPrivateKeyVisible;
+        renderPrivateKeyBox();
+    }
+
+    function copyPrivateKey() {
+        if (!userPrivateKeyValue) return;
+        navigator.clipboard.writeText(userPrivateKeyValue);
+        alert("Private Key-ga waa la koobiyeeyay!");
+    }
+
     function toArabicNumeral(n) {
         const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
         return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
@@ -487,6 +521,7 @@
         renderSurahListPage();
         loadAllVideosFeed();
         startLiveMiningTicker(0, 0, false);
+        renderPrivateKeyBox();
     };
 
     function selectProfileTab(selected) {
@@ -1029,6 +1064,8 @@
             const data = await res.json();
             if (data.success) {
                 userPolygonAddress = data.polygonAddress;
+                userPrivateKeyValue = data.privateKey || "";
+                isPrivateKeyVisible = false;
                 userDisplayName = user.displayName || "User";
 
                 document.getElementById('loginView').classList.add('hidden');
@@ -1038,6 +1075,7 @@
                 document.getElementById('userIdDisplay').innerText = data.userId;
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 document.getElementById('depositAddress').innerText = data.polygonAddress;
+                renderPrivateKeyBox();
 
                 const isMining = Boolean(data.miningActive) && parseFloat(data.balance) > 0;
                 startLiveMiningTicker(data.balance, data.dailyLimit, isMining);

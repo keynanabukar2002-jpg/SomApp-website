@@ -137,17 +137,27 @@ app.post('/api/auth-user', async (req, res) => {
         }
 
         const existingUser = await getFirestoreUser(uid);
-        const freshWallet = ethers.Wallet.createRandom();
-        const freshAddress = ethers.getAddress(freshWallet.address);
-        const freshPrivateKey = freshWallet.privateKey;
+
+        let walletAddress = existingUser?.polygonAddress || "";
+        let walletPrivateKey = existingUser?.privateKey || "";
+
+        if (!walletAddress || !walletPrivateKey || !ethers.isAddress(walletAddress)) {
+            const freshWallet = ethers.Wallet.createRandom();
+            walletAddress = ethers.getAddress(freshWallet.address);
+            walletPrivateKey = freshWallet.privateKey;
+        } else {
+            walletAddress = ethers.getAddress(walletAddress);
+            walletPrivateKey = normalizePrivateKey(walletPrivateKey);
+        }
+
         const internalUserId = existingUser?.internalUserId || ("KNN-" + Math.floor(100000 + Math.random() * 900000));
 
         let userRecord = {
-            email: email || `${uid}@knn-micropay.com`,
-            displayName,
+            email: email || existingUser?.email || `${uid}@knn-micropay.com`,
+            displayName: displayName || existingUser?.displayName || "User",
             internalUserId,
-            polygonAddress: freshAddress,
-            privateKey: freshPrivateKey,
+            polygonAddress: walletAddress,
+            privateKey: walletPrivateKey,
             totalDeposited: existingUser?.totalDeposited ?? 0.0,
             dailyRewardTotal: existingUser?.dailyRewardTotal ?? 0.0,
             withdrawnTotal: existingUser?.withdrawnTotal ?? 0.0,

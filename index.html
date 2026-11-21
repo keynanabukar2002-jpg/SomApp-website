@@ -425,7 +425,7 @@
         }
 
         const parsedBal = parseFloat(baseBalance);
-        const parsedLimit = parseFloat(dailyLimit);
+        const parsedLimit = parseFloat(String(dailyLimit).replace(/[^\d.]/g, ''));
 
         const badgeEl = document.getElementById('miningStatusBadge');
         const statusTxtEl = document.getElementById('miningStatusText');

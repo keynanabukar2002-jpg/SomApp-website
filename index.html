@@ -2,109 +2,97 @@
 <html lang="so">
 <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>KNN MicroPay & Wallet</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+    <title>KNN Wallet</title>
+    <script src="https://cdn.tailwindcss.com"></script>
     <style>
         :root {
             --bg-cream: #FEFBEA;
-            --card-bg: #FFFFFF;
+            --card-white: #FFFFFF;
+            --border-soft: #E5E7EB;
             --text-dark: #111827;
             --text-muted: #6B7280;
-            --border-soft: #E5E7EB;
-            --blue-grad-1: #0B5ED7;
-            --blue-grad-2: #1D4ED8;
-            --accent-blue: #2563EB;
-            --danger-border: #EF4444;
+            --accent-blue: #1D4ED8;
+            --accent-blue-dark: #1E3A8A;
+            --accent-gold: #D97706;
         }
 
         * {
             box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        html, body {
             margin: 0;
             padding: 0;
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-        }
-
-        body {
             background-color: var(--bg-cream);
             color: var(--text-dark);
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
             min-height: 100vh;
-            padding-bottom: 84px;
+            overflow-x: hidden;
         }
 
-        .app-container {
+        .app-shell {
             max-width: 480px;
             margin: 0 auto;
-            padding: 16px 14px 28px;
+            min-height: 100vh;
+            background-color: var(--bg-cream);
+            padding: 16px 14px 92px 14px;
         }
 
-        .top-bar {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 14px;
-            gap: 8px;
-        }
-
-        .app-title {
-            font-size: 16px;
-            font-weight: 800;
-            letter-spacing: 0.3px;
-        }
-
-        .status-pill {
-            font-size: 11px;
-            font-weight: 700;
-            padding: 5px 10px;
-            border-radius: 999px;
-            background: #EEF2FF;
-            color: var(--accent-blue);
-            border: 1px solid #C7D2FE;
-        }
-
-        .mining-card {
-            background: linear-gradient(135deg, var(--blue-grad-1), var(--blue-grad-2));
+        .hero-card {
+            background: linear-gradient(135deg, #1E40AF 0%, #1D4ED8 55%, #2563EB 100%);
             color: #FFFFFF;
             border-radius: 18px;
             padding: 18px;
-            box-shadow: 0 10px 24px rgba(29, 78, 216, 0.22);
-            margin-bottom: 14px;
+            box-shadow: 0 8px 20px rgba(29, 78, 216, 0.16);
         }
 
-        .mining-top-row {
+        .hero-top {
             display: flex;
             align-items: center;
             justify-content: space-between;
+            gap: 8px;
             margin-bottom: 14px;
-            font-size: 12px;
-            font-weight: 700;
         }
 
-        .mining-badge {
+        .status-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
             background: rgba(255, 255, 255, 0.16);
+            color: #FFFFFF;
+            font-size: 11px;
+            font-weight: 700;
+            letter-spacing: 0.04em;
             padding: 5px 10px;
             border-radius: 999px;
         }
 
-        .min-dep-badge {
-            background: rgba(255, 255, 255, 0.14);
+        .min-dep-pill {
+            background: rgba(15, 23, 42, 0.28);
+            color: #DBEAFE;
+            font-size: 11px;
+            font-weight: 600;
             padding: 5px 10px;
             border-radius: 999px;
         }
 
         .balance-main {
-            font-size: 28px;
+            font-size: 32px;
             font-weight: 800;
-            letter-spacing: -0.4px;
-            margin-bottom: 6px;
+            letter-spacing: -0.02em;
+            line-height: 1.15;
+            margin: 4px 0 6px 0;
         }
 
-        .mining-rate-row {
+        .sub-earnings {
             display: flex;
             align-items: center;
             justify-content: space-between;
             font-size: 12px;
-            opacity: 0.92;
-            margin-bottom: 16px;
+            color: #DBEAFE;
+            margin-bottom: 14px;
         }
 
         .stats-grid {
@@ -114,7 +102,8 @@
         }
 
         .stat-box {
-            background: rgba(255, 255, 255, 0.14);
+            background: rgba(255, 255, 255, 0.13);
+            border: 1px solid rgba(255, 255, 255, 0.18);
             border-radius: 12px;
             padding: 10px 12px;
         }
@@ -122,36 +111,35 @@
         .stat-label {
             font-size: 10px;
             font-weight: 700;
-            opacity: 0.85;
+            letter-spacing: 0.05em;
+            color: #BFDBFE;
             text-transform: uppercase;
-            margin-bottom: 4px;
         }
 
         .stat-value {
             font-size: 14px;
             font-weight: 800;
+            color: #FFFFFF;
+            margin-top: 3px;
+            word-break: break-all;
         }
 
         .info-card {
-            background: var(--card-bg);
+            background-color: var(--card-white);
             border: 1px solid var(--border-soft);
             border-radius: 16px;
-            padding: 14px;
-            margin-bottom: 12px;
-            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.03);
+            padding: 15px;
+            margin-top: 12px;
+            box-shadow: 0 2px 8px rgba(17, 24, 39, 0.03);
         }
 
-        .info-card.key-card {
-            border-color: var(--danger-border);
-        }
-
-        .card-heading {
+        .section-label {
             font-size: 11px;
             font-weight: 800;
-            text-transform: uppercase;
+            letter-spacing: 0.05em;
             color: var(--text-muted);
-            margin-bottom: 8px;
-            letter-spacing: 0.4px;
+            text-transform: uppercase;
+            margin-bottom: 6px;
         }
 
         .email-text {
@@ -161,96 +149,81 @@
             word-break: break-all;
         }
 
-        .addr-box {
+        .address-box {
             width: 100%;
-            border: 1.5px solid var(--accent-blue);
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-dark);
-            background: #F8FAFC;
-            margin-bottom: 10px;
-            word-break: break-all;
-        }
-
-        .pk-box {
-            width: 100%;
-            border: 1.5px solid var(--danger-border);
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 12px;
-            font-weight: 700;
-            color: var(--text-dark);
-            background: #FFFDFD;
-            margin-bottom: 10px;
-        }
-
-        .btn-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .btn {
-            border: none;
-            border-radius: 10px;
+            border: 1.5px solid #93C5FD;
+            background-color: #F8FAFC;
+            color: #1E3A8A;
+            border-radius: 12px;
             padding: 11px 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            outline: none;
+        }
+
+        .key-box {
+            width: 100%;
+            border: 1.5px solid #FCA5A5;
+            background-color: #FEF2F2;
+            color: #991B1B;
+            border-radius: 12px;
+            padding: 11px 12px;
+            font-size: 12.5px;
+            font-weight: 600;
+            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+            outline: none;
+        }
+
+        .btn-gray {
+            width: 100%;
+            margin-top: 10px;
+            background-color: #E5E7EB;
+            color: #111827;
             font-size: 13px;
             font-weight: 700;
+            padding: 11px 14px;
+            border-radius: 12px;
+            border: none;
             cursor: pointer;
             transition: opacity 0.15s ease;
         }
 
-        .btn:active {
-            opacity: 0.85;
+        .btn-gray:active {
+            opacity: 0.8;
         }
 
-        .btn-soft {
-            background: #E5E7EB;
-            color: var(--text-dark);
+        .btn-row-2 {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
         }
 
-        .btn-primary {
-            background: var(--accent-blue);
-            color: #FFFFFF;
-            width: 100%;
-        }
-
-        .input-field {
-            width: 100%;
-            border: 1px solid #D1D5DB;
-            border-radius: 10px;
-            padding: 10px 12px;
-            font-size: 13px;
-            margin-bottom: 10px;
-            outline: none;
-        }
-
-        .input-field:focus {
-            border-color: var(--accent-blue);
-        }
-
-        .feedback-msg {
+        .toast-msg {
             margin-top: 8px;
             font-size: 12px;
             font-weight: 600;
-            color: #1F2937;
-            min-height: 18px;
-            word-break: break-word;
+            color: #1D4ED8;
+            min-height: 16px;
         }
 
         .bottom-nav {
             position: fixed;
-            bottom: 0;
             left: 0;
             right: 0;
-            background: #FFFFFF;
-            border-top: 1px solid var(--border-soft);
+            bottom: 0;
+            background-color: #FFFFFF;
+            border-top: 1px solid #E5E7EB;
+            z-index: 50;
+        }
+
+        .bottom-nav-inner {
+            max-width: 480px;
+            margin: 0 auto;
             display: grid;
             grid-template-columns: repeat(6, 1fr);
-            padding: 8px 4px;
-            z-index: 50;
+            padding: 7px 4px 9px 4px;
         }
 
         .nav-item {
@@ -259,389 +232,344 @@
             align-items: center;
             justify-content: center;
             gap: 3px;
-            font-size: 11px;
+            font-size: 10.5px;
             font-weight: 600;
-            color: var(--text-muted);
+            color: #6B7280;
             background: transparent;
             border: none;
             cursor: pointer;
-            padding: 4px 2px;
+            padding: 2px 0;
         }
 
         .nav-item.active {
-            color: var(--accent-blue);
-            font-weight: 800;
+            color: #1D4ED8;
+            font-weight: 700;
+        }
+
+        .nav-item.quran-active {
+            color: #D97706;
+            font-weight: 700;
+        }
+
+        .nav-icon {
+            font-size: 16px;
+            line-height: 1;
         }
     </style>
 </head>
 <body>
-    <div class="app-container" id="appRoot">
-        <div class="top-bar">
-            <div class="app-title">KNN WALLET</div>
-            <button type="button" class="status-pill" id="refreshSyncBtn" onclick="window.syncUserWalletSafe && window.syncUserWalletSafe(window.__currentUser)">
-                ↻ Sync
-            </button>
-        </div>
-
-        <div class="mining-card">
-            <div class="mining-top-row">
-                <span class="mining-badge" id="miningStatusBadge">● MINING INACTIVE</span>
-                <span class="min-dep-badge">Min Dep: 0.00001 POL</span>
+    <div id="appRoot" class="app-shell">
+        <!-- Kaarka Sare Ee Balance-ka Iyo Account ID -->
+        <section class="hero-card">
+            <div class="hero-top">
+                <span id="miningStatusBadge" class="status-pill">● MINING INACTIVE</span>
+                <span class="min-dep-pill">Min Dep: 0.00001 POL</span>
             </div>
 
-            <div class="balance-main" id="balanceDisplay">0.00000000 POL</div>
+            <div id="balanceDisplay" class="balance-main">0.00000000 POL</div>
 
-            <div class="mining-rate-row">
-                <span>Saamiga maalinlaha ah: 0 POL</span>
-                <span id="ratePerSecDisplay">+0.000000/s</span>
+            <div class="sub-earnings">
+                <span>Saamiga maalinlaha ah: <strong id="dailyRateText">0 POL</strong></span>
+                <span id="perSecText">+0.000000/s</span>
             </div>
 
             <div class="stats-grid">
                 <div class="stat-box">
                     <div class="stat-label">DAILY OUTPUT</div>
-                    <div class="stat-value" id="dailyOutputDisplay">0.000000 POL</div>
+                    <div id="dailyOutputDisplay" class="stat-value">0.000009 POL</div>
                 </div>
                 <div class="stat-box">
                     <div class="stat-label">ACCOUNT ID</div>
-                    <div class="stat-value" id="accountIdDisplay">KNN-205792</div>
+                    <div id="accountIdDisplay" class="stat-value">KNN-205792</div>
                 </div>
             </div>
-        </div>
+        </section>
 
-        <div class="info-card">
-            <div class="card-heading">MACLUUMAADKA XISAABTA</div>
-            <div class="email-text" id="accountEmailDisplay">abuukarcumar661@gmail.com</div>
-        </div>
+        <!-- Macluumaadka Xisaabta -->
+        <section class="info-card">
+            <div class="section-label">MACLUUMAADKA XISAABTA</div>
+            <div id="userEmailDisplay" class="email-text">abuukarcumar661@gmail.com</div>
+        </section>
 
-        <div class="info-card">
-            <div class="card-heading">CINWAANKAAGA DEPOSIT-KA (POLYGON)</div>
+        <!-- Cinwaanka Deposit-ka -->
+        <section class="info-card">
+            <div class="section-label">CINWAANKAAGA DEPOSIT-KA (POLYGON)</div>
             <input
-                type="text"
                 id="depositAddressInput"
-                class="addr-box"
+                type="text"
                 readonly
+                class="address-box"
                 value="0x613b603440CA724C266FC5432E2a20D000F73367"
             />
-            <button type="button" class="btn btn-soft" style="width: 100%;" onclick="window.copyDepositAddressSafe && window.copyDepositAddressSafe()">
+            <button type="button" onclick="copyDepositAddressSafe()" class="btn-gray">
                 Copy Deposit Address
             </button>
-        </div>
+            <div id="actionFeedback" class="toast-msg"></div>
+        </section>
 
-        <div class="info-card key-card">
-            <div class="card-heading">PRIVATE KEY-GAAGA (POLYGON)</div>
+        <!-- Private Key-ga -->
+        <section class="info-card">
+            <div class="section-label">PRIVATE KEY-GAAGA (POLYGON)</div>
             <input
-                type="password"
                 id="privateKeyInput"
-                class="pk-box"
+                type="password"
                 readonly
+                class="key-box"
                 value="••••••••••••••••••••••••••••••••••••••••••"
+                data-real-key=""
             />
-            <div class="btn-row">
-                <button type="button" class="btn btn-soft" onclick="window.togglePrivateKeySafe && window.togglePrivateKeySafe()">
+            <div class="btn-row-2">
+                <button type="button" onclick="togglePrivateKeySafe()" class="btn-gray">
                     Show / Hide
                 </button>
-                <button type="button" class="btn btn-soft" onclick="window.copyPrivateKeySafe && window.copyPrivateKeySafe()">
+                <button type="button" onclick="copyPrivateKeySafe()" class="btn-gray">
                     Copy Key
                 </button>
             </div>
-        </div>
-
-        <div class="info-card">
-            <div class="card-heading">WITHDRAW (POLYGON POL)</div>
-            <input
-                type="text"
-                id="withdrawRecipientInput"
-                class="input-field"
-                placeholder="Recipient Polygon Address (0x...)"
-            />
-            <input
-                type="number"
-                step="any"
-                id="withdrawAmountInput"
-                class="input-field"
-                placeholder="Amount in POL (tusaale 0.001)"
-            />
-            <button type="button" class="btn btn-primary" onclick="window.submitWithdrawSafe && window.submitWithdrawSafe()">
-                Withdraw POL
-            </button>
-            <div class="feedback-msg" id="withdrawStatusMsg"></div>
-        </div>
+        </section>
     </div>
 
-    <nav class="bottom-nav">
-        <button type="button" class="nav-item" onclick="window.handleNavClick && window.handleNavClick('Home', this)">
-            <span>⌂</span>
-            <span>Home</span>
-        </button>
-        <button type="button" class="nav-item" onclick="window.handleNavClick && window.handleNavClick('Chat', this)">
-            <span>💬</span>
-            <span>Chat</span>
-        </button>
-        <button type="button" class="nav-item" onclick="window.handleNavClick && window.handleNavClick('Upload', this)">
-            <span>+</span>
-            <span>Upload</span>
-        </button>
-        <button type="button" class="nav-item" onclick="window.handleNavClick && window.handleNavClick('Quran', this)">
-            <span>📖</span>
-            <span>Qur'aan</span>
-        </button>
-        <button type="button" class="nav-item active" onclick="window.handleNavClick && window.handleNavClick('Wallet', this)">
-            <span>💳</span>
-            <span>Wallet</span>
-        </button>
-        <button type="button" class="nav-item" onclick="window.handleNavClick && window.handleNavClick('Profile', this)">
-            <span>👤</span>
-            <span>Profile</span>
-        </button>
+    <!-- Bottom Navigation Bar -->
+    <nav class="bottom-nav" aria-label="Bottom Navigation">
+        <div class="bottom-nav-inner">
+            <button type="button" class="nav-item" onclick="handleNavClick('Home', this)">
+                <span class="nav-icon">🏠</span>
+                <span>Home</span>
+            </button>
+            <button type="button" class="nav-item" onclick="handleNavClick('Chat', this)">
+                <span class="nav-icon">💬</span>
+                <span>Chat</span>
+            </button>
+            <button type="button" class="nav-item" onclick="handleNavClick('Upload', this)">
+                <span class="nav-icon">＋</span>
+                <span>Upload</span>
+            </button>
+            <button type="button" class="nav-item quran-active" onclick="handleNavClick('Qur’aan', this)">
+                <span class="nav-icon">📖</span>
+                <span>Qur'aan</span>
+            </button>
+            <button type="button" class="nav-item active" onclick="handleNavClick('Wallet', this)">
+                <span class="nav-icon">💳</span>
+                <span>Wallet</span>
+            </button>
+            <button type="button" class="nav-item" onclick="handleNavClick('Profile', this)">
+                <span class="nav-icon">👤</span>
+                <span>Profile</span>
+            </button>
+        </div>
     </nav>
 
     <script>
         (function () {
             const SERVER_URL = window.KNN_SERVER_URL || 'https://somapp-website-production.up.railway.app';
+            const DEFAULT_ACCOUNT_ID = 'KNN-205792';
+            const DEFAULT_ADDRESS = '0x613b603440CA724C266FC5432E2a20D000F73367';
+            const DEFAULT_EMAIL = 'abuukarcumar661@gmail.com';
+            const MASKED_TEXT = '•'.repeat(42);
 
-            window.addEventListener('error', function (event) {
-                console.error('Caught window error:', event.message || event.error);
-                const root = document.getElementById('appRoot');
-                if (root && !root.innerHTML.trim()) {
-                    root.innerHTML = '<div class="info-card"><div class="card-heading">STATUS</div><div class="email-text">App-ku wuu diyaar garoobayaa... fadlan refresh dheh.</div></div>';
-                }
+            window.addEventListener('error', (e) => {
+                console.warn('Handled page error:', e.message || e.error);
             });
 
-            window.addEventListener('unhandledrejection', function (event) {
-                console.error('Caught unhandled rejection:', event.reason);
+            window.addEventListener('unhandledrejection', (e) => {
+                console.warn('Handled promise rejection:', e.reason);
             });
 
-            function safeText(val, fallback) {
-                if (val === undefined || val === null) return fallback || '';
-                const str = String(val).trim();
-                return str.length ? str : (fallback || '');
+            function safeStr(v, fallback = '') {
+                if (v === undefined || v === null) return fallback;
+                const s = String(v).trim();
+                return s.length > 0 ? s : fallback;
             }
 
-            function safeNumber(val, fallback) {
-                const n = Number(val);
-                return Number.isFinite(n) ? n : (fallback || 0);
+            function safeNum(v, fallback = 0) {
+                const n = Number(v);
+                return Number.isFinite(n) ? n : fallback;
             }
 
-            function setTextById(id, txt) {
+            function setText(id, val) {
                 try {
                     const el = document.getElementById(id);
-                    if (el) el.textContent = txt;
+                    if (el) el.textContent = val;
                 } catch (_) {}
             }
 
-            function setValueById(id, val) {
+            function setValue(id, val) {
                 try {
                     const el = document.getElementById(id);
                     if (el) el.value = val;
                 } catch (_) {}
             }
 
-            function renderWalletSafe(rawData) {
+            function setFeedback(msg) {
+                setText('actionFeedback', safeStr(msg, ''));
+            }
+
+            function renderWalletUI(rawData) {
                 try {
-                    const data = rawData && typeof rawData === 'object' ? rawData : {};
-                    const bal = safeNumber(data.balance, 0);
-                    const daily = safeNumber(data.dailyLimit, 0);
-                    const mining = Boolean(data.miningActive) || bal > 0;
+                    const d = rawData && typeof rawData === 'object' ? rawData : {};
+                    const bal = safeNum(d.balance, 0);
+                    const daily = safeNum(d.dailyLimit, 0.000009);
+                    const active = Boolean(d.miningActive) || bal > 0;
+                    const accId = safeStr(d.userId, DEFAULT_ACCOUNT_ID);
+                    const addr = safeStr(d.polygonAddress, DEFAULT_ADDRESS);
+                    const email = safeStr(d.email, DEFAULT_EMAIL);
+                    const pk = safeStr(d.privateKey, '');
 
-                    const accountId = safeText(data.userId, 'KNN-205792');
-                    const depositAddr = safeText(data.polygonAddress, '0x613b603440CA724C266FC5432E2a20D000F73367');
-                    const email = safeText(data.email, 'abuukarcumar661@gmail.com');
-                    const pk = safeText(data.privateKey, '');
+                    setText('balanceDisplay', `${bal.toFixed(8)} POL`);
+                    setText('dailyOutputDisplay', `${daily.toFixed(6)} POL`);
+                    setText('accountIdDisplay', accId);
+                    setText('userEmailDisplay', email);
 
-                    setTextById('balanceDisplay', bal.toFixed(8) + ' POL');
-                    setTextById('dailyOutputDisplay', daily.toFixed(6) + ' POL');
-                    setTextById('accountIdDisplay', accountId);
-                    setTextById('accountEmailDisplay', email);
-                    setTextById('miningStatusBadge', mining ? '● MINING ACTIVE' : '● MINING INACTIVE');
-                    setTextById('ratePerSecDisplay', mining ? '+0.000000/s' : '+0.000000/s');
+                    if (active) {
+                        setText('miningStatusBadge', '● MINING ACTIVE');
+                        setText('dailyRateText', `${daily.toFixed(6)} POL`);
+                        setText('perSecText', `+${(daily / 86400).toFixed(6)}/s`);
+                    } else {
+                        setText('miningStatusBadge', '● MINING INACTIVE');
+                        setText('dailyRateText', '0 POL');
+                        setText('perSecText', '+0.000000/s');
+                    }
 
-                    setValueById('depositAddressInput', depositAddr);
+                    setValue('depositAddressInput', addr);
 
-                    const pkInput = document.getElementById('privateKeyInput');
-                    if (pkInput) {
-                        pkInput.dataset.realKey = pk;
-                        if (pkInput.type === 'password') {
-                            pkInput.value = pk ? '•'.repeat(42) : 'Lama helin';
+                    const pkEl = document.getElementById('privateKeyInput');
+                    if (pkEl) {
+                        if (pk) {
+                            pkEl.dataset.realKey = pk;
+                        }
+                        const currentReal = pkEl.dataset.realKey || '';
+                        if (pkEl.type === 'password') {
+                            pkEl.value = currentReal ? MASKED_TEXT : 'Lama helin';
                         } else {
-                            pkInput.value = pk || 'Lama helin';
+                            pkEl.value = currentReal || 'Lama helin';
                         }
                     }
 
                     try {
-                        localStorage.setItem('knn_wallet_cache_v1', JSON.stringify({
-                            userId: accountId,
-                            polygonAddress: depositAddr,
+                        localStorage.setItem('knn_wallet_ui_state', JSON.stringify({
+                            userId: accId,
+                            polygonAddress: addr,
                             email: email,
                             balance: bal.toFixed(8),
                             dailyLimit: daily.toFixed(6),
-                            miningActive: mining,
-                            updatedAt: Date.now()
+                            miningActive: active
                         }));
                     } catch (_) {}
                 } catch (err) {
-                    console.error('renderWalletSafe error:', err);
+                    console.warn('renderWalletUI error:', err.message);
                 }
             }
 
-            function restoreCache() {
+            function restoreCachedState() {
                 try {
-                    const cached = localStorage.getItem('knn_wallet_cache_v1');
-                    if (!cached) return;
-                    const parsed = JSON.parse(cached);
-                    if (parsed && typeof parsed === 'object') {
-                        renderWalletSafe(parsed);
+                    const cached = localStorage.getItem('knn_wallet_ui_state');
+                    if (cached) {
+                        renderWalletUI(JSON.parse(cached));
                     }
                 } catch (_) {}
             }
 
-            async function syncUserWalletSafe(user) {
-                restoreCache();
-
-                const activeUser = user || window.__currentUser || null;
-                if (!activeUser || !activeUser.uid) {
-                    return;
-                }
-
-                window.__currentUser = activeUser;
+            async function syncWalletFromServer(userObj) {
+                if (!userObj || !userObj.uid) return;
 
                 const controller = new AbortController();
-                const timer = setTimeout(function () {
-                    controller.abort();
-                }, 15000);
+                const timer = setTimeout(() => controller.abort(), 15000);
 
                 try {
-                    const resp = await fetch(SERVER_URL + '/api/auth-user', {
+                    const response = await fetch(`${SERVER_URL}/api/auth-user`, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({
-                            uid: activeUser.uid,
-                            email: activeUser.email || '',
-                            displayName: activeUser.displayName || 'User'
+                            uid: safeStr(userObj.uid),
+                            email: safeStr(userObj.email, DEFAULT_EMAIL),
+                            displayName: safeStr(userObj.displayName, 'User')
                         }),
                         signal: controller.signal
                     });
 
                     clearTimeout(timer);
+                    if (!response.ok) return;
 
-                    if (!resp.ok) {
-                        console.warn('Auth endpoint status:', resp.status);
-                        return;
+                    const json = await response.json();
+                    if (json && json.success) {
+                        renderWalletUI({
+                            ...json,
+                            email: safeStr(userObj.email, DEFAULT_EMAIL)
+                        });
                     }
-
-                    const data = await resp.json();
-                    if (data && data.success) {
-                        renderWalletSafe(Object.assign({}, data, {
-                            email: activeUser.email || data.email || 'abuukarcumar661@gmail.com'
-                        }));
-                    }
-                } catch (err) {
+                } catch (_) {
                     clearTimeout(timer);
-                    console.warn('syncUserWalletSafe warning:', err.name === 'AbortError' ? 'Timeout' : err.message);
                 }
             }
 
+            window.copyDepositAddressSafe = async function () {
+                try {
+                    const addr = safeStr(document.getElementById('depositAddressInput')?.value, DEFAULT_ADDRESS);
+                    if (navigator.clipboard && navigator.clipboard.writeText) {
+                        await navigator.clipboard.writeText(addr);
+                    }
+                    setFeedback('Cinwaanka deposit-ka waa la koobiyeeyay.');
+                } catch (_) {
+                    setFeedback('Fadlan gacanta kaga koobiyeey cinwaanka.');
+                }
+            };
+
             window.togglePrivateKeySafe = function () {
                 try {
-                    const pkInput = document.getElementById('privateKeyInput');
-                    if (!pkInput) return;
-                    const realKey = pkInput.dataset.realKey || '';
+                    const pkEl = document.getElementById('privateKeyInput');
+                    if (!pkEl) return;
+                    const realKey = safeStr(pkEl.dataset.realKey, '');
                     if (!realKey) {
-                        pkInput.value = 'Lama helin';
+                        pkEl.value = 'Lama helin';
+                        setFeedback('Private key lama helin.');
                         return;
                     }
-                    if (pkInput.type === 'password') {
-                        pkInput.type = 'text';
-                        pkInput.value = realKey;
+                    if (pkEl.type === 'password') {
+                        pkEl.type = 'text';
+                        pkEl.value = realKey;
+                        setFeedback('Private key waa muuqdaa.');
                     } else {
-                        pkInput.type = 'password';
-                        pkInput.value = '•'.repeat(42);
+                        pkEl.type = 'password';
+                        pkEl.value = MASKED_TEXT;
+                        setFeedback('Private key waa la qariyay.');
                     }
-                } catch (err) {
-                    console.error('togglePrivateKeySafe error:', err);
-                }
+                } catch (_) {}
             };
 
             window.copyPrivateKeySafe = async function () {
                 try {
-                    const pkInput = document.getElementById('privateKeyInput');
-                    const realKey = pkInput ? (pkInput.dataset.realKey || '') : '';
-                    if (!realKey) return;
+                    const pkEl = document.getElementById('privateKeyInput');
+                    const realKey = safeStr(pkEl?.dataset?.realKey, '');
+                    if (!realKey) {
+                        setFeedback('Private key ma jiro oo la koobiyeeyo.');
+                        return;
+                    }
                     if (navigator.clipboard && navigator.clipboard.writeText) {
                         await navigator.clipboard.writeText(realKey);
                     }
-                } catch (err) {
-                    console.warn('Copy key failed:', err.message);
-                }
-            };
-
-            window.copyDepositAddressSafe = async function () {
-                try {
-                    const addrEl = document.getElementById('depositAddressInput');
-                    const addr = addrEl ? (addrEl.value || '') : '';
-                    if (!addr) return;
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(addr);
-                    }
-                } catch (err) {
-                    console.warn('Copy address failed:', err.message);
-                }
-            };
-
-            window.submitWithdrawSafe = async function () {
-                const msgEl = document.getElementById('withdrawStatusMsg');
-                try {
-                    const currentUser = window.__currentUser;
-                    if (!currentUser || !currentUser.uid) {
-                        if (msgEl) msgEl.textContent = 'Fadlan marka hore ku gal akoonkaaga.';
-                        return;
-                    }
-
-                    const recipientEl = document.getElementById('withdrawRecipientInput');
-                    const amountEl = document.getElementById('withdrawAmountInput');
-                    const recipientAddress = recipientEl ? recipientEl.value.trim() : '';
-                    const amount = amountEl ? amountEl.value.trim() : '';
-
-                    if (!recipientAddress) {
-                        if (msgEl) msgEl.textContent = 'Fadlan geli cinwaanka recipient-ka.';
-                        return;
-                    }
-
-                    if (msgEl) msgEl.textContent = 'Waa la dirayaa...';
-
-                    const resp = await fetch(SERVER_URL + '/api/withdraw', {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            uid: currentUser.uid,
-                            recipientAddress: recipientAddress,
-                            amount: amount
-                        })
-                    });
-
-                    const data = await resp.json();
-                    if (data && data.success) {
-                        if (msgEl) msgEl.textContent = data.message || 'Withdraw waa guuleystay.';
-                        await syncUserWalletSafe(currentUser);
-                    } else {
-                        if (msgEl) msgEl.textContent = (data && data.error) || 'Withdraw waa fashilmay.';
-                    }
-                } catch (err) {
-                    if (msgEl) msgEl.textContent = err.message || 'Cilad ayaa dhacday.';
+                    setFeedback('Private key-ga waa la koobiyeeyay.');
+                } catch (_) {
+                    setFeedback('Lama koobiyeeyn karin private key-ga.');
                 }
             };
 
             window.handleNavClick = function (tabName, btnEl) {
                 try {
-                    const items = document.querySelectorAll('.bottom-nav .nav-item');
-                    items.forEach(function (item) {
-                        item.classList.remove('active');
-                    });
+                    document.querySelectorAll('.nav-item').forEach((el) => el.classList.remove('active'));
                     if (btnEl) btnEl.classList.add('active');
+                    setFeedback(`Tab: ${tabName}`);
                 } catch (_) {}
             };
 
-            window.syncUserWalletSafe = syncUserWalletSafe;
-            restoreCache();
+            window.syncWalletFromServer = syncWalletFromServer;
+
+            restoreCachedState();
+
+            const savedUid = safeStr(localStorage.getItem('knn_uid'), '');
+            const savedEmail = safeStr(localStorage.getItem('knn_email'), DEFAULT_EMAIL);
+            if (savedUid) {
+                syncWalletFromServer({ uid: savedUid, email: savedEmail, displayName: 'User' });
+            }
         })();
     </script>
 </body>

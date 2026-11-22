@@ -42,6 +42,7 @@
 
         .address-box { word-break: break-all; background: #f8fafc; padding: 12px; border-radius: 10px; font-family: monospace; color: #1d4ed8; font-weight: 800; font-size: 0.78rem; margin: 8px 0; border: 2px solid #3396FF; }
         .btn { background: #3396FF; color: white; border: none; padding: 13px 16px; border-radius: 12px; width: 100%; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px; box-shadow: 0 4px 15px rgba(51, 150, 255, 0.35); }
+        .btn:disabled { opacity: 0.6; cursor: not-allowed; }
         .btn-google { background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; }
         .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); }
         .btn-upload { background: #7c3aed; }
@@ -141,7 +142,7 @@
         <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin: 20px 15px;">
             <h3 style="color: #0f172a; margin-bottom: 8px; font-size: 1.4rem;">Ku soo dhawoow</h3>
             <p style="color: #334155; font-size: 0.9rem; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
-            <button class="btn btn-google" onclick="loginWithGoogle()">
+            <button type="button" class="btn btn-google" onclick="loginWithGoogle()">
                 <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
                 <span>Google Login-ka ku gal</span>
             </button>
@@ -162,7 +163,7 @@
                 <div class="input-group" style="margin-top: 10px;">
                     <input type="text" id="chatInput" placeholder="Qor fariintaada...">
                 </div>
-                <button class="btn btn-chat" onclick="sendChatMessage()">Dir Fariinta</button>
+                <button type="button" class="btn btn-chat" onclick="sendChatMessage()">Dir Fariinta</button>
             </div>
         </div>
 
@@ -175,7 +176,7 @@
                 </div>
                 <p style="font-size: 0.85rem; color: #475569; margin: 12px 0;">Guji badhanka hoose si aad taleefankaaga uga doorato video weyn ama sawir.</p>
                 <input type="file" id="mediaFileInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)">
-                <button class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir ama Video</button>
+                <button type="button" class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir ama Video</button>
                 <div id="uploadStatus" style="margin-top: 12px; font-size: 0.85rem; color: #059669; font-weight: 800;"></div>
             </div>
         </div>
@@ -183,23 +184,23 @@
         <div id="tabQuran" class="tab-content hidden">
             <div id="quranListContainer" style="width: 100%;">
                 <div class="pagination-bar" style="margin-top: 15px;">
-                    <button class="page-btn" id="prevSurahPageBtn" onclick="changeSurahPage(-1)">← Bogga Hore</button>
+                    <button type="button" class="page-btn" id="prevSurahPageBtn" onclick="changeSurahPage(-1)">← Bogga Hore</button>
                     <span class="page-indicator" id="surahPageIndicator">Bogga 1 / 6</span>
-                    <button class="page-btn" id="nextSurahPageBtn" onclick="changeSurahPage(1)">Bogga Xiga →</button>
+                    <button type="button" class="page-btn" id="nextSurahPageBtn" onclick="changeSurahPage(1)">Bogga Xiga →</button>
                 </div>
                 <div class="surah-list" id="surahList"></div>
             </div>
             <div id="quranReaderContainer" class="hidden" style="width: 100%;">
                 <div class="mushaf-page" style="margin-top: 15px; height: calc(100dvh - 100px);">
                     <div class="mushaf-header-banner">
-                        <button class="back-back-btn" onclick="backToSurahList()">← Dib</button>
+                        <button type="button" class="back-back-btn" onclick="backToSurahList()">← Dib</button>
                         <span id="readerTitle" class="mushaf-header-title">سُورَةُ</span>
                     </div>
                     <div class="reader-content" id="readerContent">Loading...</div>
                     <div class="surah-pagination" id="surahPaginationBar" style="display:none;">
-                        <button class="page-btn" id="prevAyahPageBtn" onclick="changeAyahPage(-1)">← Bogga Hore</button>
+                        <button type="button" class="page-btn" id="prevAyahPageBtn" onclick="changeAyahPage(-1)">← Bogga Hore</button>
                         <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 1</span>
-                        <button class="page-btn" id="nextAyahPageBtn" onclick="changeAyahPage(1)">Bogga Xiga →</button>
+                        <button type="button" class="page-btn" id="nextAyahPageBtn" onclick="changeAyahPage(1)">Bogga Xiga →</button>
                     </div>
                 </div>
             </div>
@@ -239,7 +240,7 @@
             <div class="card">
                 <div class="card-title">Cinwaankaaga Deposit-ka (Polygon)</div>
                 <div class="address-box" id="depositAddress">Loading...</div>
-                <button class="btn" style="background: #e2e8f0; color: #0f172a; box-shadow:none; border: 2px solid #cbd5e1;" onclick="copyAddress()">Copy Deposit Address</button>
+                <button type="button" class="btn" style="background: #e2e8f0; color: #0f172a; box-shadow:none; border: 2px solid #cbd5e1;" onclick="copyAddress()">Copy Deposit Address</button>
             </div>
 
             <div class="card">
@@ -261,17 +262,17 @@
                     <label style="font-size: 0.8rem; color: #334155;">Qaddarka POL (optional - min 0.00000001):</label>
                     <input type="text" id="withdrawAmountInput" placeholder="Tusaale: 0.00000001 (madhan = hadhaaga)">
                 </div>
-                <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Hadda</button>
+                <button type="button" class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Hadda</button>
             </div>
         </div>
 
         <div id="tabSettings" class="tab-content hidden">
             <div class="tiktok-profile" style="padding-top: 20px;">
-                <button class="profile-back-btn" onclick="switchTab('tabHome', document.querySelector('.nav-item'))">← Dib u laabo</button>
+                <button type="button" class="profile-back-btn" onclick="switchTab('tabHome', document.querySelector('.nav-item'))">← Dib u laabo</button>
                 <div class="profile-menu-wrapper">
-                    <button class="three-dots-btn" onclick="toggleProfileMenu(event)">⋮</button>
+                    <button type="button" class="three-dots-btn" onclick="toggleProfileMenu(event)">⋮</button>
                     <div id="profileDropdownMenu" class="three-dots-dropdown hidden">
-                        <button class="dropdown-logout-item" onclick="logoutUser()">
+                        <button type="button" class="dropdown-logout-item" onclick="logoutUser()">
                             <span>🚪 Logout</span>
                         </button>
                     </div>
@@ -311,24 +312,24 @@
             <div class="subscribers-list" id="modalSubscribersList">
                 <div style="text-align: center; color: #64748b; font-size: 0.8rem;">Weli qof ma jiro.</div>
             </div>
-            <button class="btn" style="padding: 10px; font-size: 0.85rem;" onclick="document.getElementById('subscribersModal').classList.remove('show')">Xidh</button>
+            <button type="button" class="btn" style="padding: 10px; font-size: 0.85rem;" onclick="document.getElementById('subscribersModal').classList.remove('show')">Xidh</button>
         </div>
     </div>
 
     <div id="bottomNav" class="bottom-nav hidden">
-        <button class="nav-item active" onclick="switchTab('tabHome', this)">
+        <button type="button" class="nav-item active" onclick="switchTab('tabHome', this)">
             <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
             <span>Home</span>
         </button>
-        <button class="nav-item" onclick="switchTab('tabChat', this)">
+        <button type="button" class="nav-item" onclick="switchTab('tabChat', this)">
             <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
             <span>Chat</span>
         </button>
-        <button class="nav-item" onclick="switchTab('tabUpload', this)">
+        <button type="button" class="nav-item" onclick="switchTab('tabUpload', this)">
             <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
             <span>Upload</span>
         </button>
-        <button class="nav-item" onclick="switchTab('tabQuran', this)">
+        <button type="button" class="nav-item" onclick="switchTab('tabQuran', this)">
             <svg class="nav-quran-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
               <defs>
                 <linearGradient id="navGold" x1="0" y1="0" x2="1" y2="1">
@@ -349,11 +350,11 @@
             </svg>
             <span>Qur'aan</span>
         </button>
-        <button class="nav-item" onclick="switchTab('tabWallet', this)">
+        <button type="button" class="nav-item" onclick="switchTab('tabWallet', this)">
             <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
             <span>Wallet</span>
         </button>
-        <button class="nav-item" onclick="switchTab('tabSettings', this)">
+        <button type="button" class="nav-item" onclick="switchTab('tabSettings', this)">
             <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
             <span>Profile</span>
         </button>
@@ -381,6 +382,7 @@
     let isPrivateKeyVisible = false;
     let userDisplayName = "User";
     let globalVideosList = [];
+    let isLoggingIn = false;
 
     let currentBalanceNum = 0;
     let liveRatePerSec = 0;
@@ -522,6 +524,12 @@
         loadAllVideosFeed();
         startLiveMiningTicker(0, 0, false);
         renderPrivateKeyBox();
+
+        firebase.auth().getRedirectResult().then(async (result) => {
+            if (result && result.user) {
+                await authenticateWithBackend(result.user);
+            }
+        }).catch(() => {});
     };
 
     function selectProfileTab(selected) {
@@ -672,22 +680,22 @@
                                 <div class="yt-subinfo" onclick="openSubscribersModal(${JSON.stringify(item.subscribers).replace(/"/g, '&quot;')})">@${authorUsername} • <span id="subCount_${authorUsername}">${getAuthorSubscriberCount(authorUsername)}</span> Subscribers</div>
                             </div>
                         </div>
-                        <button class="${subBtnClass}" id="subBtn_${authorUsername}" onclick="subscribeToAuthor('${authorUsername}')">${subBtnText}</button>
+                        <button type="button" class="${subBtnClass}" id="subBtn_${authorUsername}" onclick="subscribeToAuthor('${authorUsername}')">${subBtnText}</button>
                     </div>
                     <div class="yt-actions">
-                        <button class="action-item ${isLiked ? 'liked' : ''}" onclick="interactVideo('${item.id}', 'like')">
+                        <button type="button" class="action-item ${isLiked ? 'liked' : ''}" onclick="interactVideo('${item.id}', 'like')">
                             <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg>
                             <span>${item.likes.length}</span>
                         </button>
-                        <button class="action-item" onclick="toggleCommentBox('${item.id}')">
+                        <button type="button" class="action-item" onclick="toggleCommentBox('${item.id}')">
                             <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
                             <span>${item.comments.length}</span>
                         </button>
-                        <button class="action-item" onclick="interactVideo('${item.id}', 'repost')">
+                        <button type="button" class="action-item" onclick="interactVideo('${item.id}', 'repost')">
                             <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
                             <span>${item.reposts}</span>
                         </button>
-                        <button class="action-item" onclick="shareVideo('${item.url}')">
+                        <button type="button" class="action-item" onclick="shareVideo('${item.url}')">
                             <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
                             <span>Share</span>
                         </button>
@@ -698,7 +706,7 @@
                         </div>
                         <div class="comment-input-box">
                             <input type="text" id="commentText_${item.id}" placeholder="Qor faallo...">
-                            <button class="btn" onclick="sendComment('${item.id}')">Dir</button>
+                            <button type="button" class="btn" onclick="sendComment('${item.id}')">Dir</button>
                         </div>
                     </div>
                 `;
@@ -862,9 +870,9 @@
 
                 div.innerHTML = `
                     ${mediaElHtml}
-                    <button class="video-menu-btn" onclick="toggleVideoMenu(event, '${item.id}')">⋮</button>
+                    <button type="button" class="video-menu-btn" onclick="toggleVideoMenu(event, '${item.id}')">⋮</button>
                     <div class="video-dropdown" id="dropdown_${item.id}">
-                        <button class="delete-video-option" onclick="deleteVideo('${item.id}')">🗑️ Delete</button>
+                        <button type="button" class="delete-video-option" onclick="deleteVideo('${item.id}')">🗑️ Delete</button>
                     </div>
                 `;
                 gridContainer.appendChild(div);
@@ -1041,12 +1049,38 @@
     }
 
     async function loginWithGoogle() {
+        if (isLoggingIn) return;
+        isLoggingIn = true;
+
+        const btn = document.querySelector('.btn-google');
+        if (btn) btn.disabled = true;
+
         const provider = new firebase.auth.GoogleAuthProvider();
+        provider.setCustomParameters({ prompt: 'select_account' });
+
         try {
             const result = await firebase.auth().signInWithPopup(provider);
-            if (result.user) await authenticateWithBackend(result.user);
+            if (result && result.user) {
+                await authenticateWithBackend(result.user);
+            }
         } catch (err) {
-            alert("Cilad Login: " + err.message);
+            if (
+                err.code === 'auth/popup-blocked' ||
+                err.code === 'auth/cancelled-popup-request' ||
+                err.code === 'auth/operation-not-supported-in-this-environment'
+            ) {
+                try {
+                    await firebase.auth().signInWithRedirect(provider);
+                    return;
+                } catch (redirErr) {
+                    alert("Cilad Login: " + redirErr.message);
+                }
+            } else if (err.code !== 'auth/popup-closed-by-user') {
+                alert("Cilad Login: " + err.message);
+            }
+        } finally {
+            isLoggingIn = false;
+            if (btn) btn.disabled = false;
         }
     }
 

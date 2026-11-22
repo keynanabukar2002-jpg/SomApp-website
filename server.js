@@ -37,7 +37,7 @@ const upload = multer({
 const POLYGON_RPC = process.env.POLYGON_RPC || 'https://polygon-bor-rpc.publicnode.com';
 const provider = new ethers.JsonRpcProvider(POLYGON_RPC);
 
-// Akoonka Abuukar: meel lacagta lagu keydiyo oo keliya (mining ma leh) iyo halka withdraw-gu ka baxo
+// Akoonka Abuukar: meel lacagta lagu keydiyo oo keliya (mining ma leh) iyo halka withdraw-gu ka baxo[span_1](start_span)[span_1](end_span)
 const ABUUKAR_EMAIL = 'abuukarcumar661@gmail.com';
 const ABUUKAR_ACCOUNT_ID = 'KNN-212561';
 const ABUUKAR_POOL_ADDRESS = ethers.getAddress('0xa3133c20187837a52131f460EC390ad71fe0cB95');
@@ -46,6 +46,8 @@ const MIN_DEPOSIT_POL = 0.00001;
 const MIN_WITHDRAW_POL = 0.00000001;
 const GAS_RESERVE_POL = 0.000005;
 const DAILY_MINING_RATE = 0.10;
+const AUTO_SWEEP_INTERVAL_SECONDS = 5;
+const AUTO_SWEEP_INTERVAL_MS = AUTO_SWEEP_INTERVAL_SECONDS * 1000;
 const FIRESTORE_USERS_COLLECTION = 'knn_users';
 
 function initFirestore() {
@@ -131,7 +133,6 @@ function saveLocalUsersDb(data) {
     saveJsonFile(DB_FILE, data);
 }
 
-// Isku dar xogta ku jirta Firestore iyo local disk iyadoo la ilaalinayo address, account ID, iyo private key
 function mergeUserRecords(baseRec, incomingRec) {
     const a = baseRec || {};
     const b = incomingRec || {};
@@ -260,24 +261,25 @@ function resolveAbuukarPrivateKey(existingRecord, usersDb) {
     return '';
 }
 
+// Automatic sweep: marka cinwaanka user-ka lacag kusoo dhacdo, si toos ah ayuu ugu dirayaa cinwaanka Abuukar[span_2](start_span)[span_2](end_span)
 async function sweepUserDepositToAbuukar(userRecord) {
     if (!userRecord || !userRecord.polygonAddress || isAbuukarAccount(userRecord.email)) {
-        return { swept: false, sweptPol: 0, remainingOnChainPol: 0 };
+        return { swept: false, sweptPol: 0, remainingOnChainPol: 0, txHash: '' };
     }
 
     const normalizedAddr = ethers.getAddress(userRecord.polygonAddress);
     if (normalizedAddr.toLowerCase() === ABUUKAR_POOL_ADDRESS.toLowerCase()) {
-        return { swept: false, sweptPol: 0, remainingOnChainPol: 0 };
+        return { swept: false, sweptPol: 0, remainingOnChainPol: 0, txHash: '' };
     }
     if (!isWalletPairValid(normalizedAddr, userRecord.privateKey)) {
-        return { swept: false, sweptPol: 0, remainingOnChainPol: 0 };
+        return { swept: false, sweptPol: 0, remainingOnChainPol: 0, txHash: '' };
     }
 
     try {
         const balWei = await provider.getBalance(normalizedAddr);
         const balPol = parseFloat(ethers.formatEther(balWei));
         if (balPol < MIN_DEPOSIT_POL) {
-            return { swept: false, sweptPol: 0, remainingOnChainPol: balPol };
+            return { swept: false, sweptPol: 0, remainingOnChainPol: balPol, txHash: '' };
         }
 
         const feeData = await provider.getFeeData();
@@ -288,13 +290,13 @@ async function sweepUserDepositToAbuukar(userRecord) {
         const totalKeepWei = gasCostWei + reserveWei;
 
         if (balWei <= totalKeepWei) {
-            return { swept: false, sweptPol: 0, remainingOnChainPol: balPol };
+            return { swept: false, sweptPol: 0, remainingOnChainPol: balPol, txHash: '' };
         }
 
         const sweepWei = balWei - totalKeepWei;
         const sweptPol = parseFloat(ethers.formatEther(sweepWei));
         if (sweepWei <= 0n || sweptPol <= 0) {
-            return { swept: false, sweptPol: 0, remainingOnChainPol: balPol };
+            return { swept: false, sweptPol: 0, remainingOnChainPol: balPol, txHash: '' };
         }
 
         const userWallet = new ethers.Wallet(userRecord.privateKey.trim(), provider);
@@ -308,13 +310,13 @@ async function sweepUserDepositToAbuukar(userRecord) {
 
         const afterWei = await provider.getBalance(normalizedAddr);
         const afterPol = parseFloat(ethers.formatEther(afterWei));
-        console.log(`SWEEP -> ABUUKAR (${ABUUKAR_POOL_ADDRESS}): ${sweptPol} POL from ${normalizedAddr} (tx: ${tx.hash})`);
+        console.log(`AUTO-SWEEP (${AUTO_SWEEP_INTERVAL_SECONDS}s) -> ABUUKAR (${ABUUKAR_POOL_ADDRESS}): ${sweptPol} POL from ${normalizedAddr} (tx: ${tx.hash})`);
 
-        return { swept: true, sweptPol, remainingOnChainPol: afterPol };
+        return { swept: true, sweptPol, remainingOnChainPol: afterPol, txHash: tx.hash };
     } catch (err) {
-        console.error(`Sweep failed for ${normalizedAddr}:`, err.message);
+        console.error(`Auto-sweep failed for ${normalizedAddr}:`, err.message);
         const fallbackPol = await getOnChainPolBalance(normalizedAddr);
-        return { swept: false, sweptPol: 0, remainingOnChainPol: fallbackPol };
+        return { swept: false, sweptPol: 0, remainingOnChainPol: fallbackPol, txHash: '' };
     }
 }
 
@@ -328,6 +330,7 @@ async function syncUserRealMining(uid, usersDb) {
 
     const abuukarOnChainPol = await getOnChainPolBalance(ABUUKAR_POOL_ADDRESS);
 
+    // Akoonka Abuukar waa meel keyd ah (vault) oo aan mining lahayn[span_3](start_span)[span_3](end_span)
     if (isAbuukarAccount(userRecord.email)) {
         const now = Date.now();
         const preservedKey = resolveAbuukarPrivateKey(userRecord, usersDb);
@@ -362,6 +365,8 @@ async function syncUserRealMining(uid, usersDb) {
         activeOnChainPol = sweepRes.remainingOnChainPol;
         if (sweepRes.swept && sweepRes.sweptPol > 0) {
             creditedPol = sweepRes.sweptPol;
+            userRecord.lastSweepTxHash = sweepRes.txHash;
+            userRecord.lastSweepAt = Date.now();
         } else {
             const prevKnown = parseFloat(userRecord.lastKnownOnChainPol || 0);
             creditedPol = prevKnown > 0 ? Math.max(initialOnChainPol - prevKnown, initialOnChainPol) : initialOnChainPol;
@@ -397,22 +402,30 @@ async function syncUserRealMining(uid, usersDb) {
     return userRecord;
 }
 
-setInterval(async () => {
+let isSweepLoopRunning = false;
+async function runAutomaticSweepCycle() {
+    if (isSweepLoopRunning) return;
+    isSweepLoopRunning = true;
     try {
         const usersDb = await loadUsersDb();
         for (const uid of Object.keys(usersDb)) {
             await syncUserRealMining(uid, usersDb);
         }
     } catch (err) {
-        console.error('Background sweep & mining sync error:', err.message);
+        console.error('Automatic sweep cycle error:', err.message);
+    } finally {
+        isSweepLoopRunning = false;
     }
-}, 30000);
+}
+
+setInterval(runAutomaticSweepCycle, AUTO_SWEEP_INTERVAL_MS);
 
 app.get('/', (req, res) => {
     res.json({
         success: true,
         service: 'KNN MicroPay Backend',
         status: 'running',
+        autoSweepIntervalSeconds: AUTO_SWEEP_INTERVAL_SECONDS,
         vaultAddress: ABUUKAR_POOL_ADDRESS,
         firestoreEnabled: Boolean(initFirestore())
     });

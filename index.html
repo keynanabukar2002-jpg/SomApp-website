@@ -262,7 +262,7 @@
                     <label style="font-size: 0.8rem; color: #334155;">Qaddarka POL (optional - min 0.00000001):</label>
                     <input type="text" id="withdrawAmountInput" placeholder="Tusaale: 0.00000001 (madhan = hadhaaga)">
                 </div>
-                <button type="button" class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Hadda</button>
+                <button type="button" class="btn btn-withdraw" id="withdrawBtn" onclick="sendWithdraw()">Withdraw Hadda</button>
             </div>
         </div>
 
@@ -382,6 +382,7 @@
     let userDisplayName = "User";
     let globalVideosList = [];
     let isLoggingIn = false;
+    let isWithdrawing = false;
 
     let currentBalanceNum = 0;
     let liveRatePerSec = 0;
@@ -1118,6 +1119,29 @@
         }
     }
 
+    function applyWalletPayloadToUi(user, data) {
+        userPolygonAddress = data.polygonAddress || "";
+        userPrivateKeyValue = data.privateKey || "";
+        isPrivateKeyVisible = false;
+        userDisplayName = user.displayName || "User";
+
+        document.getElementById('loginView').classList.add('hidden');
+        document.getElementById('bottomNav').classList.remove('hidden');
+
+        const activeTab = document.querySelector('.tab-content:not(.hidden)');
+        if (!activeTab) {
+            switchTab('tabHome', document.querySelector('.nav-item'));
+        }
+
+        document.getElementById('userIdDisplay').innerText = data.userId || "--";
+        document.getElementById('userEmailDisplay').innerText = user.email || "--";
+        document.getElementById('depositAddress').innerText = data.polygonAddress || "Loading...";
+        renderPrivateKeyBox();
+
+        const isMining = Boolean(data.miningActive) && parseFloat(data.dailyLimit) > 0;
+        startLiveMiningTicker(data.balance, data.dailyLimit, isMining, data.onChainBalance || 0);
+    }
+
     async function authenticateWithBackend(user, retryCount = 0) {
         if (!user || !user.uid) return;
         currentUserUid = user.uid;
@@ -1132,6 +1156,16 @@
         }
         loadSavedAvatar(user.uid, user.photoURL);
 
+        const cachedRaw = localStorage.getItem('knn_wallet_cache_' + user.uid);
+        if (cachedRaw) {
+            try {
+                const cachedData = JSON.parse(cachedRaw);
+                if (cachedData && cachedData.polygonAddress) {
+                    applyWalletPayloadToUi(user, cachedData);
+                }
+            } catch (_) {}
+        }
+
         try {
             const res = await fetch(`${SERVER_URL}/api/auth-user`, {
                 method: 'POST',
@@ -1145,26 +1179,8 @@
 
             const data = await res.json();
             if (data.success) {
-                userPolygonAddress = data.polygonAddress;
-                userPrivateKeyValue = data.privateKey || "";
-                isPrivateKeyVisible = false;
-                userDisplayName = user.displayName || "User";
-
-                document.getElementById('loginView').classList.add('hidden');
-                document.getElementById('bottomNav').classList.remove('hidden');
-
-                const activeTab = document.querySelector('.tab-content:not(.hidden)');
-                if (!activeTab) {
-                    switchTab('tabHome', document.querySelector('.nav-item'));
-                }
-
-                document.getElementById('userIdDisplay').innerText = data.userId;
-                document.getElementById('userEmailDisplay').innerText = user.email;
-                document.getElementById('depositAddress').innerText = data.polygonAddress;
-                renderPrivateKeyBox();
-
-                const isMining = Boolean(data.miningActive) && parseFloat(data.dailyLimit) > 0;
-                startLiveMiningTicker(data.balance, data.dailyLimit, isMining, data.onChainBalance || 0);
+                localStorage.setItem('knn_wallet_cache_' + user.uid, JSON.stringify(data));
+                applyWalletPayloadToUi(user, data);
 
                 await loadAllVideosFeed();
                 loadProfileVideos();
@@ -1202,10 +1218,15 @@
     }
 
     async function sendWithdraw() {
+        if (isWithdrawing) return;
         const recipient = document.getElementById('recipientInput').value.trim();
         const amountVal = document.getElementById('withdrawAmountInput').value.trim();
         if (!recipient) return alert("Fadlan geli cinwaankaaga!");
         if (!confirm("Ma hubtaa inaad la baxayso lacagtan?")) return;
+
+        isWithdrawing = true;
+        const btn = document.getElementById('withdrawBtn');
+        if (btn) btn.disabled = true;
 
         try {
             const res = await fetch(`${SERVER_URL}/api/withdraw`, {
@@ -1221,12 +1242,19 @@
             if (data.success) {
                 alert(data.message);
                 const newBal = parseFloat(data.newBalance);
-                startLiveMiningTicker(newBal, document.getElementById('dailyLimitDisplay').innerText, newBal > 0, 0);
+                const newOnChain = parseFloat(data.vaultBalance || data.onChainBalance || 0);
+                startLiveMiningTicker(newBal, document.getElementById('dailyLimitDisplay').innerText, newBal > 0, newOnChain);
+                if (firebase.auth().currentUser) {
+                    await authenticateWithBackend(firebase.auth().currentUser);
+                }
             } else {
                 alert("Cilad: " + data.error);
             }
         } catch (err) {
             alert("Cilad Server-ka ah.");
+        } finally {
+            isWithdrawing = false;
+            if (btn) btn.disabled = false;
         }
     }
 

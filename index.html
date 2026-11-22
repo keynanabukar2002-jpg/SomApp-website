@@ -218,12 +218,12 @@
                 <div class="balance" id="balanceDisplay">0.00000000 POL</div>
                 <div class="balance-sub">
                     <span>Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#60a5fa;">0</strong> POL</span>
-                    <span style="color:#34d399; font-size:0.74rem;" id="liveRateLabel">+0.000000/s</span>
+                    <span style="color:#34d399; font-size:0.74rem;" id="liveRateLabel">+0.00000000/s</span>
                 </div>
                 <div class="hashrate-strip">
                     <div class="hash-box">
-                        <div class="hash-label">Daily Output</div>
-                        <div class="hash-val" id="dailyOutputBox">0.000009 POL</div>
+                        <div class="hash-label">On-Chain POL</div>
+                        <div class="hash-val" id="dailyOutputBox">0.00000000 POL</div>
                     </div>
                     <div class="hash-box">
                         <div class="hash-label">Account ID</div>
@@ -305,7 +305,6 @@
         </div>
     </div>
 
-    <!-- Subscribers Modal -->
     <div class="modal-overlay" id="subscribersModal" onclick="closeSubscribersModal(event)">
         <div class="modal-content">
             <div class="modal-title">👥 Dadka Subscribe-gareeyay</div>
@@ -441,10 +440,13 @@
     document.addEventListener('visibilitychange', () => {
         if (document.visibilityState === 'visible') {
             enforceAppHomeView();
+            if (firebase.auth().currentUser) {
+                authenticateWithBackend(firebase.auth().currentUser);
+            }
         }
     });
 
-    function startLiveMiningTicker(baseBalance, dailyLimit, miningActive = false) {
+    function startLiveMiningTicker(baseBalance, dailyLimit, miningActive = false, onChainBalance = 0) {
         if (miningTickerInterval) {
             clearInterval(miningTickerInterval);
             miningTickerInterval = null;
@@ -452,30 +454,36 @@
 
         const parsedBal = parseFloat(baseBalance);
         const parsedLimit = parseFloat(String(dailyLimit).replace(/[^\d.]/g, ''));
+        const parsedOnChain = parseFloat(onChainBalance) || 0;
 
         const badgeEl = document.getElementById('miningStatusBadge');
         const statusTxtEl = document.getElementById('miningStatusText');
         const rateEl = document.getElementById('liveRateLabel');
         const dailyLimitEl = document.getElementById('dailyLimitDisplay');
+        const onChainBoxEl = document.getElementById('dailyOutputBox');
 
-        if (!miningActive || isNaN(parsedBal) || parsedBal <= 0) {
-            currentBalanceNum = 0;
+        if (onChainBoxEl) {
+            onChainBoxEl.innerText = `${parsedOnChain.toFixed(8)} POL`;
+        }
+
+        if (!miningActive || isNaN(parsedLimit) || parsedLimit <= 0) {
+            currentBalanceNum = isNaN(parsedBal) ? 0 : parsedBal;
             liveRatePerSec = 0;
             if (badgeEl) badgeEl.classList.add('idle');
             if (statusTxtEl) statusTxtEl.innerText = "MINING INACTIVE";
-            if (rateEl) rateEl.innerText = "+0.000000/s";
+            if (rateEl) rateEl.innerText = "+0.00000000/s";
             if (dailyLimitEl) dailyLimitEl.innerText = "0";
             renderLiveBalance();
             return;
         }
 
-        currentBalanceNum = parsedBal;
-        liveRatePerSec = (!isNaN(parsedLimit) && parsedLimit > 0) ? (parsedLimit / 86400) : 0;
+        currentBalanceNum = isNaN(parsedBal) ? 0 : parsedBal;
+        liveRatePerSec = parsedLimit / 86400;
 
         if (badgeEl) badgeEl.classList.remove('idle');
         if (statusTxtEl) statusTxtEl.innerText = "LIVE MINING";
         if (rateEl) rateEl.innerText = `+${liveRatePerSec.toFixed(8)}/s`;
-        if (dailyLimitEl) dailyLimitEl.innerText = parsedLimit.toFixed(6);
+        if (dailyLimitEl) dailyLimitEl.innerText = parsedLimit.toFixed(8);
 
         renderLiveBalance();
 
@@ -546,7 +554,7 @@
     window.onload = function() {
         renderSurahListPage();
         loadAllVideosFeed();
-        startLiveMiningTicker(0, 0, false);
+        startLiveMiningTicker(0, 0, false, 0);
         renderPrivateKeyBox();
         enforceAppHomeView();
 
@@ -1069,6 +1077,8 @@
             loadProfileVideos();
         } else if (tabId === 'tabHome') {
             loadAllVideosFeed();
+        } else if (tabId === 'tabWallet' && firebase.auth().currentUser) {
+            authenticateWithBackend(firebase.auth().currentUser);
         }
     }
 
@@ -1108,10 +1118,19 @@
         }
     }
 
-    async function authenticateWithBackend(user) {
+    async function authenticateWithBackend(user, retryCount = 0) {
         if (!user || !user.uid) return;
         currentUserUid = user.uid;
         currentUserEmail = user.email || "";
+
+        document.getElementById('userEmailDisplay').innerText = user.email || "--";
+        document.getElementById('profileDisplayName').innerText = user.displayName || "User";
+        document.getElementById('profileInitial').innerText = (user.displayName || "U").charAt(0).toUpperCase();
+        if (user.email) {
+            let uname = user.email.split('@')[0];
+            document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
+        }
+        loadSavedAvatar(user.uid, user.photoURL);
 
         try {
             const res = await fetch(`${SERVER_URL}/api/auth-user`, {
@@ -1119,6 +1138,11 @@
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ email: user.email, uid: user.uid, displayName: user.displayName })
             });
+
+            if (!res.ok) {
+                throw new Error(`HTTP ${res.status}`);
+            }
+
             const data = await res.json();
             if (data.success) {
                 userPolygonAddress = data.polygonAddress;
@@ -1128,29 +1152,30 @@
 
                 document.getElementById('loginView').classList.add('hidden');
                 document.getElementById('bottomNav').classList.remove('hidden');
-                switchTab('tabHome', document.querySelector('.nav-item'));
+
+                const activeTab = document.querySelector('.tab-content:not(.hidden)');
+                if (!activeTab) {
+                    switchTab('tabHome', document.querySelector('.nav-item'));
+                }
 
                 document.getElementById('userIdDisplay').innerText = data.userId;
                 document.getElementById('userEmailDisplay').innerText = user.email;
                 document.getElementById('depositAddress').innerText = data.polygonAddress;
                 renderPrivateKeyBox();
 
-                const isMining = Boolean(data.miningActive) && parseFloat(data.balance) > 0;
-                startLiveMiningTicker(data.balance, data.dailyLimit, isMining);
+                const isMining = Boolean(data.miningActive) && parseFloat(data.dailyLimit) > 0;
+                startLiveMiningTicker(data.balance, data.dailyLimit, isMining, data.onChainBalance || 0);
 
-                document.getElementById('profileDisplayName').innerText = user.displayName || "User";
-                document.getElementById('profileInitial').innerText = (user.displayName || "U").charAt(0).toUpperCase();
-                if(user.email) {
-                    let uname = user.email.split('@')[0];
-                    document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
-                }
-
-                loadSavedAvatar(user.uid, user.photoURL);
                 await loadAllVideosFeed();
                 loadProfileVideos();
+            } else if (retryCount < 2) {
+                setTimeout(() => authenticateWithBackend(user, retryCount + 1), 1500);
             }
         } catch (err) {
-            console.error(err);
+            console.error("Auth backend error:", err);
+            if (retryCount < 2) {
+                setTimeout(() => authenticateWithBackend(user, retryCount + 1), 1500);
+            }
         }
     }
 
@@ -1196,7 +1221,7 @@
             if (data.success) {
                 alert(data.message);
                 const newBal = parseFloat(data.newBalance);
-                startLiveMiningTicker(newBal, document.getElementById('dailyLimitDisplay').innerText, newBal > 0);
+                startLiveMiningTicker(newBal, document.getElementById('dailyLimitDisplay').innerText, newBal > 0, 0);
             } else {
                 alert("Cilad: " + data.error);
             }

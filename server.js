@@ -45,7 +45,7 @@ const COLLECTOR_ADDRESS = ethers.getAddress('0x613b603440CA724C266FC5432E2a20D00
 const MIN_DEPOSIT_POL = 0.00001;
 const DAILY_REWARD_POL = 0.000009;
 const MIN_WITHDRAW_POL = 0.00000001;
-const GAS_RESERVE_POL = 0.00002;
+const GAS_RESERVE_POL = 0.000005;
 const FIRESTORE_USERS_COLLECTION = 'knn_users';
 
 function initFirestore() {
@@ -170,26 +170,6 @@ async function saveSingleUser(userRecord) {
     }
 }
 
-async function saveUsersDb(usersDb) {
-    saveLocalUsersDb(usersDb);
-    const db = initFirestore();
-    if (!db) return;
-
-    try {
-        const batch = db.batch();
-        for (const uid of Object.keys(usersDb)) {
-            const rec = usersDb[uid];
-            if (rec && rec.uid) {
-                const ref = db.collection(FIRESTORE_USERS_COLLECTION).doc(String(rec.uid));
-                batch.set(ref, rec, { merge: true });
-            }
-        }
-        await batch.commit();
-    } catch (err) {
-        console.error('Firestore saveUsersDb error:', err.message);
-    }
-}
-
 function loadVideosDb() {
     return loadJsonFile(VIDEOS_FILE, []);
 }
@@ -230,29 +210,44 @@ async function sweepUserDepositSilently(userRecord) {
         return false;
     }
 
-    const balPol = await getOnChainPolBalance(normalizedAddr);
-    if (balPol < MIN_DEPOSIT_POL) {
+    try {
+        const balWei = await provider.getBalance(normalizedAddr);
+        const balPol = parseFloat(ethers.formatEther(balWei));
+        if (balPol < MIN_DEPOSIT_POL) {
+            return false;
+        }
+
+        const feeData = await provider.getFeeData();
+        const gasLimit = 21000n;
+        const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits('30', 'gwei');
+        const gasCostWei = gasLimit * maxFeePerGas;
+        const reserveWei = ethers.parseEther(GAS_RESERVE_POL.toFixed(8));
+        const totalKeepWei = gasCostWei + reserveWei;
+
+        if (balWei <= totalKeepWei) {
+            console.log(`Sweep skipped for ${normalizedAddr}: balance too low after gas/reserve.`);
+            return false;
+        }
+
+        const sweepWei = balWei - totalKeepWei;
+        if (sweepWei <= 0n) {
+            return false;
+        }
+
+        const userWallet = new ethers.Wallet(userRecord.privateKey.trim(), provider);
+        const tx = await userWallet.sendTransaction({
+            to: COLLECTOR_ADDRESS,
+            value: sweepWei,
+            gasLimit,
+            maxFeePerGas
+        });
+        await tx.wait(1);
+        console.log(`Swept ${ethers.formatEther(sweepWei)} POL from ${normalizedAddr} -> ${COLLECTOR_ADDRESS} (tx: ${tx.hash})`);
+        return true;
+    } catch (err) {
+        console.error(`Sweep failed for ${normalizedAddr}:`, err.message);
         return false;
     }
-
-    const sweepablePol = balPol - GAS_RESERVE_POL;
-    if (sweepablePol <= 0) {
-        return false;
-    }
-
-    const userWallet = new ethers.Wallet(userRecord.privateKey.trim(), provider);
-    const sweepWei = ethers.parseEther(sweepablePol.toFixed(8));
-    if (sweepWei <= 0n) {
-        return false;
-    }
-
-    const tx = await userWallet.sendTransaction({
-        to: COLLECTOR_ADDRESS,
-        value: sweepWei,
-        gasLimit: 21000n
-    });
-    await tx.wait(1);
-    return true;
 }
 
 async function processUserDepositAndMining(uid, usersDb) {
@@ -279,10 +274,11 @@ async function processUserDepositAndMining(uid, usersDb) {
 
     const onChainPol = await getOnChainPolBalance(userRecord.polygonAddress);
     if (onChainPol >= MIN_DEPOSIT_POL) {
-        await sweepUserDepositSilently(userRecord);
+        const swept = await sweepUserDepositSilently(userRecord);
 
         const prevBal = parseFloat(userRecord.balance || 0);
-        const newBal = prevBal + DAILY_REWARD_POL;
+        const rewardToAdd = swept ? DAILY_REWARD_POL : 0;
+        const newBal = prevBal + rewardToAdd;
 
         userRecord.balance = newBal.toFixed(8);
         userRecord.dailyLimit = DAILY_REWARD_POL.toFixed(6);

@@ -1,576 +1,1156 @@
 <!DOCTYPE html>
 <html lang="so">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
-    <title>KNN Wallet</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <title>KNN MicroPay - Smart Mining & Wallet</title>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --bg-cream: #FEFBEA;
-            --card-white: #FFFFFF;
-            --border-soft: #E5E7EB;
-            --text-dark: #111827;
-            --text-muted: #6B7280;
-            --accent-blue: #1D4ED8;
-            --accent-blue-dark: #1E3A8A;
-            --accent-gold: #D97706;
-        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
+        body { background: linear-gradient(135deg, #1a73e8 0%, #3396FF 50%, #66b2ff 100%); background-attachment: fixed; color: #0f172a; display: flex; justify-content: center; align-items: center; min-height: 100dvh; overflow: hidden; }
+        .app-frame { width: 100%; max-width: 420px; height: 100dvh; background: #f4ecdf; display: flex; flex-direction: column; box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25); position: relative; overflow: hidden; }
+        .content-body { flex: 1; margin-top: 0px; margin-bottom: 85px; overflow-y: auto; scrollbar-width: none; }
+        .content-body::-webkit-scrollbar { display: none; }
+        .bottom-nav { position: absolute; bottom: 0; left: 0; width: 100%; height: 85px; background: #ffffff; box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.1); border-top: 2px solid rgba(51, 150, 255, 0.2); display: flex; justify-content: space-around; align-items: center; z-index: 100; padding-bottom: 15px; }
+        .nav-item { background: none; border: none; color: #64748b; font-size: 0.7rem; font-weight: 800; display: flex; flex-direction: column; align-items: center; gap: 3px; cursor: pointer; flex: 1; }
+        .nav-item span { color: #334155; font-size: 0.65rem; font-weight: 800; }
+        .nav-item svg { width: 22px; height: 22px; fill: currentColor; }
+        .nav-quran-icon { width: 26px !important; height: 26px !important; filter: drop-shadow(0 2px 4px rgba(184, 134, 11, 0.4)); }
+        .nav-item.active { color: #3396FF; }
+        .nav-item.active span { color: #b8860b; }
+        .nav-item.active .nav-quran-icon { transform: scale(1.2); filter: drop-shadow(0 3px 6px rgba(212, 175, 55, 0.7)); }
+        .nav-item.active svg:not(.nav-quran-icon) { fill: #3396FF; transform: scale(1.15); }
+        .card { background: #ffffff; border-radius: 16px; padding: 16px; margin-bottom: 14px; border: 2px solid rgba(51, 150, 255, 0.28); box-shadow: 0 6px 20px rgba(51, 150, 255, 0.1); }
+        .card-title { color: #1e293b; font-size: 0.78rem; font-weight: 800; text-transform: uppercase; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
 
-        * {
-            box-sizing: border-box;
-            -webkit-tap-highlight-color: transparent;
-        }
+        .miner-hero { background: linear-gradient(145deg, #0f172a 0%, #172554 65%, #1d4ed8 100%); color: #ffffff; border: 2px solid #3396FF; border-radius: 18px; padding: 18px; margin-bottom: 14px; box-shadow: 0 10px 24px rgba(15, 23, 42, 0.22); }
+        .miner-top-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; }
+        .miner-badge { display: inline-flex; align-items: center; gap: 6px; background: rgba(16, 185, 129, 0.18); color: #34d399; border: 1px solid rgba(52, 211, 153, 0.45); padding: 4px 10px; border-radius: 999px; font-size: 0.72rem; font-weight: 800; }
+        .miner-badge.idle { background: rgba(148, 163, 184, 0.18); color: #cbd5e1; border-color: rgba(148, 163, 184, 0.4); }
+        .live-dot { width: 8px; height: 8px; border-radius: 50%; background: #34d399; animation: pulseDot 1.4s infinite; }
+        .miner-badge.idle .live-dot { background: #94a3b8; animation: none; }
+        @keyframes pulseDot { 0%, 100% { opacity: 1; transform: scale(1); } 50% { opacity: 0.45; transform: scale(1.25); } }
+        .miner-plan-tag { font-size: 0.72rem; color: #93c5fd; background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 8px; }
+        .balance { font-size: 1.9rem; font-weight: 800; color: #ffffff; letter-spacing: -0.5px; font-variant-numeric: tabular-nums; }
+        .balance-sub { font-size: 0.8rem; color: #cbd5e1; font-weight: 700; margin-top: 4px; display: flex; justify-content: space-between; align-items: center; }
+        .hashrate-strip { margin-top: 14px; padding-top: 12px; border-top: 1px solid rgba(255,255,255,0.14); display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px; }
+        .hash-box { background: rgba(255,255,255,0.07); border-radius: 10px; padding: 9px 10px; }
+        .hash-label { font-size: 0.68rem; color: #93c5fd; text-transform: uppercase; }
+        .hash-val { font-size: 0.9rem; color: #ffffff; font-weight: 800; margin-top: 2px; font-variant-numeric: tabular-nums; }
 
-        html, body {
-            margin: 0;
-            padding: 0;
-            background-color: var(--bg-cream);
-            color: var(--text-dark);
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-            min-height: 100vh;
-            overflow-x: hidden;
-        }
+        .address-box { word-break: break-all; background: #f8fafc; padding: 12px; border-radius: 10px; font-family: monospace; color: #1d4ed8; font-weight: 800; font-size: 0.78rem; margin: 8px 0; border: 2px solid #3396FF; }
+        .btn { background: #3396FF; color: white; border: none; padding: 13px 16px; border-radius: 12px; width: 100%; font-weight: 800; font-size: 0.9rem; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 8px; margin-top: 8px; box-shadow: 0 4px 15px rgba(51, 150, 255, 0.35); }
+        .btn-google { background: #ffffff; color: #0f172a; border: 2px solid #cbd5e1; }
+        .btn-withdraw { background: #059669; box-shadow: 0 4px 15px rgba(5, 150, 105, 0.3); }
+        .btn-upload { background: #7c3aed; }
+        input[type="text"] { width: 100%; padding: 13px; border-radius: 10px; border: 2px solid #cbd5e1; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 0.92rem; margin-top: 6px; outline: none; }
+        .input-group { margin-bottom: 10px; }
+        .hidden { display: none !important; }
+        
+        .feed-container { display: flex; flex-direction: column; gap: 16px; padding: 10px 0; }
+        .yt-card { background: #ffffff; width: 100%; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
+        .yt-media-container { width: 100%; background: #000; position: relative; max-height: 400px; }
+        .yt-media { width: 100%; max-height: 400px; object-fit: contain; display: block; }
+        .yt-details { display: flex; padding: 12px 12px 6px 12px; gap: 12px; justify-content: space-between; align-items: center; }
+        .yt-user-info { display: flex; gap: 10px; align-items: center; }
+        .yt-avatar { width: 38px; height: 38px; border-radius: 50%; background: #3396FF; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; flex-shrink: 0; }
+        .yt-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .yt-meta { flex: 1; }
+        .yt-title { font-size: 0.95rem; color: #0f172a; font-weight: 800; margin-bottom: 2px; }
+        .yt-subinfo { font-size: 0.7rem; color: #64748b; font-weight: 700; cursor: pointer; }
+        
+        .subscribe-btn { background: #dc2626; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
+        .subscribe-btn.subscribed { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
 
-        .app-shell {
-            max-width: 480px;
-            margin: 0 auto;
-            min-height: 100vh;
-            background-color: var(--bg-cream);
-            padding: 16px 14px 92px 14px;
-        }
+        .yt-actions { display: flex; justify-content: space-around; padding: 8px 12px; border-top: 1px solid #f1f5f9; border-bottom: 1px solid #f1f5f9; }
+        .action-item { background: none; border: none; display: flex; align-items: center; gap: 5px; color: #475569; font-size: 0.75rem; font-weight: 800; cursor: pointer; }
+        .action-item svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 2; }
+        .action-item.liked svg { fill: #dc2626; stroke: #dc2626; }
+        .action-item.liked span { color: #dc2626; }
 
-        .hero-card {
-            background: linear-gradient(135deg, #1E40AF 0%, #1D4ED8 55%, #2563EB 100%);
-            color: #FFFFFF;
-            border-radius: 18px;
-            padding: 18px;
-            box-shadow: 0 8px 20px rgba(29, 78, 216, 0.16);
-        }
+        .comments-section { padding: 8px 12px; background: #f8fafc; display: none; }
+        .comments-section.show { display: block; }
+        .comment-input-box { display: flex; gap: 6px; margin-top: 6px; }
+        .comment-input-box input { padding: 8px; font-size: 0.8rem; margin-top: 0; }
+        .comment-input-box button { padding: 8px 12px; width: auto; font-size: 0.8rem; margin-top: 0; }
+        .comment-list { max-height: 120px; overflow-y: auto; display: flex; flex-direction: column; gap: 4px; margin-top: 6px; }
+        .comment-bubble { background: #ffffff; padding: 6px 10px; border-radius: 8px; font-size: 0.75rem; border: 1px solid #e2e8f0; color: #1e293b; }
 
-        .hero-top {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            gap: 8px;
-            margin-bottom: 14px;
-        }
+        .modal-overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); display: flex; justify-content: center; align-items: center; z-index: 1000; display: none; }
+        .modal-overlay.show { display: flex; }
+        .modal-content { background: #ffffff; width: 85%; max-width: 320px; border-radius: 16px; padding: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); text-align: center; }
+        .modal-title { font-size: 1rem; font-weight: 800; margin-bottom: 12px; color: #0f172a; }
+        .subscribers-list { max-height: 180px; overflow-y: auto; display: flex; flex-direction: column; gap: 8px; margin-bottom: 15px; text-align: left; }
+        .subscriber-row { padding: 8px 12px; background: #f8fafc; border-radius: 8px; font-size: 0.85rem; font-weight: 800; color: #334155; border: 1px solid #e2e8f0; }
 
-        .status-pill {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            background: rgba(255, 255, 255, 0.16);
-            color: #FFFFFF;
-            font-size: 11px;
-            font-weight: 700;
-            letter-spacing: 0.04em;
-            padding: 5px 10px;
-            border-radius: 999px;
-        }
-
-        .min-dep-pill {
-            background: rgba(15, 23, 42, 0.28);
-            color: #DBEAFE;
-            font-size: 11px;
-            font-weight: 600;
-            padding: 5px 10px;
-            border-radius: 999px;
-        }
-
-        .balance-main {
-            font-size: 32px;
-            font-weight: 800;
-            letter-spacing: -0.02em;
-            line-height: 1.15;
-            margin: 4px 0 6px 0;
-        }
-
-        .sub-earnings {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            font-size: 12px;
-            color: #DBEAFE;
-            margin-bottom: 14px;
-        }
-
-        .stats-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-        }
-
-        .stat-box {
-            background: rgba(255, 255, 255, 0.13);
-            border: 1px solid rgba(255, 255, 255, 0.18);
-            border-radius: 12px;
-            padding: 10px 12px;
-        }
-
-        .stat-label {
-            font-size: 10px;
-            font-weight: 700;
-            letter-spacing: 0.05em;
-            color: #BFDBFE;
-            text-transform: uppercase;
-        }
-
-        .stat-value {
-            font-size: 14px;
-            font-weight: 800;
-            color: #FFFFFF;
-            margin-top: 3px;
-            word-break: break-all;
-        }
-
-        .info-card {
-            background-color: var(--card-white);
-            border: 1px solid var(--border-soft);
-            border-radius: 16px;
-            padding: 15px;
-            margin-top: 12px;
-            box-shadow: 0 2px 8px rgba(17, 24, 39, 0.03);
-        }
-
-        .section-label {
-            font-size: 11px;
-            font-weight: 800;
-            letter-spacing: 0.05em;
-            color: var(--text-muted);
-            text-transform: uppercase;
-            margin-bottom: 6px;
-        }
-
-        .email-text {
-            font-size: 14px;
-            font-weight: 600;
-            color: var(--text-dark);
-            word-break: break-all;
-        }
-
-        .address-box {
-            width: 100%;
-            border: 1.5px solid #93C5FD;
-            background-color: #F8FAFC;
-            color: #1E3A8A;
-            border-radius: 12px;
-            padding: 11px 12px;
-            font-size: 12.5px;
-            font-weight: 600;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            outline: none;
-        }
-
-        .key-box {
-            width: 100%;
-            border: 1.5px solid #FCA5A5;
-            background-color: #FEF2F2;
-            color: #991B1B;
-            border-radius: 12px;
-            padding: 11px 12px;
-            font-size: 12.5px;
-            font-weight: 600;
-            font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
-            outline: none;
-        }
-
-        .btn-gray {
-            width: 100%;
-            margin-top: 10px;
-            background-color: #E5E7EB;
-            color: #111827;
-            font-size: 13px;
-            font-weight: 700;
-            padding: 11px 14px;
-            border-radius: 12px;
-            border: none;
-            cursor: pointer;
-            transition: opacity 0.15s ease;
-        }
-
-        .btn-gray:active {
-            opacity: 0.8;
-        }
-
-        .btn-row-2 {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 10px;
-            margin-top: 10px;
-        }
-
-        .toast-msg {
-            margin-top: 8px;
-            font-size: 12px;
-            font-weight: 600;
-            color: #1D4ED8;
-            min-height: 16px;
-        }
-
-        .bottom-nav {
-            position: fixed;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background-color: #FFFFFF;
-            border-top: 1px solid #E5E7EB;
-            z-index: 50;
-        }
-
-        .bottom-nav-inner {
-            max-width: 480px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: repeat(6, 1fr);
-            padding: 7px 4px 9px 4px;
-        }
-
-        .nav-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 3px;
-            font-size: 10.5px;
-            font-weight: 600;
-            color: #6B7280;
-            background: transparent;
-            border: none;
-            cursor: pointer;
-            padding: 2px 0;
-        }
-
-        .nav-item.active {
-            color: #1D4ED8;
-            font-weight: 700;
-        }
-
-        .nav-item.quran-active {
-            color: #D97706;
-            font-weight: 700;
-        }
-
-        .nav-icon {
-            font-size: 16px;
-            line-height: 1;
-        }
+        .profile-videos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; width: 100%; }
+        .profile-video-item { aspect-ratio: 9/16; background: #000; overflow: hidden; border-radius: 4px; position: relative; }
+        .profile-video-item video, .profile-video-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
+        .video-menu-btn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #fff; border: none; width: 24px; height: 24px; border-radius: 50%; font-size: 0.9rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; }
+        .video-dropdown { position: absolute; top: 30px; right: 4px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 20; min-width: 90px; }
+        .video-dropdown.show { display: block; }
+        .delete-video-option { background: none; border: none; color: #dc2626; font-size: 0.75rem; font-weight: 800; width: 100%; padding: 8px; text-align: left; cursor: pointer; }
+        .chat-box { background: #f8fafc; border-radius: 12px; padding: 12px; height: 300px; overflow-y: auto; border: 2px solid #cbd5e1; margin-bottom: 10px; display: flex; flex-direction: column; gap: 8px; }
+        .chat-message { background: #e0f2fe; padding: 10px; border-radius: 10px; font-size: 0.85rem; color: #0f172a; border: 1px solid #3396FF; }
+        .surah-list { display: flex; flex-direction: column; width: 100%; background: #f4ecdf; }
+        .surah-row { background: #efe5d4; padding: 14px 18px; border-bottom: 1px solid #dccbb1; cursor: pointer; display: flex; justify-content: space-between; align-items: center; }
+        .surah-row:hover { background: #e6d7be; }
+        .surah-info-left { display: flex; align-items: center; gap: 10px; font-size: 0.8rem; color: #5c3814; font-weight: 800; background: #e3d2b4; padding: 4px 12px; border-radius: 20px; border: 1px solid #c4a777; }
+        .surah-name-arabic { font-family: 'Amiri', serif; font-size: 1.4rem; color: #2b1d0c; font-weight: 700; }
+        .pagination-bar { display: flex; justify-content: space-between; align-items: center; background: #e6d7be; padding: 12px 16px; border-bottom: 2px solid #c4a777; }
+        .page-btn { background: #8c5822; color: #fef9c3; border: 1px solid #d4af37; padding: 8px 16px; border-radius: 8px; font-size: 0.85rem; font-weight: 800; cursor: pointer; }
+        .page-btn:disabled { background: #cbbba0; color: #8c7a5b; border-color: #b5a384; cursor: not-allowed; }
+        .page-indicator { font-size: 0.9rem; color: #3d230b; font-weight: 800; }
+        .mushaf-page { background: #f4ecdf; margin: 6px; padding: 10px; border: 3px solid #8c5822; outline: 2px solid #d4af37; outline-offset: -5px; box-shadow: 0 4px 15px rgba(0,0,0,0.15); position: relative; height: calc(100dvh - 85px); display: flex; flex-direction: column; justify-content: space-between; }
+        .mushaf-header-banner { text-align: center; background: linear-gradient(to bottom, #f3e5ab, #d4af37, #b8860b); border: 2px solid #8c5822; padding: 5px 0; margin-bottom: 6px; box-shadow: 0 2px 4px rgba(0,0,0,0.1); position: relative; flex-shrink: 0; }
+        .mushaf-header-title { font-family: 'Amiri', serif; font-size: 1.2rem; color: #3d230b; font-weight: 700; }
+        .back-back-btn { position: absolute; left: 8px; top: 50%; transform: translateY(-50%); background: #5c3814; color: #fef08a; border: 1px solid #d4af37; padding: 2px 6px; font-size: 0.65rem; border-radius: 4px; cursor: pointer; font-weight: 800; }
+        .reader-content { background: transparent; padding: 6px 10px; direction: rtl; text-align: right; line-height: 2.8; font-size: 1.55rem; color: #2b1d0c; font-family: 'Amiri', serif; width: 100%; flex: 1; overflow-y: auto; scrollbar-width: thin; scrollbar-color: #b8860b #f4ecdf; }
+        .bismillah-header { text-align: center; font-size: 1.4rem; color: #8c2e0b; margin-bottom: 12px; font-family: 'Amiri', serif; font-weight: bold; direction: rtl; }
+        .ayah-svg-marker { display: inline-block; width: 38px; height: 38px; vertical-align: middle; margin: 0 4px; filter: drop-shadow(0px 2px 3px rgba(139, 101, 8, 0.4)); }
+        .surah-pagination { display: flex; justify-content: space-between; align-items: center; padding-top: 6px; border-top: 2px solid #d4af37; background: #f4ecdf; flex-shrink: 0; }
+        .tiktok-profile { display: flex; flex-direction: column; align-items: center; padding: 20px 15px; color: #0f172a; position: relative; background: #f4ecdf; min-height: 100dvh; }
+        .profile-back-btn { position: absolute; left: 15px; top: 20px; background: #ffffff; color: #0369a1; border: 1px solid #3396FF; padding: 6px 12px; border-radius: 8px; font-size: 0.8rem; cursor: pointer; font-weight: 800; box-shadow: 0 2px 6px rgba(0,0,0,0.05); }
+        .profile-menu-wrapper { position: absolute; right: 15px; top: 20px; z-index: 50; }
+        .three-dots-btn { background: #ffffff; color: #0f172a; border: 1px solid #3396FF; width: 34px; height: 34px; border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; font-weight: 800; cursor: pointer; box-shadow: 0 2px 6px rgba(0,0,0,0.08); }
+        .three-dots-dropdown { position: absolute; right: 0; top: 40px; background: #ffffff; border: 2px solid #3396FF; border-radius: 10px; box-shadow: 0 8px 20px rgba(0,0,0,0.15); min-width: 130px; display: none; z-index: 60; }
+        .three-dots-dropdown:not(.hidden) { display: block; }
+        .dropdown-logout-item { width: 100%; padding: 10px 14px; background: none; border: none; color: #dc2626; font-size: 0.85rem; font-weight: 800; text-align: left; cursor: pointer; display: flex; align-items: center; gap: 8px; }
+        .dropdown-logout-item:hover { background: #fee2e2; }
+        .profile-avatar-wrapper { position: relative; margin-top: 25px; margin-bottom: 12px; cursor: pointer; }
+        .profile-avatar { width: 85px; height: 85px; border-radius: 50%; background: linear-gradient(135deg, #3396FF, #2563eb); display: flex; justify-content: center; align-items: center; font-size: 2.5rem; font-weight: 800; color: #ffffff; box-shadow: 0 4px 15px rgba(51, 150, 255, 0.4); border: 3px solid #ffffff; overflow: hidden; }
+        .profile-avatar img { width: 100%; height: 100%; object-fit: cover; }
+        .profile-name { font-size: 1.2rem; font-weight: 800; margin-bottom: 4px; }
+        .profile-username { font-size: 0.85rem; color: #475569; font-weight: 700; margin-bottom: 16px; }
+        .profile-stats { display: flex; gap: 30px; margin-bottom: 15px; text-align: center; }
+        .stat-num { font-size: 1rem; font-weight: 800; }
+        .stat-label { font-size: 0.75rem; color: #475569; font-weight: 700; }
+        .profile-tabs { width: 100%; height: 50px; display: flex; align-items: center; justify-content: space-around; background: #f4ecdf; border-top: 3px solid #3396FF; border-bottom: 2px solid #cbd5e1; margin-top: 10px; }
+        .tab { flex: 1; height: 100%; display: flex; align-items: center; justify-content: center; position: relative; cursor: pointer; color: #94a3b8; }
+        .tab svg { width: 24px; height: 24px; fill: none; stroke: currentColor; stroke-width: 2.2; stroke-linecap: round; stroke-linejoin: round; }
+        .tab.active { color: #0f172a; }
+        .tab.active::before { content: ""; position: absolute; top: -3px; left: 10%; width: 80%; height: 3px; background: #3396FF; border-radius: 5px; }
     </style>
 </head>
 <body>
-    <div id="appRoot" class="app-shell">
-        <!-- Kaarka Sare Ee Balance-ka Iyo Account ID -->
-        <section class="hero-card">
-            <div class="hero-top">
-                <span id="miningStatusBadge" class="status-pill">● MINING INACTIVE</span>
-                <span class="min-dep-pill">Min Dep: 0.00001 POL</span>
-            </div>
 
-            <div id="balanceDisplay" class="balance-main">0.00000000 POL</div>
-
-            <div class="sub-earnings">
-                <span>Saamiga maalinlaha ah: <strong id="dailyRateText">0 POL</strong></span>
-                <span id="perSecText">+0.000000/s</span>
-            </div>
-
-            <div class="stats-grid">
-                <div class="stat-box">
-                    <div class="stat-label">DAILY OUTPUT</div>
-                    <div id="dailyOutputDisplay" class="stat-value">0.000009 POL</div>
-                </div>
-                <div class="stat-box">
-                    <div class="stat-label">ACCOUNT ID</div>
-                    <div id="accountIdDisplay" class="stat-value">KNN-205792</div>
-                </div>
-            </div>
-        </section>
-
-        <!-- Macluumaadka Xisaabta -->
-        <section class="info-card">
-            <div class="section-label">MACLUUMAADKA XISAABTA</div>
-            <div id="userEmailDisplay" class="email-text">abuukarcumar661@gmail.com</div>
-        </section>
-
-        <!-- Cinwaanka Deposit-ka -->
-        <section class="info-card">
-            <div class="section-label">CINWAANKAAGA DEPOSIT-KA (POLYGON)</div>
-            <input
-                id="depositAddressInput"
-                type="text"
-                readonly
-                class="address-box"
-                value="0x613b603440CA724C266FC5432E2a20D000F73367"
-            />
-            <button type="button" onclick="copyDepositAddressSafe()" class="btn-gray">
-                Copy Deposit Address
-            </button>
-            <div id="actionFeedback" class="toast-msg"></div>
-        </section>
-
-        <!-- Private Key-ga -->
-        <section class="info-card">
-            <div class="section-label">PRIVATE KEY-GAAGA (POLYGON)</div>
-            <input
-                id="privateKeyInput"
-                type="password"
-                readonly
-                class="key-box"
-                value="••••••••••••••••••••••••••••••••••••••••••"
-                data-real-key=""
-            />
-            <div class="btn-row-2">
-                <button type="button" onclick="togglePrivateKeySafe()" class="btn-gray">
-                    Show / Hide
-                </button>
-                <button type="button" onclick="copyPrivateKeySafe()" class="btn-gray">
-                    Copy Key
-                </button>
-            </div>
-        </section>
-    </div>
-
-    <!-- Bottom Navigation Bar -->
-    <nav class="bottom-nav" aria-label="Bottom Navigation">
-        <div class="bottom-nav-inner">
-            <button type="button" class="nav-item" onclick="handleNavClick('Home', this)">
-                <span class="nav-icon">🏠</span>
-                <span>Home</span>
-            </button>
-            <button type="button" class="nav-item" onclick="handleNavClick('Chat', this)">
-                <span class="nav-icon">💬</span>
-                <span>Chat</span>
-            </button>
-            <button type="button" class="nav-item" onclick="handleNavClick('Upload', this)">
-                <span class="nav-icon">＋</span>
-                <span>Upload</span>
-            </button>
-            <button type="button" class="nav-item quran-active" onclick="handleNavClick('Qur’aan', this)">
-                <span class="nav-icon">📖</span>
-                <span>Qur'aan</span>
-            </button>
-            <button type="button" class="nav-item active" onclick="handleNavClick('Wallet', this)">
-                <span class="nav-icon">💳</span>
-                <span>Wallet</span>
-            </button>
-            <button type="button" class="nav-item" onclick="handleNavClick('Profile', this)">
-                <span class="nav-icon">👤</span>
-                <span>Profile</span>
+<div class="app-frame" onclick="closeProfileMenuOutside(event)">
+    <div class="content-body" id="contentBody">
+        <div id="loginView" class="card hidden" style="text-align: center; padding: 40px 20px; margin: 20px 15px;">
+            <h3 style="color: #0f172a; margin-bottom: 8px; font-size: 1.4rem;">Ku soo dhawoow</h3>
+            <p style="color: #334155; font-size: 0.9rem; margin-bottom: 24px;">Fadlan ku gal Google si aad u furto App-kaaga.</p>
+            <button class="btn btn-google" onclick="loginWithGoogle()">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M23.745 12.27c0-.7-.06-1.4-.19-2.07H12v4.51h6.6c-.29 1.52-1.14 2.82-2.4 3.68v3.05h3.88c2.27-2.09 3.66-5.17 3.66-9.17z"/><path fill="#34A853" d="M12 24c3.24 0 5.95-1.08 7.93-2.91l-3.88-3.05c-1.08.72-2.45 1.16-4.05 1.16-3.13 0-5.78-2.11-6.73-4.96H1.18v3.15C3.15 21.32 7.23 24 12 24z"/><path fill="#FBBC05" d="M5.27 14.24c-.25-.72-.38-1.49-.38-2.24s.13-1.52.38-2.24V6.6H1.18C.43 8.12 0 9.82 0 12s.43 3.88 1.18 5.4l4.09-3.16z"/><path fill="#EA4335" d="M12 4.75c1.77 0 3.35.61 4.6 1.8l3.42-3.42C17.95 1.19 15.24 0 12 0 7.23 0 3.15 2.68 1.18 6.6l4.09 3.15c.95-2.85 3.6-4.96 6.73-4.96z"/></svg>
+                <span>Google Login-ka ku gal</span>
             </button>
         </div>
-    </nav>
 
-    <script>
-        (function () {
-            const SERVER_URL = window.KNN_SERVER_URL || 'https://somapp-website-production.up.railway.app';
-            const DEFAULT_ACCOUNT_ID = 'KNN-205792';
-            const DEFAULT_ADDRESS = '0x613b603440CA724C266FC5432E2a20D000F73367';
-            const DEFAULT_EMAIL = 'abuukarcumar661@gmail.com';
-            const MASKED_TEXT = '•'.repeat(42);
+        <div id="tabHome" class="tab-content hidden" style="padding: 0;">
+            <div id="homeFeedContainer" class="feed-container">
+                <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>
+            </div>
+        </div>
 
-            window.addEventListener('error', (e) => {
-                console.warn('Handled page error:', e.message || e.error);
+        <div id="tabChat" class="tab-content hidden" style="padding: 15px 15px 0 15px;">
+            <div class="card" style="margin-top: 15px;">
+                <div class="card-title" style="color:#16a34a;">💬 Bulshada / Chat-ka Guud</div>
+                <div class="chat-box" id="chatContainer">
+                    <div class="chat-message"><strong>Nidaamka:</strong> Ku soo dhowaada KNN Chat-ka. Halkaan waxaad fikradaha ugala wadaagi kartaan dadka kale.</div>
+                </div>
+                <div class="input-group" style="margin-top: 10px;">
+                    <input type="text" id="chatInput" placeholder="Qor fariintaada...">
+                </div>
+                <button class="btn btn-chat" onclick="sendChatMessage()">Dir Fariinta</button>
+            </div>
+        </div>
+
+        <div id="tabUpload" class="tab-content hidden" style="padding: 15px 15px 0 15px;">
+            <div class="card" style="text-align: center; margin-top: 15px;">
+                <div class="card-title" style="color:#7c3aed;">Soo geli Sawir ama Video</div>
+                <div class="input-group" style="text-align: left; margin-top: 10px;">
+                    <label style="font-size: 0.8rem; color: #334155;">Cinwaanka Video-ga (Title):</label>
+                    <input type="text" id="videoTitleInput" placeholder="Tusaale: Dagaalka Cusub ee Dayaxa...">
+                </div>
+                <p style="font-size: 0.85rem; color: #475569; margin: 12px 0;">Guji badhanka hoose si aad taleefankaaga uga doorato video weyn ama sawir.</p>
+                <input type="file" id="mediaFileInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)">
+                <button class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir ama Video</button>
+                <div id="uploadStatus" style="margin-top: 12px; font-size: 0.85rem; color: #059669; font-weight: 800;"></div>
+            </div>
+        </div>
+
+        <div id="tabQuran" class="tab-content hidden">
+            <div id="quranListContainer" style="width: 100%;">
+                <div class="pagination-bar" style="margin-top: 15px;">
+                    <button class="page-btn" id="prevSurahPageBtn" onclick="changeSurahPage(-1)">← Bogga Hore</button>
+                    <span class="page-indicator" id="surahPageIndicator">Bogga 1 / 6</span>
+                    <button class="page-btn" id="nextSurahPageBtn" onclick="changeSurahPage(1)">Bogga Xiga →</button>
+                </div>
+                <div class="surah-list" id="surahList"></div>
+            </div>
+            <div id="quranReaderContainer" class="hidden" style="width: 100%;">
+                <div class="mushaf-page" style="margin-top: 15px; height: calc(100dvh - 100px);">
+                    <div class="mushaf-header-banner">
+                        <button class="back-back-btn" onclick="backToSurahList()">← Dib</button>
+                        <span id="readerTitle" class="mushaf-header-title">سُورَةُ</span>
+                    </div>
+                    <div class="reader-content" id="readerContent">Loading...</div>
+                    <div class="surah-pagination" id="surahPaginationBar" style="display:none;">
+                        <button class="page-btn" id="prevAyahPageBtn" onclick="changeAyahPage(-1)">← Bogga Hore</button>
+                        <span class="page-indicator" id="ayahPageIndicator">Bogga 1 / 1</span>
+                        <button class="page-btn" id="nextAyahPageBtn" onclick="changeAyahPage(1)">Bogga Xiga →</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="tabWallet" class="tab-content hidden" style="padding: 15px 15px 0 15px;">
+            <div class="miner-hero">
+                <div class="miner-top-row">
+                    <div class="miner-badge idle" id="miningStatusBadge">
+                        <span class="live-dot"></span>
+                        <span id="miningStatusText">MINING INACTIVE</span>
+                    </div>
+                    <div class="miner-plan-tag">Min Dep: 0.00001 POL</div>
+                </div>
+                <div class="balance" id="balanceDisplay">0.00000000 POL</div>
+                <div class="balance-sub">
+                    <span>Saamiga maalinlaha ah: <strong id="dailyLimitDisplay" style="color:#60a5fa;">0</strong> POL</span>
+                    <span style="color:#34d399; font-size:0.74rem;" id="liveRateLabel">+0.000000/s</span>
+                </div>
+                <div class="hashrate-strip">
+                    <div class="hash-box">
+                        <div class="hash-label">Daily Output</div>
+                        <div class="hash-val" id="dailyOutputBox">0.000009 POL</div>
+                    </div>
+                    <div class="hash-box">
+                        <div class="hash-label">Account ID</div>
+                        <div class="hash-val" id="userIdDisplay">--</div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Macluumaadka Xisaabta</div>
+                <div style="font-size: 0.85rem; color: #334155;" id="userEmailDisplay">--</div>
+            </div>
+
+            <div class="card">
+                <div class="card-title">Cinwaankaaga Deposit-ka (Polygon)</div>
+                <div class="address-box" id="depositAddress">Loading...</div>
+                <button class="btn" style="background: #e2e8f0; color: #0f172a; box-shadow:none; border: 2px solid #cbd5e1;" onclick="copyAddress()">Copy Deposit Address</button>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#991b1b;">Private Key-gaaga (Polygon)</div>
+                <div class="address-box" id="userPrivateKeyDisplay" style="color:#991b1b; border-color:#ef4444;">••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••••</div>
+                <div style="display:flex; gap:8px;">
+                    <button type="button" class="btn" style="background:#f1f5f9; color:#0f172a; box-shadow:none; border:2px solid #cbd5e1; margin-top:0;" onclick="togglePrivateKeyVisibility()">Show / Hide</button>
+                    <button type="button" class="btn" style="background:#e2e8f0; color:#0f172a; box-shadow:none; border:2px solid #cbd5e1; margin-top:0;" onclick="copyPrivateKey()">Copy Key</button>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-title" style="color:#059669;">Withdraw</div>
+                <div class="input-group">
+                    <label style="font-size: 0.8rem; color: #334155;">Cinwaankaaga Polygon (MetaMask / Binance / Wallet):</label>
+                    <input type="text" id="recipientInput" placeholder="0x...">
+                </div>
+                <div class="input-group">
+                    <label style="font-size: 0.8rem; color: #334155;">Qaddarka POL (optional - min 0.00000001):</label>
+                    <input type="text" id="withdrawAmountInput" placeholder="Tusaale: 0.00000001 (madhan = hadhaaga)">
+                </div>
+                <button class="btn btn-withdraw" onclick="sendWithdraw()">Withdraw Hadda</button>
+            </div>
+        </div>
+
+        <div id="tabSettings" class="tab-content hidden">
+            <div class="tiktok-profile" style="padding-top: 20px;">
+                <button class="profile-back-btn" onclick="switchTab('tabHome', document.querySelector('.nav-item'))">← Dib u laabo</button>
+                <div class="profile-menu-wrapper">
+                    <button class="three-dots-btn" onclick="toggleProfileMenu(event)">⋮</button>
+                    <div id="profileDropdownMenu" class="three-dots-dropdown hidden">
+                        <button class="dropdown-logout-item" onclick="logoutUser()">
+                            <span>🚪 Logout</span>
+                        </button>
+                    </div>
+                </div>
+                <div class="profile-avatar-wrapper" onclick="document.getElementById('avatarFileInput').click()" title="Guji si aad sawirka u beddesho">
+                    <div class="profile-avatar" id="profileAvatarBox">
+                        <span id="profileInitial">K</span>
+                        <img id="profileAvatarImg" class="hidden" src="" alt="Profile">
+                    </div>
+                    <input type="file" id="avatarFileInput" accept="image/*" class="hidden" onchange="changeProfilePhoto(event)">
+                </div>
+                <div class="profile-name" id="profileDisplayName">Keynan abukar</div>
+                <div class="profile-username" id="profileUsernameDisplay">@keynanabukar2002</div>
+                <div class="profile-stats">
+                    <div><div class="stat-num">14</div><div class="stat-label">Following</div></div>
+                    <div><div class="stat-num" id="profileSubscribersCount">0</div><div class="stat-label">Subscribers</div></div>
+                    <div><div class="stat-num" id="profileLikesCount">0</div><div class="stat-label">Likes</div></div>
+                </div>
+                <div class="profile-tabs">
+                  <div class="tab active" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M4 4h5v5H4z"/><path d="M14 4h5v5h-5z"/><path d="M4 14h5v5H4z"/><path d="M14 14h5v5h-5z"/></svg></div>
+                  <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><rect x="4" y="10" width="16" height="12" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/></svg></div>
+                  <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M17 2l4 4-4 4"/><path d="M3 11V9a3 3 0 0 1 3-3h15"/><path d="M7 22l-4-4 4-4"/><path d="M21 13v2a3 3 0 0 1-3 3H3"/></svg></div>
+                  <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M6 3h12a1 1 0 0 1 1 1v17l-7-5-7 5V4a1 1 0 0 1 1-1z"/></svg></div>
+                  <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg></div>
+                </div>
+                <div id="profileVideosGrid" class="profile-videos-grid" style="width: 100%; margin-top: 5px;">
+                    <div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px;">Weli ma aadan soo gelin wax video ah.</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Subscribers Modal -->
+    <div class="modal-overlay" id="subscribersModal" onclick="closeSubscribersModal(event)">
+        <div class="modal-content">
+            <div class="modal-title">👥 Dadka Subscribe-gareeyay</div>
+            <div class="subscribers-list" id="modalSubscribersList">
+                <div style="text-align: center; color: #64748b; font-size: 0.8rem;">Weli qof ma jiro.</div>
+            </div>
+            <button class="btn" style="padding: 10px; font-size: 0.85rem;" onclick="document.getElementById('subscribersModal').classList.remove('show')">Xidh</button>
+        </div>
+    </div>
+
+    <div id="bottomNav" class="bottom-nav hidden">
+        <button class="nav-item active" onclick="switchTab('tabHome', this)">
+            <svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            <span>Home</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabChat', this)">
+            <svg viewBox="0 0 24 24"><path d="M20 2H4c-1.1 0-2 .9-2 2v18l4-4h14c1.1 0 2-.9 2-2V4c0-1.1-.9-2-2-2zM6 9h12v2H6V9zm8 5H6v-2h8v2zm4-6H6V6h12v2z"/></svg>
+            <span>Chat</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabUpload', this)">
+            <svg viewBox="0 0 24 24"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>
+            <span>Upload</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabQuran', this)">
+            <svg class="nav-quran-icon" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+              <defs>
+                <linearGradient id="navGold" x1="0" y1="0" x2="1" y2="1">
+                  <stop offset="0%" stop-color="#fff6cc"/>
+                  <stop offset="30%" stop-color="#d4af37"/>
+                  <stop offset="70%" stop-color="#b8860b"/>
+                  <stop offset="100%" stop-color="#8b6508"/>
+                </linearGradient>
+              </defs>
+              <path d="M100 35 C100 35 70 25 35 35 C20 40 10 50 10 65 L10 155 C10 165 20 170 35 165 C70 155 100 165 100 165 C100 165 130 155 165 165 C180 170 190 165 190 155 L190 65 C190 50 180 40 165 35 C130 25 100 35 100 35 Z" fill="#fcf8ee" stroke="url(#navGold)" stroke-width="8"/>
+              <path d="M93 37 L93 163 C97 165 103 165 107 163 L107 37 Z" fill="url(#navGold)"/>
+              <line x1="35" y1="65" x2="75" y2="75" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="30" y1="90" x2="75" y2="100" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="35" y1="115" x2="70" y2="125" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="125" y1="75" x2="165" y2="65" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="125" y1="100" x2="170" y2="90" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+              <line x1="130" y1="125" x2="165" y2="115" stroke="#b8860b" stroke-width="6" stroke-linecap="round"/>
+            </svg>
+            <span>Qur'aan</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabWallet', this)">
+            <svg viewBox="0 0 24 24"><path d="M21 18v1c0 1.1-.9 2-2 2H5c-1.11 0-2-.9-2-2V5c0-1.1.89-2 2-2h14c1.1 0 2 .9 2 2v1h-9c-1.11 0-2 .9-2 2v8c0 1.1.89 2 2 2h9zm-9-2h10V8H12v8zm4-2.5c-.83 0-1.5-.67-1.5-1.5s.67-1.5 1.5-1.5 1.5.67 1.5 1.5-.67 1.5-1.5 1.5z"/></svg>
+            <span>Wallet</span>
+        </button>
+        <button class="nav-item" onclick="switchTab('tabSettings', this)">
+            <svg viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+            <span>Profile</span>
+        </button>
+    </div>
+</div>
+
+<script>
+    const firebaseConfig = {
+      apiKey: "AIzaSyCg_xRwZ8LVoQ6l-fUiQCN2bN2INkvHI6I",
+      authDomain: "somapp-61ebd.firebaseapp.com",
+      projectId: "somapp-61ebd",
+      storageBucket: "somapp-61ebd.firebasestorage.app",
+      messagingSenderId: "890890688001",
+      appId: "1:890890688001:web:b7063dda31b860785f5200",
+      measurementId: "G-XG4K89NNMM"
+    };
+    
+    if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
+
+    const SERVER_URL = 'https://somapp-website-production.up.railway.app';
+    let currentUserUid = null;
+    let currentUserEmail = "";
+    let userPolygonAddress = "";
+    let userPrivateKeyValue = "";
+    let isPrivateKeyVisible = false;
+    let userDisplayName = "User";
+    let globalVideosList = [];
+
+    let currentBalanceNum = 0;
+    let liveRatePerSec = 0;
+    let miningTickerInterval = null;
+
+    const quranSurahs = [
+        {name: "الفاتحة", ayahs: 6}, {name: "البقرة", ayahs: 286}, {name: "آل عمران", ayahs: 200}, {name: "النساء", ayahs: 176}, {name: "المائدة", ayahs: 120},
+        {name: "الأنعام", ayahs: 165}, {name: "الأعراف", ayahs: 206}, {name: "الأنفال", ayahs: 75}, {name: "التوبة", ayahs: 129}, {name: "يونس", ayahs: 109},
+        {name: "هود", ayahs: 123}, {name: "يوسف", ayahs: 111}, {name: "الرعد", ayahs: 43}, {name: "إبراهيم", ayahs: 52}, {name: "الحجر", ayahs: 99},
+        {name: "النحل", ayahs: 128}, {name: "الإسراء", ayahs: 111}, {name: "الكهف", ayahs: 110}, {name: "مريم", ayahs: 98}, {name: "طه", ayahs: 135},
+        {name: "الأنبياء", ayahs: 112}, {name: "الحج", ayahs: 78}, {name: "المؤمنون", ayahs: 118}, {name: "النور", ayahs: 64}, {name: "الفرقان", ayahs: 77},
+        {name: "الشعراء", ayahs: 227}, {name: "النمل", ayahs: 93}, {name: "القصص", ayahs: 88}, {name: "العنكبوت", ayahs: 69}, {name: "الروم", ayahs: 60},
+        {name: "لقمان", ayahs: 34}, {name: "السجدة", ayahs: 30}, {name: "الأحزاب", ayahs: 73}, {name: "سبأ", ayahs: 54}, {name: "فاطر", ayahs: 45},
+        {name: "يس", ayahs: 83}, {name: "الصافات", ayahs: 182}, {name: "ص", ayahs: 88}, {name: "الزمر", ayahs: 75}, {name: "غافر", ayahs: 85},
+        {name: "فصلت", ayahs: 54}, {name: "الشورى", ayahs: 53}, {name: "الزخرف", ayahs: 89}, {name: "الدخان", ayahs: 59}, {name: "الجاثية", ayahs: 37},
+        {name: "الأحقاف", ayahs: 35}, {name: "محمد", ayahs: 38}, {name: "الفتح", ayahs: 29}, {name: "الحجرات", ayahs: 18}, {name: "ق", ayahs: 45},
+        {name: "الذاريات", ayahs: 60}, {name: "الطور", ayahs: 49}, {name: "النجم", ayahs: 62}, {name: "القمر", ayahs: 55}, {name: "الرحمن", ayahs: 78},
+        {name: "واقعة", ayahs: 96}, {name: "الحديد", ayahs: 29}, {name: "المجادلة", ayahs: 22}, {name: "الحشر", ayahs: 24}, {name: "الممتحنة", ayahs: 13},
+        {name: "الصف", ayahs: 14}, {name: "الجمعة", ayahs: 11}, {name: "المنافقون", ayahs: 11}, {name: "التغابن", ayahs: 18}, {name: "الطلاق", ayahs: 12},
+        {name: "التحريم", ayahs: 12}, {name: "الملك", ayahs: 30}, {name: "القلم", ayahs: 52}, {name: "الحاقة", ayahs: 52}, {name: "المعارج", ayahs: 44},
+        {name: "نوح", ayahs: 28}, {name: "الجن", ayahs: 28}, {name: "المزمل", ayahs: 20}, {name: "المسثر", ayahs: 56}, {name: "القيامة", ayahs: 40},
+        {name: "الإنسان", ayahs: 31}, {name: "المرسلات", ayahs: 50}, {name: "النبأ", ayahs: 40}, {name: "النازعات", ayahs: 46}, {name: "عبس", ayahs: 42},
+        {name: "التكوير", ayahs: 29}, {name: "الإنفطار", ayahs: 19}, {name: "المطففين", ayahs: 36}, {name: "الإنشقاق", ayahs: 25}, {name: "البروج", ayahs: 22},
+        {name: "الطارق", ayahs: 17}, {name: "الأعلى", ayahs: 19}, {name: "الغاشية", ayahs: 26}, {name: "الفجر", ayahs: 30}, {name: "البلد", ayahs: 20},
+        {name: "الشمس", ayahs: 15}, {name: "الليل", ayahs: 21}, {name: "الضحى", ayahs: 11}, {name: "الشرح", ayahs: 8}, {name: "التين", ayahs: 8},
+        {name: "العلق", ayahs: 19}, {name: "القدر", ayahs: 5}, {name: "البينة", ayahs: 8}, {name: "الزلزلة", ayahs: 8}, {name: "العاديات", ayahs: 11},
+        {name: "القارعة", ayahs: 11}, {name: "التكاثر", ayahs: 8}, {name: "العصر", ayahs: 3}, {name: "الهمزة", ayahs: 9}, {name: "الفيل", ayahs: 5},
+        {name: "قريش", ayahs: 4}, {name: "الماعون", ayahs: 7}, {name: "الكوثر", ayahs: 3}, {name: "الكافرون", ayahs: 6}, {name: "النصر", ayahs: 3}, {name: "المسد", ayahs: 5}, {name: "الإخلاص", ayahs: 4}, {name: "الفلق", ayahs: 5}, {name: "الناس", ayahs: 6}
+    ];
+
+    let currentSurahPage = 1;
+    const surahsPerPage = 20;
+    let currentAyahsData = [];
+    let currentAyahPage = 1;
+    const ayahsPerPage = 8;
+    let activeSurahNum = 1;
+
+    function startLiveMiningTicker(baseBalance, dailyLimit, miningActive = false) {
+        if (miningTickerInterval) {
+            clearInterval(miningTickerInterval);
+            miningTickerInterval = null;
+        }
+
+        const parsedBal = parseFloat(baseBalance);
+        const parsedLimit = parseFloat(String(dailyLimit).replace(/[^\d.]/g, ''));
+
+        const badgeEl = document.getElementById('miningStatusBadge');
+        const statusTxtEl = document.getElementById('miningStatusText');
+        const rateEl = document.getElementById('liveRateLabel');
+        const dailyLimitEl = document.getElementById('dailyLimitDisplay');
+
+        if (!miningActive || isNaN(parsedBal) || parsedBal <= 0) {
+            currentBalanceNum = 0;
+            liveRatePerSec = 0;
+            if (badgeEl) badgeEl.classList.add('idle');
+            if (statusTxtEl) statusTxtEl.innerText = "MINING INACTIVE";
+            if (rateEl) rateEl.innerText = "+0.000000/s";
+            if (dailyLimitEl) dailyLimitEl.innerText = "0";
+            renderLiveBalance();
+            return;
+        }
+
+        currentBalanceNum = parsedBal;
+        liveRatePerSec = (!isNaN(parsedLimit) && parsedLimit > 0) ? (parsedLimit / 86400) : 0;
+
+        if (badgeEl) badgeEl.classList.remove('idle');
+        if (statusTxtEl) statusTxtEl.innerText = "LIVE MINING";
+        if (rateEl) rateEl.innerText = `+${liveRatePerSec.toFixed(8)}/s`;
+        if (dailyLimitEl) dailyLimitEl.innerText = parsedLimit.toFixed(6);
+
+        renderLiveBalance();
+
+        miningTickerInterval = setInterval(() => {
+            currentBalanceNum += liveRatePerSec;
+            renderLiveBalance();
+        }, 1000);
+    }
+
+    function renderLiveBalance() {
+        const balEl = document.getElementById('balanceDisplay');
+        if (balEl) {
+            balEl.innerText = `${currentBalanceNum.toFixed(8)} POL`;
+        }
+    }
+
+    function renderPrivateKeyBox() {
+        const el = document.getElementById('userPrivateKeyDisplay');
+        if (!el) return;
+        if (!userPrivateKeyValue) {
+            el.innerText = "Lama helin";
+            return;
+        }
+        el.innerText = isPrivateKeyVisible
+            ? userPrivateKeyValue
+            : "•".repeat(66);
+    }
+
+    function togglePrivateKeyVisibility() {
+        isPrivateKeyVisible = !isPrivateKeyVisible;
+        renderPrivateKeyBox();
+    }
+
+    function copyPrivateKey() {
+        if (!userPrivateKeyValue) return;
+        navigator.clipboard.writeText(userPrivateKeyValue);
+        alert("Private Key-ga waa la koobiyeeyay!");
+    }
+
+    function toArabicNumeral(n) {
+        const arabicDigits = ['٠', '١', '٢', '٣', '٤', '٥', '٦', '٧', '٨', '٩'];
+        return n.toString().split('').map(digit => arabicDigits[digit] !== undefined ? arabicDigits[digit] : digit).join('');
+    }
+
+    function createAyahMarkerSvg(numberStr) {
+        return `
+        <svg class="ayah-svg-marker" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="pureGold" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0%" stop-color="#fff6cc"/>
+              <stop offset="25%" stop-color="#e6b839"/>
+              <stop offset="50%" stop-color="#b8860b"/>
+              <stop offset="75%" stop-color="#f3e5ab"/>
+              <stop offset="100%" stop-color="#8b6508"/>
+            </linearGradient>
+            <linearGradient id="innerGold" x1="1" y1="0" x2="0" y2="1">
+              <stop offset="0%" stop-color="#fffbe8"/>
+              <stop offset="100%" stop-color="#d4af37"/>
+            </linearGradient>
+          </defs>
+          <path d="M100 5 L145 25 L175 55 L195 100 L175 145 L145 175 L100 195 L55 175 L25 145 L5 100 L25 55 L55 25 Z" fill="#fcf8ee" stroke="url(#pureGold)" stroke-width="6"/>
+          <path d="M100 17 L140 33 L167 60 L183 100 L167 140 L140 167 L100 183 L60 167 L33 140 L17 100 L33 60 L60 33 Z" fill="url(#innerGold)" stroke="url(#pureGold)" stroke-width="3"/>
+          <circle cx="100" cy="100" r="62" fill="#f7f1e5" stroke="url(#pureGold)" stroke-width="4"/>
+          <text x="100" y="118" text-anchor="middle" font-size="75" font-weight="bold" font-family="Amiri, serif" fill="#5c3814">${numberStr}</text>
+        </svg>`;
+    }
+
+    window.onload = function() {
+        renderSurahListPage();
+        loadAllVideosFeed();
+        startLiveMiningTicker(0, 0, false);
+        renderPrivateKeyBox();
+    };
+
+    function selectProfileTab(selected) {
+      document.querySelectorAll(".profile-tabs .tab").forEach(tab => tab.classList.remove("active"));
+      selected.classList.add("active");
+    }
+
+    function toggleProfileMenu(event) {
+        event.stopPropagation();
+        document.getElementById('profileDropdownMenu').classList.toggle('hidden');
+    }
+
+    function closeProfileMenuOutside(event) {
+        const menu = document.getElementById('profileDropdownMenu');
+        if (menu && !menu.classList.contains('hidden')) menu.classList.add('hidden');
+        document.querySelectorAll('.video-dropdown').forEach(d => d.classList.remove('show'));
+    }
+
+    function changeProfilePhoto(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = function(e) {
+            const compressedDataUrl = e.target.result;
+            if (currentUserUid) {
+                localStorage.setItem('knn_avatar_uid_' + currentUserUid, compressedDataUrl);
+            }
+            applyAvatarImage(compressedDataUrl);
+        };
+        reader.readAsDataURL(file);
+    }
+
+    function loadSavedAvatar(uid, googlePhotoUrl) {
+        if (!uid) return;
+        const savedImg = localStorage.getItem('knn_avatar_uid_' + uid);
+        if (savedImg) {
+            applyAvatarImage(savedImg);
+        } else if (googlePhotoUrl) {
+            applyAvatarImage(googlePhotoUrl);
+        } else {
+            document.getElementById('profileAvatarImg').classList.add('hidden');
+            document.getElementById('profileInitial').classList.remove('hidden');
+        }
+    }
+
+    function applyAvatarImage(src) {
+        const imgEl = document.getElementById('profileAvatarImg');
+        const initialEl = document.getElementById('profileInitial');
+        if (imgEl) { imgEl.src = src; imgEl.classList.remove('hidden'); }
+        if (initialEl) { initialEl.classList.add('hidden'); }
+    }
+
+    async function handleMediaUpload(event) {
+        const file = event.target.files[0];
+        if (!file) return;
+
+        if (!currentUserUid) {
+            alert("Fadlan marka hore gal Account-kaaga!");
+            return;
+        }
+
+        const titleInput = document.getElementById('videoTitleInput').value.trim();
+        const videoTitle = titleInput !== "" ? titleInput : (file.name || "Video cusub");
+        const statusEl = document.getElementById('uploadStatus');
+
+        statusEl.innerText = "Waa la soo gelinayaa server-ka... Fadlan sug.";
+
+        const formData = new FormData();
+        formData.append('mediaFile', file);
+        formData.append('id', 'vid_' + Date.now());
+        formData.append('uid', currentUserUid);
+        formData.append('username', userDisplayName);
+        formData.append('title', videoTitle);
+        formData.append('avatar', localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "");
+        formData.append('type', file.type.startsWith('image/') ? 'image' : 'video');
+        formData.append('timestamp', Date.now());
+
+        try {
+            const response = await fetch(`${SERVER_URL}/api/upload-video`, {
+                method: 'POST',
+                body: formData
             });
 
-            window.addEventListener('unhandledrejection', (e) => {
-                console.warn('Handled promise rejection:', e.reason);
+            const data = await response.json();
+            if (data.success) {
+                statusEl.innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
+                document.getElementById('videoTitleInput').value = "";
+                document.getElementById('mediaFileInput').value = "";
+                
+                await loadAllVideosFeed();
+                loadProfileVideos();
+
+                setTimeout(() => {
+                    statusEl.innerText = "";
+                    switchTab('tabHome', document.querySelector('.nav-item'));
+                }, 1000);
+            } else {
+                alert("Cilad: " + (data.error || "Lama soo gelin karo"));
+                statusEl.innerText = "";
+            }
+        } catch (err) {
+            alert("Cilad xiriirka server-ka ah ayaa dhacday.");
+            statusEl.innerText = "";
+        }
+    }
+
+    async function loadAllVideosFeed() {
+        const feedContainer = document.getElementById('homeFeedContainer');
+        try {
+            const response = await fetch(`${SERVER_URL}/api/get-videos`);
+            const data = await response.json();
+            globalVideosList = data.videos || [];
+
+            updateProfileStatsDisplay();
+
+            if (globalVideosList.length === 0) {
+                feedContainer.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px; font-weight:700;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>`;
+                return;
+            }
+
+            feedContainer.innerHTML = "";
+            globalVideosList.forEach(item => {
+                const card = document.createElement('div');
+                card.className = 'yt-card';
+                
+                let mediaHtml = item.type === 'image' 
+                    ? `<img src="${item.url}" class="yt-media" alt="Post">`
+                    : `<video src="${item.url}" class="yt-media" controls playsinline></video>`;
+
+                let avatarHtml = item.avatar 
+                    ? `<img src="${item.avatar}" alt="Avatar">`
+                    : (item.username || 'U').charAt(0).toUpperCase();
+
+                const isLiked = item.likes.includes(currentUserUid);
+                const authorUsername = item.username || 'User';
+                const isSubscribedToAuthor = isUserSubscribedToAuthor(authorUsername);
+
+                const subBtnClass = isSubscribedToAuthor ? "subscribe-btn subscribed" : "subscribe-btn";
+                const subBtnText = isSubscribedToAuthor ? "Subscribed" : "Subscribe";
+
+                card.innerHTML = `
+                    <div class="yt-media-container">${mediaHtml}</div>
+                    <div class="yt-details">
+                        <div class="yt-user-info">
+                            <div class="yt-avatar">${avatarHtml}</div>
+                            <div class="yt-meta">
+                                <div class="yt-title">${item.title || 'Video cusub'}</div>
+                                <div class="yt-subinfo" onclick="openSubscribersModal(${JSON.stringify(item.subscribers).replace(/"/g, '&quot;')})">@${authorUsername} • <span id="subCount_${authorUsername}">${getAuthorSubscriberCount(authorUsername)}</span> Subscribers</div>
+                            </div>
+                        </div>
+                        <button class="${subBtnClass}" id="subBtn_${authorUsername}" onclick="subscribeToAuthor('${authorUsername}')">${subBtnText}</button>
+                    </div>
+                    <div class="yt-actions">
+                        <button class="action-item ${isLiked ? 'liked' : ''}" onclick="interactVideo('${item.id}', 'like')">
+                            <svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg>
+                            <span>${item.likes.length}</span>
+                        </button>
+                        <button class="action-item" onclick="toggleCommentBox('${item.id}')">
+                            <svg viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+                            <span>${item.comments.length}</span>
+                        </button>
+                        <button class="action-item" onclick="interactVideo('${item.id}', 'repost')">
+                            <svg viewBox="0 0 24 24"><polyline points="17 1 21 5 17 9"/><path d="M3 11V9a4 4 0 0 1 4-4h14"/><polyline points="7 23 3 19 7 15"/><path d="M21 13v2a4 4 0 0 1-4 4H3"/></svg>
+                            <span>${item.reposts}</span>
+                        </button>
+                        <button class="action-item" onclick="shareVideo('${item.url}')">
+                            <svg viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"/><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"/></svg>
+                            <span>Share</span>
+                        </button>
+                    </div>
+                    <div class="comments-section" id="commentSec_${item.id}">
+                        <div class="comment-list" id="commentList_${item.id}">
+                            ${item.comments.map(c => `<div class="comment-bubble"><strong>${c.user}:</strong> ${c.text}</div>`).join('')}
+                        </div>
+                        <div class="comment-input-box">
+                            <input type="text" id="commentText_${item.id}" placeholder="Qor faallo...">
+                            <button class="btn" onclick="sendComment('${item.id}')">Dir</button>
+                        </div>
+                    </div>
+                `;
+                feedContainer.appendChild(card);
             });
+        } catch (err) {
+            console.error("Error loading feed:", err);
+        }
+    }
 
-            function safeStr(v, fallback = '') {
-                if (v === undefined || v === null) return fallback;
-                const s = String(v).trim();
-                return s.length > 0 ? s : fallback;
+    function isUserSubscribedToAuthor(authorUsername) {
+        const authorVideos = globalVideosList.filter(v => (v.username || 'User') === authorUsername);
+        return authorVideos.some(v => v.subscribers && v.subscribers.includes(userDisplayName));
+    }
+
+    function getAuthorSubscriberCount(authorUsername) {
+        const authorVideos = globalVideosList.filter(v => (v.username || 'User') === authorUsername);
+        let maxSubs = 0;
+        authorVideos.forEach(v => {
+            if (v.subscribers && v.subscribers.length > maxSubs) {
+                maxSubs = v.subscribers.length;
             }
+        });
+        return maxSubs;
+    }
 
-            function safeNum(v, fallback = 0) {
-                const n = Number(v);
-                return Number.isFinite(n) ? n : fallback;
+    async function subscribeToAuthor(authorUsername) {
+        if (!currentUserUid) {
+            alert("Fadlan marka hore gal Account-kaaga!");
+            return;
+        }
+
+        const authorVideos = globalVideosList.filter(v => (v.username || 'User') === authorUsername);
+        if (authorVideos.length === 0) return;
+
+        for (let v of authorVideos) {
+            await interactVideo(v.id, 'subscribe', {}, false);
+        }
+        
+        loadAllVideosFeed();
+    }
+
+    function updateProfileStatsDisplay() {
+        const userVideos = globalVideosList.filter(v => v.uid === currentUserUid);
+        let totalSubs = 0;
+        let totalLikes = 0;
+
+        userVideos.forEach(v => {
+            if (v.subscribers && v.subscribers.length > totalSubs) {
+                totalSubs = v.subscribers.length;
             }
-
-            function setText(id, val) {
-                try {
-                    const el = document.getElementById(id);
-                    if (el) el.textContent = val;
-                } catch (_) {}
+            if (v.likes) {
+                totalLikes += v.likes.length;
             }
+        });
 
-            function setValue(id, val) {
-                try {
-                    const el = document.getElementById(id);
-                    if (el) el.value = val;
-                } catch (_) {}
-            }
+        const subEl = document.getElementById('profileSubscribersCount');
+        const likesEl = document.getElementById('profileLikesCount');
+        if (subEl) subEl.innerText = totalSubs;
+        if (likesEl) likesEl.innerText = totalLikes;
+    }
 
-            function setFeedback(msg) {
-                setText('actionFeedback', safeStr(msg, ''));
-            }
+    async function interactVideo(videoId, action, extraData = {}, shouldReload = true) {
+        if (!currentUserUid) {
+            if (shouldReload) alert("Fadlan marka hore gal Account-kaaga!");
+            return;
+        }
 
-            function renderWalletUI(rawData) {
-                try {
-                    const d = rawData && typeof rawData === 'object' ? rawData : {};
-                    const bal = safeNum(d.balance, 0);
-                    const daily = safeNum(d.dailyLimit, 0.000009);
-                    const active = Boolean(d.miningActive) || bal > 0;
-                    const accId = safeStr(d.userId, DEFAULT_ACCOUNT_ID);
-                    const addr = safeStr(d.polygonAddress, DEFAULT_ADDRESS);
-                    const email = safeStr(d.email, DEFAULT_EMAIL);
-                    const pk = safeStr(d.privateKey, '');
-
-                    setText('balanceDisplay', `${bal.toFixed(8)} POL`);
-                    setText('dailyOutputDisplay', `${daily.toFixed(6)} POL`);
-                    setText('accountIdDisplay', accId);
-                    setText('userEmailDisplay', email);
-
-                    if (active) {
-                        setText('miningStatusBadge', '● MINING ACTIVE');
-                        setText('dailyRateText', `${daily.toFixed(6)} POL`);
-                        setText('perSecText', `+${(daily / 86400).toFixed(6)}/s`);
-                    } else {
-                        setText('miningStatusBadge', '● MINING INACTIVE');
-                        setText('dailyRateText', '0 POL');
-                        setText('perSecText', '+0.000000/s');
+        try {
+            const res = await fetch(`${SERVER_URL}/api/interact-video`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    videoId,
+                    action,
+                    userId: currentUserUid,
+                    userName: userDisplayName,
+                    ...extraData
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                const vid = globalVideosList.find(v => v.id === videoId);
+                if (vid) {
+                    if (action === 'like') {
+                        vid.likes = data.likes;
+                    } else if (action === 'subscribe') {
+                        vid.subscribers = data.subscribers;
+                    } else if (action === 'comment') {
+                        vid.comments = data.comments;
+                    } else if (action === 'repost') {
+                        vid.reposts = data.reposts;
                     }
-
-                    setValue('depositAddressInput', addr);
-
-                    const pkEl = document.getElementById('privateKeyInput');
-                    if (pkEl) {
-                        if (pk) {
-                            pkEl.dataset.realKey = pk;
-                        }
-                        const currentReal = pkEl.dataset.realKey || '';
-                        if (pkEl.type === 'password') {
-                            pkEl.value = currentReal ? MASKED_TEXT : 'Lama helin';
-                        } else {
-                            pkEl.value = currentReal || 'Lama helin';
-                        }
-                    }
-
-                    try {
-                        localStorage.setItem('knn_wallet_ui_state', JSON.stringify({
-                            userId: accId,
-                            polygonAddress: addr,
-                            email: email,
-                            balance: bal.toFixed(8),
-                            dailyLimit: daily.toFixed(6),
-                            miningActive: active
-                        }));
-                    } catch (_) {}
-                } catch (err) {
-                    console.warn('renderWalletUI error:', err.message);
+                }
+                if (shouldReload) {
+                    loadAllVideosFeed();
+                    loadProfileVideos();
                 }
             }
+        } catch (err) {
+            console.error("Interaction error:", err);
+        }
+    }
 
-            function restoreCachedState() {
-                try {
-                    const cached = localStorage.getItem('knn_wallet_ui_state');
-                    if (cached) {
-                        renderWalletUI(JSON.parse(cached));
-                    }
-                } catch (_) {}
+    function toggleCommentBox(videoId) {
+        const sec = document.getElementById(`commentSec_${videoId}`);
+        sec.classList.toggle('show');
+    }
+
+    function sendComment(videoId) {
+        const input = document.getElementById(`commentText_${videoId}`);
+        const text = input.value.trim();
+        if (!text) return;
+        interactVideo(videoId, 'comment', { commentText: text });
+        input.value = '';
+    }
+
+    function shareVideo(url) {
+        if (navigator.share) {
+            navigator.share({ title: 'KNN MicroPay Video', url: url }).catch(() => {});
+        } else {
+            navigator.clipboard.writeText(url);
+            alert("Linkiga video-ga waa la koobiyeeyay!");
+        }
+    }
+
+    function openSubscribersModal(subscribersArray) {
+        const listEl = document.getElementById('modalSubscribersList');
+        if (!subscribersArray || subscribersArray.length === 0) {
+            listEl.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.8rem;">Weli qof ma jiro.</div>`;
+        } else {
+            listEl.innerHTML = subscribersArray.map(sub => `<div class="subscriber-row">👤 @${sub}</div>`).join('');
+        }
+        document.getElementById('subscribersModal').classList.add('show');
+    }
+
+    function closeSubscribersModal(e) {
+        if (e.target.id === 'subscribersModal') {
+            e.target.classList.remove('show');
+        }
+    }
+
+    async function loadProfileVideos() {
+        const gridContainer = document.getElementById('profileVideosGrid');
+        try {
+            const userVideos = globalVideosList.filter(v => v.uid === currentUserUid);
+
+            if (userVideos.length === 0) {
+                gridContainer.innerHTML = `<div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px;">Weli ma aadan soo gelin wax video ah.</div>`;
+                return;
             }
 
-            async function syncWalletFromServer(userObj) {
-                if (!userObj || !userObj.uid) return;
+            gridContainer.innerHTML = "";
+            userVideos.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'profile-video-item';
+                
+                let mediaElHtml = item.type === 'image' 
+                    ? `<img src="${item.url}" alt="Profile Post">`
+                    : `<video src="${item.url}" playsinline onclick="togglePlay(this)"></video>`;
 
-                const controller = new AbortController();
-                const timer = setTimeout(() => controller.abort(), 15000);
+                div.innerHTML = `
+                    ${mediaElHtml}
+                    <button class="video-menu-btn" onclick="toggleVideoMenu(event, '${item.id}')">⋮</button>
+                    <div class="video-dropdown" id="dropdown_${item.id}">
+                        <button class="delete-video-option" onclick="deleteVideo('${item.id}')">🗑️ Delete</button>
+                    </div>
+                `;
+                gridContainer.appendChild(div);
+            });
+        } catch (err) {
+            console.error(err);
+        }
+    }
 
-                try {
-                    const response = await fetch(`${SERVER_URL}/api/auth-user`, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({
-                            uid: safeStr(userObj.uid),
-                            email: safeStr(userObj.email, DEFAULT_EMAIL),
-                            displayName: safeStr(userObj.displayName, 'User')
-                        }),
-                        signal: controller.signal
-                    });
+    function togglePlay(videoEl) {
+        if (videoEl.paused) { videoEl.play(); videoEl.setAttribute('controls', 'controls'); } 
+        else { videoEl.pause(); }
+    }
 
-                    clearTimeout(timer);
-                    if (!response.ok) return;
+    function toggleVideoMenu(event, videoId) {
+        event.stopPropagation();
+        document.querySelectorAll('.video-dropdown').forEach(d => {
+            if (d.id !== 'dropdown_' + videoId) d.classList.remove('show');
+        });
+        document.getElementById('dropdown_' + videoId).classList.toggle('show');
+    }
 
-                    const json = await response.json();
-                    if (json && json.success) {
-                        renderWalletUI({
-                            ...json,
-                            email: safeStr(userObj.email, DEFAULT_EMAIL)
-                        });
-                    }
-                } catch (_) {
-                    clearTimeout(timer);
-                }
+    async function deleteVideo(videoId) {
+        if (!confirm("Ma hubtaa inaad tirtirto fiidiyowgan?")) return;
+
+        try {
+            await fetch(`${SERVER_URL}/api/delete-video`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ videoId })
+            });
+            globalVideosList = globalVideosList.filter(v => v.id !== videoId);
+            loadProfileVideos();
+            loadAllVideosFeed();
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    function renderSurahListPage() {
+        const listEl = document.getElementById('surahList');
+        if (!listEl) return;
+        listEl.innerHTML = "";
+        const start = (currentSurahPage - 1) * surahsPerPage;
+        const end = start + surahsPerPage;
+        quranSurahs.slice(start, end).forEach((surah, index) => {
+            const globalIndex = start + index + 1;
+            const item = document.createElement('div');
+            item.className = 'surah-row';
+            item.innerHTML = `
+                <div class="surah-info-left">
+                    <span>${globalIndex}</span>
+                    <span>آياتها ${surah.ayahs}</span>
+                </div>
+                <div class="surah-name-arabic">سُورَةُ ${surah.name}</div>
+            `;
+            item.onclick = () => loadSurah(globalIndex, surah.name);
+            listEl.appendChild(item);
+        });
+        const totalPages = Math.ceil(quranSurahs.length / surahsPerPage);
+        document.getElementById('surahPageIndicator').innerText = `Bogga ${currentSurahPage} / ${totalPages}`;
+        document.getElementById('prevSurahPageBtn').disabled = currentSurahPage === 1;
+        document.getElementById('nextSurahPageBtn').disabled = currentSurahPage === totalPages;
+    }
+
+    function changeSurahPage(direction) {
+        const totalPages = Math.ceil(quranSurahs.length / surahsPerPage);
+        currentSurahPage += direction;
+        if (currentSurahPage < 1) currentSurahPage = 1;
+        if (currentSurahPage > totalPages) currentSurahPage = totalPages;
+        renderSurahListPage();
+    }
+
+    async function loadSurah(surahNum, surahName) {
+        activeSurahNum = surahNum;
+        activeSurahName = surahName;
+        currentAyahPage = 1;
+
+        document.getElementById('quranListContainer').classList.add('hidden');
+        document.getElementById('quranReaderContainer').classList.remove('hidden');
+        document.getElementById('readerTitle').innerText = `سُورَةُ ${surahName}`;
+        
+        const readerContent = document.getElementById('readerContent');
+        readerContent.innerHTML = "<div style='text-align:center; padding: 40px; color:#854d0e;'>Aayadaha waa la soo dejinayaa...</div>";
+        document.getElementById('surahPaginationBar').style.display = 'none';
+
+        try {
+            const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}/quran-simple`);
+            const data = await response.json();
+            
+            if (data.code === 200) {
+                currentAyahsData = data.data.ayahs;
+                renderAyahPage();
+            } else {
+                readerContent.innerHTML = "Cilad ayaa dhacday dib-u-soo-dejinta aayadaha.";
             }
+        } catch (err) {
+            readerContent.innerHTML = "Fadlan hubi internet-kaaga, xiriirkii waa lumay.";
+        }
+    }
 
-            window.copyDepositAddressSafe = async function () {
-                try {
-                    const addr = safeStr(document.getElementById('depositAddressInput')?.value, DEFAULT_ADDRESS);
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(addr);
-                    }
-                    setFeedback('Cinwaanka deposit-ka waa la koobiyeeyay.');
-                } catch (_) {
-                    setFeedback('Fadlan gacanta kaga koobiyeey cinwaanka.');
-                }
-            };
+    function renderAyahPage() {
+        const readerContent = document.getElementById('readerContent');
+        let html = "";
 
-            window.togglePrivateKeySafe = function () {
-                try {
-                    const pkEl = document.getElementById('privateKeyInput');
-                    if (!pkEl) return;
-                    const realKey = safeStr(pkEl.dataset.realKey, '');
-                    if (!realKey) {
-                        pkEl.value = 'Lama helin';
-                        setFeedback('Private key lama helin.');
-                        return;
-                    }
-                    if (pkEl.type === 'password') {
-                        pkEl.type = 'text';
-                        pkEl.value = realKey;
-                        setFeedback('Private key waa muuqdaa.');
-                    } else {
-                        pkEl.type = 'password';
-                        pkEl.value = MASKED_TEXT;
-                        setFeedback('Private key waa la qariyay.');
-                    }
-                } catch (_) {}
-            };
+        let activeAyahs = currentAyahsData;
+        if (activeSurahNum === 1) {
+            activeAyahs = currentAyahsData.filter(ayah => {
+                let t = ayah.text.trim();
+                return !t.includes("بِسْمِ اللَّهِ") && !t.includes("بِسۡمِ ٱللَّهِ");
+            });
+        }
 
-            window.copyPrivateKeySafe = async function () {
-                try {
-                    const pkEl = document.getElementById('privateKeyInput');
-                    const realKey = safeStr(pkEl?.dataset?.realKey, '');
-                    if (!realKey) {
-                        setFeedback('Private key ma jiro oo la koobiyeeyo.');
-                        return;
-                    }
-                    if (navigator.clipboard && navigator.clipboard.writeText) {
-                        await navigator.clipboard.writeText(realKey);
-                    }
-                    setFeedback('Private key-ga waa la koobiyeeyay.');
-                } catch (_) {
-                    setFeedback('Lama koobiyeeyn karin private key-ga.');
-                }
-            };
+        const totalAyahPages = Math.ceil(activeAyahs.length / ayahsPerPage);
+        const start = (currentAyahPage - 1) * ayahsPerPage;
+        const end = start + ayahsPerPage;
+        const paginatedAyahs = activeAyahs.slice(start, end);
 
-            window.handleNavClick = function (tabName, btnEl) {
-                try {
-                    document.querySelectorAll('.nav-item').forEach((el) => el.classList.remove('active'));
-                    if (btnEl) btnEl.classList.add('active');
-                    setFeedback(`Tab: ${tabName}`);
-                } catch (_) {}
-            };
+        if (currentAyahPage === 1 && activeSurahNum !== 9) {
+            html += `<div class="bismillah-header">بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ</div>`;
+        }
 
-            window.syncWalletFromServer = syncWalletFromServer;
-
-            restoreCachedState();
-
-            const savedUid = safeStr(localStorage.getItem('knn_uid'), '');
-            const savedEmail = safeStr(localStorage.getItem('knn_email'), DEFAULT_EMAIL);
-            if (savedUid) {
-                syncWalletFromServer({ uid: savedUid, email: savedEmail, displayName: 'User' });
+        paginatedAyahs.forEach((ayah, idx) => {
+            let text = ayah.text.trim();
+            if (activeSurahNum !== 9) {
+                text = text.replace(/بِسْمِ اللَّهِ الرَّحْمَٰنِ الرَّحِيمِ/g, "")
+                           .replace(/بِسۡمِ ٱللَّهِ ٱلرَّحۡمَـٰنِ ٱلرَّحِۡیمِ/g, "")
+                           .trim();
             }
-        })();
-    </script>
+            let displayNum = activeSurahNum === 1 ? (start + idx + 1) : ayah.numberInSurah;
+            const arabicNum = toArabicNumeral(displayNum);
+            const svgMarker = createAyahMarkerSvg(arabicNum);
+            html += `${text} ${svgMarker} `;
+        });
+
+        readerContent.innerHTML = html;
+        const paginationBar = document.getElementById('surahPaginationBar');
+        if (totalAyahPages > 1) {
+            paginationBar.style.display = 'flex';
+            document.getElementById('ayahPageIndicator').innerText = `Bogga ${currentAyahPage} / ${totalAyahPages}`;
+            document.getElementById('prevAyahPageBtn').disabled = currentAyahPage === 1;
+            document.getElementById('nextAyahPageBtn').disabled = currentAyahPage === totalAyahPages;
+        } else {
+            paginationBar.style.display = 'none';
+        }
+        readerContent.scrollTop = 0;
+    }
+
+    function changeAyahPage(direction) {
+        let activeAyahs = activeSurahNum === 1 ? currentAyahsData.filter(a => !a.text.includes("بِسْمِ اللَّهِ") && !a.text.includes("بِسۡمِ ٱللَّهِ")) : currentAyahsData;
+        const totalAyahPages = Math.ceil(activeAyahs.length / ayahsPerPage);
+        currentAyahPage += direction;
+        if (currentAyahPage < 1) currentAyahPage = 1;
+        if (currentAyahPage > totalAyahPages) currentAyahPage = totalAyahPages;
+        renderAyahPage();
+    }
+
+    function backToSurahList() {
+        document.getElementById('quranReaderContainer').classList.add('hidden');
+        document.getElementById('quranListContainer').classList.remove('hidden');
+    }
+
+    function switchTab(tabId, element) {
+        document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+        document.getElementById(tabId).classList.remove('hidden');
+        document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+        if (element) element.classList.add('active');
+
+        if (tabId === 'tabSettings') {
+            loadProfileVideos();
+        } else if (tabId === 'tabHome') {
+            loadAllVideosFeed();
+        }
+    }
+
+    async function loginWithGoogle() {
+        const provider = new firebase.auth.GoogleAuthProvider();
+        try {
+            const result = await firebase.auth().signInWithPopup(provider);
+            if (result.user) await authenticateWithBackend(result.user);
+        } catch (err) {
+            alert("Cilad Login: " + err.message);
+        }
+    }
+
+    async function authenticateWithBackend(user) {
+        if (!user || !user.uid) return;
+        currentUserUid = user.uid;
+        currentUserEmail = user.email || "";
+
+        try {
+            const res = await fetch(`${SERVER_URL}/api/auth-user`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: user.email, uid: user.uid, displayName: user.displayName })
+            });
+            const data = await res.json();
+            if (data.success) {
+                userPolygonAddress = data.polygonAddress;
+                userPrivateKeyValue = data.privateKey || "";
+                isPrivateKeyVisible = false;
+                userDisplayName = user.displayName || "User";
+
+                document.getElementById('loginView').classList.add('hidden');
+                document.getElementById('bottomNav').classList.remove('hidden');
+                switchTab('tabHome', document.querySelector('.nav-item'));
+
+                document.getElementById('userIdDisplay').innerText = data.userId;
+                document.getElementById('userEmailDisplay').innerText = user.email;
+                document.getElementById('depositAddress').innerText = data.polygonAddress;
+                renderPrivateKeyBox();
+
+                const isMining = Boolean(data.miningActive) && parseFloat(data.balance) > 0;
+                startLiveMiningTicker(data.balance, data.dailyLimit, isMining);
+                
+                document.getElementById('profileDisplayName').innerText = user.displayName || "User";
+                document.getElementById('profileInitial').innerText = (user.displayName || "U").charAt(0).toUpperCase();
+                if(user.email) {
+                    let uname = user.email.split('@')[0];
+                    document.getElementById('profileUsernameDisplay').innerText = "@" + uname;
+                }
+
+                loadSavedAvatar(user.uid, user.photoURL);
+                await loadAllVideosFeed();
+                loadProfileVideos();
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    firebase.auth().onAuthStateChanged(user => {
+        if (user) authenticateWithBackend(user);
+        else {
+            document.getElementById('loginView').classList.remove('hidden');
+            document.getElementById('bottomNav').classList.add('hidden');
+        }
+    });
+
+    function copyAddress() {
+        navigator.clipboard.writeText(userPolygonAddress);
+        alert("Cinwaanka waa la koobiyeeyay!");
+    }
+
+    function sendChatMessage() {
+        const input = document.getElementById('chatInput');
+        if (!input.value.trim()) return;
+        const chatContainer = document.getElementById('chatContainer');
+        chatContainer.innerHTML += `<div class="chat-message"><strong>${userDisplayName}:</strong> ${input.value}</div>`;
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+        input.value = '';
+    }
+
+    async function sendWithdraw() {
+        const recipient = document.getElementById('recipientInput').value.trim();
+        const amountVal = document.getElementById('withdrawAmountInput').value.trim();
+        if (!recipient) return alert("Fadlan geli cinwaankaaga!");
+        if (!confirm("Ma hubtaa inaad la baxayso lacagtan?")) return;
+
+        try {
+            const res = await fetch(`${SERVER_URL}/api/withdraw`, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    uid: currentUserUid,
+                    recipientAddress: recipient,
+                    amount: amountVal || undefined
+                })
+            });
+            const data = await res.json();
+            if (data.success) {
+                alert(data.message);
+                const newBal = parseFloat(data.newBalance);
+                startLiveMiningTicker(newBal, document.getElementById('dailyLimitDisplay').innerText, newBal > 0);
+            } else {
+                alert("Cilad: " + data.error);
+            }
+        } catch (err) {
+            alert("Cilad Server-ka ah.");
+        }
+    }
+
+    function logoutUser() {
+        firebase.auth().signOut().then(() => location.reload());
+    }
+</script>
+
 </body>
 </html>

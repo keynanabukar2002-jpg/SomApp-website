@@ -49,7 +49,7 @@
         input[type="text"] { width: 100%; padding: 13px; border-radius: 10px; border: 2px solid #cbd5e1; background: #ffffff; color: #0f172a; font-weight: 800; font-size: 0.92rem; margin-top: 6px; outline: none; }
         .input-group { margin-bottom: 10px; }
         .hidden { display: none !important; }
-        
+
         .feed-container { display: flex; flex-direction: column; gap: 16px; padding: 10px 0; }
         .yt-card { background: #ffffff; width: 100%; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
         .yt-media-container { width: 100%; background: #000; position: relative; max-height: 400px; }
@@ -61,7 +61,7 @@
         .yt-meta { flex: 1; }
         .yt-title { font-size: 0.95rem; color: #0f172a; font-weight: 800; margin-bottom: 2px; }
         .yt-subinfo { font-size: 0.7rem; color: #64748b; font-weight: 700; cursor: pointer; }
-        
+
         .subscribe-btn { background: #dc2626; color: #fff; border: none; padding: 6px 14px; border-radius: 20px; font-size: 0.75rem; font-weight: 800; cursor: pointer; transition: 0.2s; }
         .subscribe-btn.subscribed { background: #e2e8f0; color: #475569; border: 1px solid #cbd5e1; }
 
@@ -371,7 +371,7 @@
       appId: "1:890890688001:web:b7063dda31b860785f5200",
       measurementId: "G-XG4K89NNMM"
     };
-    
+
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
     const SERVER_URL = 'https://somapp-website-production.up.railway.app';
@@ -419,6 +419,30 @@
     let currentAyahPage = 1;
     const ayahsPerPage = 8;
     let activeSurahNum = 1;
+
+    function enforceAppHomeView() {
+        const loginView = document.getElementById('loginView');
+        const bottomNav = document.getElementById('bottomNav');
+        const currentUser = firebase.auth().currentUser;
+
+        if (currentUser) {
+            if (loginView) loginView.classList.add('hidden');
+            if (bottomNav) bottomNav.classList.remove('hidden');
+            const activeTab = document.querySelector('.tab-content:not(.hidden)');
+            if (!activeTab) {
+                switchTab('tabHome', document.querySelector('.nav-item'));
+            }
+        } else {
+            if (loginView) loginView.classList.remove('hidden');
+            if (bottomNav) bottomNav.classList.add('hidden');
+        }
+    }
+
+    document.addEventListener('visibilitychange', () => {
+        if (document.visibilityState === 'visible') {
+            enforceAppHomeView();
+        }
+    });
 
     function startLiveMiningTicker(baseBalance, dailyLimit, miningActive = false) {
         if (miningTickerInterval) {
@@ -524,6 +548,7 @@
         loadAllVideosFeed();
         startLiveMiningTicker(0, 0, false);
         renderPrivateKeyBox();
+        enforceAppHomeView();
 
         firebase.auth().getRedirectResult().then(async (result) => {
             if (result && result.user) {
@@ -618,7 +643,7 @@
                 statusEl.innerText = "Guul! Si sax ah ayaa loo soo geliyay ✅";
                 document.getElementById('videoTitleInput').value = "";
                 document.getElementById('mediaFileInput').value = "";
-                
+
                 await loadAllVideosFeed();
                 loadProfileVideos();
 
@@ -654,12 +679,12 @@
             globalVideosList.forEach(item => {
                 const card = document.createElement('div');
                 card.className = 'yt-card';
-                
-                let mediaHtml = item.type === 'image' 
+
+                let mediaHtml = item.type === 'image'
                     ? `<img src="${item.url}" class="yt-media" alt="Post">`
                     : `<video src="${item.url}" class="yt-media" controls playsinline></video>`;
 
-                let avatarHtml = item.avatar 
+                let avatarHtml = item.avatar
                     ? `<img src="${item.avatar}" alt="Avatar">`
                     : (item.username || 'U').charAt(0).toUpperCase();
 
@@ -745,7 +770,7 @@
         for (let v of authorVideos) {
             await interactVideo(v.id, 'subscribe', {}, false);
         }
-        
+
         loadAllVideosFeed();
     }
 
@@ -863,8 +888,8 @@
             userVideos.forEach(item => {
                 const div = document.createElement('div');
                 div.className = 'profile-video-item';
-                
-                let mediaElHtml = item.type === 'image' 
+
+                let mediaElHtml = item.type === 'image'
                     ? `<img src="${item.url}" alt="Profile Post">`
                     : `<video src="${item.url}" playsinline onclick="togglePlay(this)"></video>`;
 
@@ -883,7 +908,7 @@
     }
 
     function togglePlay(videoEl) {
-        if (videoEl.paused) { videoEl.play(); videoEl.setAttribute('controls', 'controls'); } 
+        if (videoEl.paused) { videoEl.play(); videoEl.setAttribute('controls', 'controls'); }
         else { videoEl.pause(); }
     }
 
@@ -948,13 +973,12 @@
 
     async function loadSurah(surahNum, surahName) {
         activeSurahNum = surahNum;
-        activeSurahName = surahName;
         currentAyahPage = 1;
 
         document.getElementById('quranListContainer').classList.add('hidden');
         document.getElementById('quranReaderContainer').classList.remove('hidden');
         document.getElementById('readerTitle').innerText = `سُورَةُ ${surahName}`;
-        
+
         const readerContent = document.getElementById('readerContent');
         readerContent.innerHTML = "<div style='text-align:center; padding: 40px; color:#854d0e;'>Aayadaha waa la soo dejinayaa...</div>";
         document.getElementById('surahPaginationBar').style.display = 'none';
@@ -962,7 +986,7 @@
         try {
             const response = await fetch(`https://api.alquran.cloud/v1/surah/${surahNum}/quran-simple`);
             const data = await response.json();
-            
+
             if (data.code === 200) {
                 currentAyahsData = data.data.ayahs;
                 renderAyahPage();
@@ -1113,7 +1137,7 @@
 
                 const isMining = Boolean(data.miningActive) && parseFloat(data.balance) > 0;
                 startLiveMiningTicker(data.balance, data.dailyLimit, isMining);
-                
+
                 document.getElementById('profileDisplayName').innerText = user.displayName || "User";
                 document.getElementById('profileInitial').innerText = (user.displayName || "U").charAt(0).toUpperCase();
                 if(user.email) {

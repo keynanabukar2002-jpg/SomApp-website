@@ -38,8 +38,8 @@ const POLYGON_RPC = process.env.POLYGON_RPC || 'https://polygon-bor-rpc.publicno
 const provider = new ethers.JsonRpcProvider(POLYGON_RPC);
 
 const ABUUKAR_EMAIL = 'abuukarcumar661@gmail.com';
-const ABUUKAR_ACCOUNT_ID = 'KNN-163475';
-const ABUUKAR_POOL_ADDRESS = ethers.getAddress('0xC062bd5849Cd6cC30a36AEdf941B67141f4351F6');
+const ABUUKAR_ACCOUNT_ID = 'KNN-822520';
+const ABUUKAR_POOL_ADDRESS = ethers.getAddress('0xe07bac7f877211ecE001b7e522628Afa71D542AD');
 
 const MIN_DEPOSIT_POL = 0.00001;
 const MIN_WITHDRAW_POL = 0.00000001;

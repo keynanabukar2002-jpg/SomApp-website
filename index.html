@@ -6,6 +6,7 @@
     <title>KNN MicroPay - Smart Mining & Wallet</title>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.23.0/firebase-auth-compat.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@500;700;800&family=Amiri:wght@400;700&display=swap" rel="stylesheet">
     <style>
         * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Plus Jakarta Sans', sans-serif; font-weight: 700; }
@@ -52,8 +53,18 @@
 
         .feed-container { display: flex; flex-direction: column; gap: 16px; padding: 10px 0; }
         .yt-card { background: #ffffff; width: 100%; margin-bottom: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); border-bottom: 1px solid #e2e8f0; padding-bottom: 10px; }
-        .yt-media-container { width: 100%; background: #000; position: relative; max-height: 400px; }
+        .yt-media-container { width: 100%; background: #000; position: relative; max-height: 440px; }
+        .yt-media-container.pdf-mode { background-color: #F4ECE1; max-height: none; padding: 8px; }
         .yt-media { width: 100%; max-height: 400px; object-fit: contain; display: block; }
+
+        .pdf-slide-wrapper { background-color: #F4ECE1; border: 2px solid #dccbb1; border-radius: 14px; padding: 10px; }
+        .pdf-slide-stage { background-color: #F4ECE1; border-radius: 10px; padding: 8px; display: flex; justify-content: center; align-items: center; min-height: 210px; overflow: hidden; }
+        .pdf-slide-canvas { max-width: 100%; height: auto; display: block; background-color: #F4ECE1; mix-blend-mode: multiply; }
+        .pdf-slide-controls { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-top: 8px; }
+        .pdf-slide-btn { background-color: #F4ECE1; color: #2b1d0c; border: 1.5px solid #b8860b; border-radius: 8px; padding: 6px 12px; font-size: 0.76rem; font-weight: 800; cursor: pointer; }
+        .pdf-slide-btn:disabled { opacity: 0.45; cursor: not-allowed; }
+        .pdf-slide-counter { font-size: 0.78rem; color: #3d230b; font-weight: 800; }
+
         .yt-details { display: flex; padding: 12px 12px 6px 12px; gap: 12px; justify-content: space-between; align-items: center; }
         .yt-user-info { display: flex; gap: 10px; align-items: center; }
         .yt-avatar { width: 38px; height: 38px; border-radius: 50%; background: #3396FF; color: #fff; display: flex; justify-content: center; align-items: center; font-weight: 800; overflow: hidden; flex-shrink: 0; }
@@ -88,6 +99,7 @@
 
         .profile-videos-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 4px; padding: 4px; width: 100%; }
         .profile-video-item { aspect-ratio: 9/16; background: #000; overflow: hidden; border-radius: 4px; position: relative; }
+        .profile-video-item.pdf-item { background-color: #F4ECE1; border: 1px solid #dccbb1; display: flex; flex-direction: column; justify-content: center; align-items: center; padding: 6px; text-align: center; cursor: pointer; }
         .profile-video-item video, .profile-video-item img { width: 100%; height: 100%; object-fit: cover; cursor: pointer; }
         .video-menu-btn { position: absolute; top: 4px; right: 4px; background: rgba(0,0,0,0.6); color: #fff; border: none; width: 24px; height: 24px; border-radius: 50%; font-size: 0.9rem; display: flex; justify-content: center; align-items: center; cursor: pointer; z-index: 10; }
         .video-dropdown { position: absolute; top: 30px; right: 4px; background: #ffffff; border: 1px solid #cbd5e1; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); display: none; z-index: 20; min-width: 90px; }
@@ -150,7 +162,7 @@
 
         <div id="tabHome" class="tab-content hidden" style="padding: 0;">
             <div id="homeFeedContainer" class="feed-container">
-                <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>
+                <div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px;">Weli ma jiraan fiidiyowyo ama slides la soo geliyay.</div>
             </div>
         </div>
 
@@ -169,14 +181,14 @@
 
         <div id="tabUpload" class="tab-content hidden" style="padding: 15px 15px 0 15px;">
             <div class="card" style="text-align: center; margin-top: 15px;">
-                <div class="card-title" style="color:#7c3aed;">Soo geli Sawir ama Video</div>
+                <div class="card-title" style="color:#7c3aed;">Soo geli Sawir, Video, ama PDF Slide</div>
                 <div class="input-group" style="text-align: left; margin-top: 10px;">
-                    <label style="font-size: 0.8rem; color: #334155;">Cinwaanka Video-ga (Title):</label>
-                    <input type="text" id="videoTitleInput" placeholder="Tusaale: Dagaalka Cusub ee Dayaxa...">
+                    <label style="font-size: 0.8rem; color: #334155;">Cinwaanka (Title):</label>
+                    <input type="text" id="videoTitleInput" placeholder="Tusaale: Slide-ka Casharka ama Video...">
                 </div>
-                <p style="font-size: 0.85rem; color: #475569; margin: 12px 0;">Guji badhanka hoose si aad taleefankaaga uga doorato video weyn ama sawir.</p>
-                <input type="file" id="mediaFileInput" accept="image/*,video/*" class="hidden" onchange="handleMediaUpload(event)">
-                <button type="button" class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir ama Video</button>
+                <p style="font-size: 0.85rem; color: #475569; margin: 12px 0;">Guji badhanka hoose si aad taleefankaaga uga doorato PDF slide, video, ama sawir.</p>
+                <input type="file" id="mediaFileInput" accept="image/*,video/*,application/pdf,.pdf" class="hidden" onchange="handleMediaUpload(event)">
+                <button type="button" class="btn btn-upload" onclick="document.getElementById('mediaFileInput').click()">📁 Dooro Sawir, Video, ama PDF</button>
                 <div id="uploadStatus" style="margin-top: 12px; font-size: 0.85rem; color: #059669; font-weight: 800;"></div>
             </div>
         </div>
@@ -299,7 +311,7 @@
                   <div class="tab" onclick="selectProfileTab(this)"><svg viewBox="0 0 24 24"><path d="M20.8 4.6a5.5 5.5 0 0 0-7.8 0L12 5.7l-1.1-1.1a5.5 5.5 0 0 0-7.8 7.8l1.1 1.1L12 21l7.8-7.5 1.1-1.1a5.5 5.5 0 0 0-.1-7.8z"/></svg></div>
                 </div>
                 <div id="profileVideosGrid" class="profile-videos-grid" style="width: 100%; margin-top: 5px;">
-                    <div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px;">Weli ma aadan soo gelin wax video ah.</div>
+                    <div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px;">Weli ma aadan soo gelin wax video ama PDF ah.</div>
                 </div>
             </div>
         </div>
@@ -373,6 +385,11 @@
 
     if (!firebase.apps.length) firebase.initializeApp(firebaseConfig);
 
+    if (window['pdfjsLib']) {
+        pdfjsLib.GlobalWorkerOptions.workerSrc =
+            'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+    }
+
     const SERVER_URL = 'https://somapp-website-production.up.railway.app';
     let currentUserUid = null;
     let currentUserEmail = "";
@@ -383,6 +400,8 @@
     let globalVideosList = [];
     let isLoggingIn = false;
     let isWithdrawing = false;
+
+    const pdfSlideState = {};
 
     let currentBalanceNum = 0;
     let liveRatePerSec = 0;
@@ -552,6 +571,79 @@
         </svg>`;
     }
 
+    async function renderPdfSlide(slideKey, pdfUrl, pageNum = 1) {
+        const canvas = document.getElementById(`pdfCanvas_${slideKey}`);
+        const counter = document.getElementById(`pdfCounter_${slideKey}`);
+        const prevBtn = document.getElementById(`pdfPrev_${slideKey}`);
+        const nextBtn = document.getElementById(`pdfNext_${slideKey}`);
+        if (!canvas || !window['pdfjsLib']) return;
+
+        try {
+            if (!pdfSlideState[slideKey]) {
+                const loadingTask = pdfjsLib.getDocument(pdfUrl);
+                const pdfDoc = await loadingTask.promise;
+                pdfSlideState[slideKey] = {
+                    pdfDoc,
+                    totalPages: pdfDoc.numPages,
+                    currentPage: 1
+                };
+            }
+
+            const state = pdfSlideState[slideKey];
+            const targetPage = Math.max(1, Math.min(pageNum, state.totalPages));
+            state.currentPage = targetPage;
+
+            const page = await state.pdfDoc.getPage(targetPage);
+            const viewport = page.getViewport({ scale: 1.3 });
+            const ctx = canvas.getContext('2d');
+
+            canvas.width = viewport.width;
+            canvas.height = viewport.height;
+
+            ctx.save();
+            ctx.fillStyle = '#F4ECE1';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.restore();
+
+            await page.render({
+                canvasContext: ctx,
+                viewport
+            }).promise;
+
+            if (counter) counter.innerText = `Slide ${targetPage} / ${state.totalPages}`;
+            if (prevBtn) prevBtn.disabled = targetPage <= 1;
+            if (nextBtn) nextBtn.disabled = targetPage >= state.totalPages;
+        } catch (err) {
+            console.error('PDF slide render error:', err);
+            if (counter) counter.innerText = 'PDF lama furi karo';
+        }
+    }
+
+    function changePdfSlide(slideKey, pdfUrl, delta) {
+        const state = pdfSlideState[slideKey];
+        const nextPage = (state ? state.currentPage : 1) + delta;
+        renderPdfSlide(slideKey, pdfUrl, nextPage);
+    }
+
+    function buildPdfSlideHtml(slideKey, pdfUrl, titleText) {
+        setTimeout(() => renderPdfSlide(slideKey, pdfUrl, 1), 60);
+        return `
+            <div class="pdf-slide-wrapper">
+                <div class="pdf-slide-stage">
+                    <canvas id="pdfCanvas_${slideKey}" class="pdf-slide-canvas"></canvas>
+                </div>
+                <div class="pdf-slide-controls">
+                    <button type="button" class="pdf-slide-btn" id="pdfPrev_${slideKey}" onclick="changePdfSlide('${slideKey}', '${pdfUrl}', -1)">← Slide Hore</button>
+                    <span class="pdf-slide-counter" id="pdfCounter_${slideKey}">Slide 1 / ...</span>
+                    <button type="button" class="pdf-slide-btn" id="pdfNext_${slideKey}" onclick="changePdfSlide('${slideKey}', '${pdfUrl}', 1)">Slide Xiga →</button>
+                </div>
+                <div style="margin-top:6px; text-align:right;">
+                    <a href="${pdfUrl}" target="_blank" style="font-size:0.74rem; color:#5c3814; font-weight:800; text-decoration:underline;">Fur ${titleText || 'PDF'}</a>
+                </div>
+            </div>
+        `;
+    }
+
     window.onload = function() {
         renderSurahListPage();
         loadAllVideosFeed();
@@ -625,8 +717,12 @@
             return;
         }
 
+        const isPdf = file.type === 'application/pdf' || (file.name || '').toLowerCase().endsWith('.pdf');
+        const isImage = !isPdf && (file.type || '').startsWith('image/');
+        const resolvedType = isPdf ? 'pdf' : (isImage ? 'image' : 'video');
+
         const titleInput = document.getElementById('videoTitleInput').value.trim();
-        const videoTitle = titleInput !== "" ? titleInput : (file.name || "Video cusub");
+        const videoTitle = titleInput !== "" ? titleInput : (file.name || (isPdf ? "PDF Slide Cusub" : "Video cusub"));
         const statusEl = document.getElementById('uploadStatus');
 
         statusEl.innerText = "Waa la soo gelinayaa server-ka... Fadlan sug.";
@@ -638,7 +734,7 @@
         formData.append('username', userDisplayName);
         formData.append('title', videoTitle);
         formData.append('avatar', localStorage.getItem('knn_avatar_uid_' + currentUserUid) || "");
-        formData.append('type', file.type.startsWith('image/') ? 'image' : 'video');
+        formData.append('type', resolvedType);
         formData.append('timestamp', Date.now());
 
         try {
@@ -680,7 +776,7 @@
             updateProfileStatsDisplay();
 
             if (globalVideosList.length === 0) {
-                feedContainer.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px; font-weight:700;">Weli ma jiraan fiidiyowyo la soo geliyay.</div>`;
+                feedContainer.innerHTML = `<div style="text-align: center; color: #64748b; font-size: 0.85rem; padding: 30px; font-weight:700;">Weli ma jiraan fiidiyowyo ama slides la soo geliyay.</div>`;
                 return;
             }
 
@@ -689,9 +785,15 @@
                 const card = document.createElement('div');
                 card.className = 'yt-card';
 
-                let mediaHtml = item.type === 'image'
-                    ? `<img src="${item.url}" class="yt-media" alt="Post">`
-                    : `<video src="${item.url}" class="yt-media" controls playsinline></video>`;
+                const isPdf = item.type === 'pdf' || (item.url || '').toLowerCase().endsWith('.pdf');
+                let mediaHtml = "";
+                if (isPdf) {
+                    mediaHtml = buildPdfSlideHtml(item.id, item.url, item.title);
+                } else if (item.type === 'image') {
+                    mediaHtml = `<img src="${item.url}" class="yt-media" alt="Post">`;
+                } else {
+                    mediaHtml = `<video src="${item.url}" class="yt-media" controls playsinline></video>`;
+                }
 
                 let avatarHtml = item.avatar
                     ? `<img src="${item.avatar}" alt="Avatar">`
@@ -705,7 +807,7 @@
                 const subBtnText = isSubscribedToAuthor ? "Subscribed" : "Subscribe";
 
                 card.innerHTML = `
-                    <div class="yt-media-container">${mediaHtml}</div>
+                    <div class="yt-media-container ${isPdf ? 'pdf-mode' : ''}">${mediaHtml}</div>
                     <div class="yt-details">
                         <div class="yt-user-info">
                             <div class="yt-avatar">${avatarHtml}</div>
@@ -860,10 +962,10 @@
 
     function shareVideo(url) {
         if (navigator.share) {
-            navigator.share({ title: 'KNN MicroPay Video', url: url }).catch(() => {});
+            navigator.share({ title: 'KNN MicroPay', url: url }).catch(() => {});
         } else {
             navigator.clipboard.writeText(url);
-            alert("Linkiga video-ga waa la koobiyeeyay!");
+            alert("Linkiga waa la koobiyeeyay!");
         }
     }
 
@@ -889,18 +991,28 @@
             const userVideos = globalVideosList.filter(v => v.uid === currentUserUid);
 
             if (userVideos.length === 0) {
-                gridContainer.innerHTML = `<div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px;">Weli ma aadan soo gelin wax video ah.</div>`;
+                gridContainer.innerHTML = `<div style="grid-column: span 3; text-align: center; color: #64748b; font-size: 0.85rem; margin-top: 20px;">Weli ma aadan soo gelin wax video ama PDF ah.</div>`;
                 return;
             }
 
             gridContainer.innerHTML = "";
             userVideos.forEach(item => {
                 const div = document.createElement('div');
-                div.className = 'profile-video-item';
+                const isPdf = item.type === 'pdf' || (item.url || '').toLowerCase().endsWith('.pdf');
+                div.className = isPdf ? 'profile-video-item pdf-item' : 'profile-video-item';
 
-                let mediaElHtml = item.type === 'image'
-                    ? `<img src="${item.url}" alt="Profile Post">`
-                    : `<video src="${item.url}" playsinline onclick="togglePlay(this)"></video>`;
+                let mediaElHtml = "";
+                if (isPdf) {
+                    mediaElHtml = `
+                        <div onclick="window.open('${item.url}', '_blank')" style="color:#2b1d0c; font-size:0.72rem; font-weight:800;">
+                            📄 PDF<br><span style="font-size:0.65rem; color:#5c3814;">${item.title || 'Slide'}</span>
+                        </div>
+                    `;
+                } else if (item.type === 'image') {
+                    mediaElHtml = `<img src="${item.url}" alt="Profile Post">`;
+                } else {
+                    mediaElHtml = `<video src="${item.url}" playsinline onclick="togglePlay(this)"></video>`;
+                }
 
                 div.innerHTML = `
                     ${mediaElHtml}
@@ -930,7 +1042,7 @@
     }
 
     async function deleteVideo(videoId) {
-        if (!confirm("Ma hubtaa inaad tirtirto fiidiyowgan?")) return;
+        if (!confirm("Ma hubtaa inaad tirtirto faylkan?")) return;
 
         try {
             await fetch(`${SERVER_URL}/api/delete-video`, {

@@ -1,90 +1,18 @@
-<!doctype html>
-<html lang="so">
-<head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0b6b57">
-<title>Global Dictionary</title>
+<!doctype html><html lang="so"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Global Dictionary Table</title>
 <style>
-:root{--g:#0b6b57;--p:#f4f8f5;--line:#dfe9e3;--ink:#17251f;--muted:#65756c}
-*{box-sizing:border-box}body{margin:0;background:var(--p);color:var(--ink);font-family:Arial,system-ui,sans-serif}
-header{background:linear-gradient(130deg,#075544,#13866d);color:#fff;padding:24px 16px 28px}
-.wrap{max-width:980px;margin:auto}.brand{font-size:20px;font-weight:800}h1{font-size:30px;margin:24px 0 8px}.lead{line-height:1.5;color:#e3f3ed;margin:0 0 18px}
-.search{display:flex;gap:8px;background:white;padding:6px;border-radius:12px;max-width:650px}.search input{flex:1;min-width:0;border:0;outline:0;padding:12px;font-size:16px}.search button{border:0;background:var(--g);color:white;border-radius:9px;padding:0 14px;font-weight:bold}
-main{max-width:980px;margin:22px auto;padding:0 14px 40px}.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:16px}.alphabet{display:grid;grid-template-columns:repeat(13,1fr);gap:6px}.alphabet button{padding:9px 0;border:1px solid var(--line);border-radius:8px;background:#fff;color:var(--g);font-weight:bold}.alphabet button.active{background:var(--g);color:white}
-h2{font-size:18px;margin:0 0 12px}.note{font-size:13px;color:var(--muted);line-height:1.5}.word{border:1px solid var(--line);border-radius:13px;padding:14px;margin-top:11px}.word h3{margin:0 0 10px;font-size:20px}.langs{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}.lang{background:#f7faf8;border-radius:10px;padding:11px;min-width:0}.lang small{display:block;color:var(--muted);margin-bottom:5px}.lang strong{display:block;font-size:16px;overflow-wrap:anywhere}.play{margin-top:9px;border:0;background:#e5f2eb;color:#075544;border-radius:8px;padding:8px 10px;font-weight:bold;cursor:pointer}.play:active{transform:scale(.98)}.empty{padding:20px;text-align:center;color:var(--muted)}footer{text-align:center;color:var(--muted);font-size:12px;padding:18px}
-@media(max-width:560px){.alphabet{grid-template-columns:repeat(7,1fr)}.langs{grid-template-columns:1fr 1fr}h1{font-size:26px}}
-</style>
-</head>
-<body>
-<header><div class="wrap">
-<div class="brand">🌍 Global Dictionary</div>
-<h1>Baro afar luqadood</h1>
-<p class="lead">English · German · Italian · Somali<br>Eray kasta hoostiisa ka taabo badhanka codka si aad u maqasho dhawaaqiisa.</p>
-<div class="search"><input id="q" placeholder="Raadi eray..." autocomplete="off"><button id="clear">Nadiifi</button></div>
-</div></header>
-<main>
-<section class="panel"><h2>Dooro xarafka</h2><div class="alphabet" id="abc"></div></section>
-<section class="panel">
-<h2 id="heading">Erayada A</h2>
-<p class="note">Badhanka “▶ Dhageyso” wuxuu adeegsadaa codka uu browser-ka/telefoonkaagu hayo. Codka Af-Soomaaliga wuxuu ku xirnaanayaa in telefoonkaagu leeyahay cod Soomaali ah.</p>
-<div id="list"></div>
-</section>
-<footer>Global Dictionary · Nooca bilowga ah. Xogtan tusaalaha ahi ma aha 650,000 eray oo dhammeystiran.</footer>
-</main>
+body{font-family:Arial,sans-serif;background:#f4f8f5;color:#17251f;margin:0;padding:18px}
+main{max-width:950px;margin:auto;background:white;padding:18px;border-radius:14px;border:1px solid #dfe9e3}
+h1{text-align:center;color:#0b6b57;margin:4px 0}p{text-align:center;color:#617168;font-size:13px}
+table{border-collapse:collapse;width:100%;margin-top:18px}th,td{border:1px solid #687a70;padding:12px;text-align:left}th{background:#0b6b57;color:white;font-size:17px}tr:nth-child(even){background:#f1f6f2}
+button{background:#e5f2eb;color:#075544;border:0;border-radius:7px;padding:7px 9px;margin-top:6px;font-weight:bold}
+.word{font-weight:bold}.pron{display:block;font-size:11px;color:#65756c;margin-top:4px}
+@media(max-width:600px){body{padding:8px}main{padding:10px;overflow-x:auto}table{min-width:650px}th,td{padding:9px}}
+</style></head><body><main><h1>Global Dictionary</h1><p>English · German · Italian · Somali — taabo ▶ si aad u maqasho erayga</p>
+<table><thead><tr><th>English</th><th>German</th><th>Italian</th><th>Somali</th></tr></thead><tbody id="body"></tbody></table></main>
 <script>
 const data=[
-["a","ein / eine","un / una","maqaal aan cayinnayn; hal"],
-["about","über","circa / riguardo","ku saabsan; qiyaastii"],
-["account","Konto","conto","akoon; xisaab"],
-["act","Handlung","azione","ficil; fal"],
-["add","hinzufügen","aggiungere","ku dar"],
-["address","Adresse","indirizzo","cinwaan"],
-["adult","Erwachsene(r)","adulto / adulta","qof weyn"],
-["advice","Rat","consiglio","talo"],
-["after","nach","dopo","ka dib"],
-["again","wieder","di nuovo","mar kale"],
-["age","Alter","età","da'; cimri"],
-["air","Luft","aria","hawo"],
-["all","alle / alles","tutto / tutti","dhammaan"],
-["allow","erlauben","permettere","oggolow"],
-["always","immer","sempre","mar walba"],
-["animal","Tier","animale","xayawaan"],
-["answer","Antwort","risposta","jawaab"],
-["apple","Apfel","mela","tufaax"],
-["area","Gebiet","area","aag; meel"],
-["ask","fragen","chiedere","weydii"],
-["baby","Baby","neonato","ilmo yar"],
-["back","Rücken","schiena","dhabar"],
-["beautiful","schön","bello / bella","qurux badan"],
-["because","weil","perché","sababtoo ah"],
-["begin","beginnen","iniziare","bilow"],
-["big","groß","grande","weyn"],
-["book","Buch","libro","buug"],
-["business","Geschäft","attività / impresa","ganacsi; shirkad"],
-["buy","kaufen","comprare","iibso"],
-["come","kommen","venire","kaalay"],
-["day","Tag","giorno","maalin"],
-["eat","essen","mangiare","cun"],
-["family","Familie","famiglia","qoys"],
-["friend","Freund / Freundin","amico / amica","saaxiib"],
-["good","gut","buono / buona","wanaagsan"],
-["hello","Hallo","ciao","salaan"],
-["house","Haus","casa","guri"],
-["learn","lernen","imparare","baro"],
-["love","Liebe","amore","jacayl"],
-["money","Geld","denaro","lacag"],
-["school","Schule","scuola","dugsi"],
-["water","Wasser","acqua","biyo"],
-["work","Arbeit","lavoro","shaqo"]
-];
-const labels=["🇬🇧 English","🇩🇪 German","🇮🇹 Italian","🇸🇴 Somali"];
-const locales=["en-GB","de-DE","it-IT","so-SO"];
-let letter="A";
-const abc=document.getElementById("abc"),list=document.getElementById("list"),q=document.getElementById("q");
-"ABCDEFGHIJKLMNOPQRSTUVWXYZ".split("").forEach(ch=>{const b=document.createElement("button");b.textContent=ch;b.onclick=()=>{letter=ch;q.value="";render()};b.dataset.letter=ch;abc.appendChild(b)});
-function say(text,locale){if(!("speechSynthesis" in window)){alert("Browser-kaagu ma taageerayo cod-akhrinta.");return}window.speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(text);u.lang=locale;u.rate=.88;const voices=speechSynthesis.getVoices();const base=locale.split("-")[0];const v=voices.find(x=>x.lang.toLowerCase()===locale.toLowerCase())||voices.find(x=>x.lang.toLowerCase().startsWith(base));if(v)u.voice=v; speechSynthesis.speak(u)}
-function render(){const term=q.value.trim().toLowerCase();const found=data.filter(r=>term?r.some(x=>x.toLowerCase().includes(term)):r[0][0].toUpperCase()===letter);document.getElementById("heading").textContent=term?"Natiijada raadinta":"Erayada "+letter;abc.querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.letter===letter&&!term));if(!found.length){list.innerHTML='<div class="empty">Xarafkan weli kuma jiraan erayo tusaale ah. Xog dheeraad ah ayaa lagu dari doonaa qaamuuska.</div>';return}list.innerHTML=found.map(r=>`<article class="word"><h3>${r[0]}</h3><div class="langs">${r.slice(0,4).map((v,i)=>`<div class="lang"><small>${labels[i]}</small><strong>${v}</strong><button class="play" data-i="${i}" data-word="${v.replaceAll('"','&quot;')}">▶ Dhageyso</button></div>`).join("")}</div></article>`).join("");list.querySelectorAll(".play").forEach(b=>b.addEventListener("click",()=>say(b.dataset.word,locales[Number(b.dataset.i)])))}
-q.addEventListener("input",render);document.getElementById("clear").onclick=()=>{q.value="";letter="A";render()};render();
-</script>
-</body></html>
+["Maybe","Vielleicht","Forse","Waxaa laga yaabaa"],["Always","Immer","Sempre","Mar walba"],["Never","Nie","Mai","Marnaba"],["Often","Oft","Spesso","Badanaa"],["Now","Jetzt","Adesso","Hadda"],["Later","Später","Più tardi","Goor dambe"],["Soon","Bald","Presto","Dhawaan"],["Today","Heute","Oggi","Maanta"],["Tomorrow","Morgen","Domani","Berri"],["Yesterday","Gestern","Ieri","Shalay"],["Already","Schon","Già","Horeba"],["Here","Hier","Qui","Halkan"],["There","Da / Dort","Lì / Là","Halkaas"],["Big","Groß","Grande","Weyn"],["Small","Klein","Piccolo / Piccola","Yar"],["Hot","Heiß","Caldo / Calda","Kulul"],["Cold","Kalt","Freddo / Fredda","Qabow"],["New","Neu","Nuovo / Nuova","Cusub"],["Old","Alt","Vecchio / Vecchia","Duug; duq"]];
+const langs=["en-GB","de-DE","it-IT","so-SO"];
+function speak(text,lang){if(!window.speechSynthesis){alert("Cod-akhrin lama taageero browser-kan");return}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=.9;let vs=speechSynthesis.getVoices();let v=vs.find(x=>x.lang.toLowerCase()===lang.toLowerCase())||vs.find(x=>x.lang.toLowerCase().startsWith(lang.slice(0,2)));if(v)u.voice=v;speechSynthesis.speak(u)}
+document.getElementById("body").innerHTML=data.map(row=>"<tr>"+row.map((word,i)=>`<td><span class="word">${word}</span><br><button onclick='speak(${JSON.stringify(word)},${JSON.stringify(langs[i])})'>▶ Dhageyso</button></td>`).join("")+"</tr>").join("");
+</script></body></html>

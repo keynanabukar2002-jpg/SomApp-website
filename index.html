@@ -1,21 +1,54 @@
 <!doctype html>
-<html lang="so"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Global Dictionary – Kenyan English</title>
+<html lang="so">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#0b6b57">
+<title>Global Dictionary – Somali Voice Fix</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f4f8f5;color:#17251f;margin:0;padding:16px}
-main{max-width:950px;margin:auto;background:white;padding:18px;border-radius:14px;border:1px solid #dfe9e3}
-h1{text-align:center;color:#0b6b57;margin:4px 0}p{text-align:center;color:#617168;font-size:13px}
-table{border-collapse:collapse;width:100%;margin-top:18px}th,td{border:1px solid #687a70;padding:11px;text-align:left}th{background:#0b6b57;color:white}tr:nth-child(even){background:#f1f6f2}
-button{background:#e5f2eb;color:#075544;border:0;border-radius:7px;padding:7px 9px;margin-top:6px;font-weight:bold}
-@media(max-width:600px){main{padding:9px;overflow-x:auto}table{min-width:650px}th,td{padding:9px}}
-</style></head><body><main>
-<h1>Global Dictionary</h1>
-<p>English (Kenyan accent) · German · Italian · Somali</p>
-<p>Taabo badhanka codka ee erayga luqaddiisa si aad u maqasho.</p>
-<table><thead><tr><th>English (Kenya)</th><th>German</th><th>Italian</th><th>Somali</th></tr></thead><tbody id="body"></tbody></table>
+:root{--green:#0b6b57;--bg:#f4f8f5;--line:#dce7e0;--ink:#17251f;--muted:#65756c}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:Arial,system-ui,sans-serif}
+header{background:linear-gradient(130deg,#075544,#13866d);color:white;padding:22px 16px}
+.wrap,main{max-width:960px;margin:auto}
+h1{font-size:27px;margin:8px 0}.sub{line-height:1.5;color:#e5f4ed}
+main{padding:16px 12px 40px}
+.notice{background:#fff8e7;border:1px solid #ead9a7;color:#5f4b16;padding:12px;border-radius:10px;font-size:13px;line-height:1.5;margin-bottom:14px}
+.controls{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px}
+input{flex:1;min-width:180px;padding:12px;border:1px solid var(--line);border-radius:9px;font-size:16px}
+button{border:0;border-radius:8px;padding:9px 12px;background:#e4f2ea;color:#075544;font-weight:bold;cursor:pointer}
+button.active{background:var(--green);color:white}
+.alphabet{display:grid;grid-template-columns:repeat(13,1fr);gap:5px;background:white;border:1px solid var(--line);padding:12px;border-radius:12px;margin-bottom:14px}
+.alphabet button{padding:8px 0}
+.card{background:white;border:1px solid var(--line);border-radius:13px;padding:14px;margin:10px 0}
+.word{font-size:20px;font-weight:bold;margin-bottom:10px}
+.grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px}
+.lang{background:#f7faf8;border-radius:10px;padding:10px;min-width:0}
+.lang small{display:block;color:var(--muted);margin-bottom:5px}
+.lang strong{display:block;overflow-wrap:anywhere}
+.lang button{margin-top:8px}
+.status{font-size:12px;color:var(--muted);margin-top:7px;line-height:1.4}
+@media(max-width:560px){.alphabet{grid-template-columns:repeat(7,1fr)}.grid{grid-template-columns:1fr 1fr}h1{font-size:24px}}
+</style>
+</head>
+<body>
+<header><div class="wrap">
+<div><strong>🌍 GLOBAL DICTIONARY</strong></div>
+<h1>English · German · Italian · Somali</h1>
+<div class="sub">English: codka Kenya haddii qalabkaagu hayo. German iyo Italian: codadkooda. Somali: isticmaal cod Soomaali oo qalabkaagu taageero.</div>
+</div></header>
+<main>
+<div class="notice"><b>Muhiim – codka Af-Soomaaliga:</b> Browser-yo badan ma laha cod Soomaali oo dabiici ah. App-kan wuxuu hubinayaa in cod Soomaali jiro. Haddii uusan jirin, ma akhrin doono erayga si khaldan; wuxuu kuu sheegi doonaa in codka aan la helin. Si cod Soomaali dhab ah loo helo, waa in lagu daraa duubis cod Soomaali ah ama adeeg cod-bixin taageera Af-Soomaaliga.</div>
+<div class="controls">
+<input id="search" placeholder="Raadi eray..." autocomplete="off">
+<button id="clear">Nadiifi</button>
+</div>
+<div class="alphabet" id="alphabet"></div>
+<h2 id="heading">Erayada A</h2>
+<div id="words"></div>
 </main>
 <script>
-const data=[
+const entries = [
 ["Maybe","Vielleicht","Forse","Waxaa laga yaabaa"],
 ["Always","Immer","Sempre","Mar walba"],
 ["Never","Nie","Mai","Marnaba"],
@@ -28,26 +61,79 @@ const data=[
 ["Yesterday","Gestern","Ieri","Shalay"],
 ["Already","Schon","Già","Horeba"],
 ["Here","Hier","Qui","Halkan"],
-["There","Da / Dort","Lì / Là","Halkaas"],
+["There","Dort","Lì","Halkaas"],
 ["Big","Groß","Grande","Weyn"],
 ["Small","Klein","Piccolo / Piccola","Yar"],
 ["Hot","Heiß","Caldo / Calda","Kulul"],
 ["Cold","Kalt","Freddo / Fredda","Qabow"],
 ["New","Neu","Nuovo / Nuova","Cusub"],
-["Old","Alt","Vecchio / Vecchia","Duug; duq"]
+["Old","Alt","Vecchio / Vecchia","Duug; duq"],
+["Apple","Apfel","Mela","Tufaax"],
+["Book","Buch","Libro","Buug"],
+["Business","Geschäft","Impresa","Ganacsi"]
 ];
-const langs=["en-KE","de-DE","it-IT","so-SO"];
-function speak(text,lang){
- if(!window.speechSynthesis){alert("Browser-kaagu ma taageerayo cod-akhrinta.");return;}
- speechSynthesis.cancel();
- const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=.88;
- const voices=speechSynthesis.getVoices();
- const voice=voices.find(v=>v.lang.toLowerCase()===lang.toLowerCase())||
-   voices.find(v=>v.lang.toLowerCase().startsWith(lang.slice(0,2)));
- if(voice)u.voice=voice;
- speechSynthesis.speak(u);
+const columns = [
+ {label:"🇬🇧 English (Kenyan accent)",lang:"en-KE",fallback:"en"},
+ {label:"🇩🇪 German",lang:"de-DE",fallback:"de"},
+ {label:"🇮🇹 Italian",lang:"it-IT",fallback:"it"},
+ {label:"🇸🇴 Somali",lang:"so-SO",fallback:"so"}
+];
+let selected="A";
+const alphabet=document.getElementById("alphabet");
+for(const letter of "ABCDEFGHIJKLMNOPQRSTUVWXYZ"){
+ const b=document.createElement("button"); b.textContent=letter;
+ b.onclick=()=>{selected=letter;document.getElementById("search").value="";render()};
+ b.dataset.letter=letter;alphabet.appendChild(b);
 }
-document.getElementById("body").innerHTML=data.map(row=>"<tr>"+row.map((word,i)=>
- `<td>${word}<br><button onclick='speak(${JSON.stringify(word)},${JSON.stringify(langs[i])})'>▶ Dhageyso</button></td>`
-).join("")+"</tr>").join("");
-</script></body></html>
+function getVoice(lang, fallback){
+ const voices=speechSynthesis.getVoices();
+ return voices.find(v=>v.lang.toLowerCase()===lang.toLowerCase()) ||
+        voices.find(v=>v.lang.toLowerCase().startsWith(fallback+"-")) ||
+        voices.find(v=>v.lang.toLowerCase()===fallback);
+}
+function speak(text,index,status){
+ if(!("speechSynthesis" in window)){status.textContent="Browser-kan ma taageero cod-akhrin.";return}
+ const cfg=columns[index], voice=getVoice(cfg.lang,cfg.fallback);
+ if(index===3 && (!voice || !voice.lang.toLowerCase().startsWith("so"))){
+   status.textContent="Cod Soomaali oo qalabkaaga ku jira lama helin. Si aan dhawaaq khaldan loo bixin, cod lama ciyaarin.";
+   return;
+ }
+ if(!voice){
+   status.textContent="Codka luqaddan lagama helin qalabkaaga. Ku rakib voice-ka luqaddan haddii la heli karo.";
+   return;
+ }
+ speechSynthesis.cancel();
+ const utterance=new SpeechSynthesisUtterance(text);
+ utterance.voice=voice; utterance.lang=voice.lang; utterance.rate=.88;
+ status.textContent="Codka: "+voice.name+" ("+voice.lang+")";
+ speechSynthesis.speak(utterance);
+}
+function render(){
+ const term=document.getElementById("search").value.trim().toLowerCase();
+ const filtered=entries.filter(row=>term?row.some(x=>x.toLowerCase().includes(term)):row[0][0].toUpperCase()===selected);
+ document.getElementById("heading").textContent=term?"Natiijada raadinta":"Erayada "+selected;
+ alphabet.querySelectorAll("button").forEach(b=>b.classList.toggle("active",b.dataset.letter===selected&&!term));
+ const root=document.getElementById("words");root.innerHTML="";
+ if(!filtered.length){root.textContent="Erayo tusaale ah oo xarafkan ah weli laguma darin.";return}
+ filtered.forEach(row=>{
+  const card=document.createElement("section");card.className="card";
+  const word=document.createElement("div");word.className="word";word.textContent=row[0];card.appendChild(word);
+  const grid=document.createElement("div");grid.className="grid";
+  row.forEach((value,i)=>{
+   const box=document.createElement("div");box.className="lang";
+   const label=document.createElement("small");label.textContent=columns[i].label;
+   const strong=document.createElement("strong");strong.textContent=value;
+   const btn=document.createElement("button");btn.textContent="▶ Dhageyso";
+   const status=document.createElement("div");status.className="status";
+   btn.onclick=()=>speak(value,i,status);
+   box.append(label,strong,btn,status);grid.appendChild(box);
+  });
+  card.append(word,grid);root.appendChild(card);
+ });
+}
+document.getElementById("search").addEventListener("input",render);
+document.getElementById("clear").onclick=()=>{document.getElementById("search").value="";selected="A";render()};
+if("speechSynthesis" in window) speechSynthesis.onvoiceschanged=()=>{};
+render();
+</script>
+</body></html>

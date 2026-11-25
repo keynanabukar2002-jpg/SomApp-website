@@ -1,18 +1,53 @@
-<!doctype html><html lang="so"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Global Dictionary Table</title>
+<!doctype html>
+<html lang="so"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Global Dictionary – Kenyan English</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f4f8f5;color:#17251f;margin:0;padding:18px}
+body{font-family:Arial,sans-serif;background:#f4f8f5;color:#17251f;margin:0;padding:16px}
 main{max-width:950px;margin:auto;background:white;padding:18px;border-radius:14px;border:1px solid #dfe9e3}
 h1{text-align:center;color:#0b6b57;margin:4px 0}p{text-align:center;color:#617168;font-size:13px}
-table{border-collapse:collapse;width:100%;margin-top:18px}th,td{border:1px solid #687a70;padding:12px;text-align:left}th{background:#0b6b57;color:white;font-size:17px}tr:nth-child(even){background:#f1f6f2}
+table{border-collapse:collapse;width:100%;margin-top:18px}th,td{border:1px solid #687a70;padding:11px;text-align:left}th{background:#0b6b57;color:white}tr:nth-child(even){background:#f1f6f2}
 button{background:#e5f2eb;color:#075544;border:0;border-radius:7px;padding:7px 9px;margin-top:6px;font-weight:bold}
-.word{font-weight:bold}.pron{display:block;font-size:11px;color:#65756c;margin-top:4px}
-@media(max-width:600px){body{padding:8px}main{padding:10px;overflow-x:auto}table{min-width:650px}th,td{padding:9px}}
-</style></head><body><main><h1>Global Dictionary</h1><p>English · German · Italian · Somali — taabo ▶ si aad u maqasho erayga</p>
-<table><thead><tr><th>English</th><th>German</th><th>Italian</th><th>Somali</th></tr></thead><tbody id="body"></tbody></table></main>
+@media(max-width:600px){main{padding:9px;overflow-x:auto}table{min-width:650px}th,td{padding:9px}}
+</style></head><body><main>
+<h1>Global Dictionary</h1>
+<p>English (Kenyan accent) · German · Italian · Somali</p>
+<p>Taabo badhanka codka ee erayga luqaddiisa si aad u maqasho.</p>
+<table><thead><tr><th>English (Kenya)</th><th>German</th><th>Italian</th><th>Somali</th></tr></thead><tbody id="body"></tbody></table>
+</main>
 <script>
 const data=[
-["Maybe","Vielleicht","Forse","Waxaa laga yaabaa"],["Always","Immer","Sempre","Mar walba"],["Never","Nie","Mai","Marnaba"],["Often","Oft","Spesso","Badanaa"],["Now","Jetzt","Adesso","Hadda"],["Later","Später","Più tardi","Goor dambe"],["Soon","Bald","Presto","Dhawaan"],["Today","Heute","Oggi","Maanta"],["Tomorrow","Morgen","Domani","Berri"],["Yesterday","Gestern","Ieri","Shalay"],["Already","Schon","Già","Horeba"],["Here","Hier","Qui","Halkan"],["There","Da / Dort","Lì / Là","Halkaas"],["Big","Groß","Grande","Weyn"],["Small","Klein","Piccolo / Piccola","Yar"],["Hot","Heiß","Caldo / Calda","Kulul"],["Cold","Kalt","Freddo / Fredda","Qabow"],["New","Neu","Nuovo / Nuova","Cusub"],["Old","Alt","Vecchio / Vecchia","Duug; duq"]];
-const langs=["en-GB","de-DE","it-IT","so-SO"];
-function speak(text,lang){if(!window.speechSynthesis){alert("Cod-akhrin lama taageero browser-kan");return}speechSynthesis.cancel();let u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=.9;let vs=speechSynthesis.getVoices();let v=vs.find(x=>x.lang.toLowerCase()===lang.toLowerCase())||vs.find(x=>x.lang.toLowerCase().startsWith(lang.slice(0,2)));if(v)u.voice=v;speechSynthesis.speak(u)}
-document.getElementById("body").innerHTML=data.map(row=>"<tr>"+row.map((word,i)=>`<td><span class="word">${word}</span><br><button onclick='speak(${JSON.stringify(word)},${JSON.stringify(langs[i])})'>▶ Dhageyso</button></td>`).join("")+"</tr>").join("");
+["Maybe","Vielleicht","Forse","Waxaa laga yaabaa"],
+["Always","Immer","Sempre","Mar walba"],
+["Never","Nie","Mai","Marnaba"],
+["Often","Oft","Spesso","Badanaa"],
+["Now","Jetzt","Adesso","Hadda"],
+["Later","Später","Più tardi","Goor dambe"],
+["Soon","Bald","Presto","Dhawaan"],
+["Today","Heute","Oggi","Maanta"],
+["Tomorrow","Morgen","Domani","Berri"],
+["Yesterday","Gestern","Ieri","Shalay"],
+["Already","Schon","Già","Horeba"],
+["Here","Hier","Qui","Halkan"],
+["There","Da / Dort","Lì / Là","Halkaas"],
+["Big","Groß","Grande","Weyn"],
+["Small","Klein","Piccolo / Piccola","Yar"],
+["Hot","Heiß","Caldo / Calda","Kulul"],
+["Cold","Kalt","Freddo / Fredda","Qabow"],
+["New","Neu","Nuovo / Nuova","Cusub"],
+["Old","Alt","Vecchio / Vecchia","Duug; duq"]
+];
+const langs=["en-KE","de-DE","it-IT","so-SO"];
+function speak(text,lang){
+ if(!window.speechSynthesis){alert("Browser-kaagu ma taageerayo cod-akhrinta.");return;}
+ speechSynthesis.cancel();
+ const u=new SpeechSynthesisUtterance(text);u.lang=lang;u.rate=.88;
+ const voices=speechSynthesis.getVoices();
+ const voice=voices.find(v=>v.lang.toLowerCase()===lang.toLowerCase())||
+   voices.find(v=>v.lang.toLowerCase().startsWith(lang.slice(0,2)));
+ if(voice)u.voice=voice;
+ speechSynthesis.speak(u);
+}
+document.getElementById("body").innerHTML=data.map(row=>"<tr>"+row.map((word,i)=>
+ `<td>${word}<br><button onclick='speak(${JSON.stringify(word)},${JSON.stringify(langs[i])})'>▶ Dhageyso</button></td>`
+).join("")+"</tr>").join("");
 </script></body></html>
